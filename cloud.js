@@ -1,28 +1,29 @@
-// cloud.js — Makhanani LTSM v1.70
+// cloud.js — Makhanani LTSM v1.71
+// Uses YOUR Firebase Realtime Database: makhanani-ltsm
+// Path: schools/<SCHOOL_NAME>/data
 // Syncs: Books, Learners, Staff, Issues, School Name, Notifications
-// Cloud ID = schools/<SCHOOL_NAME> — changes when Admin changes school name
-// Works with Firebase Firestore if configured, else falls back to local only
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
-// --- PASTE YOUR FIREBASE CONFIG HERE (from Firebase Console > Project Settings) ---
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_ID",
-  appId: "PASTE_APP_ID"
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:760b5163fdf421bae01b5a",
+  measurementId: "G-TDFSSF6NTB"
 };
 
-let db = null;
-try {
-  if (firebaseConfig.apiKey !== "PASTE_YOUR_API_KEY") {
-    const app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-  }
-} catch(e){ console.warn("Firebase not configured, using local only", e); }
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+let analytics = null;
+try { analytics = getAnalytics(app); } catch(e){ console.log("Analytics skipped", e); }
+const db = getDatabase(app);
 
 function getSchoolName(){
   return localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'MAKHANANI PRIMARY SCHOOL';
@@ -30,12 +31,17 @@ function getSchoolName(){
 function getCloudId(){
   return 'schools/' + getSchoolName().toUpperCase().replace(/[^A-Z0-9]+/g,'_');
 }
+function getCloudPath(){
+  return getCloudId() + '/data';
+}
 function getAllData(){
+  let login = null;
+  try { login = JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); } catch(e){}
   return {
-    version: '1.70',
+    version: '1.71',
     school: getSchoolName(),
     updatedAt: new Date().toISOString(),
-    updatedBy: (()=>{ try{ let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); return l?l.name+' ('+l.role+')':'System'; }catch(e){ return 'System'; } })(),
+    updatedBy: login ? login.name + ' (' + login.role + ')' : 'System',
     books: JSON.parse(localStorage.getItem('LTSM_BARCODES_TEXTBOOK_v158')||'[]'),
     learners: JSON.parse(localStorage.getItem('LTSM_BARCODES_LEARNER_v158')||'[]'),
     staff: JSON.parse(localStorage.getItem('MAKHANANI_STAFF')||'[]'),
@@ -55,38 +61,37 @@ function applyData(d){
 }
 function setStatus(msg, color){
   let el = document.getElementById('cloudStatus');
-  if(el){ el.textContent = msg; el.style.background = color || '#059669'; }
+  if(el){ el.textContent = msg; }
   let lbl = document.getElementById('cloudIdLabel');
   if(lbl) lbl.textContent = getCloudId();
+  let lbl2 = document.getElementById('cloudIdLabel2');
+  if(lbl2) lbl2.textContent = getCloudId();
 }
 
-// --- PUSH: This phone -> Cloud ---
+// PUSH: This phone -> Cloud
 async function pushToCloud(){
   let data = getAllData();
   setStatus('☁️ Syncing to cloud...', '#f59e0b');
   try{
-    if(db){
-      await setDoc(doc(db, getCloudId(), 'data'), data);
-      setStatus('☁️ Cloud: Synced ✅ ' + new Date().toLocaleTimeString(), '#059669');
-    } else {
-      setStatus('☁️ Cloud: Not configured — Saved Locally (paste Firebase config in cloud.js)', '#dc2626');
-      console.log('Cloud payload (no Firebase):', data);
-    }
+    await set(ref(db, getCloudPath()), data);
     localStorage.setItem('MAKHANANI_CLOUD_UPDATED', new Date().toISOString());
+    setStatus('☁️ Cloud: Synced ✅ ' + new Date().toLocaleTimeString() + ' — ' + getCloudId(), '#059669');
   } catch(e){
     setStatus('☁️ Cloud Error: ' + e.message, '#dc2626');
-    alert('Cloud sync failed: ' + e.message);
+    alert('Cloud sync failed: ' + e.message + '\n\nCheck Firebase Console > Realtime Database > Rules — must allow read/write for testing.');
   }
 }
 
-// --- PULL: Cloud -> This phone ---
+// PULL: Cloud -> This phone
 async function pullFromCloud(){
   setStatus('⬇️ Downloading from cloud...', '#f59e0b');
   try{
-    if(!db){ setStatus('☁️ Cloud: Not configured — Paste Firebase config in cloud.js', '#dc2626'); return alert('Paste your Firebase config in cloud.js first'); }
-    let snap = await getDoc(doc(db, getCloudId(), 'data'));
-    if(!snap.exists()){ setStatus('☁️ Cloud: No data for ' + getCloudId(), '#dc2626'); return alert('No cloud data for ' + getCloudId() + '\nCheck school name matches Admin phone'); }
-    let d = snap.data();
+    let snap = await get(ref(db, getCloudPath()));
+    if(!snap.exists()){
+      setStatus('☁️ Cloud: No data for ' + getCloudId(), '#dc2626');
+      return alert('No cloud data for ' + getCloudId() + '\n\n1. Check school name matches Admin phone exactly\n2. Admin must click SYNC TO CLOUD first');
+    }
+    let d = snap.val();
     if(!confirm('Download will REPLACE local data with cloud data from ' + (d.updatedAt||'') + ' by ' + (d.updatedBy||'') + '. Continue?')) return;
     applyData(d);
     setStatus('⬇️ Downloaded ✅ ' + new Date().toLocaleTimeString(), '#059669');
@@ -98,15 +103,30 @@ async function pullFromCloud(){
   }
 }
 
-// Make available to onclick buttons
+// LIVE LISTENER: Auto-update when another phone syncs
+function startLiveListener(){
+  try{
+    onValue(ref(db, getCloudPath()), (snap)=>{
+      if(!snap.exists()) return;
+      let d = snap.val();
+      let last = localStorage.getItem('MAKHANANI_CLOUD_UPDATED')||'';
+      // Only auto-apply if cloud is newer and not from this sync
+      if(d.updatedAt && d.updatedAt !== last){
+        // Do NOT auto-overwrite if user is typing, just show badge
+        setStatus('☁️ Cloud: New data from ' + (d.updatedBy||'another phone') + ' — Click DOWNLOAD', '#f59e0b');
+      }
+    });
+  } catch(e){ console.log('Listener error', e); }
+}
+
 window.pushToCloud = pushToCloud;
 window.pullFromCloud = pullFromCloud;
 window.getAllData = getAllData;
 window.applyData = applyData;
 window.getCloudId = getCloudId;
 
-// Auto status on load
 document.addEventListener('DOMContentLoaded', ()=>{
-  setStatus(db ? '☁️ Cloud: Ready — ' + getCloudId() : '☁️ Cloud: Not configured — Paste Firebase config in cloud.js', db ? '#059669' : '#dc2626');
+  setStatus('☁️ Cloud: Ready — ' + getCloudId(), '#059669');
+  startLiveListener();
 });
-setTimeout(()=>{ setStatus(db ? '☁️ Cloud: Ready — ' + getCloudId() : '☁️ Cloud: Not configured — Paste Firebase config in cloud.js', db ? '#059669' : '#dc2626'); }, 500);
+setTimeout(()=>{ setStatus('☁️ Cloud: Ready — ' + getCloudId(), '#059669'); startLiveListener(); }, 800);
