@@ -1,24 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Management</title>
-    <style>
-        .subBanner{padding:10px;text-align:center;font-weight:900;border-radius:10px;margin:10px 0}
-        .subBanner.ACTIVE{background:#dcfce7;color:#065f46}
-        .subBanner.TRIAL{background:#fef3c7;color:#92400e}
-        .subBanner.EXPIRED{background:#fee2e2;color:#7f1d1d}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Makhanani LTSM — v1.75</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a1f4d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Makhanani LTSM">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;margin:0;background:#e5e7eb;padding:16px}
+.wrap{max-width:1150px;margin:auto}
+header{text-align:center;background:#0a1f4d;color:#fff;padding:16px;border-radius:14px;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}
+.logo{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;border:3px solid #d4af37}
+.badge{background:#d4af37;color:#0a1f4d;font-size:11px;font-weight:900;padding:5px 10px;border-radius:20px}
+.card{background:#fff;border-radius:14px;padding:16px;margin:12px 0}
+label{font-size:12px;font-weight:800;color:#555}
+input,select,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;margin:4px 0 10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.btn{border:none;padding:11px;border-radius:10px;font-weight:900;cursor:pointer;width:100%}
+.gold{background:#d4af37}.blue{background:#2563eb;color:#fff}.green{background:#059669;color:#fff}.dark{background:#0a1f4d;color:#fff}.red{background:#dc2626;color:#fff}.orange{background:#ea580c;color:#fff}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #eee;text-align:left;vertical-align:top}
+.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.nav a{background:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;color:#0a1f4d;font-weight:900;font-size:13px}
+.small{font-size:12px;color:#666}.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}
+.pass-wrap{position:relative}.pass-wrap button{position:absolute;right:8px;top:12px;border:none;background:none;cursor:pointer}
+.subBanner{padding:12px;text-align:center;font-weight:900;border-radius:10px;margin:10px 0;font-size:14px}
+.subBanner.ACTIVE{background:#dcfce7;color:#065f46;border:2px solid #059669}
+.subBanner.TRIAL{background:#fef3c7;color:#92400e;border:2px solid #f59e0b}
+.subBanner.EXPIRED{background:#fee2e2;color:#7f1d1d;border:2px solid #dc2626}
+.subBanner.PENDING{background:#dbeafe;color:#1e40af;border:2px solid #2563eb}
+.subBanner.NONE{background:#fee2e2;color:#7f1d1d;border:2px solid #dc2626}
+.priceGrid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.priceCard{border:2px solid #0a1f4d;border-radius:14px;padding:12px;text-align:center;background:#fff}
+.priceCard .setup{color:#059669;font-weight:900;font-size:18px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.tabs button{border:none;padding:10px 14px;border-radius:20px;font-weight:900;cursor:pointer;background:#fff;font-size:13px}.tabs button.active{background:#0a1f4d;color:#fff}
+.tab{display:none}.tab.active{display:block}
+@media(max-width:700px){.grid,.grid3,.grid4,.priceGrid{grid-template-columns:1fr 1fr}}
+@media print{.no-print{display:none!important}}
+</style>
 </head>
 <body>
-    <div class="wrap">
-        <div id="subBanner" class="subBanner no-print" style="display:none"></div>
-        <!-- rest of your content -->
-    </div>
-    <script>
-        function checkSubBanner(){let school=getSchoolName(),subs=getSubs(),s=subs.find(x=>x.school.toLowerCase()===school.toLowerCase());if(!s)return document.getElementById('subBanner').style.display='none';let d=daysLeft(s.end),msg='<b>'+s.school+'</b> — '+s.plan+' • '+s.status+' • '+d+' days left',cls=s.status;if(s.status==='EXPIRED'||d<0){msg='🔴 EXPIRED! '+s.school+' — '+s.plan+' ended '+s.end+' • Contact Admin • R'+(s.amount||0);cls='EXPIRED';}else if(s.status==='TRIAL'){msg='🟡 TRIAL: '+s.school+' — '+s.plan+' ends '+s.end+' ('+d+' days) • R'+(s.amount||0);cls='TRIAL';}document.getElementById('subBanner').innerHTML=msg;document.getElementById('subBanner').className='subBanner '+cls;document.getElementById('subBanner').style.display='block';}
-        checkSubBanner();
-    </script>
+<div class="wrap">
+
+<header>
+<img src="logo.png" class="logo" onerror="this.style.display='none'">
+<div>
+<h1 style="margin:0">Makhanani LTSM</h1>
+<p style="margin:4px 0 0" id="schoolTitle">MAKHANANI PRIMARY SCHOOL</p>
+<p style="font-size:12px;opacity:.85">Textbook & Learner Barcode System • Due 30 Nov Every Year</p>
+</div>
+<span class="badge">v1.75 PWA</span>
+</header>
+
+<div id="subBanner" class="subBanner no-print" style="display:none"></div>
+
+<div class="card no-print" id="loginCard">
+<h2 style="margin:0 0 10px">🔐 Login</h2>
+<div class="grid3">
+<div><label>Email</label><input id="loginEmail" placeholder="Enter your email"></div>
+<div><label>Password</label><div class="pass-wrap"><input id="loginPass" type="password" placeholder="Enter password"><button type="button" onclick="togglePass()">👁️</button></div></div>
+<div><label>&nbsp;</label><button class="btn dark" onclick="doLogin()">Login</button></div>
+</div>
+<p class="small">Admin / Principal / Librarian / Teacher. No demo passwords shown.</p>
+<div id="loginMsg" class="small" style="color:#dc2626"></div>
+</div>
+
+<div class="card no-print" id="loggedCard" style="display:none">
+<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
+<div><b id="whoName">-</b><br><small id="whoDetail">-</small></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="location.href='admin.html'" style="width:auto">⚙️ Admin</button><button class="btn blue" onclick="location.href='principal.html'" style="width:auto">👩🏾‍🏫 Principal</button><button class="btn red" onclick="logout()" style="width:auto">Logout</button></div>
+</div>
+</div>
+
+<div style="background:#059669;color:#fff;padding:10px;border-radius:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-weight:800;font-size:13px" class="no-print">
+<span id="cloudStatus">☁️ Cloud: Connecting...</span>
+<button onclick="pushToCloud()" class="btn" style="background:#fff;color:#059669;width:auto">☁️ SYNC TO CLOUD</button>
+<button onclick="pullFromCloud()" class="btn" style="background:#0a1f4d;color:#fff;width:auto">⬇️ DOWNLOAD</button>
+</div>
+<p class="small no-print" style="text-align:center">Cloud ID: <b id="cloudIdLabel">schools/...</b></p>
+
+<div style="text-align:center;margin:10px 0" class="no-print">
+<button id="installBtn" onclick="installApp()" class="btn green" style="width:auto;display:none">📲 INSTALL APP</button>
+<button onclick="installApp()" class="btn dark" style="width:auto">📲 Download / Install App</button>
+<p class="small">Installs Makhanani LTSM on your phone — icon on home screen, opens like a real app. Open in Chrome / Safari, not WhatsApp.</p>
+</div>
+
+<div class="nav no-print">
+<a href="index.html">🏠 Home</a><a href="issue.html">📚 Issue / Return</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="learner-barcode.html">🎓 Learners</a><a href="admin.html">⚙️ Admin</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="librarian.html">📚 Librarian</a>
+</div>
+
+<div class="grid4">
+<div class="card" style="text-align:center;margin:0"><b id="sBooks" style="font-size:22px">0</b><br><span class="small">📖 Books</span></div>
+<div class="card" style="text-align:center;margin:0"><b id="sLearners" style="font-size:22px">0</b><br><span class="small">🎓 Learners</span></div>
+<div class="card" style="text-align:center;margin:0"><b id="sOut" style="font-size:22px">0</b><br><span class="small">📚 Out</span></div>
+<div class="card" style="text-align:center;margin:0"><b id="sOverdue" style="font-size:22px;color:#dc2626">0</b><br><span class="small">🔴 Overdue</span></div>
+</div>
+
+<div class="card">
+<h2 style="margin:0 0 8px">💰 Our Prices</h2>
+<div class="priceGrid">
+<div class="priceCard"><b>DEMO</b><br><small>7 days free trial</small><br><span class="setup">Setup: FREE</span><br><small>Monthly: <b>FREE</b><br>Once-off: <b>FREE</b></small><br><button class="btn green" onclick="location.href='principal.html'">➡️ REQUEST DEMO</button></div>
+<div class="priceCard"><b>STARTER</b><br><small>Starter — 1 school</small><br><span class="setup">Setup: R3 000</span><br><small>Monthly: <b>R350 / month</b><br>Once-off: <b>R4 500 / year</b></small><br><button class="btn green" onclick="location.href='principal.html'">➡️ REQUEST STARTER</button></div>
+<div class="priceCard" style="border-color:#059669;background:#f0fdf4"><b>STANDARD</b><br><small>Most popular</small><br><span class="setup">Setup: R4 500</span><br><small>Monthly: <b>R500 / month</b><br>Once-off: <b>R7 500 / year</b></small><br><button class="btn green" onclick="location.href='principal.html'">➡️ REQUEST STANDARD</button></div>
+<div class="priceCard"><b>PREMIUM</b><br><small>Premium</small><br><span class="setup">Setup: R5 500</span><br><small>Monthly: <b>R600 / month</b><br>Once-off: <b>R9 000 / year</b></small><br><button class="btn green" onclick="location.href='principal.html'">➡️ REQUEST PREMIUM</button></div>
+</div>
+<p class="small" style="text-align:center;margin:8px 0 0">Principal requests → Admin approves in Admin → Subscriptions.</p>
+</div>
+
+<div class="tabs no-print">
+<button class="tabBtn active" onclick="showTab('homeTab',this)">🏠 Dashboard</button>
+<button class="tabBtn" onclick="showTab('booksTab',this)">📖 Books</button>
+<button class="tabBtn" onclick="showTab('learnersTab',this)">🎓 Learners</button>
+<button class="tabBtn" onclick="showTab('issuesTab',this)">📚 Issues</button>
+<button class="tabBtn" onclick="showTab('backupTab',this)">💾 Backup</button>
+</div>
+
+<div class="tab active" id="homeTab">
+<div class="card"><h2>⚡ Quick Actions</h2>
+<div class="grid3">
+<button class="btn blue" onclick="location.href='issue.html'">📚 Issue / Return Book</button>
+<button class="btn gold" onclick="location.href='textbook-barcode.html'">📖 Scan Textbook</button>
+<button class="btn green" onclick="location.href='learner-barcode.html'">🎓 Scan Learner</button>
+</div>
+<div class="grid" style="margin-top:10px">
+<div><label>School Name (This Device)</label><input id="schoolNameInput"></div>
+<div><label>&nbsp;</label><button class="btn gold" onclick="saveSchool()">💾 Save School Name</button></div>
+</div>
+<p class="small">School name must match Admin phone exactly for cloud sync to work.</p>
+</div>
+
+<div class="card"><h2>📚 Recently Out — Overdue Highlighted</h2>
+<div style="overflow:auto"><table><thead><tr><th>Learner</th><th>Book</th><th>Issued By</th><th>Due</th><th>Status</th></tr></thead><tbody id="homeIssues"></tbody></table></div></div>
+</div>
+
+<div class="tab" id="booksTab">
+<div class="card"><h2>📖 Textbooks</h2>
+<div class="grid"><div><label>Search Book / Barcode / Grade</label><input id="bookSearch" placeholder="Maths Grade 5 / 12345" oninput="renderAll()"></div><div><label>&nbsp;</label><button class="btn blue" onclick="location.href='textbook-barcode.html'">➕ Add / Scan Book</button></div></div>
+<div style="overflow:auto"><table><thead><tr><th>Title</th><th>Barcode</th><th>Grade / Subject</th><th>Condition</th><th>Status</th></tr></thead><tbody id="bookRows"></tbody></table></div></div>
+</div>
+
+<div class="tab" id="learnersTab">
+<div class="card"><h2>🎓 Learners</h2>
+<div class="grid"><div><label>Search Learner / Barcode / Grade</label><input id="learnerSearch" placeholder="Thabo / Grade 5" oninput="renderAll()"></div><div><label>&nbsp;</label><button class="btn green" onclick="location.href='learner-barcode.html'">➕ Add / Scan Learner</button></div></div>
+<div style="overflow:auto"><table><thead><tr><th>Name</th><th>Barcode</th><th>Grade / Class</th><th>Books Out</th></tr></thead><tbody id="learnerRows"></tbody></table></div></div>
+</div>
+
+<div class="tab" id="issuesTab">
+<div class="card"><h2>📚 All Issues / Returns</h2>
+<div><label>Search Learner / Book</label><input id="issueSearch" placeholder="Search..." oninput="renderAll()"></div>
+<div style="overflow:auto"><table><thead><tr><th>Learner</th><th>Book</th><th>Issued By</th><th>Retrieved By</th><th>Due</th><th>Status</th></tr></thead><tbody id="issueRows"></tbody></table></div></div>
+</div>
+
+<div class="tab" id="backupTab">
+<div class="card"><h2>💾 Backup / Restore</h2>
+<div class="grid3"><button class="btn gold" onclick="downloadBackup()">⬇️ Download Backup</button><input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreBackup()"><button class="btn blue" onclick="document.getElementById('restoreFile').click()">⬆️ Restore Backup</button><button class="btn red" onclick="wipeAll()">🗑️ Wipe All</button></div>
+<p class="small">Backup includes Books, Learners, Staff, Issues, DBE Schools, Subscriptions, Requests.</p></div>
+</div>
+
+<p class="small" style="text-align:center">Makhanani LTSM v1.75 • DEMO FREE • STARTER R3 000 / R350 / R4 500 • STANDARD R4 500 / R500 / R7 500 • PREMIUM R5 500 / R600 / R9 000 • Due 30 Nov</p>
+</div>
+
+<script type="module" src="cloud.js"></script>
+<script>
+// ===== PWA v1.75 =====
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(()=>console.log('SW OK')).catch(e=>console.log('SW Fail',e));
+  });
+}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e;let b=document.getElementById('installBtn');if(b)b.style.display='inline-block';});
+async function installApp(){
+  if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;}
+  else{alert('To install:\n\nAndroid Chrome: Menu (⋮) > Add to Home screen / Install app\n\niPhone Safari: Share (⬆️) > Add to Home Screen');}
+}
+
+// ===== Core v1.75 =====
+const PRICES={DEMO:{setup:0,monthly:0,once:0},STARTER:{setup:3000,monthly:350,once:4500},STANDARD:{setup:4500,monthly:500,once:7500},PREMIUM:{setup:5500,monthly:600,once:9000}};
+function togglePass(){let p=document.getElementById('loginPass');p.type=p.type==='password'?'text':'password';}
+function getSchoolName(){return localStorage.getItem('MAKHANANI_SCHOOL_NAME')||'MAKHANANI PRIMARY SCHOOL';}
+function getSubs(){return JSON.parse(localStorage.getItem('MAKHANANI_SUBSCRIPTIONS')||'[]');}
+function getStaff(){return JSON.parse(localStorage.getItem('MAKHANANI_STAFF')||'[]');}
+function daysLeft(end){if(!end)return 0;let t=new Date();t.setHours(0,0,0,0);let e=new Date(end);e.setHours(0,0,0,0);return Math.ceil((e-t)/86400000);}
+function isOverdue(d){if(!d)return false;let t=new Date();t.setHours(0,0,0,0);let x=new Date(d);x.setHours(0,0,0,0);return t>x;}
+function setSchoolTitle(){let n=getSchoolName();document.getElementById('schoolTitle').textContent=n;document.getElementById('schoolNameInput').value=n;document.getElementById('cloudIdLabel').textContent='schools/'+n.toUpperCase().replace(/[^A-Z0-9]+/g,'_');}
+function showTab(id,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
+function seedIfEmpty(){if(getStaff().length)return;let d=[{name:'Admin User',email:'admin@makhanani.co.za',role:'ADMIN',subject:'Library',password:'Admin123'},{name:'Principal Dube',email:'principal@makhanani.co.za',role:'PRINCIPAL',subject:'Management',password:'Principal123'},{name:'Librarian Nkosi',email:'librarian@makhanani.co.za',role:'LIBRARIAN',subject:'Library',password:'Lib123'},{name:'Teacher Maths',email:'teacher-maths@makhanani.co.za',role:'TEACHER',subject:'Maths',password:'Teacher123'}];localStorage.setItem('MAKHANANI_STAFF',JSON.stringify(d));}
+function updateLoginUI(){let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');document.getElementById('loginCard').style.display=l?'none':'block';document.getElementById('loggedCard').style.display=l?'block':'none';if(l){document.getElementById('whoName').textContent=l.name+' — '+l.role;document.getElementById('whoDetail').textContent=l.email+' • '+(l.subject||'');}}
+function doLogin(){seedIfEmpty();let e=document.getElementById('loginEmail').value.trim().toLowerCase(),p=document.getElementById('loginPass').value;let f=getStaff().find(x=>x.email.toLowerCase()===e&&x.password===p);if(!f)return document.getElementById('loginMsg').textContent='❌ Wrong email or password.';localStorage.setItem('MAKHANANI_LOGGED_IN',JSON.stringify(f));updateLoginUI();renderAll();alert('✅ Welcome '+f.name+' ('+f.role+')');}
+function logout(){localStorage.removeItem('MAKHANANI_LOGGED_IN');updateLoginUI();}
+function saveSchool(){let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');if(!login||!['ADMIN','PRINCIPAL'].includes(login.role))return alert('Admin / Principal only');let n=document.getElementById('schoolNameInput').value.trim();if(!n)return alert('Type school name');localStorage.setItem('MAKHANANI_SCHOOL_NAME',n);setSchoolTitle();checkSubBanner();alert('✅ School saved: '+n);if(typeof pushToCloud==='function')pushToCloud();}
+function checkSubBanner(){
+  let el=document.getElementById('subBanner');
+  let school=getSchoolName(),subs=getSubs();
+  let s=subs.find(x=>(x.school||'').toLowerCase()===school.toLowerCase());
+  if(!s){el.innerHTML='🔴 NO SUBSCRIPTION — '+school+' • Contact Admin • <a href="principal.html" style="color:#7f1d1d">Request Subscription →</a>';el.className='subBanner NONE';el.style.display='block';return;}
+  let d=daysLeft(s.end),msg='',cls=s.status;
+  let total=(+s.setup||0)+(+s.amount||0);
+  if(s.status==='EXPIRED'||d<0){msg='🔴 EXPIRED! '+s.school+' — '+s.plan+' ('+(s.billing||'')+') ended '+s.end+' • Setup R'+(s.setup||0)+' + R'+(s.amount||0)+' = R'+total+' • Contact Admin';cls='EXPIRED';}
+  else if(s.status==='TRIAL'){msg='🟡 TRIAL: '+s.school+' — '+s.plan+' ('+(s.billing||'')+') ends '+s.end+' ('+d+' days left) • R'+total;cls='TRIAL';}
+  else if(s.status==='PENDING'){msg='🔵 PENDING: '+s.school+' — '+s.plan+' awaiting Admin approval • R'+total;cls='PENDING';}
+  else if(s.status==='SUSPENDED'||s.status==='CANCELLED'){msg='🔴 '+s.status+': '+s.school+' — '+s.plan+' • Contact Admin';cls='EXPIRED';}
+  else{msg='✅ '+s.school+' — '+s.plan+' ('+(s.billing||'')+') • '+s.status+' • '+d+' days left • End: '+s.end+' • R'+total;cls='ACTIVE';}
+  el.innerHTML=msg;el.className='subBanner '+cls;el.style.display='block';
+}
+function downloadBackup(){let data={version:'1.75',school:getSchoolName(),books:JSON.parse(localStorage.getItem('LTSM_BARCODES_TEXTBOOK_v158')||'[]'),learners:JSON.parse(localStorage.getItem('LTSM_BARCODES_LEARNER_v158')||'[]'),staff:getStaff(),issues:JSON.parse(localStorage.getItem('MAKHANANI_ISSUES')||'[]'),notifications:JSON.parse(localStorage.getItem('MAKHANANI_NOTIF_LOG')||'[]'),dbeSchools:JSON.parse(localStorage.getItem('MAKHANANI_DBE_SCHOOLS')||'[]'),subscriptions:getSubs(),subRequests:JSON.parse(localStorage.getItem('MAKHANANI_SUB_REQUESTS')||'[]')};let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='makhanani-backup-'+new Date().toISOString().split('T')[0]+'.json';a.click();}
+function restoreBackup(){let f=document.getElementById('restoreFile').files[0];if(!f)return;let r=new FileReader();r.onload=function(e){try{let d=JSON.parse(e.target.result);if(!confirm('Restore will REPLACE all data. Continue?'))return;if(d.books)localStorage.setItem('LTSM_BARCODES_TEXTBOOK_v158',JSON.stringify(d.books));if(d.learners)localStorage.setItem('LTSM_BARCODES_LEARNER_v158',JSON.stringify(d.learners));if(d.staff)localStorage.setItem('MAKHANANI_STAFF',JSON.stringify(d.staff));if(d.issues)localStorage.setItem('MAKHANANI_ISSUES',JSON.stringify(d.issues));if(d.dbeSchools)localStorage.setItem('MAKHANANI_DBE_SCHOOLS',JSON.stringify(d.dbeSchools));if(d.subscriptions)localStorage.setItem('MAKHANANI_SUBSCRIPTIONS',JSON.stringify(d.subscriptions));if(d.subRequests)localStorage.setItem('MAKHANANI_SUB_REQUESTS',JSON.stringify(d.subRequests));if(d.school)localStorage.setItem('MAKHANANI_SCHOOL_NAME',d.school);alert('✅ Restored');location.reload();}catch(err){alert('❌ '+err.message);}};r.readAsText(f);}
+function wipeAll(){if(!confirm('WIPE ALL? This cannot be undone.'))return;['LTSM_BARCODES_TEXTBOOK_v158','LTSM_BARCODES_LEARNER_v158','MAKHANANI_ISSUES','MAKHANANI_NOTIF_LOG','MAKHANANI_DBE_SCHOOLS','MAKHANANI_SUBSCRIPTIONS','MAKHANANI_SUB_REQUESTS'].forEach(k=>localStorage.removeItem(k));alert('Wiped');location.reload();}
+function renderAll(){
+  let books=JSON.parse(localStorage.getItem('LTSM_BARCODES_TEXTBOOK_v158')||'[]');
+  let learners=JSON.parse(localStorage.getItem('LTSM_BARCODES_LEARNER_v158')||'[]');
+  let issues=JSON.parse(localStorage.getItem('MAKHANANI_ISSUES')||'[]');
+  let out=issues.filter(x=>x.status==='OUT');
+  document.getElementById('sBooks').textContent=books.length;
+  document.getElementById('sLearners').textContent=learners.length;
+  document.getElementById('sOut').textContent=out.length;
+  document.getElementById('sOverdue').textContent=out.filter(x=>isOverdue(x.dueDate)).length;
+  let bq=(document.getElementById('bookSearch').value||'').toLowerCase();
+  let fb=books.filter(x=>!bq||(x.title||'').toLowerCase().includes(bq)||(x.barcode||'').includes(bq)||(x.grade||'').toLowerCase().includes(bq)||(x.subject||'').toLowerCase().includes(bq));
+  document.getElementById('bookRows').innerHTML=fb.slice(0,50).map(x=>'<tr><td><b>'+(x.title||'')+'</b></td><td>'+(x.barcode||'')+'</td><td>'+(x.grade||'')+' • '+(x.subject||'')+'</td><td>'+(x.condition||'-')+'</td><td>'+(out.find(o=>o.bookBarcode===x.barcode)?'<span class="pill" style="background:#fee2e2">OUT</span>':'<span class="pill" style="background:#dcfce7">IN</span>')+'</td></tr>').join('')||'<tr><td colspan="5">No books yet — Add in Textbooks page</td></tr>';
+  let lq=(document.getElementById('learnerSearch').value||'').toLowerCase();
+  let fl=learners.filter(x=>!lq||(x.name||'').toLowerCase().includes(lq)||(x.barcode||'').includes(lq)||(x.grade||'').toLowerCase().includes(lq));
+  document.getElementById('learnerRows').innerHTML=fl.slice(0,50).map(x=>{let c=out.filter(o=>o.learnerBarcode===x.barcode).length;return '<tr><td><b>'+(x.name||'')+'</b></td><td>'+(x.barcode||'')+'</td><td>'+(x.grade||'')+' • '+(x.className||x.class||'')+'</td><td>'+c+' out</td></tr>';}).join('')||'<tr><td colspan="4">No learners yet — Add in Learners page</td></tr>';
+  let iq=(document.getElementById('issueSearch').value||'').toLowerCase();
+  let fi=issues.filter(x=>!iq||(x.learnerName||'').toLowerCase().includes(iq)||(x.bookTitle||'').toLowerCase().includes(iq));
+  document.getElementById('issueRows').innerHTML=fi.slice().reverse().slice(0,50).map(x=>'<tr><td><b>'+(x.learnerName||'')+'</b></td><td><b>'+(x.bookTitle||'')+'</b></td><td>'+(x.issuedByName||'-')+'</td><td>'+(x.status==='RETURNED'?(x.retrievedByName||''):'— Still Out —')+'</td><td>'+(x.dueDate||'30 Nov')+'</td><td>'+(x.status==='RETURNED'?'✅ Returned':(isOverdue(x.dueDate)?'🔴 OVERDUE':'🟢 OUT'))+'</td></tr>').join('')||'<tr><td colspan="6">No records yet</td></tr>';
+  document.getElementById('homeIssues').innerHTML=issues.slice().reverse().slice(0,10).map(x=>'<tr><td><b>'+(x.learnerName||'')+'</b></td><td><b>'+(x.bookTitle||'')+'</b></td><td>'+(x.issuedByName||'-')+'</td><td>'+(x.dueDate||'30 Nov')+'</td><td>'+(x.status==='RETURNED'?'✅ Returned':(isOverdue(x.dueDate)?'🔴 OVERDUE':'🟢 OUT'))+'</td></tr>').join('')||'<tr><td colspan="5">No records yet</td></tr>';
+  checkSubBanner();
+}
+seedIfEmpty();setSchoolTitle();updateLoginUI();renderAll();checkSubBanner();
+</script>
 </body>
 </html>
