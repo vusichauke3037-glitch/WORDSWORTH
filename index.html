@@ -1,154 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Makhanani LTSM — v1.72</title>
-<style>
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#e5e7eb;color:#111;padding:16px}
-.wrap{max-width:1100px;margin:auto}
-header{text-align:center;background:#0a1f4d;color:#fff;padding:18px 14px;border-radius:14px;position:relative;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}
-header .logo{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;border:3px solid #d4af37}
-header .head-text{text-align:left}
-.badge{position:absolute;top:10px;right:12px;background:#d4af37;color:#0a1f4d;font-size:11px;font-weight:900;padding:5px 10px;border-radius:20px}
-.card{background:#fff;border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-h2{margin:0 0 10px;font-size:18px}label{font-size:12px;font-weight:800;color:#555}
-input,select{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;margin:4px 0 10px;font-size:14px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
-.btn{border:none;padding:11px 14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:13px}
-.gold{background:#d4af37}.blue{background:#2563eb;color:#fff}.green{background:#059669;color:#fff}.dark{background:#0a1f4d;color:#fff}.red{background:#dc2626;color:#fff}.orange{background:#ea580c;color:#fff}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #eee;text-align:left;vertical-align:top}
-.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
-.nav a{background:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;color:#0a1f4d;font-weight:900;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
-.small{font-size:12px;color:#666}.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.tabs button{border:none;padding:10px 14px;border-radius:20px;font-weight:900;cursor:pointer;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.1);font-size:13px}.tabs button.active{background:#0a1f4d;color:#fff}
-.tab{display:none}.tab.active{display:block}
-.stat{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center}.stat b{font-size:22px;display:block}.stat span{font-size:12px;color:#666}
-.pass-wrap{position:relative}.pass-wrap button{position:absolute;right:8px;top:12px;border:none;background:none;cursor:pointer;font-size:16px}
-@media(max-width:700px){.grid,.grid3,.grid4{grid-template-columns:1fr 1fr}header .head-text{text-align:center}}
-@media print{.no-print{display:none!important}body{background:#fff;padding:0}.card{box-shadow:none;border:1px solid #ddd}.tab{display:none!important}.tab.active{display:block!important}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management</title>
+    <style>
+        .subBanner{padding:10px;text-align:center;font-weight:900;border-radius:10px;margin:10px 0}
+        .subBanner.ACTIVE{background:#dcfce7;color:#065f46}
+        .subBanner.TRIAL{background:#fef3c7;color:#92400e}
+        .subBanner.EXPIRED{background:#fee2e2;color:#7f1d1d}
+    </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-<img src="logo.png" class="logo" alt="School Logo" onerror="this.style.display='none'">
-<div class="head-text"><h1 style="margin:0">Makhanani LTSM</h1><p style="margin:6px 0 0;opacity:.9" id="schoolTitle">MAKHANANI PRIMARY SCHOOL</p><p style="margin:4px 0 0;font-size:12px;opacity:.8">Textbook & Learner Barcode System • Due: 30 Nov Every Year</p></div>
-<div class="badge">v1.72</div>
-</header>
-
-<!-- LOGIN - NO DEMO PASSWORD SHOWN -->
-<div class="card no-print" id="loginCard">
-<h2>🔐 Login</h2>
-<div class="grid3">
-<div><label>Email</label><input id="loginEmail" placeholder="Enter your email" autocomplete="username"></div>
-<div><label>Password</label><div class="pass-wrap"><input id="loginPass" type="password" placeholder="Enter password" autocomplete="current-password"><button type="button" onclick="togglePass()">👁️</button></div></div>
-<div><label>&nbsp;</label><button class="btn dark" onclick="doLogin()" style="width:100%">Login</button></div>
-</div>
-<p class="small">Use the account given to you by Admin / Principal. Login is saved on this phone.</p>
-<div id="loginMsg" class="small" style="color:#dc2626"></div>
-</div>
-
-<div class="card no-print" id="loggedCard" style="display:none">
-<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
-<div><b id="whoName">-</b><br><small id="whoDetail">-</small></div>
-<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="goRolePage()">⚙️ My Dashboard</button><button class="btn red" onclick="logout()">Logout</button></div>
-</div>
-</div>
-
-<div style="background:#059669;color:#fff;padding:10px;border-radius:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;font-size:13px;font-weight:800" class="no-print">
-<span id="cloudStatus">☁️ Cloud: Connecting...</span>
-<button onclick="pushToCloud()" class="btn" style="background:#fff;color:#059669">☁️ SYNC TO CLOUD</button>
-<button onclick="pullFromCloud()" class="btn" style="background:#0a1f4d;color:#fff">⬇️ DOWNLOAD FROM CLOUD</button>
-</div>
-<p class="small no-print" style="text-align:center">Cloud ID: <b id="cloudIdLabel">schools/...</b></p>
-
-<div class="nav no-print">
-<a href="issue.html">📚 Issue / Return</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="learner-barcode.html">🎓 Learners</a><a href="admin.html">⚙️ Admin</a><a href="librarian.html">📚 Librarian</a>
-</div>
-
-<div class="grid4">
-<div class="stat"><b id="sBooks">0</b><span>📖 Textbooks</span></div>
-<div class="stat"><b id="sLearners">0</b><span>🎓 Learners</span></div>
-<div class="stat"><b id="sOut">0</b><span>📚 Out Now</span></div>
-<div class="stat"><b id="sOverdue" style="color:#dc2626">0</b><span>🔴 Overdue (After 30 Nov)</span></div>
-</div>
-
-<div class="tabs no-print">
-<button class="tabBtn active" onclick="showTab('homeTab',this)">🏠 Home</button>
-<button class="tabBtn" onclick="showTab('reportsTab',this)">📊 Reports</button>
-<button class="tabBtn" onclick="showTab('notifTab',this)">🔔 Notifications</button>
-<button class="tabBtn" onclick="showTab('backupTab',this)">💾 Backup</button>
-<button class="tabBtn" onclick="showTab('schoolTab',this)">🏫 School</button>
-</div>
-
-<div class="tab active" id="homeTab">
-<div class="card">
-<h2>⚡ Quick Actions</h2>
-<div class="grid4">
-<button class="btn green" onclick="location.href='issue.html'">📚 Issue Book</button>
-<button class="btn orange" onclick="location.href='issue.html'">↩️ Return Book</button>
-<button class="btn blue" onclick="location.href='textbook-barcode.html'">📖 Print Textbooks</button>
-<button class="btn gold" onclick="location.href='learner-barcode.html'">🎓 Print Learners</button>
-</div>
-<p class="small">Every Issue / Return records: <b>Issued By + Retrieved By</b> (Name, Email, Role, Date, Time). Due date is always <b>30 Nov</b>.</p>
-</div>
-<div class="card"><h2>📚 Recently Issued / Returned</h2><div style="overflow:auto"><table><thead><tr><th>Learner</th><th>Book</th><th>Issued By</th><th>Retrieved By</th><th>Due</th><th>Status</th></tr></thead><tbody id="recentRows"></tbody></table></div></div>
-</div>
-
-<div class="tab" id="reportsTab">
-<div class="card">
-<h2>📊 Reports — Issue History + Overdue + Issuer / Retriever</h2>
-<div class="grid3 no-print">
-<div><label>Filter</label><select id="repFilter" onchange="renderAll()"><option value="ALL">All</option><option value="OUT">OUT Only</option><option value="RETURNED">Returned Only</option><option value="OVERDUE">Overdue Only</option></select></div>
-<div><label>Search Learner / Book / Issuer</label><input id="repSearch" oninput="renderAll()" placeholder="Type name..."></div>
-<div><label>&nbsp;</label><button class="btn dark" onclick="window.print()" style="width:100%">🖨️ Print Issue Log</button></div>
-</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0" class="no-print"><span class="pill" style="background:#dbeafe" id="statTotal">Total: 0</span><span class="pill" style="background:#fef3c7" id="statOut2">Out: 0</span><span class="pill" style="background:#fee2e2" id="statOverdue2">Overdue: 0</span><span class="pill" style="background:#dcfce7" id="statReturned">Returned: 0</span></div>
-<div style="overflow:auto"><table><thead><tr><th>Learner</th><th>Book</th><th>Issued By</th><th>Retrieved By</th><th>Due</th><th>Status</th></tr></thead><tbody id="reportRows"></tbody></table></div>
-</div>
-</div>
-
-<div class="tab" id="notifTab">
-<div class="card"><h2>🔔 Notifications — Overdue Alerts</h2><p class="small">Books due <b>30 Nov</b> every year. After 30 Nov, books still OUT are OVERDUE.</p><div id="overdueList"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px" class="no-print"><button class="btn orange" onclick="sendNotifications()">🔔 Send / Log Overdue Alerts</button><button class="btn dark" onclick="exportNotificationsCSV()">⬇️ Export Overdue CSV</button><button class="btn red" onclick="clearNotifLog()">🗑️ Clear Log</button></div><h3 style="font-size:14px;margin:16px 0 8px">📜 Notification Log (Last 20)</h3><div id="notifLog"></div></div>
-</div>
-
-<div class="tab" id="backupTab">
-<div class="card"><h2>💾 Backup / Restore</h2><p class="small">Backup includes: Books, Learners, Staff, Issues (with Issuer/Retriever), School Name, Notifications.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="downloadBackup()">⬇️ Download Backup JSON</button><input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreBackup()"><button class="btn blue" onclick="document.getElementById('restoreFile').click()">⬆️ Restore Backup JSON</button><button class="btn green" onclick="pushToCloud()">☁️ Backup to Cloud</button></div></div>
-</div>
-
-<div class="tab" id="schoolTab">
-<div class="card"><h2>🏫 School Name</h2><p class="small">Only <b>ADMIN / PRINCIPAL</b> can change school name. Changing it updates all barcodes + Cloud ID. After change, click SYNC TO CLOUD.</p><label>School Name (as on barcodes)</label><input id="schoolNameInput" placeholder="MAKHANANI PRIMARY SCHOOL"><button class="btn gold" onclick="saveSchoolNameHome()">💾 Save School Name</button><button class="btn dark" onclick="location.href='admin.html'">Open Admin — DBE Schools</button><p class="small">Current Cloud ID: <b id="cloudIdLabel2">schools/...</b></p></div>
-</div>
-
-<p class="small" style="text-align:center">Makhanani LTSM v1.72 • Due: 30 Nov Every Year • Issuer / Retriever Recorded • Cloud Sync • Backup • Notifications</p>
-</div>
-
-<script type="module" src="cloud.js"></script>
-<script>
-function togglePass(){let p=document.getElementById('loginPass');p.type=p.type==='password'?'text':'password';}
-function getSchoolName(){return localStorage.getItem('MAKHANANI_SCHOOL_NAME')||'MAKHANANI PRIMARY SCHOOL';}
-function setSchoolName(n){localStorage.setItem('MAKHANANI_SCHOOL_NAME',n);document.getElementById('schoolTitle').textContent=n;document.getElementById('schoolNameInput').value=n;let cid='schools/'+n.toUpperCase().replace(/[^A-Z0-9]+/g,'_');document.getElementById('cloudIdLabel').textContent=cid;document.getElementById('cloudIdLabel2').textContent=cid;}
-function saveSchoolNameHome(){let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');if(!login||!['ADMIN','PRINCIPAL'].includes(login.role))return alert('Admin / Principal only. Login as Admin first.');let n=document.getElementById('schoolNameInput').value.trim();if(!n)return alert('Type school name');setSchoolName(n);alert('✅ School saved: '+n+'\nNow click SYNC TO CLOUD');}
-function showTab(id,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
-function getStaff(){return JSON.parse(localStorage.getItem('MAKHANANI_STAFF')||'[]');}
-function seedIfEmpty(){if(getStaff().length)return;let demo=[{name:'Admin User',email:'admin@makhanani.co.za',role:'ADMIN',subject:'Library',password:'Admin123'},{name:'Principal Dube',email:'principal@makhanani.co.za',role:'PRINCIPAL',subject:'Management',password:'Principal123'},{name:'Librarian Nkosi',email:'librarian@makhanani.co.za',role:'LIBRARIAN',subject:'Library',password:'Lib123'},{name:'Teacher Maths',email:'teacher-maths@makhanani.co.za',role:'TEACHER',subject:'Maths',password:'Teacher123'}];localStorage.setItem('MAKHANANI_STAFF',JSON.stringify(demo));}
-function updateLoginUI(){let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');document.getElementById('loginCard').style.display=login?'none':'block';document.getElementById('loggedCard').style.display=login?'block':'none';if(login){document.getElementById('whoName').textContent=login.name+' — '+login.role;document.getElementById('whoDetail').textContent=login.email+' • '+(login.subject||'');}}
-function doLogin(){seedIfEmpty();let email=document.getElementById('loginEmail').value.trim().toLowerCase(),pass=document.getElementById('loginPass').value;let found=getStaff().find(x=>x.email.toLowerCase()===email&&x.password===pass);if(!found)return document.getElementById('loginMsg').textContent='❌ Wrong email or password. Contact Admin for your login.';localStorage.setItem('MAKHANANI_LOGGED_IN',JSON.stringify(found));updateLoginUI();renderAll();alert('✅ Welcome '+found.name+' ('+found.role+')');}
-function logout(){localStorage.removeItem('MAKHANANI_LOGGED_IN');updateLoginUI();}
-function goRolePage(){let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');if(!login)return;if(['ADMIN','PRINCIPAL'].includes(login.role))location.href='admin.html';else if(login.role==='LIBRARIAN')location.href='librarian.html';else location.href='issue.html';}
-function getIssues(){return JSON.parse(localStorage.getItem('MAKHANANI_ISSUES')||'[]');}
-function getBooks(){return JSON.parse(localStorage.getItem('LTSM_BARCODES_TEXTBOOK_v158')||'[]');}
-function getLearners(){return JSON.parse(localStorage.getItem('LTSM_BARCODES_LEARNER_v158')||'[]');}
-function isOverdue(due){if(!due)return false;let t=new Date();t.setHours(0,0,0,0);let d=new Date(due);d.setHours(0,0,0,0);return t>d;}
-function rowHTML(x){return '<tr><td><b>'+(x.learnerName||'')+'</b><br><small>'+(x.issueDate||'')+' '+(x.issueTime||'')+'</small></td><td><b>'+(x.bookTitle||'')+'</b><br><small>'+(x.bookBarcode||'')+'</small></td><td><b>'+(x.issuedByName||'-')+'</b><br><small>'+(x.issuedByRole||'')+'<br>'+(x.issuedByEmail||'')+'</small></td><td>'+(x.status==='RETURNED'?'<b>'+(x.retrievedByName||'')+'</b><br><small>'+(x.retrievedByRole||'')+'<br>'+(x.retrievedByEmail||'')+'<br>'+(x.returnDate||'')+' '+(x.returnTime||'')+'</small>':'<span style="color:#999">— Still Out —</span>')+'</td><td>30 Nov '+(x.dueDate?new Date(x.dueDate).getFullYear():'')+'<br><small>'+(x.dueDate||'')+'</small></td><td>'+(x.status==='RETURNED'?'✅ Returned':(isOverdue(x.dueDate)?'🔴 OVERDUE':'🟢 OUT'))+'</td></tr>';}
-function renderAll(){let issues=getIssues(),books=getBooks(),learners=getLearners();let out=issues.filter(x=>x.status==='OUT'),overdue=out.filter(x=>isOverdue(x.dueDate)),ret=issues.filter(x=>x.status==='RETURNED');document.getElementById('sBooks').textContent=books.length;document.getElementById('sLearners').textContent=learners.length;document.getElementById('sOut').textContent=out.length;document.getElementById('sOverdue').textContent=overdue.length;document.getElementById('statTotal').textContent='Total: '+issues.length;document.getElementById('statOut2').textContent='Out: '+out.length;document.getElementById('statOverdue2').textContent='Overdue: '+overdue.length;document.getElementById('statReturned').textContent='Returned: '+ret.length;document.getElementById('recentRows').innerHTML=issues.slice().reverse().slice(0,10).map(rowHTML).join('')||'<tr><td colspan="6">No records yet. Go to Issue page.</td></tr>';let f=document.getElementById('repFilter').value,q=(document.getElementById('repSearch').value||'').toLowerCase();let filtered=issues.filter(x=>{if(f==='OUT'&&x.status!=='OUT')return false;if(f==='RETURNED'&&x.status!=='RETURNED')return false;if(f==='OVERDUE'&&!(x.status==='OUT'&&isOverdue(x.dueDate)))return false;if(q&&!((x.learnerName||'').toLowerCase().includes(q)||(x.bookTitle||'').toLowerCase().includes(q)||(x.issuedByName||'').toLowerCase().includes(q)||(x.retrievedByName||'').toLowerCase().includes(q)))return false;return true;});document.getElementById('reportRows').innerHTML=filtered.slice().reverse().map(rowHTML).join('')||'<tr><td colspan="6">No records</td></tr>';document.getElementById('overdueList').innerHTML=overdue.map(x=>'<div style="background:#fee2e2;padding:10px;border-radius:8px;margin:5px 0"><b>'+x.learnerName+'</b> — '+x.bookTitle+'<br><small>Issued: '+x.issueDate+' by '+(x.issuedByName||'')+' • Due: 30 Nov '+new Date(x.dueDate).getFullYear()+'</small></div>').join('')||'<p class="small">No overdue books — all good.</p>';let logs=JSON.parse(localStorage.getItem('MAKHANANI_NOTIF_LOG')||'[]');document.getElementById('notifLog').innerHTML=logs.slice(-20).reverse().map(l=>'<div style="padding:8px;border:1px solid #eee;border-radius:8px;margin:4px 0;font-size:12px"><b>'+l.date+' '+l.time+'</b> — '+l.message+'<br><small>By '+(l.by||'')+'</small></div>').join('')||'<p class="small">No notifications sent yet.</p>';}
-function sendNotifications(){let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');if(!login)return alert('Login first');let overdue=getIssues().filter(x=>x.status==='OUT'&&isOverdue(x.dueDate));if(!overdue.length)return alert('No overdue books');let logs=JSON.parse(localStorage.getItem('MAKHANANI_NOTIF_LOG')||'[]');let now=new Date();overdue.forEach(x=>logs.push({date:now.toISOString().split('T')[0],time:now.toLocaleTimeString(),message:'Overdue alert: '+x.learnerName+' — '+x.bookTitle+' (Due 30 Nov)',by:login.name+' ('+login.role+')'}));localStorage.setItem('MAKHANANI_NOTIF_LOG',JSON.stringify(logs));renderAll();alert('🔔 Logged '+overdue.length+' overdue alerts.');}
-function exportNotificationsCSV(){let overdue=getIssues().filter(x=>x.status==='OUT'&&isOverdue(x.dueDate));let csv='Learner,Book,Due,Issued By,Issue Date\n'+overdue.map(x=>'"'+x.learnerName+'","'+x.bookTitle+'","'+x.dueDate+'","'+(x.issuedByName||'')+'","'+(x.issueDate||'')+'"').join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='overdue-'+new Date().toISOString().split('T')[0]+'.csv';a.click();}
-function clearNotifLog(){if(!confirm('Clear notification log?'))return;localStorage.setItem('MAKHANANI_NOTIF_LOG','[]');renderAll();}
-function downloadBackup(){let data={version:'1.72',exportedAt:new Date().toISOString(),school:getSchoolName(),books:getBooks(),learners:getLearners(),staff:getStaff(),issues:getIssues(),notifications:JSON.parse(localStorage.getItem('MAKHANANI_NOTIF_LOG')||'[]')};let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='makhanani-backup-'+new Date().toISOString().split('T')[0]+'.json';a.click();}
-function restoreBackup(){let file=document.getElementById('restoreFile').files[0];if(!file)return;let r=new FileReader();r.onload=function(e){try{let d=JSON.parse(e.target.result);if(!confirm('Restore will REPLACE all data. Continue?'))return;if(d.books)localStorage.setItem('LTSM_BARCODES_TEXTBOOK_v158',JSON.stringify(d.books));if(d.learners)localStorage.setItem('LTSM_BARCODES_LEARNER_v158',JSON.stringify(d.learners));if(d.staff)localStorage.setItem('MAKHANANI_STAFF',JSON.stringify(d.staff));if(d.issues)localStorage.setItem('MAKHANANI_ISSUES',JSON.stringify(d.issues));if(d.notifications)localStorage.setItem('MAKHANANI_NOTIF_LOG',JSON.stringify(d.notifications));if(d.school)setSchoolName(d.school);alert('✅ Restored! Refreshing...');location.reload();}catch(err){alert('❌ '+err.message);}};r.readAsText(file);}
-seedIfEmpty();setSchoolName(getSchoolName());updateLoginUI();renderAll();
-</script>
+    <div class="wrap">
+        <div id="subBanner" class="subBanner no-print" style="display:none"></div>
+        <!-- rest of your content -->
+    </div>
+    <script>
+        function checkSubBanner(){let school=getSchoolName(),subs=getSubs(),s=subs.find(x=>x.school.toLowerCase()===school.toLowerCase());if(!s)return document.getElementById('subBanner').style.display='none';let d=daysLeft(s.end),msg='<b>'+s.school+'</b> — '+s.plan+' • '+s.status+' • '+d+' days left',cls=s.status;if(s.status==='EXPIRED'||d<0){msg='🔴 EXPIRED! '+s.school+' — '+s.plan+' ended '+s.end+' • Contact Admin • R'+(s.amount||0);cls='EXPIRED';}else if(s.status==='TRIAL'){msg='🟡 TRIAL: '+s.school+' — '+s.plan+' ends '+s.end+' ('+d+' days) • R'+(s.amount||0);cls='TRIAL';}document.getElementById('subBanner').innerHTML=msg;document.getElementById('subBanner').className='subBanner '+cls;document.getElementById('subBanner').style.display='block';}
+        checkSubBanner();
+    </script>
 </body>
 </html>
