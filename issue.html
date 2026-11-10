@@ -1,144 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Issue / Return — Makhanani LTSM v1.71</title>
-<style>
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#e5e7eb;color:#111;padding:16px}
-.wrap{max-width:1100px;margin:auto}
-header{text-align:center;background:#0a1f4d;color:#fff;padding:18px 14px;border-radius:14px;position:relative}
-.badge{position:absolute;top:10px;right:12px;background:#d4af37;color:#0a1f4d;font-size:11px;font-weight:900;padding:5px 10px;border-radius:20px}
-.card{background:#fff;border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-h2{margin:0 0 10px;font-size:18px}label{font-size:12px;font-weight:800;color:#555}
-input,select,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;margin:4px 0 10px;font-size:14px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.btn{border:none;padding:11px 14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:13px;width:100%}
-.gold{background:#d4af37}.blue{background:#2563eb;color:#fff}.green{background:#059669;color:#fff}.dark{background:#0a1f4d;color:#fff}.red{background:#dc2626;color:#fff}.orange{background:#ea580c;color:#fff}.grey{background:#e5e7eb}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #eee;text-align:left;vertical-align:top}
-.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
-.nav a{background:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;color:#0a1f4d;font-weight:900;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
-.small{font-size:12px;color:#666}.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}
-.found{background:#dcfce7;border:1px solid #86efac;padding:10px;border-radius:10px;font-size:13px}
-.notfound{background:#fee2e2;border:1px solid #fca5a5;padding:10px;border-radius:10px;font-size:13px}
-@media(max-width:700px){.grid,.grid3{grid-template-columns:1fr}}
-@media print{.no-print{display:none!important}body{background:#fff;padding:0}.card{box-shadow:none;border:1px solid #ddd}}
-</style>
-</head>
-<body>
-<div class="wrap">
-<header><div class="badge">v1.71</div><h1 style="margin:0">Issue / Return</h1><p style="margin:6px 0 0;opacity:.9" id="schoolTitle">MAKHANANI PRIMARY SCHOOL</p><p style="margin:4px 0 0;font-size:12px;opacity:.8">Scan Learner + Book • Due: 30 Nov Every Year • Issuer / Retriever Recorded</p></header>
-
-<div class="card no-print" id="loginCard">
-<h2>🔐 Login</h2>
-<div class="grid3">
-<div><label>Email</label><input id="loginEmail" value="admin@makhanani.co.za" placeholder="admin@makhanani.co.za"></div>
-<div><label>Password</label><input id="loginPass" type="password" value="Admin123" placeholder="Admin123"></div>
-<div><label>&nbsp;</label><button class="btn dark" onclick="doLogin()">Login</button></div>
-</div>
-<p class="small">Demo: admin@makhanani.co.za / Admin123 • principal@makhanani.co.za / Principal123 • librarian@makhanani.co.za / Lib123 • teacher-maths@makhanani.co.za / Teacher123</p>
-<div id="loginMsg" class="small" style="color:#dc2626"></div>
-</div>
-
-<div class="card no-print" id="loggedCard" style="display:none">
-<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
-<div><b id="whoName">-</b><br><small id="whoDetail">-</small></div>
-<div style="display:flex;gap:8px"><button class="btn gold" onclick="goRolePage()" style="width:auto">⚙️ My Dashboard</button><button class="btn red" onclick="logout()" style="width:auto">Logout</button></div>
-</div>
-</div>
-
-<div style="background:#059669;color:#fff;padding:10px;border-radius:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;font-size:13px;font-weight:800" class="no-print">
-<span id="cloudStatus">☁️ Cloud: Connecting...</span>
-<button onclick="pushToCloud()" class="btn" style="background:#fff;color:#059669;width:auto">☁️ SYNC TO CLOUD</button>
-<button onclick="pullFromCloud()" class="btn" style="background:#0a1f4d;color:#fff;width:auto">⬇️ DOWNLOAD FROM CLOUD</button>
-</div>
-<p class="small no-print" style="text-align:center">Cloud ID: <b id="cloudIdLabel">schools/...</b></p>
-
-<div class="nav no-print">
-<a href="index.html">🏠 Home</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="learner-barcode.html">🎓 Learners</a><a href="admin.html">⚙️ Admin</a><a href="librarian.html">📚 Librarian</a>
-</div>
-
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-<span class="pill" style="background:#dbeafe" id="statTotal">Total: 0</span>
-<span class="pill" style="background:#fef3c7" id="statOut">Out: 0</span>
-<span class="pill" style="background:#fee2e2" id="statOverdue">Overdue: 0</span>
-<span class="pill" style="background:#dcfce7" id="statReturned">Returned: 0</span>
-<span class="pill" style="background:#f3e8ff" id="statToday">Today: 0</span>
-</div>
-
-<div class="card">
-<h2>📚 Issue / Return</h2>
-<p class="small">Scan or type Learner barcode + Book barcode. Press Enter in Book field to Issue. Due is always <b>30 Nov</b>.</p>
-<div class="grid">
-<div>
-<label>Learner Barcode / Name</label>
-<input id="learnerBarcode" placeholder="Scan learner barcode" autocomplete="off" oninput="findLearner(this.value)">
-<div id="learnerResult" class="small"></div>
-<label>Or Select Learner</label>
-<select id="learnerSelect" onchange="selectLearner(this.value)"><option value="">-- Select Learner --</option></select>
-</div>
-<div>
-<label>Textbook Barcode / Title</label>
-<input id="bookBarcode" placeholder="Scan book barcode" autocomplete="off" oninput="findBook(this.value)">
-<div id="bookResult" class="small"></div>
-<label>Or Select Book</label>
-<select id="bookSelect" onchange="selectBook(this.value)"><option value="">-- Select Book --</option></select>
-</div>
-</div>
-<div class="grid" style="margin-top:10px">
-<div><label>Condition on Issue / Return</label><select id="condition"><option>Good</option><option>Fair</option><option>Damaged</option><option>New</option></select></div>
-<div><label>Notes (optional)</label><input id="notes" placeholder="e.g. Cover torn"></div>
-</div>
-<div class="grid no-print" style="margin-top:10px">
-<button class="btn green" onclick="issueBook()">📚 ISSUE BOOK</button>
-<button class="btn orange" onclick="returnBook()">↩️ RETURN / RETRIEVE BOOK</button>
-</div>
-<div id="actionMsg" style="margin-top:10px;font-weight:800;font-size:13px"></div>
-</div>
-
-<div class="card">
-<h2>📜 Issue History — Issuer / Retriever Log</h2>
-<div class="grid3 no-print">
-<div><label>Filter</label><select id="repFilter" onchange="renderHistory()"><option value="ALL">All</option><option value="OUT">OUT Only</option><option value="RETURNED">Returned Only</option><option value="OVERDUE">Overdue Only</option><option value="TODAY">Today Only</option></select></div>
-<div><label>Search Learner / Book / Issuer</label><input id="repSearch" oninput="renderHistory()" placeholder="Type name..."></div>
-<div><label>&nbsp;</label><button class="btn dark" onclick="window.print()">🖨️ Print Log</button></div>
-</div>
-<div style="overflow:auto;margin-top:10px"><table><thead><tr><th>Learner</th><th>Book</th><th>Issued By</th><th>Retrieved By</th><th>Due</th><th>Status</th></tr></thead><tbody id="historyRows"></tbody></table></div>
-</div>
-
-<p class="small" style="text-align:center">Makhanani LTSM v1.71 • Due: 30 Nov Every Year • Issuer / Retriever Recorded • Cloud Sync</p>
-</div>
-
-<script type="module" src="cloud.js"></script>
-<script>
-function getSchoolName(){ return localStorage.getItem('MAKHANANI_SCHOOL_NAME')||'MAKHANANI PRIMARY SCHOOL'; }
-function setSchoolTitle(){ let n=getSchoolName(); document.getElementById('schoolTitle').textContent=n; document.getElementById('cloudIdLabel').textContent='schools/'+n.toUpperCase().replace(/[^A-Z0-9]+/g,'_'); }
-function getStaff(){ return JSON.parse(localStorage.getItem('MAKHANANI_STAFF')||'[]'); }
-function seedIfEmpty(){ if(getStaff().length) return; let d=[{name:'Admin User',email:'admin@makhanani.co.za',role:'ADMIN',subject:'Library',password:'Admin123'},{name:'Principal Dube',email:'principal@makhanani.co.za',role:'PRINCIPAL',subject:'Management',password:'Principal123'},{name:'Librarian Nkosi',email:'librarian@makhanani.co.za',role:'LIBRARIAN',subject:'Library',password:'Lib123'},{name:'Teacher Maths',email:'teacher-maths@makhanani.co.za',role:'TEACHER',subject:'Maths',password:'Teacher123'}]; localStorage.setItem('MAKHANANI_STAFF',JSON.stringify(d)); }
-function updateLoginUI(){ let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); document.getElementById('loginCard').style.display=l?'none':'block'; document.getElementById('loggedCard').style.display=l?'block':'none'; if(l){ document.getElementById('whoName').textContent=l.name+' — '+l.role; document.getElementById('whoDetail').textContent=l.email+' • '+(l.subject||''); } }
-function doLogin(){ seedIfEmpty(); let e=document.getElementById('loginEmail').value.trim().toLowerCase(), p=document.getElementById('loginPass').value; let f=getStaff().find(x=>x.email.toLowerCase()===e&&x.password===p); if(!f) return document.getElementById('loginMsg').textContent='❌ Wrong email or password.'; localStorage.setItem('MAKHANANI_LOGGED_IN',JSON.stringify(f)); updateLoginUI(); renderHistory(); alert('✅ Welcome '+f.name+' ('+f.role+')'); }
-function logout(){ localStorage.removeItem('MAKHANANI_LOGGED_IN'); updateLoginUI(); }
-function goRolePage(){ let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); if(!l) return; if(['ADMIN','PRINCIPAL'].includes(l.role)) location.href='admin.html'; else if(l.role==='LIBRARIAN') location.href='librarian.html'; else location.href='index.html'; }
-function getBooks(){ return JSON.parse(localStorage.getItem('LTSM_BARCODES_TEXTBOOK_v158')||'[]'); }
-function getLearners(){ return JSON.parse(localStorage.getItem('LTSM_BARCODES_LEARNER_v158')||'[]'); }
-function getIssues(){ return JSON.parse(localStorage.getItem('MAKHANANI_ISSUES')||'[]'); }
-function saveIssues(a){ localStorage.setItem('MAKHANANI_ISSUES',JSON.stringify(a)); }
-function getDueDate(){ let now=new Date(); let y=now.getFullYear(); let due=new Date(y,10,30); if(now>due) return new Date(y+1,10,30).toISOString().split('T')[0]; return due.toISOString().split('T')[0]; }
-function isOverdue(due){ if(!due) return false; let t=new Date(); t.setHours(0,0,0,0); let d=new Date(due); d.setHours(0,0,0,0); return t>d; }
-function nowParts(){ let n=new Date(); return {date:n.toISOString().split('T')[0], time:n.toLocaleTimeString()}; }
-let selectedLearner=null, selectedBook=null;
-function findLearner(q){ q=(q||'').trim(); if(!q){ document.getElementById('learnerResult').innerHTML=''; selectedLearner=null; return; } let list=getLearners(); let f=list.find(x=>(x.barcode||'')===q||(x.learnerBarcode||'')===q)||list.find(x=>((x.name||x.learnerName||'').toLowerCase())===q.toLowerCase())||list.find(x=>((x.name||x.learnerName||'').toLowerCase()).includes(q.toLowerCase())); if(f){ selectedLearner=f; document.getElementById('learnerResult').innerHTML='<div class="found">✅ '+(f.name||f.learnerName)+' • '+(f.grade||f.class||'')+' • '+(f.barcode||f.learnerBarcode||'')+'</div>'; } else { selectedLearner={name:q,barcode:q}; document.getElementById('learnerResult').innerHTML='<div class="notfound">⚠️ Not in list — will save as typed: '+q+'</div>'; } }
-function findBook(q){ q=(q||'').trim(); if(!q){ document.getElementById('bookResult').innerHTML=''; selectedBook=null; return; } let list=getBooks(); let f=list.find(x=>(x.barcode||'')===q)||list.find(x=>((x.title||'').toLowerCase())===q.toLowerCase())||list.find(x=>((x.title||'').toLowerCase()).includes(q.toLowerCase())); if(f){ selectedBook=f; document.getElementById('bookResult').innerHTML='<div class="found">✅ '+(f.title||'')+' • '+(f.subject||'')+' • Grade '+(f.grade||'')+' • '+(f.barcode||'')+'</div>'; } else { selectedBook={title:q,barcode:q}; document.getElementById('bookResult').innerHTML='<div class="notfound">⚠️ Not in list — will save as typed: '+q+'</div>'; } }
-function selectLearner(v){ if(!v) return; document.getElementById('learnerBarcode').value=v; findLearner(v); }
-function selectBook(v){ if(!v) return; document.getElementById('bookBarcode').value=v; findBook(v); }
-function fillSelects(){ let ls=getLearners(); document.getElementById('learnerSelect').innerHTML='<option value="">-- Select Learner --</option>'+ls.map(x=>'<option value="'+(x.barcode||x.learnerBarcode||'')+'">'+(x.name||x.learnerName)+' — '+(x.barcode||x.learnerBarcode||'')+'</option>').join(''); let bs=getBooks(); document.getElementById('bookSelect').innerHTML='<option value="">-- Select Book --</option>'+bs.map(x=>'<option value="'+(x.barcode||'')+'">'+(x.title||'')+' — '+(x.barcode||'')+'</option>').join(''); }
-function requireLogin(){ let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); if(!l){ alert('Login first'); return null; } return l; }
-function issueBook(){ let login=requireLogin(); if(!login) return; let lq=document.getElementById('learnerBarcode').value.trim(), bq=document.getElementById('bookBarcode').value.trim(); if(!lq||!bq) return alert('Scan learner + book first'); if(!selectedLearner) findLearner(lq); if(!selectedBook) findBook(bq); let issues=getIssues(); let already=issues.find(x=>x.bookBarcode===bq&&x.status==='OUT'); if(already) return alert('❌ This book is already OUT to '+already.learnerName); let p=nowParts(); let rec={id:Date.now(), learnerName:selectedLearner.name||selectedLearner.learnerName||lq, learnerBarcode:selectedLearner.barcode||selectedLearner.learnerBarcode||lq, learnerGrade:selectedLearner.grade||selectedLearner.class||'', bookTitle:selectedBook.title||bq, bookBarcode:selectedBook.barcode||bq, bookSubject:selectedBook.subject||'', bookGrade:selectedBook.grade||'', type:'ISSUED', issueDate:p.date, issueTime:p.time, dueDate:getDueDate(), issuedByName:login.name, issuedByEmail:login.email, issuedByRole:login.role, retrievedByName:'', retrievedByEmail:'', retrievedByRole:'', returnDate:'', returnTime:'', condition:document.getElementById('condition').value, notes:document.getElementById('notes').value, status:'OUT'}; issues.push(rec); saveIssues(issues); document.getElementById('actionMsg').textContent='✅ ISSUED: '+rec.bookTitle+' to '+rec.learnerName+' by '+login.name+' — Due 30 Nov '+new Date(rec.dueDate).getFullYear(); document.getElementById('bookBarcode').value=''; document.getElementById('bookResult').innerHTML=''; selectedBook=null; renderHistory(); if(typeof pushToCloud==='function') pushToCloud(); }
-function returnBook(){ let login=requireLogin(); if(!login) return; let bq=document.getElementById('bookBarcode').value.trim(); if(!bq) return alert('Scan book barcode to return'); let issues=getIssues(); let f=issues.find(x=>x.bookBarcode===bq&&x.status==='OUT'); if(!f){ let byLearner=document.getElementById('learnerBarcode').value.trim(); if(byLearner) f=issues.find(x=>x.learnerBarcode===byLearner&&x.status==='OUT'); } if(!f) return alert('No OUT record found for this book'); let p=nowParts(); f.status='RETURNED'; f.type='RETURNED'; f.returnDate=p.date; f.returnTime=p.time; f.retrievedByName=login.name; f.retrievedByEmail=login.email; f.retrievedByRole=login.role; f.returnCondition=document.getElementById('condition').value; f.returnNotes=document.getElementById('notes').value; saveIssues(issues); document.getElementById('actionMsg').textContent='✅ RETURNED: '+f.bookTitle+' from '+f.learnerName+' by '+login.name+' ('+login.role+') on '+p.date+' '+p.time; document.getElementById('bookBarcode').value=''; document.getElementById('bookResult').innerHTML=''; selectedBook=null; renderHistory(); if(typeof pushToCloud==='function') pushToCloud(); }
-function renderHistory(){ let issues=getIssues(); let today=new Date().toISOString().split('T')[0]; let out=issues.filter(x=>x.status==='OUT'); let ov=out.filter(x=>isOverdue(x.dueDate)); let ret=issues.filter(x=>x.status==='RETURNED'); let tod=issues.filter(x=>x.issueDate===today||x.returnDate===today); document.getElementById('statTotal').textContent='Total: '+issues.length; document.getElementById('statOut').textContent='Out: '+out.length; document.getElementById('statOverdue').textContent='Overdue: '+ov.length; document.getElementById('statReturned').textContent='Returned: '+ret.length; document.getElementById('statToday').textContent='Today: '+tod.length; let f=document.getElementById('repFilter').value, q=(document.getElementById('repSearch').value||'').toLowerCase(); let filtered=issues.filter(x=>{ if(f==='OUT'&&x.status!=='OUT') return false; if(f==='RETURNED'&&x.status!=='RETURNED') return false; if(f==='OVERDUE'&&!(x.status==='OUT'&&isOverdue(x.dueDate))) return false; if(f==='TODAY'&&!(x.issueDate===today||x.returnDate===today)) return false; if(q&&!((x.learnerName||'').toLowerCase().includes(q)||(x.bookTitle||'').toLowerCase().includes(q)||(x.issuedByName||'').toLowerCase().includes(q)||(x.retrievedByName||'').toLowerCase().includes(q))) return false; return true; }); document.getElementById('historyRows').innerHTML=filtered.slice().reverse().map(x=>'<tr><td><b>'+(x.learnerName||'')+'</b><br><small>'+(x.learnerBarcode||'')+'<br>'+(x.issueDate||'')+' '+(x.issueTime||'')+'</small></td><td><b>'+(x.bookTitle||'')+'</b><br><small>'+(x.bookBarcode||'')+'<br>'+(x.bookSubject||'')+'</small></td><td><b>'+(x.issuedByName||'-')+'</b><br><small>'+(x.issuedByRole||'')+'<br>'+(x.issuedByEmail||'')+'</small></td><td>'+(x.status==='RETURNED'?'<b>'+(x.retrievedByName||'')+'</b><br><small>'+(x.retrievedByRole||'')+'<br>'+(x.retrievedByEmail||'')+'<br>'+(x.returnDate||'')+' '+(x.returnTime||'')+'</small>':'<span style="color:#999">— Still Out —</span>')+'</td><td>30 Nov '+(x.dueDate?new Date(x.dueDate).getFullYear():'')+'<br><small>'+(x.dueDate||'')+'</small></td><td>'+(x.status==='RETURNED'?'✅ Returned':(isOverdue(x.dueDate)?'🔴 OVERDUE':'🟢 OUT'))+'</td></tr>').join('')||'<tr><td colspan="6">No records yet</td></tr>'; }
-document.getElementById('bookBarcode').addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); issueBook(); } });
-document.getElementById('learnerBarcode').addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('bookBarcode').focus(); } });
-seedIfEmpty(); setSchoolTitle(); updateLoginUI(); fillSelects(); renderHistory();
-</script>
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Issue / Return — v1.72</title><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#e5e7eb;padding:16px} .wrap{max-width:1100px;margin:auto}header{text-align:center;background:#0a1f4d;color:#fff;padding:16px;border-radius:14px;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}.logo{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;border:3px solid #d4af37}.badge{background:#d4af37;color:#0a1f4d;font-size:11px;font-weight:900;padding:5px 10px;border-radius:20px}.card{background:#fff;border-radius:14px;padding:16px;margin:12px 0}label{font-size:12px;font-weight:800;color:#555}input,select{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;margin:4px 0 10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.btn{border:none;padding:11px;border-radius:10px;font-weight:900;cursor:pointer;width:100%}.gold{background:#d4af37}.blue{background:#2563eb;color:#fff}.green{background:#059669;color:#fff}.dark{background:#0a1f4d;color:#fff}.red{background:#dc2626;color:#fff}.orange{background:#ea580c;color:#fff}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}.nav a{background:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;color:#0a1f4d;font-weight:900;font-size:13px}.small{font-size:12px;color:#666}.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.found{background:#dcfce7;padding:10px;border-radius:10px}.notfound{background:#fee2e2;padding:10px;border-radius:10px}.pass-wrap{position:relative}.pass-wrap button{position:absolute;right:8px;top:12px;border:none;background:none;cursor:pointer}@media(max-width:700px){.grid,.grid3{grid-template-columns:1fr}}@media print{.no-print{display:none!important}}</style></head><body><div class="wrap"><header><img src="logo.png" class="logo" onerror="this.style.display='none'"><div><h1 style="margin:0">Issue / Return</h1><p style="margin:4px 0 0" id="schoolTitle">MAKHANANI PRIMARY SCHOOL</p><p style="font-size:12px;opacity:.8">Due: 30 Nov Every Year • Issuer / Retriever Recorded</p></div><span class="badge">v1.72</span></header>
+<div class="card no-print" id="loginCard"><h2 style="margin:0 0 10px">🔐 Login</h2><div class="grid3"><div><label>Email</label><input id="loginEmail" placeholder="Enter your email"></div><div><label>Password</label><div class="pass-wrap"><input id="loginPass" type="password" placeholder="Enter password"><button type="button" onclick="togglePass()">👁️</button></div></div><div><label>&nbsp;</label><button class="btn dark" onclick="doLogin()">Login</button></div></div><p class="small">Use the account given to you by Admin / Principal.</p><div id="loginMsg" class="small" style="color:#dc2626"></div></div>
+<div class="card no-print" id="loggedCard" style="display:none"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><b id="whoName">-</b><br><small id="whoDetail">-</small></div><div style="display:flex;gap:8px"><button class="btn gold" onclick="goRolePage()" style="width:auto">⚙️ My Dashboard</button><button class="btn red" onclick="logout()" style="width:auto">Logout</button></div></div></div>
+<div style="background:#059669;color:#fff;padding:10px;border-radius:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-weight:800;font-size:13px" class="no-print"><span id="cloudStatus">☁️ Cloud: Connecting...</span><button onclick="pushToCloud()" class="btn" style="background:#fff;color:#059669;width:auto">☁️ SYNC TO CLOUD</button><button onclick="pullFromCloud()" class="btn" style="background:#0a1f4d;color:#fff;width:auto">⬇️ DOWNLOAD</button></div><p class="small no-print" style="text-align:center">Cloud ID: <b id="cloudIdLabel">schools/...</b></p>
+<div class="nav no-print"><a href="index.html">🏠 Home</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="learner-barcode.html">🎓 Learners</a><a href="admin.html">⚙️ Admin</a><a href="librarian.html">📚 Librarian</a></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill" style="background:#dbeafe" id="statTotal">Total: 0</span><span class="pill" style="background:#fef3c7" id="statOut">Out: 0</span><span class="pill" style="background:#fee2e2" id="statOverdue">Overdue: 0</span><span class="pill" style="background:#dcfce7" id="statReturned">Returned: 0</span><span class="pill" style="background:#f3e8ff" id="statToday">Today: 0</span></div>
+<div class="card"><h2>📚 Issue / Return</h2><p class="small">Scan or type Learner + Book. Press Enter in Book to Issue. Due always <b>30 Nov</b>.</p><div class="grid"><div><label>Learner Barcode / Name</label><input id="learnerBarcode" placeholder="Scan learner barcode" oninput="findLearner(this.value)"><div id="learnerResult" class="small"></div><label>Or Select Learner</label><select id="learnerSelect" onchange="selectLearner(this.value)"><option value="">-- Select Learner --</option></select></div><div><label>Textbook Barcode / Title</label><input id="bookBarcode" placeholder="Scan book barcode" oninput="findBook(this.value)"><div id="bookResult" class="small"></div><label>Or Select Book</label><select id="bookSelect" onchange="selectBook(this.value)"><option value="">-- Select Book --</option></select></div></div><div class="grid"><div><label>Condition</label><select id="condition"><option>Good</option><option>Fair</option><option>Damaged</option><option>New</option></select></div><div><label>Notes</label><input id="notes" placeholder="e.g. Cover torn"></div></div><div class="grid no-print" style="margin-top:10px"><button class="btn green" onclick="issueBook()">📚 ISSUE BOOK</button><button class="btn orange" onclick="returnBook()">↩️ RETURN BOOK</button></div><div id="actionMsg" style="margin-top:10px;font-weight:800;font-size:13px"></div></div>
+<div class="card"><h2>📜 Issue History</h2><div class="grid3 no-print"><div><label>Filter</label><select id="repFilter" onchange="renderHistory()"><option value="ALL">All</option><option value="OUT">OUT Only</option><option value="RETURNED">Returned Only</option><option value="OVERDUE">Overdue Only</option><option value="TODAY">Today Only</option></select></div><div><label>Search</label><input id="repSearch" oninput="renderHistory()" placeholder="Type name..."></div><div><label>&nbsp;</label><button class="btn dark" onclick="window.print()">🖨️ Print Log</button></div></div><div style="overflow:auto"><table><thead><tr><th>Learner</th><th>Book</th><th>Issued By</th><th>Retrieved By</th><th>Due</th><th>Status</th></tr></thead><tbody id="historyRows"></tbody></table></div></div>
+<p class="small" style="text-align:center">Makhanani LTSM v1.72 • Due 30 Nov • Issuer / Retriever Recorded</p></div>
+<script type="module" src="cloud.js"></script><script>
+function togglePass(){let p=document.getElementById('loginPass');p.type=p.type==='password'?'text':'password';}
+function getSchoolName(){return localStorage.getItem('MAKHANANI_SCHOOL_NAME')||'MAKHANANI PRIMARY SCHOOL';}
+function setSchoolTitle(){let n=getSchoolName();document.getElementById('schoolTitle').textContent=n;document.getElementById('cloudIdLabel').textContent='schools/'+n.toUpperCase().replace(/[^A-Z0-9]+/g,'_');}
+function getStaff(){return JSON.parse(localStorage.getItem('MAKHANANI_STAFF')||'[]');}
+function seedIfEmpty(){if(getStaff().length)return;let d=[{name:'Admin User',email:'admin@makhanani.co.za',role:'ADMIN',subject:'Library',password:'Admin123'},{name:'Principal Dube',email:'principal@makhanani.co.za',role:'PRINCIPAL',subject:'Management',password:'Principal123'},{name:'Librarian Nkosi',email:'librarian@makhanani.co.za',role:'LIBRARIAN',subject:'Library',password:'Lib123'},{name:'Teacher Maths',email:'teacher-maths@makhanani.co.za',role:'TEACHER',subject:'Maths',password:'Teacher123'}];localStorage.setItem('MAKHANANI_STAFF',JSON.stringify(d));}
+function updateLoginUI(){let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');document.getElementById('loginCard').style.display=l?'none':'block';document.getElementById('loggedCard').style.display=l?'block':'none';if(l){document.getElementById('whoName').textContent=l.name+' — '+l.role;document.getElementById('whoDetail').textContent=l.email+' • '+(l.subject||'');}}
+function doLogin(){seedIfEmpty();let e=document.getElementById('loginEmail').value.trim().toLowerCase(),p=document.getElementById('loginPass').value;let f=getStaff().find(x=>x.email.toLowerCase()===e&&x.password===p);if(!f)return document.getElementById('loginMsg').textContent='❌ Wrong email or password. Contact Admin.';localStorage.setItem('MAKHANANI_LOGGED_IN',JSON.stringify(f));updateLoginUI();renderHistory();alert('✅ Welcome '+f.name+' ('+f.role+')');}
+function logout(){localStorage.removeItem('MAKHANANI_LOGGED_IN');updateLoginUI();}
+function goRolePage(){let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');if(!l)return;if(['ADMIN','PRINCIPAL'].includes(l.role))location.href='admin.html';else if(l.role==='LIBRARIAN')location.href='librarian.html';else location.href='index.html';}
+function getBooks(){return JSON.parse(localStorage.getItem('LTSM_BARCODES_TEXTBOOK_v158')||'[]');}
+function getLearners(){return JSON.parse(localStorage.getItem('LTSM_BARCODES_LEARNER_v158')||'[]');}
+function getIssues(){return JSON.parse(localStorage.getItem('MAKHANANI_ISSUES')||'[]');}
+function saveIssues(a){localStorage.setItem('MAKHANANI_ISSUES',JSON.stringify(a));}
+function getDueDate(){let now=new Date(),y=now.getFullYear(),due=new Date(y,10,30);if(now>due)return new Date(y+1,10,30).toISOString().split('T')[0];return due.toISOString().split('T')[0];}
+function isOverdue(d){if(!d)return false;let t=new Date();t.setHours(0,0,0,0);let x=new Date(d);x.setHours(0,0,0,0);return t>x;}
+function nowParts(){let n=new Date();return{date:n.toISOString().split('T')[0],time:n.toLocaleTimeString()};}
+let selectedLearner=null,selectedBook=null;
+function findLearner(q){q=(q||'').trim();if(!q){document.getElementById('learnerResult').innerHTML='';selectedLearner=null;return;}let list=getLearners();let f=list.find(x=>(x.barcode||'')===q||(x.learnerBarcode||'')===q)||list.find(x=>((x.name||x.learnerName||'').toLowerCase())===q.toLowerCase())||list.find(x=>((x.name||x.learnerName||'').toLowerCase()).includes(q.toLowerCase()));if(f){selectedLearner=f;document.getElementById('learnerResult').innerHTML='<div class="found">✅ '+(f.name||f.learnerName)+' • '+(f.grade||f.class||'')+' • '+(f.barcode||f.learnerBarcode||'')+'</div>';}else{selectedLearner={name:q,barcode:q};document.getElementById('learnerResult').innerHTML='<div class="notfound">⚠️ Not in list — will save as typed</div>';}}
+function findBook(q){q=(q||'').trim();if(!q){document.getElementById('bookResult').innerHTML='';selectedBook=null;return;}let list=getBooks();let f=list.find(x=>(x.barcode||'')===q)||list.find(x=>((x.title||'').toLowerCase())===q.toLowerCase())||list.find(x=>((x.title||'').toLowerCase()).includes(q.toLowerCase()));if(f){selectedBook=f;document.getElementById('bookResult').innerHTML='<div class="found">✅ '+(f.title||'')+' • '+(f.subject||'')+' • Grade '+(f.grade||'')+' • '+(f.barcode||'')+'</div>';}else{selectedBook={title:q,barcode:q};document.getElementById('bookResult').innerHTML='<div class="notfound">⚠️ Not in list — will save as typed</div>';}}
+function selectLearner(v){if(!v)return;document.getElementById('learnerBarcode').value=v;findLearner(v);}
+function selectBook(v){if(!v)return;document.getElementById('bookBarcode').value=v;findBook(v);}
+function fillSelects(){document.getElementById('learnerSelect').innerHTML='<option value="">-- Select Learner --</option>'+getLearners().map(x=>'<option value="'+(x.barcode||x.learnerBarcode||'')+'">'+(x.name||x.learnerName)+' — '+(x.barcode||x.learnerBarcode||'')+'</option>').join('');document.getElementById('bookSelect').innerHTML='<option value="">-- Select Book --</option>'+getBooks().map(x=>'<option value="'+(x.barcode||'')+'">'+(x.title||'')+' — '+(x.barcode||'')+'</option>').join('');}
+function requireLogin(){let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');if(!l){alert('Login first');return null;}return l;}
+function issueBook(){let login=requireLogin();if(!login)return;let lq=document.getElementById('learnerBarcode').value.trim(),bq=document.getElementById('bookBarcode').value.trim();if(!lq||!bq)return alert('Scan learner + book first');if(!selectedLearner)findLearner(lq);if(!selectedBook)findBook(bq);let issues=getIssues();if(issues.find(x=>x.bookBarcode===bq&&x.status==='OUT'))return alert('❌ Book already OUT');let p=nowParts();let rec={id:Date.now(),learnerName:selectedLearner.name||selectedLearner.learnerName||lq,learnerBarcode:selectedLearner.barcode||selectedLearner.learnerBarcode||lq,learnerGrade:selectedLearner.grade||selectedLearner.class||'',bookTitle:selectedBook.title||bq,bookBarcode:selectedBook.barcode||bq,bookSubject:selectedBook.subject||'',bookGrade:selectedBook.grade||'',issueDate:p.date,issueTime:p.time,dueDate:getDueDate(),issuedByName:login.name,issuedByEmail:login.email,issuedByRole:login.role,retrievedByName:'',retrievedByEmail:'',retrievedByRole:'',returnDate:'',returnTime:'',condition:document.getElementById('condition').value,notes:document.getElementById('notes').value,status:'OUT'};issues.push(rec);saveIssues(issues);document.getElementById('actionMsg').textContent='✅ ISSUED: '+rec.bookTitle+' to '+rec.learnerName+' by '+login.name+' — Due 30 Nov '+new Date(rec.dueDate).getFullYear();document.getElementById('bookBarcode').value='';document.getElementById('bookResult').innerHTML='';selectedBook=null;renderHistory();if(typeof pushToCloud==='function')pushToCloud();}
+function returnBook(){let login=requireLogin();if(!login)return;let bq=document.getElementById('bookBarcode').value.trim();if(!bq)return alert('Scan book to return');let issues=getIssues();let f=issues.find(x=>x.bookBarcode===bq&&x.status==='OUT');if(!f){let by=document.getElementById('learnerBarcode').value.trim();if(by)f=issues.find(x=>x.learnerBarcode===by&&x.status==='OUT');}if(!f)return alert('No OUT record found');let p=nowParts();f.status='RETURNED';f.returnDate=p.date;f.returnTime=p.time;f.retrievedByName=login.name;f.retrievedByEmail=login.email;f.retrievedByRole=login.role;f.returnCondition=document.getElementById('condition').value;f.returnNotes=document.getElementById('notes').value;saveIssues(issues);document.getElementById('actionMsg').textContent='✅ RETURNED: '+f.bookTitle+' from '+f.learnerName+' by '+login.name+' on '+p.date+' '+p.time;document.getElementById('bookBarcode').value='';document.getElementById('bookResult').innerHTML='';selectedBook=null;renderHistory();if(typeof pushToCloud==='function')pushToCloud();}
+function renderHistory(){let issues=getIssues(),today=new Date().toISOString().split('T')[0],out=issues.filter(x=>x.status==='OUT'),ov=out.filter(x=>isOverdue(x.dueDate)),ret=issues.filter(x=>x.status==='RETURNED'),tod=issues.filter(x=>x.issueDate===today||x.returnDate===today);document.getElementById('statTotal').textContent='Total: '+issues.length;document.getElementById('statOut').textContent='Out: '+out.length;document.getElementById('statOverdue').textContent='Overdue: '+ov.length;document.getElementById('statReturned').textContent='Returned: '+ret.length;document.getElementById('statToday').textContent='Today: '+tod.length;let f=document.getElementById('repFilter').value,q=(document.getElementById('repSearch').value||'').toLowerCase();let filtered=issues.filter(x=>{if(f==='OUT'&&x.status!=='OUT')return false;if(f==='RETURNED'&&x.status!=='RETURNED')return false;if(f==='OVERDUE'&&!(x.status==='OUT'&&isOverdue(x.dueDate)))return false;if(f==='TODAY'&&!(x.issueDate===today||x.returnDate===today))return false;if(q&&!((x.learnerName||'').toLowerCase().includes(q)||(x.bookTitle||'').toLowerCase().includes(q)||(x.issuedByName||'').toLowerCase().includes(q)||(x.retrievedByName||'').toLowerCase().includes(q)))return false;return true;});document.getElementById('historyRows').innerHTML=filtered.slice().reverse().map(x=>'<tr><td><b>'+(x.learnerName||'')+'</b><br><small>'+(x.learnerBarcode||'')+'<br>'+(x.issueDate||'')+' '+(x.issueTime||'')+'</small></td><td><b>'+(x.bookTitle||'')+'</b><br><small>'+(x.bookBarcode||'')+'</small></td><td><b>'+(x.issuedByName||'-')+'</b><br><small>'+(x.issuedByRole||'')+'<br>'+(x.issuedByEmail||'')+'</small></td><td>'+(x.status==='RETURNED'?'<b>'+(x.retrievedByName||'')+'</b><br><small>'+(x.retrievedByRole||'')+'<br>'+(x.retrievedByEmail||'')+'<br>'+(x.returnDate||'')+' '+(x.returnTime||'')+'</small>':'<span style="color:#999">— Still Out —</span>')+'</td><td>30 Nov '+(x.dueDate?new Date(x.dueDate).getFullYear():'')+'</td><td>'+(x.status==='RETURNED'?'✅ Returned':(isOverdue(x.dueDate)?'🔴 OVERDUE':'🟢 OUT'))+'</td></tr>').join('')||'<tr><td colspan="6">No records yet</td></tr>';}
+document.getElementById('bookBarcode').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();issueBook();}});
+document.getElementById('learnerBarcode').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById('bookBarcode').focus();}});
+seedIfEmpty();setSchoolTitle();updateLoginUI();fillSelects();renderHistory();
+</script></body></html>
