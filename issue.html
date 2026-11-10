@@ -1,23 +1,22 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Issue / Retrieve — Makhanani LTSM</title>
-<style>*{box-sizing:border-box}body{font-family:Arial;margin:0;background:#e5e7eb;padding:16px}header{text-align:center;background:#0a1f4d;color:#fff;padding:18px;border-radius:14px}header h1{margin:0}header h1 span{color:#d4af37}.wrap{max-width:980px;margin:0 auto}.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0}.nav a,.nav button{padding:12px 16px;border-radius:10px;font-weight:900;text-decoration:none;font-size:13px;border:none;cursor:pointer;color:#fff;background:#0a1f4d}.nav a.home{background:#f59e0b;color:#111}.nav button.logout{background:#dc2626}.nav a.active{outline:3px solid #d4af37}.card{background:#fff;border-radius:14px;padding:16px;margin:14px 0}input,select{width:100%;padding:13px;border-radius:10px;border:1px solid #ddd;margin:6px 0}label{font-size:12px;font-weight:800;color:#555}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}.btn{display:block;text-align:center;padding:13px;border-radius:11px;font-weight:900;border:none;cursor:pointer;width:100%}.green{background:#059669;color:#fff}.orange{background:#ea580c;color:#fff}.blue{background:#0a1f4d;color:#fff}.gold{background:#d4af37}.dark{background:#111827;color:#fff}.red{background:#dc2626;color:#fff}.item{padding:10px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;gap:10px;font-size:13px}</style></head>
-<body><div class="wrap">
-<header><h1>📖 MAKHANANI <span>LTSM</span> — ISSUE / RETRIEVE</h1><p>Xintimani Group • Mr Vusi Chauke • 078 023 3263 • WORDSWORTH HIGH SCHOOL</p></header>
-<nav class="nav"><a href="index.html" class="home">🏠 HOME</a><a href="admin.html">👑 ADMIN</a><a href="index.html#ltsm">📚 LTSM</a><a href="issue.html" class="active">📖 ISSUE / RETRIEVE</a><a href="staff.html">👥 STAFF</a><a href="librarian.html">📚 LIBRARIAN</a><button class="logout" onclick="logout()">🚪 LOGOUT</button></nav>
-<div class="card"><h2 style="margin:0">Scan / Type Barcode</h2><p style="font-size:12px;color:#666;margin:6px 0">Type or scan Textbook No + Learner ID. Works with your printed barcodes.</p>
-<label>📚 Textbook Barcode / No</label><input id="bookCode" placeholder="e.g. MLIT-0001 — scan or type" autofocus>
-<label>🎓 Learner ID / Name</label><input id="learnerCode" placeholder="e.g. LRN-0001 or Thabo Nkosi">
-<div class="row" style="margin-top:8px"><button class="btn green" onclick="doIssue()">📤 ISSUE BOOK →</button><button class="btn orange" onclick="doReturn()">📥 RETRIEVE / RETURN ←</button></div>
-<p id="msg" style="font-weight:900;text-align:center"></p></div>
-<div class="card"><div class="row"><input id="search" placeholder="🔍 Search issue history..." oninput="render()"><select id="filter" onchange="render()"><option value="">ALL</option><option value="ISSUED">ISSUED ONLY</option><option value="RETURNED">RETURNED ONLY</option></select><button class="btn dark" onclick="clearIssues()">🗑️ Clear History</button></div><div id="list" style="margin-top:10px"></div><p style="text-align:center;font-weight:900" id="count"></p></div>
-</div><script>
-let IK='MAKHANANI_ISSUES';let issues=JSON.parse(localStorage.getItem(IK)||'[]');
-function save(){localStorage.setItem(IK,JSON.stringify(issues));}
-function doIssue(){let b=document.getElementById('bookCode').value.trim().toUpperCase(),l=document.getElementById('learnerCode').value.trim();if(!b||!l)return alert('Enter BOTH Book + Learner');issues.push({book:b,learner:l,type:'ISSUED',date:new Date().toLocaleString()});save();render();document.getElementById('msg').textContent='✅ ISSUED: '+b+' → '+l;document.getElementById('bookCode').value='';document.getElementById('bookCode').focus();}
-function doReturn(){let b=document.getElementById('bookCode').value.trim().toUpperCase(),l=document.getElementById('learnerCode').value.trim();if(!b||!l)return alert('Enter BOTH Book + Learner');issues.push({book:b,learner:l,type:'RETURNED',date:new Date().toLocaleString()});save();render();document.getElementById('msg').textContent='✅ RETURNED: '+b+' ← '+l;document.getElementById('bookCode').value='';}
-function clearIssues(){if(!confirm('Clear all issue history?'))return;issues=[];save();render();}
-function render(){let q=document.getElementById('search').value.toLowerCase(),f=document.getElementById('filter').value;let list=issues.filter(x=>(!q||x.book.toLowerCase().includes(q)||x.learner.toLowerCase().includes(q))&&(!f||x.type===f));document.getElementById('count').textContent='Total: '+issues.length+' • Showing: '+list.length;document.getElementById('list').innerHTML=list.length?list.slice().reverse().map(x=>`<div class="item"><span><b>${x.book}</b> ${x.type==='ISSUED'?'→':'←'} ${x.learner}</span><span>${x.type} • ${x.date}</span></div>`).join(''):'<p style="text-align:center;color:#999">No issues yet. Issue your first book above.</p>';}
-function logout(){localStorage.removeItem('MAKHANANI_LOGGED_IN');location.href='login.html';}
-render();
-</script></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Issue / Retrieve — v1.70</title>
+</head>
+<body>
+  <!-- CLOUD SYNC BAR -->
+  <div style="background:#059669;color:#fff;padding:10px;border-radius:10px;margin:12px 0;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;font-size:13px;font-weight:800">
+    <span id="cloudStatus">☁️ Cloud: Connecting...</span>
+    <button onclick="pushToCloud()" id="cloudBtn" style="background:#fff;color:#059669;border:none;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer">☁️ SYNC TO CLOUD</button>
+    <button onclick="pullFromCloud()" style="background:#0a1f4d;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer">⬇️ DOWNLOAD FROM CLOUD</button>
+  </div>
+  <script type="module" src="cloud.js"></script>
+
+  <!-- Issue / Retrieve code here -->
+  <script>
+    // Issuer/Retriever + Due 30 Nov code here (like we discussed)
+  </script>
+</body>
+</html>
