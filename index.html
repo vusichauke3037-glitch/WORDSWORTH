@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Makhanani LTSM — v1.59 — By Department</title>
+<title>Makhanani LTSM — v1.62 — Cloud Sync</title>
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;margin:0;background:#e5e7eb;color:#111;padding:16px}
@@ -40,18 +40,20 @@ label{font-size:12px;font-weight:800;color:#555}
 .footer{text-align:center;font-size:11px;color:#777;padding:10px}
 .lock{background:#fef3c7;border:2px solid #f59e0b;border-radius:10px;padding:10px;text-align:center;font-weight:900;font-size:12px;margin:10px 0}
 .perm-table{width:100%;border-collapse:collapse;font-size:12px} .perm-table th,.perm-table td{border-bottom:1px solid #eee;padding:7px;text-align:left}
+.cloud-bar{background:#059669;color:#fff;padding:10px;border-radius:10px;margin:12px 0;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;font-size:13px;font-weight:800}
+.cloud-bar button{border:none;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <header>
-<div class="version-badge">v1.59</div>
+<div class="version-badge">v1.62 ☁️</div>
 <img src="logo.png" alt="Xintimani Group Logo" class="logo" onerror="this.style.display='none'">
 <p style="margin:4px 0 0;font-size:11px;letter-spacing:3px;font-weight:900">XINTIMANI GROUP</p>
 <p style="margin:2px 0 0;font-size:11px;color:#d4af37">Building Solutions. Empowering Communities.</p>
 <h1>📚 MAKHANANI <span>LTSM</span></h1>
-<p>XINTIMANI GROUP — Building Solutions. Empowering Communities.<br>👑 Founder / CEO — Mr Vusi Chauke | 📞 0780233263<br>LEARNER • TEACHER • SUPPORT • MATERIAL<br><span id="roleBadge">Role: Checking... Login to see permissions</span></p>
+<p>XINTIMANI GROUP — Building Solutions. Empowering Communities.<br>👑 Founder / CEO — Mr Vusi Chauke | 📞 0780233263<br>LEARNER • TEACHER • SUPPORT • MATERIAL<br><span id="roleBadge">Role: Checking... Login with Email + Password</span><br><span id="userEmailBadge" style="font-size:11px;color:#d4af37"></span></p>
 </header>
 
 <nav class="nav">
@@ -64,20 +66,29 @@ label{font-size:12px;font-weight:800;color:#555}
 <button class="logout" onclick="doLogout()">🚪 LOGOUT</button>
 </nav>
 
+<!-- CLOUD SYNC BAR - v1.62 -->
+<div class="cloud-bar">
+  <span id="cloudStatus">☁️ Cloud: Connecting...</span>
+  <button onclick="pushToCloud()" id="cloudBtn" style="background:#fff;color:#059669">☁️ SYNC TO CLOUD</button>
+  <button onclick="pullFromCloud()" style="background:#0a1f4d;color:#fff">⬇️ DOWNLOAD FROM CLOUD</button>
+</div>
+<script type="module" src="cloud.js"></script>
+
 <div class="sub">
 <b>💳 SUBSCRIPTION — SHARED BY ALL STAFF</b><br>
 <b>School:</b> <span id="subSchool">WORDSWORTH HIGH SCHOOL (700310854)</span><br>
 <b>Plan:</b> PREMIUM | <b>Status:</b> ✅ Active | <b>End:</b> 2027-12-31<br>
 <b>Shared by:</b> All 10 staff<br>
-<b>Logged in as:</b> <span id="loginName">Mr Vusi Chauke — Founder/CEO (ADMIN)</span><br>
-<b>DBE Schools Loaded:</b> <span id="dbeCount">1</span> • 🟢 ONLINE
+<b>Logged in as:</b> <span id="loginName">Not logged in — Please login</span><br>
+<b>DBE Schools Loaded:</b> <span id="dbeCount">1</span> • 🟢 ONLINE • ☁️ Cloud: makhanani-ltsm
 </div>
 
-<div id="teacherNote" class="lock" style="display:none">👩‍🏫 TEACHER: You can <b>ISSUE ONLY your subject: <span id="teacherSubj"></span></b> • You can <b>RETRIEVE ANY book</b> • You can <b>ADD Learners (No Delete)</b> • You <b>CANNOT Add Books</b></div>
+<div id="notLogged" class="lock" style="display:none">🔐 NOT LOGGED IN — <a href="login.html">Click Here To Login With Email + Password →</a><br>Demo: admin@makhanani.co.za / Admin123</div>
+<div id="teacherNote" class="lock" style="display:none">👩‍🏫 TEACHER: You can <b>ISSUE ONLY your subject: <span id="teacherSubj"></span></b> • You can <b>RETRIEVE ANY book</b> • You can <b>ADD Learners (No Delete)</b> • You <b>CANNOT Add Books</b> • ❌ Cannot Print Log</div>
 <div id="staffNote" class="lock" style="display:none">🔒 You are <span id="staffRole"></span> — View + Print Only. Login as Admin / Principal / Librarian to add books.</div>
 
 <div class="card" id="ltsm">
-<label>🏫 SCHOOL NAME — Used on ALL barcodes</label>
+<label>🏫 SCHOOL NAME — Used on ALL barcodes + Cloud ID</label>
 <input id="schoolName" placeholder="e.g. WORDSWORTH HIGH SCHOOL">
 <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
 <select id="dbeSelect" onchange="setSchoolFromDbe()"><option value="">🏫 Pick from DBE Schools (Admin uploads in Admin page)</option></select>
@@ -98,7 +109,7 @@ label{font-size:12px;font-weight:800;color:#555}
 <h2>🏢 Stock By Department — Tap Department to Open Its Books</h2>
 <p>Mathematics • Science • Life Skills • Languages • Commerce • Humanities • Technology</p>
 <div class="dept-grid" id="deptGrid"></div>
-<p style="font-size:12px;color:#666;margin:10px 0 0">Each Department shows how many textbooks are in stock for that Department.</p>
+<p style="font-size:12px;color:#666;margin:10px 0 0">Each Department shows how many textbooks are in stock for that Department. Tap to filter textbooks.</p>
 </div>
 
 <div class="grid2">
@@ -134,11 +145,15 @@ label{font-size:12px;font-weight:800;color:#555}
 <button class="btn green" onclick="window.location.href='staff.html'">👩‍🏫 Add Teacher (Admin/Principal/Librarian)</button>
 <button class="btn orange" onclick="printLog()">🖨️ Print Issue Log (Principal / Admin)</button>
 </div>
+<div class="row" style="margin-top:10px">
+<button class="btn dark" onclick="pushToCloud()">☁️ Sync All To Cloud Now</button>
+<button class="btn blue" onclick="window.location.href='login.html'">🔐 Login / Switch Account (Email + Password)</button>
+</div>
 <p style="font-size:12px;color:#666;margin:10px 0 0">Print: <b>A4 • Margins = None • Scale = 100% • Background Graphics = ON</b> • Each page = 15 barcodes (3 x 5) • Logo = Screen Only, NOT on label</p>
 </div>
 
 <div class="card">
-<h2>🔐 Permissions — Who Can Do What</h2>
+<h2>🔐 Permissions — Who Can Do What (From Email Account)</h2>
 <table class="perm-table">
 <tr><th>Role</th><th>Books</th><th>Learners</th><th>Teachers</th><th>Issue / Retrieve / Print Log</th></tr>
 <tr><td><b>ADMIN / PRINCIPAL</b></td><td>✅ Add/Edit/Delete</td><td>✅ Add/Edit/Delete</td><td>✅ Add (with subject)</td><td>✅ Issue Any • Retrieve Any • 🖨️ Print Log</td></tr>
@@ -146,10 +161,18 @@ label{font-size:12px;font-weight:800;color:#555}
 <tr><td><b>TEACHER</b></td><td>❌ Cannot Add Books</td><td>✅ Add • ❌ Cannot Delete</td><td>❌ Cannot Add</td><td>✅ Issue OWN Subject Only • ✅ Retrieve ANY • ❌ Cannot Print Log</td></tr>
 <tr><td><b>STAFF / LEARNER</b></td><td>❌ No</td><td>❌ No</td><td>❌ No</td><td>View Only</td></tr>
 </table>
-<p style="font-size:12px;color:#666;margin:8px 0 0">Teacher MUST have at least 1 teaching subject to be saved. Issue checks book subject vs Teacher subject.</p>
+<p style="font-size:12px;color:#666;margin:8px 0 0">Teacher MUST have at least 1 teaching subject to be saved. Issue checks book subject vs Teacher subject from their Email account.</p>
 </div>
 
-<div class="footer"><img src="logo.png" style="width:40px;height:40px;object-fit:contain;background:#fff;border-radius:50%;padding:3px" onerror="this.style.display='none'"><br>MAKHANANI LTSM • Xintimani Group • Mr Vusi Chauke • 078 023 3263<br>v1.59 • Departments • A4 3x5 • No Price On Label • Logo Screen Only</div>
+<div class="card">
+<h2>☁️ Cloud Sync — How It Works</h2>
+<p>1. Admin adds books on Admin phone → Click <b>☁️ SYNC TO CLOUD</b><br>
+2. Teacher opens same school on another phone → Click <b>⬇️ DOWNLOAD FROM CLOUD</b><br>
+3. Any change auto-syncs in 3 seconds. Live popup when another device updates.<br>
+Firebase Project: <b>makhanani-ltsm</b> • Realtime Database • School ID = School Name</p>
+</div>
+
+<div class="footer"><img src="logo.png" style="width:40px;height:40px;object-fit:contain;background:#fff;border-radius:50%;padding:3px" onerror="this.style.display='none'"><br>MAKHANANI LTSM • Xintimani Group • Mr Vusi Chauke • 078 023 3263<br>v1.62 • Cloud Sync • Departments • A4 3x5 • No Price On Label • Logo Screen Only</div>
 
 </div>
 <script>
@@ -173,9 +196,10 @@ let DBEK='MAKHANANI_DBE_SCHOOLS';
 let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');
 let myRole=login?login.role.toUpperCase():'GUEST';
 let mySubject=login?login.subject||'';
-let myName=login?login.name:'Mr Vusi Chauke — Founder/CEO (ADMIN)';
-document.getElementById('roleBadge').textContent='Logged in: '+myName+' ('+myRole+(myRole==='TEACHER'?' - '+mySubject:'')+')';
-document.getElementById('loginName').textContent=myName+' ('+myRole+(myRole==='TEACHER'?' - '+mySubject:'')+')';
+let myName=login?login.name:'Not logged in';
+let myEmail=login?login.email:'';
+if(!login){ document.getElementById('notLogged').style.display='block'; document.getElementById('roleBadge').textContent='Not Logged In — Please login with Email + Password'; document.getElementById('loginName').textContent='Not logged in — Click Login'; }
+else { document.getElementById('roleBadge').textContent='Logged in: '+myName+' ('+myRole+(myRole==='TEACHER'?' - '+mySubject:'')+')'; document.getElementById('loginName').textContent=myName+' ('+myRole+(myRole==='TEACHER'?' - '+mySubject:'')+') — '+myEmail; document.getElementById('userEmailBadge').textContent='📧 '+myEmail; }
 if(myRole==='TEACHER'){ document.getElementById('teacherNote').style.display='block'; document.getElementById('teacherSubj').textContent=mySubject; }
 if(['STAFF','LEARNER'].includes(myRole)){ document.getElementById('staffNote').style.display='block'; document.getElementById('staffRole').textContent=myRole; }
 
@@ -190,7 +214,7 @@ function buildDbe(){
   let d=getDbe(); document.getElementById('dbeCount').textContent=d.length;
   document.getElementById('dbeSelect').innerHTML='<option value="">🏫 Pick from DBE Schools ('+d.length+' loaded)</option>'+d.map(x=>`<option value="${x.name}">${x.name} ${x.emis?`• EMIS ${x.emis}`:''}</option>`).join('');
 }
-function setSchoolFromDbe(){ let v=document.getElementById('dbeSelect').value; if(!v) return; schoolInput.value=v; syncSchool(); alert('✅ School set to: '+v); }
+function setSchoolFromDbe(){ let v=document.getElementById('dbeSelect').value; if(!v) return; schoolInput.value=v; syncSchool(); alert('✅ School set to: '+v+'\nCloud ID changed — Click SYNC TO CLOUD again.'); }
 function renderDepts(){
   let books=getBooks(); let counts={}; books.forEach(b=>{ let d=b.department||deptOf(b.subject); counts[d]=(counts[d]||0)+1; });
   document.getElementById('deptGrid').innerHTML=Object.keys(DEPARTMENTS).map(d=>`<div class="dept-card" onclick="openDept('${d}')" style="border-top:5px solid ${DEPARTMENTS[d].color}"><b>${counts[d]||0}</b><span>${d} Department</span><small>${DEPARTMENTS[d].subjects.join(' • ')}</small></div>`).join('');
@@ -207,10 +231,12 @@ function refreshCounts(){
   document.getElementById('countOut').textContent=Math.max(0,issued-ret);
   renderDepts(); buildDbe();
 }
-function clearBooks(){ if(!['ADMIN','PRINCIPAL','LIBRARIAN'].includes(myRole)) return alert('🔒 Only Admin / Principal / Librarian can delete books. Your role: '+myRole); if(!confirm('Delete ALL textbooks?')) return; localStorage.setItem(BK,'[]'); refreshCounts(); }
+function clearBooks(){ if(!['ADMIN','PRINCIPAL','LIBRARIAN'].includes(myRole)) return alert('🔒 Only Admin / Principal / Librarian can delete books. Your role: '+myRole); if(!confirm('Delete ALL textbooks? This will sync to cloud.')) return; localStorage.setItem(BK,'[]'); refreshCounts(); }
 function clearLearners(){ if(!['ADMIN','PRINCIPAL','LIBRARIAN'].includes(myRole)) return alert('🔒 Teachers can add but cannot delete learners. Only Admin / Principal / Librarian can delete.'); if(!confirm('Delete ALL learners?')) return; localStorage.setItem(LK,'[]'); refreshCounts(); }
 function printLog(){ if(!['ADMIN','PRINCIPAL'].includes(myRole)) return alert('🔒 Only Principal / Admin can print Issue Log. Your role: '+myRole); window.location.href='issue.html'; }
-function doLogout(){ if(!confirm('Logout?')) return; localStorage.removeItem('MAKHANANI_LOGGED_IN'); document.getElementById('loginName').textContent='Not logged in — Login below'; alert('✅ Logged out'); window.location.href='login.html'; }
+function doLogout(){ if(!confirm('Logout '+myName+'?')) return; localStorage.removeItem('MAKHANANI_LOGGED_IN'); alert('✅ Logged out'); window.location.href='login.html'; }
+// Re-refresh after cloud download - cloud.js reloads page on download, but also listen
+window.addEventListener('storage', ()=>{ refreshCounts(); });
 refreshCounts();
 </script>
 </body>
