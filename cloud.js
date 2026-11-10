@@ -1,13 +1,13 @@
-// cloud.js — Makhanani LTSM v1.71
-// Uses YOUR Firebase Realtime Database: makhanani-ltsm
+// cloud.js — Makhanani LTSM v1.72
+// Firebase Realtime Database: makhanani-ltsm
 // Path: schools/<SCHOOL_NAME>/data
 // Syncs: Books, Learners, Staff, Issues, School Name, Notifications
+// No demo passwords shown in UI. Logo is in HTML header as logo.png
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
@@ -19,7 +19,6 @@ const firebaseConfig = {
   measurementId: "G-TDFSSF6NTB"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 let analytics = null;
 try { analytics = getAnalytics(app); } catch(e){ console.log("Analytics skipped", e); }
@@ -38,7 +37,7 @@ function getAllData(){
   let login = null;
   try { login = JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); } catch(e){}
   return {
-    version: '1.71',
+    version: '1.72',
     school: getSchoolName(),
     updatedAt: new Date().toISOString(),
     updatedBy: login ? login.name + ' (' + login.role + ')' : 'System',
@@ -47,6 +46,9 @@ function getAllData(){
     staff: JSON.parse(localStorage.getItem('MAKHANANI_STAFF')||'[]'),
     issues: JSON.parse(localStorage.getItem('MAKHANANI_ISSUES')||'[]'),
     notifications: JSON.parse(localStorage.getItem('MAKHANANI_NOTIF_LOG')||'[]'),
+    // Logo is NOT stored in cloud — it lives as logo.png in repo
+    // If you change logo, just replace logo.png file
+    hasLogo: true
   };
 }
 function applyData(d){
@@ -58,62 +60,66 @@ function applyData(d){
   if(d.notifications) localStorage.setItem('MAKHANANI_NOTIF_LOG', JSON.stringify(d.notifications));
   if(d.school) localStorage.setItem('MAKHANANI_SCHOOL_NAME', d.school);
   localStorage.setItem('MAKHANANI_CLOUD_UPDATED', new Date().toISOString());
+  // Update school title + cloud labels if they exist on this page
+  let t = document.getElementById('schoolTitle');
+  if(t && d.school) t.textContent = d.school;
+  let lbl = document.getElementById('cloudIdLabel');
+  if(lbl) lbl.textContent = getCloudId();
+  let lbl2 = document.getElementById('cloudIdLabel2');
+  if(lbl2) lbl2.textContent = getCloudId();
+  let inp = document.getElementById('schoolNameInput');
+  if(inp && d.school) inp.value = d.school;
 }
-function setStatus(msg, color){
+function setStatus(msg){
   let el = document.getElementById('cloudStatus');
-  if(el){ el.textContent = msg; }
+  if(el) el.textContent = msg;
   let lbl = document.getElementById('cloudIdLabel');
   if(lbl) lbl.textContent = getCloudId();
   let lbl2 = document.getElementById('cloudIdLabel2');
   if(lbl2) lbl2.textContent = getCloudId();
 }
 
-// PUSH: This phone -> Cloud
 async function pushToCloud(){
   let data = getAllData();
-  setStatus('☁️ Syncing to cloud...', '#f59e0b');
+  setStatus('☁️ Syncing to cloud...');
   try{
     await set(ref(db, getCloudPath()), data);
     localStorage.setItem('MAKHANANI_CLOUD_UPDATED', new Date().toISOString());
-    setStatus('☁️ Cloud: Synced ✅ ' + new Date().toLocaleTimeString() + ' — ' + getCloudId(), '#059669');
+    setStatus('☁️ Cloud: Synced ✅ ' + new Date().toLocaleTimeString() + ' — ' + getCloudId());
   } catch(e){
-    setStatus('☁️ Cloud Error: ' + e.message, '#dc2626');
+    setStatus('☁️ Cloud Error: ' + e.message);
     alert('Cloud sync failed: ' + e.message + '\n\nCheck Firebase Console > Realtime Database > Rules — must allow read/write for testing.');
   }
 }
 
-// PULL: Cloud -> This phone
 async function pullFromCloud(){
-  setStatus('⬇️ Downloading from cloud...', '#f59e0b');
+  setStatus('⬇️ Downloading from cloud...');
   try{
     let snap = await get(ref(db, getCloudPath()));
     if(!snap.exists()){
-      setStatus('☁️ Cloud: No data for ' + getCloudId(), '#dc2626');
+      setStatus('☁️ Cloud: No data for ' + getCloudId());
       return alert('No cloud data for ' + getCloudId() + '\n\n1. Check school name matches Admin phone exactly\n2. Admin must click SYNC TO CLOUD first');
     }
     let d = snap.val();
     if(!confirm('Download will REPLACE local data with cloud data from ' + (d.updatedAt||'') + ' by ' + (d.updatedBy||'') + '. Continue?')) return;
     applyData(d);
-    setStatus('⬇️ Downloaded ✅ ' + new Date().toLocaleTimeString(), '#059669');
+    setStatus('⬇️ Downloaded ✅ ' + new Date().toLocaleTimeString());
     alert('✅ Downloaded from cloud!\nSchool: ' + d.school + '\nBooks: ' + (d.books||[]).length + ' • Learners: ' + (d.learners||[]).length + ' • Issues: ' + (d.issues||[]).length);
     location.reload();
   } catch(e){
-    setStatus('☁️ Cloud Error: ' + e.message, '#dc2626');
+    setStatus('☁️ Cloud Error: ' + e.message);
     alert('Download failed: ' + e.message);
   }
 }
 
-// LIVE LISTENER: Auto-update when another phone syncs
 function startLiveListener(){
   try{
     onValue(ref(db, getCloudPath()), (snap)=>{
       if(!snap.exists()) return;
       let d = snap.val();
       let last = localStorage.getItem('MAKHANANI_CLOUD_UPDATED')||'';
-      // Only auto-apply if cloud is newer and not from this sync
       if(d.updatedAt && d.updatedAt !== last){
-        // Do NOT auto-overwrite if user is typing, just show badge
-        setStatus('☁️ Cloud: New data from ' + (d.updatedBy||'another phone') + ' — Click DOWNLOAD', '#f59e0b');
+        setStatus('☁️ Cloud: New data from ' + (d.updatedBy||'another phone') + ' — Click DOWNLOAD');
       }
     });
   } catch(e){ console.log('Listener error', e); }
@@ -126,7 +132,7 @@ window.applyData = applyData;
 window.getCloudId = getCloudId;
 
 document.addEventListener('DOMContentLoaded', ()=>{
-  setStatus('☁️ Cloud: Ready — ' + getCloudId(), '#059669');
+  setStatus('☁️ Cloud: Ready — ' + getCloudId());
   startLiveListener();
 });
-setTimeout(()=>{ setStatus('☁️ Cloud: Ready — ' + getCloudId(), '#059669'); startLiveListener(); }, 800);
+setTimeout(()=>{ setStatus('☁️ Cloud: Ready — ' + getCloudId()); startLiveListener(); }, 800);
