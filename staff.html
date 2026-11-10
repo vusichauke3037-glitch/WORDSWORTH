@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Staff — Makhanani LTSM</title>
+<style>*{box-sizing:border-box}body{font-family:Arial;margin:0;background:#e5e7eb;padding:16px}header{text-align:center;background:#0a1f4d;color:#fff;padding:18px;border-radius:14px}header h1{margin:0}header h1 span{color:#d4af37}.wrap{max-width:980px;margin:0 auto}.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0}.nav a,.nav button{padding:12px 16px;border-radius:10px;font-weight:900;text-decoration:none;font-size:13px;border:none;cursor:pointer;color:#fff;background:#0a1f4d}.nav a.home{background:#f59e0b;color:#111}.nav button.logout{background:#dc2626}.nav a.active{outline:3px solid #d4af37}.card{background:#fff;border-radius:14px;padding:16px;margin:14px 0}input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0}label{font-size:12px;font-weight:800;color:#555}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}.btn{display:block;text-align:center;padding:13px;border-radius:11px;font-weight:900;border:none;cursor:pointer;width:100%}.green{background:#059669;color:#fff}.blue{background:#0a1f4d;color:#fff}.gold{background:#d4af37}.dark{background:#111827;color:#fff}.red{background:#dc2626;color:#fff}.item{padding:10px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;gap:10px;font-size:13px}</style></head>
+<body><div class="wrap">
+<header><h1>👥 MAKHANANI <span>LTSM</span> — STAFF</h1><p>Xintimani Group • WORDSWORTH HIGH SCHOOL • All 10 Staff • Shared Subscription</p></header>
+<nav class="nav"><a href="index.html" class="home">🏠 HOME</a><a href="admin.html">👑 ADMIN</a><a href="index.html#ltsm">📚 LTSM</a><a href="issue.html">📖 ISSUE / RETRIEVE</a><a href="staff.html" class="active">👥 STAFF</a><a href="librarian.html">📚 LIBRARIAN</a><button class="logout" onclick="logout()">🚪 LOGOUT</button></nav>
+<div class="card"><h2 style="margin:0">➕ Add Staff Member</h2>
+<input id="sName" placeholder="Full Name — e.g. Ms Dube">
+<div class="row"><select id="sRole"><option>TEACHER</option><option>LIBRARIAN</option><option>ADMIN</option><option>SUPPORT</option></select><input id="sPhone" placeholder="Phone — e.g. 078 000 0000"></div>
+<button class="btn green" onclick="addStaff()">➕ ADD STAFF</button><p id="msg" style="font-weight:900;text-align:center"></p></div>
+<div class="card"><input id="search" placeholder="🔍 Search staff..." oninput="render()"><div id="list" style="margin-top:10px"></div><p style="text-align:center;font-weight:900" id="count"></p></div>
+</div><script>
+let SK='MAKHANANI_STAFF';let staff=JSON.parse(localStorage.getItem(SK)||'[]');
+if(staff.length===0){staff=[{name:'Mr Vusi Chauke',role:'ADMIN',phone:'078 023 3263',_id:'1'}];save();}
+function save(){localStorage.setItem(SK,JSON.stringify(staff));}
+function addStaff(){let n=document.getElementById('sName').value.trim(),r=document.getElementById('sRole').value,p=document.getElementById('sPhone').value.trim();if(!n)return alert('Enter name');staff.push({name:n,role:r,phone:p,_id:Date.now()});save();render();document.getElementById('sName').value='';document.getElementById('msg').textContent='✅ Added: '+n;}
+function del(id){if(!confirm('Remove staff?'))return;staff=staff.filter(x=>x._id!=id);save();render();}
+function render(){let q=document.getElementById('search').value.toLowerCase();let list=staff.filter(x=>x.name.toLowerCase().includes(q)||x.role.toLowerCase().includes(q));document.getElementById('count').textContent='Total Staff: '+staff.length+' / 10 Shared';document.getElementById('list').innerHTML=list.map(x=>`<div class="item"><span><b>${x.name}</b> • ${x.role} • ${x.phone||''}</span><button style="background:#fee2e2;border:none;padding:6px 10px;border-radius:8px;cursor:pointer" onclick="del('${x._id}')">✕</button></div>`).join('')||'No staff found';}
+function logout(){localStorage.removeItem('MAKHANANI_LOGGED_IN');location.href='login.html';}
+render();
+</script></body></html>
