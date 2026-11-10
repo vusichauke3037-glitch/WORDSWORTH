@@ -1,7 +1,8 @@
-// cloud.js — Makhanani LTSM v1.72
+// cloud.js — Makhanani LTSM v1.73
 // Firebase Realtime Database: makhanani-ltsm
 // Path: schools/<SCHOOL_NAME>/data
 // Syncs: Books, Learners, Staff, Issues, School Name, Notifications
+//        + DBE Schools, Subscriptions, Subscription Requests
 // No demo passwords shown in UI. Logo is in HTML header as logo.png
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -33,21 +34,27 @@ function getCloudId(){
 function getCloudPath(){
   return getCloudId() + '/data';
 }
+function safeParse(key){
+  try { return JSON.parse(localStorage.getItem(key)||'[]'); } catch(e){ return []; }
+}
 function getAllData(){
   let login = null;
   try { login = JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); } catch(e){}
   return {
-    version: '1.72',
+    version: '1.73',
     school: getSchoolName(),
     updatedAt: new Date().toISOString(),
     updatedBy: login ? login.name + ' (' + login.role + ')' : 'System',
-    books: JSON.parse(localStorage.getItem('LTSM_BARCODES_TEXTBOOK_v158')||'[]'),
-    learners: JSON.parse(localStorage.getItem('LTSM_BARCODES_LEARNER_v158')||'[]'),
-    staff: JSON.parse(localStorage.getItem('MAKHANANI_STAFF')||'[]'),
-    issues: JSON.parse(localStorage.getItem('MAKHANANI_ISSUES')||'[]'),
-    notifications: JSON.parse(localStorage.getItem('MAKHANANI_NOTIF_LOG')||'[]'),
+    books: safeParse('LTSM_BARCODES_TEXTBOOK_v158'),
+    learners: safeParse('LTSM_BARCODES_LEARNER_v158'),
+    staff: safeParse('MAKHANANI_STAFF'),
+    issues: safeParse('MAKHANANI_ISSUES'),
+    notifications: safeParse('MAKHANANI_NOTIF_LOG'),
+    // v1.73 — DBE + Subscription
+    dbeSchools: safeParse('MAKHANANI_DBE_SCHOOLS'),
+    subscriptions: safeParse('MAKHANANI_SUBSCRIPTIONS'),
+    subRequests: safeParse('MAKHANANI_SUB_REQUESTS'),
     // Logo is NOT stored in cloud — it lives as logo.png in repo
-    // If you change logo, just replace logo.png file
     hasLogo: true
   };
 }
@@ -58,6 +65,10 @@ function applyData(d){
   if(d.staff) localStorage.setItem('MAKHANANI_STAFF', JSON.stringify(d.staff));
   if(d.issues) localStorage.setItem('MAKHANANI_ISSUES', JSON.stringify(d.issues));
   if(d.notifications) localStorage.setItem('MAKHANANI_NOTIF_LOG', JSON.stringify(d.notifications));
+  // v1.73
+  if(d.dbeSchools) localStorage.setItem('MAKHANANI_DBE_SCHOOLS', JSON.stringify(d.dbeSchools));
+  if(d.subscriptions) localStorage.setItem('MAKHANANI_SUBSCRIPTIONS', JSON.stringify(d.subscriptions));
+  if(d.subRequests) localStorage.setItem('MAKHANANI_SUB_REQUESTS', JSON.stringify(d.subRequests));
   if(d.school) localStorage.setItem('MAKHANANI_SCHOOL_NAME', d.school);
   localStorage.setItem('MAKHANANI_CLOUD_UPDATED', new Date().toISOString());
   // Update school title + cloud labels if they exist on this page
@@ -69,6 +80,8 @@ function applyData(d){
   if(lbl2) lbl2.textContent = getCloudId();
   let inp = document.getElementById('schoolNameInput');
   if(inp && d.school) inp.value = d.school;
+  let reqSchool = document.getElementById('reqSchool');
+  if(reqSchool && d.school) reqSchool.value = d.school;
 }
 function setStatus(msg){
   let el = document.getElementById('cloudStatus');
@@ -104,7 +117,7 @@ async function pullFromCloud(){
     if(!confirm('Download will REPLACE local data with cloud data from ' + (d.updatedAt||'') + ' by ' + (d.updatedBy||'') + '. Continue?')) return;
     applyData(d);
     setStatus('⬇️ Downloaded ✅ ' + new Date().toLocaleTimeString());
-    alert('✅ Downloaded from cloud!\nSchool: ' + d.school + '\nBooks: ' + (d.books||[]).length + ' • Learners: ' + (d.learners||[]).length + ' • Issues: ' + (d.issues||[]).length);
+    alert('✅ Downloaded from cloud!\nSchool: ' + d.school + '\nBooks: ' + (d.books||[]).length + ' • Learners: ' + (d.learners||[]).length + ' • Issues: ' + (d.issues||[]).length + ' • DBE Schools: ' + (d.dbeSchools||[]).length + ' • Subscriptions: ' + (d.subscriptions||[]).length + ' • Requests: ' + (d.subRequests||[]).length);
     location.reload();
   } catch(e){
     setStatus('☁️ Cloud Error: ' + e.message);
