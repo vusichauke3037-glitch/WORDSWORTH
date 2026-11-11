@@ -1,59 +1,297 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Learners — v1.82</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0a1f4d"><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#e5e7eb;padding:16px}.wrap{max-width:1150px;margin:auto}header{text-align:center;background:#0a1f4d;color:#fff;padding:16px;border-radius:14px;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}.logo{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;border:3px solid #d4af37}.badge{background:#d4af37;color:#0a1f4d;font-size:11px;font-weight:900;padding:5px 10px;border-radius:20px}.card{background:#fff;border-radius:14px;padding:16px;margin:12px 0}label{font-size:12px;font-weight:800;color:#555}input,select,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;margin:4px 0 10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}.btn{border:none;padding:11px;border-radius:10px;font-weight:900;cursor:pointer;width:100%}.btn:disabled{opacity:.5}.gold{background:#d4af37}.blue{background:#2563eb;color:#fff}.green{background:#059669;color:#fff}.dark{background:#0a1f4d;color:#fff}.red{background:#dc2626;color:#fff}.orange{background:#ea580c;color:#fff}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}.nav a{background:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;color:#0a1f4d;font-weight:900;font-size:13px}.small{font-size:12px;color:#666}.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.pass-wrap{position:relative}.pass-wrap button{position:absolute;right:8px;top:12px;border:none;background:none;cursor:pointer}.step{border:2px solid #0a1f4d;border-radius:12px;padding:12px;margin:10px 0}.cond-Excellent{background:#dcfce7}.cond-Good{background:#dbeafe}.cond-Fair{background:#fef3c7}.cond-Poor{background:#ffedd5}.cond-Damaged,.cond-Lost{background:#fee2e2}.cond-NeedsRepair{background:#e0e7ff}.preview{background:#f0fdf4;border:2px solid #059669;border-radius:10px;padding:10px;font-family:monospace;font-weight:800}@media(max-width:700px){.grid,.grid3,.grid4{grid-template-columns:1fr 1fr}}@media print{.no-print{display:none!important}}</style></head><body><div class="wrap">
-<header><img src="logo.png" class="logo" onerror="this.style.display='none'"><div><h1 style="margin:0">🎓 Learners</h1><p style="margin:4px 0 0" id="schoolTitle">— Select School to Log In —</p><p style="font-size:12px;opacity:.8">Learner Barcode • Grade R–12 • 1 Subject per Learner • Grade Match on Issue • v1.82</p></div><span class="badge">v1.82</span></header>
-<div class="card no-print" id="loginCard"><h2 style="margin:0">🔐 Log In — Select School First (by EMIS)</h2><div class="step"><p style="font-weight:900;margin:0 0 8px">STEP 1 — 🔍 Select / Search School by EMIS</p><div class="grid3"><div><label>DBE Dropdown (Value = EMIS)</label><select id="loginSchoolSelect" onchange="onLoginSchoolSelect()"><option value="">-- Select School by EMIS --</option></select></div><div><label>Search EMIS / NAME / TOWN / Province</label><input id="loginSchoolSearch" placeholder="123456789 / Makhanani / Giyani" oninput="renderLoginSchoolList()"></div><div><label>&nbsp;</label><button class="btn dark" onclick="renderLoginSchoolList()">🔍 Search</button></div></div><div id="loginSchoolBox" style="margin-top:8px"></div><div id="loginSchoolList" style="overflow:auto;max-height:220px;margin-top:8px"></div></div><div class="step" id="step2Box" style="opacity:.5"><p style="font-weight:900;margin:0 0 8px">STEP 2 — 👤 Email + Password</p><div class="grid3"><div><label>Email</label><input id="loginEmail" placeholder="Enter your email"></div><div><label>Password</label><div class="pass-wrap"><input id="loginPass" type="password" placeholder="Enter password"><button type="button" onclick="togglePass()">👁️</button></div></div><div><label>&nbsp;</label><button id="loginBtn" class="btn dark" onclick="doLogin()" disabled>Login</button></div></div><div id="loginMsg" class="small" style="color:#dc2626"></div><p class="small" id="loginHint">⚠️ Select school first.</p></div></div>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Learners — v1.86 Firebase</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0a1f4d"><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#e5e7eb;padding:16px}.wrap{max-width:1150px;margin:auto}header{text-align:center;background:#0a1f4d;color:#fff;padding:16px;border-radius:14px;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}.logo{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;border:3px solid #d4af37}.badge{background:#d4af37;color:#0a1f4d;font-size:11px;font-weight:900;padding:5px 10px;border-radius:20px}.card{background:#fff;border-radius:14px;padding:16px;margin:12px 0}label{font-size:12px;font-weight:800;color:#555}input,select,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;margin:4px 0 10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}.btn{border:none;padding:11px;border-radius:10px;font-weight:900;cursor:pointer;width:100%}.btn:disabled{opacity:.5}.gold{background:#d4af37}.blue{background:#2563eb;color:#fff}.green{background:#059669;color:#fff}.dark{background:#0a1f4d;color:#fff}.red{background:#dc2626;color:#fff}.orange{background:#ea580c;color:#fff}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}.nav a{background:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;color:#0a1f4d;font-weight:900;font-size:13px}.small{font-size:12px;color:#666}.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.pass-wrap{position:relative}.pass-wrap button{position:absolute;right:8px;top:12px;border:none;background:none;cursor:pointer}.step{border:2px solid #0a1f4d;border-radius:12px;padding:12px;margin:10px 0}.subBanner{padding:12px;text-align:center;font-weight:900;border-radius:10px;margin:10px 0}.subBanner.ACTIVE{background:#dcfce7;color:#065f46;border:2px solid #059669}.subBanner.NONE,.subBanner.EXPIRED{background:#fee2e2;color:#7f1d1d;border:2px solid #dc2626}.subBanner.PENDING{background:#dbeafe;color:#1e40af;border:2px solid #2563eb}.subBanner.TRIAL{background:#fef3c7;color:#92400e;border:2px solid #f59e0b}.barcode{font-family:'Courier New',monospace;font-weight:900;letter-spacing:1px}.barcodeBox{border:2px dashed #0a1f4d;border-radius:10px;padding:10px;text-align:center;background:#fff}.sticker{display:inline-block;width:180px;border:2px solid #000;border-radius:8px;padding:8px;margin:6px;text-align:center;break-inside:avoid}.print-header{display:none}.gradeHead{padding:12px;border-radius:10px;margin:14px 0 6px;font-weight:900;background:#dbeafe}.classHead{padding:8px 10px;border-radius:8px;margin:10px 0 4px;background:#f8fafc;border-left:5px solid #0a1f4d;font-weight:800}@media(max-width:700px){.grid,.grid3,.grid4{grid-template-columns:1fr 1fr}}@media print{.no-print{display:none!important}body{background:#fff;padding:0}.card{border:1px solid #000;break-inside:avoid;box-shadow:none}.print-header{display:block!important;text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:10px}.gradeHead{break-before:page}.gradeHead:first-of-type{break-before:auto}table{font-size:11px}.sticker{border:1px solid #000}}</style></head><body><div class="wrap">
+<div class="print-header"><h1 style="margin:0">Makhanani LTSM — Learner List</h1><p id="printMeta" style="margin:4px 0 0"></p><p style="font-size:12px">Barcode = LRN-GRADE-NUMBER • Grade R-12 • 1 Subject per Learner</p></div>
+<header class="no-print"><img src="logo.png" class="logo" onerror="this.style.display='none'"><div><h1 style="margin:0">🎓 Learners</h1><p style="margin:4px 0 0" id="schoolTitle">— Select School to Log In —</p><p style="font-size:12px;opacity:.8">Firebase Live • Bulk Add Class • Barcode Stickers • v1.86</p></div><span class="badge">v1.86 FIREBASE</span></header>
+<div id="subBanner" class="subBanner no-print" style="display:none"></div>
+
+<!-- LOGIN -->
+<div class="card no-print" id="loginCard"><h2 style="margin:0">🔐 Log In — Select School First (by EMIS)</h2><div class="step"><p style="font-weight:900;margin:0 0 8px">STEP 1 — 🔍 Select / Search School by EMIS</p><div class="grid3"><div><label>DBE Dropdown (Value = EMIS)</label><select id="loginSchoolSelect" onchange="onLoginSchoolSelect()"><option value="">-- Select School by EMIS --</option></select></div><div><label>Search EMIS / NAME / TOWN</label><input id="loginSchoolSearch" placeholder="123456789 / Makhanani / Giyani" oninput="onDBESearch()"></div><div><label>&nbsp;</label><button class="btn dark" onclick="renderLoginSchoolList()">🔍 Search</button></div></div><div id="loginSchoolBox" style="margin-top:8px"></div><div id="loginSchoolList" style="overflow:auto;max-height:220px;margin-top:8px"></div></div><div class="step" id="step2Box" style="opacity:.5"><p style="font-weight:900;margin:0 0 8px">STEP 2 — 👤 Email + Password (Firebase)</p><div class="grid3"><div><label>Email</label><input id="loginEmail" placeholder="Enter your email"></div><div><label>Password</label><div class="pass-wrap"><input id="loginPass" type="password" placeholder="Enter password"><button type="button" onclick="togglePass()">👁️</button></div></div><div><label>&nbsp;</label><button id="loginBtn" class="btn dark" onclick="doLogin()" disabled>Login</button><button class="btn" onclick="forgotPass()" style="background:#fff;color:#0a1f4d;margin-top:6px;border:1px solid #0a1f4d">Forgot Password?</button></div></div><div id="loginMsg" class="small" style="color:#dc2626"></div><p class="small" id="loginHint">⚠️ Select school first.</p></div></div>
 <div class="card no-print" id="loggedCard" style="display:none"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><b id="whoName">-</b><br><small id="whoDetail">-</small><br><small id="whoSchool">-</small></div><div style="display:flex;gap:8px"><button class="btn gold" onclick="switchSchool()" style="width:auto">🏫 Switch School</button><button class="btn red" onclick="logout()" style="width:auto">Logout</button></div></div></div>
-<div style="background:#059669;color:#fff;padding:10px;border-radius:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-weight:800;font-size:13px" class="no-print"><span id="cloudStatus">☁️ Cloud: Connecting...</span><button onclick="pushToCloud()" class="btn" style="background:#fff;color:#059669;width:auto">☁️ SYNC</button><button onclick="pullFromCloud()" class="btn" style="background:#0a1f4d;color:#fff;width:auto">⬇️ DOWNLOAD</button></div><p class="small no-print" style="text-align:center">Cloud ID: <b id="cloudIdLabel">schools/...</b> • School: <b id="mySchoolLine">-</b> • EMIS: <b id="selectedEmisLabel">-</b></p>
-<div class="nav no-print"><a href="index.html">🏠 Home</a><a href="issue.html">📚 Issue / Return</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="admin.html">⚙️ Admin</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="librarian.html">📚 Librarian</a></div>
-<div class="grid4"><div class="card" style="text-align:center;margin:0"><b id="sTotal">0</b><br><span class="small">🎓 Total Learners</span></div><div class="card" style="text-align:center;margin:0"><b id="sOut">0</b><br><span class="small">📚 Have Books Out</span></div><div class="card" style="text-align:center;margin:0"><b id="sNoBook">0</b><br><span class="small">📭 No Books</span></div><div class="card" style="text-align:center;margin:0"><b id="sG12">0</b><br><span class="small">🎓 Grade 12</span></div></div>
-<div class="card"><h2>🏫 My School</h2><div id="mySchoolBox"></div></div>
-<div class="card no-print" style="border:3px solid #059669"><h2>➕ Add Learner — Grade R to Grade 12</h2><p class="small">Learner Grade is used for Issue Rule: Learner can ONLY receive books for their current grade. And only 1 book per Subject Code.</p>
-<div class="grid"><div><label>Full Name *</label><input id="fName" placeholder="Thabo Nkosi" oninput="updatePreview()"></div><div><label>Grade * — Up to Grade 12</label><select id="fGrade" onchange="updatePreview()"><option value="">-- Grade --</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div></div>
-<div class="grid3"><div><label>Class</label><input id="fClass" placeholder="10A" oninput="updatePreview()"></div><div><label>Learner Barcode (Auto — Leave blank)</label><input id="fBarcode" placeholder="Auto: LRN-G10-0001"></div><div><label>Gender</label><select id="fGender"><option value="">-- --</option><option>Male</option><option>Female</option></select></div></div>
-<div id="previewBox" class="preview" style="display:none"></div>
-<button class="btn green" onclick="addLearner()">➕ ADD LEARNER</button><div id="addMsg" class="small"></div>
-<div id="generatedBox" style="display:none;margin-top:10px"><b>✅ Learner Added:</b><div id="generatedList" style="font-family:monospace;background:#fff;padding:10px;border-radius:10px"></div><button class="btn gold" onclick="window.print()">🖨️ Print Barcode</button></div></div>
-<div class="card no-print"><h2>🔍 Scan / Search Learner</h2><div class="grid"><div><label>Scan Learner Barcode</label><input id="scanInput" placeholder="Scan LRN-G10-0001" oninput="onScan()"></div><div><label>Search</label><input id="learnerSearch" placeholder="Thabo / LRN-G10-0001 / Grade 10" oninput="renderAll()"></div></div><div id="scanMsg" class="small"></div></div>
-<div class="card no-print"><h2>📥 Bulk Upload Learners (CSV) — Grade R–12</h2><p class="small">Format: <b>Name,Grade,Class,Gender</b> • Example: <code>Thabo Nkosi,Grade 10,10A,Male</code> • Barcodes auto-generated, no duplicates.</p><div class="grid"><div><label>Upload CSV</label><input type="file" id="csvFile" accept=".csv,.txt" onchange="uploadCSV()"></div><div><label>Or Paste CSV</label><textarea id="csvPaste" rows="3" placeholder="Name,Grade,Class,Gender"></textarea></div></div><button class="btn blue" onclick="importPasted()">📥 Import Pasted — Auto Barcode</button></div>
-<div class="card"><h2>🎓 All Learners — Grade R–12 + Books Out + Subjects Taken</h2><div class="grid3"><div><label>Filter Grade — Up to Grade 12</label><select id="gradeFilter" onchange="renderAll()"><option value="">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Filter Class</label><input id="classFilter" placeholder="10A" oninput="renderAll()"></div><div><label>Filter Books</label><select id="bookFilter" onchange="renderAll()"><option value="">All</option><option value="OUT">Has Books Out</option><option value="NONE">No Books</option></select></div></div><div style="overflow:auto"><table><thead><tr><th>Learner Barcode</th><th>Name</th><th>Grade</th><th>Class</th><th>Books Out</th><th>Subjects Taken (1 per Subject)</th><th>Can Issue?</th><th>Action</th></tr></thead><tbody id="learnerRows"></tbody></table></div></div>
-<p class="small" style="text-align:center">Makhanani LTSM v1.82 • Grade R–12 • 1 Subject per Learner • Grade Match • Due 30 Nov</p></div>
-<script type="module" src="cloud.js"></script><script>
-function togglePass(){let p=document.getElementById('loginPass');p.type=p.type==='password'?'text':'password';}
-function getSchoolName(){return localStorage.getItem('MAKHANANI_SCHOOL_NAME')||'';}
-function getSelectedSchool(){return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL')||getSchoolName();}
-function getSelectedEmis(){return localStorage.getItem('MAKHANANI_SELECTED_EMIS')||localStorage.getItem('MAKHANANI_SCHOOL_EMIS')||'';}
-function getDBE(){return JSON.parse(localStorage.getItem('MAKHANANI_DBE_SCHOOLS')||'[]');}
-function normaliseSchool(x){return {emis:String(x.emis||x.EMIS||'').trim(),name:String(x.name||x.NAME||x.school||'').trim().toUpperCase(),town:String(x.town||x.TOWN||x.district||'').trim(),province:String(x.province||x.Province||'').trim()};}
-function dbeForEmis(emis){return getDBE().map(normaliseSchool).find(x=>String(x.emis).trim()===String(emis).trim());}
-function dbeForSchool(n){return getDBE().map(normaliseSchool).find(x=>x.name.toLowerCase()===(n||'').toLowerCase());}
-function getStaff(){return JSON.parse(localStorage.getItem('MAKHANANI_STAFF')||'[]');}
-function seedIfEmpty(){if(getStaff().length)return;localStorage.setItem('MAKHANANI_STAFF',JSON.stringify([{name:'Admin User',email:'admin@makhanani.co.za',role:'ADMIN',subject:'Library',password:'Admin123'},{name:'Principal Dube',email:'principal@makhanani.co.za',role:'PRINCIPAL',subject:'Management',password:'Principal123'},{name:'Librarian Nkosi',email:'librarian@makhanani.co.za',role:'LIBRARIAN',subject:'Library',password:'Lib123'},{name:'Teacher Maths',email:'teacher-maths@makhanani.co.za',role:'TEACHER',subject:'Maths',password:'Teacher123'}]));}
-function setSchoolTitle(){let n=getSelectedSchool();let e=getSelectedEmis();document.getElementById('schoolTitle').textContent=n?(n+' (EMIS '+e+')'):'— Select School to Log In —';document.getElementById('cloudIdLabel').textContent=e?'schools/EMIS_'+e:'schools/...';document.getElementById('mySchoolLine').textContent=n||'-';document.getElementById('selectedEmisLabel').textContent=e||'-';}
+
+<div style="background:#059669;color:#fff;padding:10px;border-radius:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-weight:800;font-size:13px" class="no-print"><span id="cloudStatus">☁️ Cloud: Connecting to Firebase...</span><button onclick="pushToCloud()" class="btn" style="background:#fff;color:#059669;width:auto">☁️ SYNC STATUS</button></div><p class="small no-print" style="text-align:center">Cloud: Firestore • <b id="cloudIdLabel">schools/...</b> • Live listeners ON</p>
+<div class="nav no-print"><a href="index.html">🏠 Home</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="admin.html">⚙️ Admin</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="librarian.html">📚 Librarian</a></div>
+
+<div class="grid4 no-print"><div class="card" style="text-align:center;margin:0"><b id="sTotal">0</b><br><span class="small">🎓 Total Learners</span></div><div class="card" style="text-align:center;margin:0"><b id="sWithBooks">0</b><br><span class="small">📚 With Books OUT</span></div><div class="card" style="text-align:center;margin:0"><b id="sNoBooks">0</b><br><span class="small">✅ No Books OUT</span></div><div class="card" style="text-align:center;margin:0"><b id="sOverdue" style="color:#dc2626">0</b><br><span class="small">🔴 Overdue</span></div></div>
+
+<!-- ADD LEARNER -->
+<div class="card no-print"><h2>➕ Add Learner(s) — Barcode Auto: LRN-GRADE-NUMBER</h2>
+<div class="grid3"><div><label>Full Name *</label><input id="nameInput" placeholder="e.g. Thabo Nkosi"></div><div><label>Grade *</label><select id="gradeSelect"><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Class * (e.g. 10A, 10B)</label><input id="classInput" placeholder="10A" value="10A"></div></div>
+<div class="grid3"><div><label>Gender (Optional)</label><select id="genderInput"><option value="">-- Select --</option><option>Male</option><option>Female</option><option>Other</option></select></div><div><label>Parent / Guardian Phone (Optional)</label><input id="phoneInput" placeholder="082 ..."></div><div><label>Start Number (Auto = Next Free)</label><input id="startNumInput" placeholder="Auto — e.g. 1 → LRN-G10-0001"></div></div>
+<div class="barcodeBox"><small>Next Barcode Preview</small><div id="barcodePreview" class="barcode" style="font-size:20px">LRN-G10-0001</div><small id="barcodeHint">Select Grade to preview</small></div>
+<div class="grid3" style="margin-top:10px"><button class="btn green" onclick="addLearner()">✅ Add Learner to Firestore</button><button class="btn dark" onclick="previewBulk()">👁️ Preview</button><button class="btn gold" onclick="clearForm()">🧹 Clear</button></div>
+<div id="addMsg" style="margin-top:10px;font-weight:900"></div><div id="bulkPreview" style="margin-top:10px"></div>
+</div>
+
+<!-- BULK CLASS -->
+<div class="card no-print"><h2>👥 Bulk Add Whole Class — Paste Names (One Per Line)</h2><p class="small">Paste 35 names → Auto creates LRN-G10-0001 → LRN-G10-0035 for Class 10A. Use this at start of year.</p>
+<div class="grid3"><div><label>Grade for Bulk</label><select id="bulkGrade"><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Class for Bulk</label><input id="bulkClass" placeholder="10A" value="10A"></div><div><label>&nbsp;</label><button class="btn green" onclick="bulkAddClass()">👥 Add All Names Below</button></div></div>
+<textarea id="bulkNames" rows="6" placeholder="Thabo Nkosi&#10;Naledi Dube&#10;Karabo Mokoena&#10;... one name per line"></textarea>
+<div id="bulkMsg" style="font-weight:900;margin-top:6px"></div>
+</div>
+
+<!-- SEARCH + LIST -->
+<div class="card no-print"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center"><h2 style="margin:0">🎓 Learners — Search / Filter</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn dark" onclick="window.print()" style="width:auto">🖨️ Print List</button><button class="btn blue" onclick="printStickers()" style="width:auto">🏷️ Print Stickers</button></div></div>
+<div class="grid3" style="margin-top:10px"><div><label>Search Name / Barcode</label><input id="searchInput" placeholder="Thabo / LRN-G10" oninput="onSearch()"></div><div><label>Grade</label><select id="gradeFilter" onchange="onSearch()"><option value="">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Class</label><input id="classFilter" placeholder="10A" oninput="onSearch()"></div></div>
+<div class="grid3"><div><label>Status</label><select id="statusFilter" onchange="onSearch()"><option value="">All</option><option value="WITH">📚 With Books OUT</option><option value="NONE">✅ No Books OUT</option></select></div><div><label>Sort</label><select id="sortFilter" onchange="onSearch()"><option value="barcode">Barcode</option><option value="name">Name A-Z</option><option value="grade">Grade → Class</option></select></div><div><label>&nbsp;</label><button class="btn gold" onclick="exportCSV()">⬇️ Export CSV</button></div></div>
+<p class="small" id="listMeta">Showing 0 of 0</p>
+<div style="overflow:auto"><table><thead><tr><th>Barcode</th><th>Name</th><th>Grade • Class</th><th>Books OUT</th><th>Status</th><th class="no-print">Action</th></tr></thead><tbody id="learnerRows"></tbody></table></div>
+<div style="display:flex;gap:8px;margin-top:10px" class="no-print"><button class="btn dark" style="width:auto" onclick="prevPage()">⬅️ Prev</button><span class="small" id="pageLabel" style="align-self:center">Page 1 / 1</span><button class="btn dark" style="width:auto" onclick="nextPage()">Next ➡️</button></div>
+</div>
+
+<!-- GRADE -> CLASS -->
+<div class="card" id="gradeCard"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center"><h2 style="margin:0">🏫 Learners by Grade → Class</h2><button class="btn dark" onclick="window.print()" style="width:auto" class="no-print">🖨️ Print</button></div><div id="gradeTables"></div></div>
+
+<!-- STICKERS -->
+<div class="card" id="stickerCard" style="display:none"><h2>🏷️ Learner Barcode Stickers — Print & Stick on Card</h2><div id="stickerArea"></div><button class="btn dark no-print" onclick="window.print()" style="width:auto">🖨️ Print Stickers</button></div>
+
+<div class="card no-print"><h2>📜 Audit Log (Last 30)</h2><div style="overflow:auto"><table><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Detail</th></tr></thead><tbody id="logRows"></tbody></table></div></div>
+<p class="small no-print" style="text-align:center">Makhanani LTSM v1.86 Firebase • Barcode = LRN-GRADE-NUMBER • 1 Subject per Learner • Audit Log</p></div>
+
+<script type="module" src="cloud.js"></script>
+<script type="module">
+import { doc, getDoc, getDocs, query, where, orderBy, limit, updateDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const SUBJECT_NAMES={ACC:'Accounting',BUS:'Business Studies',ECO:'Economics',EMS:'Economic and Management Sciences',CST:'Consumer Studies',ENG:'English Home Language',EFA:'English First Additional Language',AFR:'Afrikaans First Additional Language',ZUL:'Isizulu Home Language',GEO:'Geography',HIS:'History',LSC:'Life Sciences',LOR:'Life Orientation',MLT:'Mathematical Literacy',MAT:'Mathematics',NSC:'Natural Sciences',PSC:'Physical Sciences',SEP:'Sepedi Home Language',SSC:'Social Sciences',XIT:'Xitsonga Home Language',TSH:'Tshivenda Home Language',TEC:'Technology',CRA:'Creative Arts',VRT:'Virtual Arts',DRM:'Dramatic Arts',CAT:'Computer Application Technology',TOU:'Tourism',OTH:'Other'};
 function normaliseGrade(g){if(!g) return '';let s=String(g).trim().toUpperCase();if(s==='GRADE R'||s==='R'||s==='GRR') return 'Grade R';let m=s.match(/(\d+)/);if(!m) return s;return 'Grade '+parseInt(m[1]);}
-function gradeCode(grade){let s=String(grade||'').toUpperCase();if(s.includes('GRADE R')||s==='R') return 'GRR';let m=s.match(/(\d+)/);if(!m) return 'G00';return 'G'+String(parseInt(m[1])).padStart(2,'0');}
-function pad4(n){return String(n).padStart(4,'0');}
-function renderLoginSchoolList(){let dbe=getDBE().map(normaliseSchool);let q=(document.getElementById('loginSchoolSearch').value||'').toLowerCase();let selEmis=getSelectedEmis();document.getElementById('loginSchoolSelect').innerHTML='<option value="">-- Select School by EMIS --</option>'+dbe.map(x=>'<option value="'+x.emis+'"'+(String(x.emis)===String(selEmis)?' selected':'')+'>'+x.emis+' — '+x.name+' — '+x.town+'</option>').join('');let f=dbe.filter(x=>!q||x.name.toLowerCase().includes(q)||x.emis.includes(q)||x.town.toLowerCase().includes(q)||x.province.toLowerCase().includes(q));let show=q?f:f.slice(0,10);document.getElementById('loginSchoolList').innerHTML=f.length?'<table><thead><tr><th>EMIS</th><th>NAME</th><th>TOWN</th><th>Province</th><th></th></tr></thead><tbody>'+show.map(x=>'<tr><td><b>'+x.emis+'</b></td><td><b>'+x.name+'</b></td><td>'+x.town+'</td><td>'+x.province+'</td><td><button class="btn '+(String(x.emis)===String(selEmis)?'green':'blue')+'" style="width:auto;padding:6px 10px" onclick="pickLoginSchoolByEmis(\''+x.emis+'\')">'+(String(x.emis)===String(selEmis)?'✅ Selected':'Select')+'</button></td></tr>').join('')+'</tbody></table>':'<p class="small">No schools found.</p>';updateLoginStepUI();}
-function pickLoginSchoolByEmis(emis){let s=dbeForEmis(emis);if(!s) return alert('School not found for EMIS '+emis);localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',s.name);localStorage.setItem('MAKHANANI_SCHOOL_NAME',s.name);localStorage.setItem('MAKHANANI_SELECTED_EMIS',s.emis);localStorage.setItem('MAKHANANI_SCHOOL_EMIS',s.emis);document.getElementById('loginSchoolSelect').value=s.emis;document.getElementById('loginSchoolBox').innerHTML='<div style="background:#f0fdf4;border:2px solid #059669;border-radius:12px;padding:12px"><b>✅ Selected: '+s.name+'</b><br><small>EMIS: <b>'+s.emis+'</b> • TOWN: <b>'+s.town+'</b> • Province: <b>'+s.province+'</b></small></div>';setSchoolTitle();renderLoginSchoolList();renderAll();document.getElementById('loginEmail').focus();if(typeof pullFromCloud==='function')pullFromCloud();}
-function onLoginSchoolSelect(){let v=document.getElementById('loginSchoolSelect').value;if(v)pickLoginSchoolByEmis(v);}
-function updateLoginStepUI(){let sel=getSelectedSchool();let emis=getSelectedEmis();document.getElementById('step2Box').style.opacity=sel?'1':'.5';document.getElementById('loginBtn').disabled=!sel;document.getElementById('loginHint').textContent=sel?('✅ School: '+sel+' (EMIS '+emis+')'):'⚠️ Select school first.';if(sel&&!document.getElementById('loginSchoolBox').innerHTML){let s=emis?dbeForEmis(emis):dbeForSchool(sel);if(s)document.getElementById('loginSchoolBox').innerHTML='<div style="background:#f0fdf4;border:2px solid #059669;border-radius:12px;padding:12px"><b>✅ Selected: '+s.name+'</b><br><small>EMIS: <b>'+s.emis+'</b> • TOWN: <b>'+s.town+'</b> • Province: <b>'+s.province+'</b></small></div>';}}
-function switchSchool(){if(!confirm('Switch school? You will log in again.'))return;localStorage.removeItem('MAKHANANI_LOGGED_IN');localStorage.removeItem('MAKHANANI_SELECTED_SCHOOL');localStorage.removeItem('MAKHANANI_SCHOOL_NAME');localStorage.removeItem('MAKHANANI_SELECTED_EMIS');document.getElementById('loginSchoolBox').innerHTML='';updateLoginUI();setSchoolTitle();renderLoginSchoolList();renderAll();}
-function updateLoginUI(){let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');let sel=getSelectedSchool();document.getElementById('loginCard').style.display=l?'none':'block';document.getElementById('loggedCard').style.display=l?'block':'none';if(l){document.getElementById('whoName').textContent=l.name+' — '+l.role;document.getElementById('whoDetail').textContent=l.email+' • '+(l.subject||'');document.getElementById('whoSchool').textContent='🏫 '+(l.school||sel||'-')+' • EMIS '+(l.schoolEmis||getSelectedEmis()||'-');}}
-function doLogin(){let sel=getSelectedSchool();let emis=getSelectedEmis();if(!sel)return alert('⚠️ Step 1: Select school first (by EMIS).');seedIfEmpty();let e=document.getElementById('loginEmail').value.trim().toLowerCase(),p=document.getElementById('loginPass').value;if(!e||!p)return document.getElementById('loginMsg').textContent='❌ Enter email + password.';let f=getStaff().find(x=>x.email.toLowerCase()===e&&x.password===p);if(!f)return document.getElementById('loginMsg').textContent='❌ Wrong email or password for '+sel+'.';f.school=sel;f.schoolEmis=emis;localStorage.setItem('MAKHANANI_LOGGED_IN',JSON.stringify(f));localStorage.setItem('MAKHANANI_SCHOOL_NAME',sel);updateLoginUI();setSchoolTitle();renderAll();alert('✅ Welcome '+f.name+'\n🏫 '+sel+' (EMIS '+emis+')');}
-function logout(){localStorage.removeItem('MAKHANANI_LOGGED_IN');updateLoginUI();}
-function getLearners(){return JSON.parse(localStorage.getItem('LTSM_BARCODES_LEARNER_v158')||'[]');}
-function saveLearners(a){localStorage.setItem('LTSM_BARCODES_LEARNER_v158',JSON.stringify(a));}
-function getIssues(){return JSON.parse(localStorage.getItem('MAKHANANI_ISSUES')||'[]');}
-function learnerBarcodeExists(bc){return getLearners().some(x=>String(x.barcode||'').toUpperCase()===String(bc).toUpperCase());}
-function nextLearnerNumber(grade){let prefix='LRN-'+gradeCode(grade)+'-';let max=0;getLearners().forEach(l=>{let bc=String(l.barcode||'');if(bc.toUpperCase().startsWith(prefix)){let n=parseInt(bc.replace(new RegExp(prefix,'i'),''));if(!isNaN(n)&&n>max) max=n;}});return max+1;}
-function makeLearnerBarcode(grade,num){return 'LRN-'+gradeCode(grade)+'-'+pad4(num);}
-function updatePreview(){let name=document.getElementById('fName').value.trim();let grade=document.getElementById('fGrade').value;let cls=document.getElementById('fClass').value.trim();let box=document.getElementById('previewBox');if(!name||!grade){box.style.display='none';return;}box.style.display='block';let bc=document.getElementById('fBarcode').value.trim()||makeLearnerBarcode(grade,nextLearnerNumber(grade));box.innerHTML='🎓 Preview: <b>'+bc+'</b> — '+name+' • '+normaliseGrade(grade)+' • '+(cls||'No Class')+' • Next free: '+pad4(nextLearnerNumber(grade));}
-function addLearner(){let name=document.getElementById('fName').value.trim();let grade=normaliseGrade(document.getElementById('fGrade').value);let cls=document.getElementById('fClass').value.trim();let gender=document.getElementById('fGender').value;let manual=document.getElementById('fBarcode').value.trim().toUpperCase();if(!name) return alert('Enter Full Name');if(!grade) return alert('Select Grade — Grade R to Grade 12');let bc=manual||makeLearnerBarcode(grade,nextLearnerNumber(grade));if(learnerBarcodeExists(bc)) return alert('❌ DUPLICATE LEARNER BARCODE: '+bc+' already exists!\n\nLearner Barcodes must be unique.\nNext free for '+normaliseGrade(grade)+' is '+makeLearnerBarcode(grade,nextLearnerNumber(grade)));let learners=getLearners();learners.push({name,barcode:bc,grade,className:cls,class:cls,gender,school:getSelectedSchool(),emis:getSelectedEmis(),createdAt:new Date().toISOString()});saveLearners(learners);document.getElementById('addMsg').innerHTML='<b style="color:#059669">✅ Added: '+name+' • '+bc+' • '+grade+' • '+(cls||'')+'</b>';document.getElementById('generatedList').innerHTML='<div>🎓 '+bc+' — '+name+' • '+grade+' • '+(cls||'')+'</div>';document.getElementById('generatedBox').style.display='block';document.getElementById('fName').value='';document.getElementById('fBarcode').value='';updatePreview();renderAll();if(typeof pushToCloud==='function')pushToCloud();}
-function onScan(){let v=document.getElementById('scanInput').value.trim().toUpperCase();if(!v) return;let f=getLearners().find(x=>(x.barcode||'').toUpperCase()===v);if(!f){document.getElementById('scanMsg').innerHTML='<span style="color:#dc2626">❌ Not found: '+v+'</span>';return;}let out=getIssues().filter(x=>x.learnerBarcode===f.barcode&&x.status==='OUT');let subjects=[...new Set(getIssues().filter(x=>x.learnerBarcode===f.barcode).map(x=>x.subjectCode||''))].filter(Boolean);document.getElementById('scanMsg').innerHTML='<b>✅ Found: '+f.barcode+' — '+f.name+' • '+normaliseGrade(f.grade)+' • '+(f.className||f.class||'')+' • Books OUT: '+out.length+' • Subjects Taken: '+(subjects.join(', ')||'None')+'</b>';document.getElementById('learnerSearch').value=v;renderAll();}
-function parseCSV(text){let lines=text.split(/\r?\n/).filter(l=>l.trim());if(!lines.length)return[];function splitLine(line){let out=[],cur='',inQ=false;for(let ch of line){if(ch==='"')inQ=!inQ;else if(ch===','&&!inQ){out.push(cur);cur='';}else cur+=ch;}out.push(cur);return out.map(s=>s.trim().replace(/^"|"$/g,''));}let h=splitLine(lines[0]).map(x=>x.toLowerCase());let start=(h.includes('name'))?1:0;let out=[];for(let i=start;i<lines.length;i++){let c=splitLine(lines[i]);if(c.length<1)continue;out.push({name:c[0],grade:normaliseGrade(c[1]||'Grade 10'),cls:c[2]||'',gender:c[3]||''});}return out;}
-function mergeBulk(list){let total=0,skipped=0;list.forEach(item=>{if(!item.name) return;let bc=makeLearnerBarcode(item.grade,nextLearnerNumber(item.grade));if(learnerBarcodeExists(bc)){skipped++;return;}let learners=getLearners();learners.push({name:item.name,barcode:bc,grade:item.grade,className:item.cls,class:item.cls,gender:item.gender,school:getSelectedSchool(),emis:getSelectedEmis(),createdAt:new Date().toISOString()});saveLearners(learners);total++;});renderAll();alert('✅ Bulk Added '+total+' learners'+(skipped?' • Skipped '+skipped+' duplicates':''));if(typeof pushToCloud==='function')pushToCloud();}
-function uploadCSV(){let f=document.getElementById('csvFile').files[0];if(!f)return;let r=new FileReader();r.onload=e=>mergeBulk(parseCSV(e.target.result));r.readAsText(f);}
-function importPasted(){let t=document.getElementById('csvPaste').value.trim();if(!t)return alert('Paste CSV first');mergeBulk(parseCSV(t));}
-function deleteLearner(barcode){let out=getIssues().filter(x=>x.learnerBarcode===barcode&&x.status==='OUT');if(out.length) return alert('❌ Cannot delete — Learner has '+out.length+' book(s) OUT: '+out.map(x=>x.bookBarcode).join(', ')+'\nReturn them first.');if(!confirm('Delete learner '+barcode+'?'))return;saveLearners(getLearners().filter(x=>x.barcode!==barcode));renderAll();if(typeof pushToCloud==='function')pushToCloud();}
-function changeGrade(barcode,newGrade){let learners=getLearners();let l=learners.find(x=>x.barcode===barcode);if(!l) return;let ng=normaliseGrade(newGrade);if(!ng) return;let out=getIssues().filter(x=>x.learnerBarcode===barcode&&x.status==='OUT');if(out.length&&!confirm('⚠️ Learner has '+out.length+' book(s) OUT for '+normaliseGrade(l.grade)+'. Change grade to '+ng+' anyway? Books for old grade will stay OUT.')) return;l.grade=ng;saveLearners(learners);renderAll();if(typeof pushToCloud==='function')pushToCloud();}
-function renderAll(){let school=getSelectedSchool();let dbe=getSelectedEmis()?dbeForEmis(getSelectedEmis()):dbeForSchool(school);document.getElementById('mySchoolBox').innerHTML=school?(dbe?'<div style="background:#eff6ff;border:2px solid #2563eb;border-radius:12px;padding:12px"><b>'+dbe.name+'</b><br><small>EMIS: <b>'+dbe.emis+'</b> • TOWN: <b>'+dbe.town+'</b> • Province: <b>'+dbe.province+'</b></small></div>':'<b>'+school+'</b>'):'<small>No school selected yet — Top → Step 1</small>';let learners=getLearners();let issues=getIssues();document.getElementById('sTotal').textContent=learners.length;let withOut=new Set(issues.filter(x=>x.status==='OUT').map(x=>x.learnerBarcode));document.getElementById('sOut').textContent=withOut.size;document.getElementById('sNoBook').textContent=learners.length-withOut.size;document.getElementById('sG12').textContent=learners.filter(x=>normaliseGrade(x.grade)==='Grade 12').length;let q=(document.getElementById('learnerSearch').value||'').toLowerCase();let gf=document.getElementById('gradeFilter').value;let cf=(document.getElementById('classFilter').value||'').toLowerCase();let bf=document.getElementById('bookFilter').value;let fl=learners.filter(x=>(!q||(x.name||'').toLowerCase().includes(q)||(x.barcode||'').toLowerCase().includes(q))&&(!gf||normaliseGrade(x.grade)===normaliseGrade(gf))&&(!cf||(x.className||x.class||'').toLowerCase().includes(cf))&&(!bf||(bf==='OUT'?withOut.has(x.barcode):!withOut.has(x.barcode))));document.getElementById('learnerRows').innerHTML=fl.slice(0,100).map(x=>{let out=issues.filter(i=>i.learnerBarcode===x.barcode&&i.status==='OUT');let subjects=[...new Set(issues.filter(i=>i.learnerBarcode===x.barcode).map(i=>i.subjectCode||''))].filter(Boolean);return '<tr><td><b>'+(x.barcode||'')+'</b></td><td><b>'+(x.name||'')+'</b></td><td><select onchange="changeGrade(\''+x.barcode+'\',this.value)" style="padding:6px"><option value="">'+normaliseGrade(x.grade)+'</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></td><td>'+(x.className||x.class||'')+'</td><td>'+out.length+' out<br><small>'+out.map(o=>o.bookBarcode+' ('+(o.subjectCode||'')+')').join('<br>')+'</small></td><td>'+(subjects.length?subjects.map(s=>'<span class="pill" style="background:#dbeafe">'+s+'</span>').join(' '):'<span class="small">None yet</span>')+'</td><td>'+(out.length?'<span class="pill" style="background:#fef3c7">Has Books</span>':'<span class="pill" style="background:#dcfce7">Can Issue</span>')+'</td><td><button class="btn blue" style="width:auto;padding:6px 10px" onclick="location.href=\'issue.html\'">📚 Issue</button> <button class="btn red" style="width:auto;padding:6px 10px" onclick="deleteLearner(\''+x.barcode+'\')">Delete</button></td></tr>';}).join('')||'<tr><td colspan="8">No learners yet</td></tr>';renderLoginSchoolList();}
-seedIfEmpty();setSchoolTitle();updateLoginUI();renderAll();updatePreview();
+function gradeNum(g){ if(normaliseGrade(g)==='Grade R') return 'R'; let m=String(g||'').match(/(\d+)/); return m?m[1]:''; }
+function isOverdue(d){ if(!d) return false; let t=new Date(); t.setHours(0,0,0,0); let x=new Date(d); x.setHours(0,0,0,0); return t>x; }
+function getSelectedSchool(){return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL')||'';}
+function getSelectedEmis(){return localStorage.getItem('MAKHANANI_SELECTED_EMIS')||'';}
+function getDB(){return window.MAKHANANI.db;}
+function togglePass(){let p=document.getElementById('loginPass');p.type=p.type==='password'?'text':'password';}
+window.togglePass=togglePass;
+
+let learners=[], issues=[], logs=[];
+let unsubLearners=null, unsubIssues=null, unsubLogs=null;
+let page=1; const PAGE_SIZE=20; let searchTimer=null;
+
+// --- DBE ---
+let _dbeCache=[], _dbeLoaded=false, _dbePage=1; const DBE_PAGE_SIZE=20;
+async function loadDBE(){
+  if(_dbeLoaded) return _dbeCache;
+  try{ let snap=await getDocs(collection(getDB(),'dbe_schools')); _dbeCache=snap.docs.map(d=>{let x=d.data();return {emis:String(x.emis||d.id).trim(),name:String(x.name||'').trim().toUpperCase(),town:String(x.town||'').trim(),province:String(x.province||'').trim()};}); }
+  catch(e){ try{ _dbeCache=JSON.parse(localStorage.getItem('MAKHANANI_DBE_SCHOOLS')||'[]').map(x=>({emis:String(x.emis||'').trim(),name:String(x.name||'').trim().toUpperCase(),town:String(x.town||'').trim(),province:String(x.province||'').trim()})); }catch(_){ _dbeCache=[]; } }
+  _dbeLoaded=true; return _dbeCache;
+}
+function onDBESearch(){ clearTimeout(searchTimer); searchTimer=setTimeout(()=>{ _dbePage=1; renderLoginSchoolList(); },250); }
+window.onDBESearch=onDBESearch;
+async function renderLoginSchoolList(){
+  let dbe=await loadDBE(); let q=(document.getElementById('loginSchoolSearch').value||'').trim().toLowerCase(); let selEmis=getSelectedEmis();
+  let sel=document.getElementById('loginSchoolSelect');
+  if(sel && !sel.dataset.built){ let opts='<option value="">-- Select School by EMIS --</option>'; let selected=dbe.find(x=>String(x.emis)===String(selEmis)); if(selected) opts+='<option value="'+selected.emis+'" selected>'+selected.emis+' — '+selected.name+' — '+selected.town+'</option>'; opts+=dbe.slice(0,200).map(x=>'<option value="'+x.emis+'">'+x.emis+' — '+x.name+' — '+x.town+'</option>').join(''); sel.innerHTML=opts; sel.dataset.built='1'; if(selected) sel.value=selected.emis; }
+  else if(sel && selEmis && sel.value!==selEmis){ sel.value=selEmis; }
+  let filtered=q ? dbe.filter(x=> x.emis.includes(q)||x.name.toLowerCase().includes(q)||x.town.toLowerCase().includes(q)||x.province.toLowerCase().includes(q)) : dbe;
+  let total=filtered.length, totalPages=Math.max(1,Math.ceil(total/DBE_PAGE_SIZE)); if(_dbePage>totalPages) _dbePage=totalPages;
+  let start=(_dbePage-1)*DBE_PAGE_SIZE, p=filtered.slice(start,start+DBE_PAGE_SIZE);
+  let listEl=document.getElementById('loginSchoolList'); if(!listEl){ updateLoginStepUI(); return; }
+  let html='<p class="small">Showing '+(total?start+1:0)+'-'+Math.min(start+DBE_PAGE_SIZE,total)+' of '+total+' schools '+(q?'(filtered)':'')+'</p>';
+  if(p.length){ html+='<table><thead><tr><th>EMIS</th><th>NAME</th><th>TOWN</th><th>Province</th><th></th></tr></thead><tbody>'+p.map(x=>'<tr><td><b>'+x.emis+'</b></td><td><b>'+x.name+'</b></td><td>'+x.town+'</td><td>'+x.province+'</td><td><button class="btn '+(String(x.emis)===String(selEmis)?'green':'blue')+'" style="width:auto;padding:6px 10px" onclick="pickLoginSchoolByEmis(\''+x.emis+'\')">'+(String(x.emis)===String(selEmis)?'✅ Selected':'Select')+'</button></td></tr>').join('')+'</tbody></table>'; html+='<div style="display:flex;gap:8px;margin-top:8px"><button class="btn dark" style="width:auto" onclick="dbePrev()" '+(_dbePage<=1?'disabled':'')+'>⬅️ Prev</button><span class="small" style="align-self:center">Page '+_dbePage+' / '+totalPages+'</span><button class="btn dark" style="width:auto" onclick="dbeNext('+totalPages+')" '+(_dbePage>=totalPages?'disabled':'')+'>Next ➡️</button></div>'; } else html+='<p class="small">No schools found.</p>';
+  listEl.innerHTML=html; updateLoginStepUI();
+}
+window.renderLoginSchoolList=renderLoginSchoolList;
+window.dbePrev=()=>{ if(_dbePage>1){ _dbePage--; renderLoginSchoolList(); } };
+window.dbeNext=(tp)=>{ if(_dbePage<tp){ _dbePage++; renderLoginSchoolList(); } };
+async function pickLoginSchoolByEmis(emis){
+  let dbe=await loadDBE(); let s=dbe.find(x=>String(x.emis)===String(emis)); if(!s) return alert('School not found for EMIS '+emis);
+  localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',s.name); localStorage.setItem('MAKHANANI_SCHOOL_NAME',s.name); localStorage.setItem('MAKHANANI_SELECTED_EMIS',s.emis); localStorage.setItem('MAKHANANI_SCHOOL_EMIS',s.emis);
+  document.getElementById('loginSchoolSelect').value=s.emis;
+  document.getElementById('loginSchoolBox').innerHTML='<div style="background:#f0fdf4;border:2px solid #059669;border-radius:12px;padding:12px"><b>✅ Selected: '+s.name+'</b><br><small>EMIS: <b>'+s.emis+'</b> • TOWN: <b>'+s.town+'</b> • Province: <b>'+s.province+'</b></small></div>';
+  setSchoolTitle(); updateLoginStepUI(); renderLoginSchoolList(); document.getElementById('loginEmail').focus(); startListeners();
+}
+window.pickLoginSchoolByEmis=pickLoginSchoolByEmis;
+function onLoginSchoolSelect(){ let v=document.getElementById('loginSchoolSelect').value; if(v) pickLoginSchoolByEmis(v); }
+window.onLoginSchoolSelect=onLoginSchoolSelect;
+function updateLoginStepUI(){ let sel=getSelectedSchool(), emis=getSelectedEmis(); document.getElementById('step2Box').style.opacity=sel?'1':'.5'; document.getElementById('loginBtn').disabled=!sel; document.getElementById('loginHint').textContent=sel?('✅ School: '+sel+' (EMIS '+emis+')'):'⚠️ Select school first.'; if(sel && !document.getElementById('loginSchoolBox').innerHTML){ document.getElementById('loginSchoolBox').innerHTML='<div style="background:#f0fdf4;border:2px solid #059669;border-radius:12px;padding:12px"><b>✅ Selected: '+sel+'</b><br><small>EMIS: <b>'+emis+'</b></small></div>'; } }
+function setSchoolTitle(){ let n=getSelectedSchool(), e=getSelectedEmis(); document.getElementById('schoolTitle').textContent=n?(n+' (EMIS '+e+')'):'— Select School to Log In —'; document.getElementById('cloudIdLabel').textContent=e?'schools/EMIS_'+e:'schools/...'; }
+function updateLoginUI(){ let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); document.getElementById('loginCard').style.display=l?'none':'block'; document.getElementById('loggedCard').style.display=l?'block':'none'; if(l){ document.getElementById('whoName').textContent=l.name+' — '+l.role; document.getElementById('whoDetail').textContent=l.email+' • '+(l.subject||l.department||''); document.getElementById('whoSchool').textContent='🏫 '+(l.school||getSelectedSchool()||'-')+' • EMIS '+(l.schoolEmis||getSelectedEmis()||'-'); } }
+async function doLogin(){
+  let sel=getSelectedSchool(), emis=getSelectedEmis(); if(!sel) return alert('⚠️ Step 1: Select school first (by EMIS).');
+  let e=document.getElementById('loginEmail').value.trim().toLowerCase(); let p=document.getElementById('loginPass').value; if(!e||!p) return document.getElementById('loginMsg').textContent='❌ Enter email + password.';
+  try{ let user=await window.firebaseLogin(e,p); let staffSnap=await getDoc(doc(getDB(),'schools','EMIS_'+emis,'staff',user.uid)); if(!staffSnap.exists()){ await window.firebaseLogout(); return document.getElementById('loginMsg').textContent='❌ This account is NOT for '+sel+' (EMIS '+emis+').'; } let staff=staffSnap.data(); localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify({uid:user.uid, ...staff, school:sel, schoolEmis:emis})); localStorage.setItem('MAKHANANI_SCHOOL_NAME', sel); updateLoginUI(); setSchoolTitle(); startListeners(); await window.logAction('LOGIN','Logged in as '+staff.role); alert('✅ Welcome '+staff.name+'\n🏫 '+sel+' (EMIS '+emis+')'); }catch(err){ document.getElementById('loginMsg').textContent='❌ '+String(err.message||err).replace('Firebase: ',''); }
+}
+window.doLogin=doLogin;
+async function forgotPass(){ let e=document.getElementById('loginEmail').value.trim(); if(!e) return alert('Type your email first'); try{ await window.firebaseResetPassword(e); alert('✅ Reset email sent to '+e); }catch(err){ alert('❌ '+err.message); } }
+window.forgotPass=forgotPass;
+function switchSchool(){ if(!confirm('Switch school? You will log in again.')) return; localStorage.removeItem('MAKHANANI_LOGGED_IN'); localStorage.removeItem('MAKHANANI_SELECTED_SCHOOL'); localStorage.removeItem('MAKHANANI_SCHOOL_NAME'); localStorage.removeItem('MAKHANANI_SELECTED_EMIS'); document.getElementById('loginSchoolBox').innerHTML=''; stopListeners(); updateLoginUI(); setSchoolTitle(); renderLoginSchoolList(); }
+window.switchSchool=switchSchool;
+async function logout(){ try{ await window.firebaseLogout(); }catch(e){} localStorage.removeItem('MAKHANANI_LOGGED_IN'); updateLoginUI(); }
+window.logout=logout;
+
+async function checkSubBanner(){
+  let el=document.getElementById('subBanner'); let school=getSelectedSchool(), emis=getSelectedEmis(); if(!school){ el.innerHTML='🏫 Select your school above to log in'; el.className='subBanner PENDING'; el.style.display='block'; return; }
+  try{ let snap=await getDoc(doc(getDB(),'schools','EMIS_'+emis)); let sub=snap.exists()?snap.data().subscription:null; if(!sub){ el.innerHTML='🔴 NO SUBSCRIPTION — '+school+' • <a href="principal.html" style="color:#7f1d1d">Request →</a>'; el.className='subBanner NONE'; el.style.display='block'; return; } let d=(()=>{ if(!sub.end) return 0; let t=new Date(); t.setHours(0,0,0,0); let e2=new Date(sub.end); e2.setHours(0,0,0,0); return Math.ceil((e2-t)/86400000); })(); let total=(+sub.setup||0)+(+sub.amount||0); el.innerHTML=(sub.status==='EXPIRED'||d<0)?'🔴 EXPIRED! '+school+' — '+sub.plan+' • R'+total:(sub.status==='TRIAL'?'🟡 TRIAL: '+school+' — '+sub.plan+' ('+d+' days) • R'+total:(sub.status==='PENDING'?'🔵 PENDING: '+school+' — '+sub.plan+' • R'+total:'✅ '+school+' — '+sub.plan+' • '+sub.status+' • '+d+' days left • R'+total)); el.className='subBanner '+(sub.status==='EXPIRED'||d<0?'EXPIRED':sub.status); el.style.display='block'; }catch(e){ el.style.display='none'; }
+}
+
+// --- Live Listeners ---
+function stopListeners(){ [unsubLearners,unsubIssues,unsubLogs].forEach(u=>{ try{ u&&u(); }catch(e){} }); unsubLearners=unsubIssues=unsubLogs=null; }
+function startListeners(){
+  let emis=getSelectedEmis(); if(!emis) return; stopListeners(); let db=getDB();
+  unsubLearners=onSnapshot(query(collection(db,'schools','EMIS_'+emis,'learners'), orderBy('barcode')), snap=>{ learners=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, ()=>{});
+  unsubIssues=onSnapshot(query(collection(db,'schools','EMIS_'+emis,'issues'), orderBy('createdAt','desc'), limit(300)), snap=>{ issues=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, ()=>{});
+  unsubLogs=onSnapshot(query(collection(db,'schools','EMIS_'+emis,'logs'), orderBy('createdAt','desc'), limit(30)), snap=>{ logs=snap.docs.map(d=>({id:d.id,...d.data()})); renderLogs(); }, ()=>{});
+}
+
+// --- Add Learner ---
+function nextFreeNumber(grade){
+  let prefix='LRN-'+gradeNum(grade)+'-';
+  let nums=learners.filter(l=>String(l.barcode).startsWith(prefix)).map(l=>parseInt(String(l.barcode).split('-').pop())||0);
+  return nums.length?Math.max(...nums)+1:1;
+}
+function makeBarcode(grade, num){ return 'LRN-'+gradeNum(grade)+'-'+String(num).padStart(4,'0'); }
+function updateBarcodePreview(){
+  let grade=document.getElementById('gradeSelect').value;
+  let start=document.getElementById('startNumInput').value.trim();
+  let num=start?parseInt(start):nextFreeNumber(grade);
+  document.getElementById('barcodePreview').textContent=makeBarcode(grade, num);
+  document.getElementById('barcodeHint').textContent='Next free: '+makeBarcode(grade, nextFreeNumber(grade))+' • Class: '+(document.getElementById('classInput').value||'');
+}
+window.updateBarcodePreview=updateBarcodePreview;
+document.getElementById('gradeSelect').addEventListener('change', updateBarcodePreview);
+document.getElementById('classInput').addEventListener('input', updateBarcodePreview);
+document.getElementById('startNumInput').addEventListener('input', updateBarcodePreview);
+function previewBulk(){
+  let grade=document.getElementById('gradeSelect').value; let cls=document.getElementById('classInput').value.trim()||'';
+  let start=document.getElementById('startNumInput').value.trim()?parseInt(document.getElementById('startNumInput').value):nextFreeNumber(grade);
+  document.getElementById('bulkPreview').innerHTML='<div style="background:#eff6ff;border:1px solid #2563eb;border-radius:10px;padding:10px"><b>Will create 1 learner:</b><br><small>'+makeBarcode(grade,start)+' — '+(document.getElementById('nameInput').value||'(Enter Name)')+' • '+grade+' • Class '+cls+'</small></div>';
+}
+window.previewBulk=previewBulk;
+function clearForm(){ document.getElementById('nameInput').value=''; document.getElementById('phoneInput').value=''; document.getElementById('startNumInput').value=''; document.getElementById('bulkPreview').innerHTML=''; document.getElementById('addMsg').textContent=''; updateBarcodePreview(); }
+window.clearForm=clearForm;
+
+async function addLearner(){
+  let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); if(!login) return alert('Login first');
+  let emis=getSelectedEmis(); if(!emis) return alert('Select school first');
+  let name=document.getElementById('nameInput').value.trim(); if(!name) return alert('Enter Learner Name');
+  let grade=document.getElementById('gradeSelect').value; let cls=document.getElementById('classInput').value.trim().toUpperCase(); if(!cls) return alert('Enter Class (e.g. 10A)');
+  let gender=document.getElementById('genderInput').value; let phone=document.getElementById('phoneInput').value.trim();
+  let start=document.getElementById('startNumInput').value.trim()?parseInt(document.getElementById('startNumInput').value):nextFreeNumber(grade);
+  let bc=makeBarcode(grade, start);
+  if(learners.find(l=>l.barcode===bc)) return alert('❌ Duplicate Barcode: '+bc+' already exists. Change Start Number to '+nextFreeNumber(grade));
+  if(!confirm('Add Learner?\n'+bc+' — '+name+' • '+grade+' • Class '+cls)) return;
+  try{
+    await window.cloudAddLearner(emis, { barcode:bc, name, grade:normaliseGrade(grade), className:cls, class:cls, gender, phone, status:'ACTIVE', addedBy:login.uid||'', addedByName:login.name||'' });
+    document.getElementById('addMsg').textContent='✅ Added '+bc+' — '+name+' ('+grade+' • '+cls+')';
+    showStickers([{barcode:bc, name, grade:normaliseGrade(grade), className:cls}]);
+    clearForm();
+  }catch(e){ document.getElementById('addMsg').textContent='❌ Failed: '+e.message; }
+}
+window.addLearner=addLearner;
+
+async function bulkAddClass(){
+  let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); if(!login) return alert('Login first');
+  let emis=getSelectedEmis(); if(!emis) return alert('Select school first');
+  let grade=document.getElementById('bulkGrade').value; let cls=document.getElementById('bulkClass').value.trim().toUpperCase(); if(!cls) return alert('Enter Class for Bulk');
+  let raw=document.getElementById('bulkNames').value.trim(); if(!raw) return alert('Paste names — one per line');
+  let names=raw.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!names.length) return alert('No names found');
+  // De-duplicate: skip names already in this grade+class
+  let existing=learners.filter(l=>normaliseGrade(l.grade)===normaliseGrade(grade) && String(l.className||l.class||'').toUpperCase()===cls).map(l=>l.name.toLowerCase());
+  let toAdd=names.filter(n=>!existing.includes(n.toLowerCase()));
+  let skipped=names.length-toAdd.length;
+  if(!toAdd.length) return alert('All '+names.length+' already exist in '+grade+' • '+cls);
+  if(!confirm('Add '+toAdd.length+' learners to '+grade+' • Class '+cls+'?'+(skipped?' ('+skipped+' skipped — already exist)':''))) return;
+  document.getElementById('bulkMsg').textContent='⏳ Adding '+toAdd.length+' learners...';
+  try{
+    let start=nextFreeNumber(grade);
+    let created=[];
+    for(let i=0;i<toAdd.length;i++){
+      let bc=makeBarcode(grade, start+i);
+      // If barcode already exists (from another class same grade), skip to next free
+      while(learners.find(l=>l.barcode===bc) || created.find(c=>c.barcode===bc)){ start++; bc=makeBarcode(grade, start+i); }
+      await window.cloudAddLearner(emis, { barcode:bc, name:toAdd[i], grade:normaliseGrade(grade), className:cls, class:cls, status:'ACTIVE', addedBy:login.uid||'', addedByName:login.name||'' });
+      created.push({barcode:bc, name:toAdd[i], grade:normaliseGrade(grade), className:cls});
+    }
+    document.getElementById('bulkMsg').textContent='✅ Added '+created.length+' learners to '+grade+' • '+cls+' ('+created[0].barcode+' → '+created[created.length-1].barcode+')'+(skipped?' • '+skipped+' skipped':'');
+    showStickers(created.slice(0,40));
+    document.getElementById('bulkNames').value='';
+  }catch(e){ document.getElementById('bulkMsg').textContent='❌ Bulk failed: '+e.message; }
+}
+window.bulkAddClass=bulkAddClass;
+
+async function deleteLearner(barcode){
+  let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); if(!login) return alert('Login first');
+  if(!['PRINCIPAL','ADMIN'].includes(String(login.role||'').toUpperCase())) return alert('❌ Only Principal / Admin can delete learners');
+  let l=learners.find(x=>x.barcode===barcode); if(!l) return;
+  let outs=issues.filter(x=>x.learnerBarcode===barcode && x.status==='OUT');
+  if(outs.length) return alert('❌ Cannot delete — '+l.name+' has '+outs.length+' book(s) OUT:\n'+outs.map(o=>o.bookBarcode+' ('+(SUBJECT_NAMES[o.subjectCode]||o.subjectCode)+')').join('\n')+'\nReturn them first.');
+  if(!confirm('Delete '+barcode+' — '+l.name+'?\nThis is logged and cannot be undone.')) return;
+  try{ await deleteDoc(doc(getDB(),'schools','EMIS_'+getSelectedEmis(),'learners', String(barcode))); await window.logAction('LEARNER_DELETE', barcode+' — '+l.name); alert('✅ Deleted '+barcode); }catch(e){ alert('❌ Delete failed: '+e.message); }
+}
+window.deleteLearner=deleteLearner;
+async function editLearner(barcode){
+  let l=learners.find(x=>x.barcode===barcode); if(!l) return;
+  let nn=prompt('Edit Name for '+barcode, l.name); if(nn===null) return;
+  let nc=prompt('Edit Class for '+barcode+' (e.g. 10A, 10B)', l.className||l.class||''); if(nc===null) return;
+  nn=nn.trim(); nc=nc.trim().toUpperCase(); if(!nn||!nc) return alert('Name + Class required');
+  try{ await updateDoc(doc(getDB(),'schools','EMIS_'+getSelectedEmis(),'learners', String(barcode)), { name:nn, className:nc, class:nc }); await window.logAction('LEARNER_EDIT', barcode+' — '+l.name+' → '+nn+' • Class '+nc); }catch(e){ alert('❌ Edit failed: '+e.message); }
+}
+window.editLearner=editLearner;
+
+// --- Search / Pagination ---
+function onSearch(){ clearTimeout(searchTimer); searchTimer=setTimeout(()=>{ page=1; renderAll(); },200); }
+window.onSearch=onSearch;
+function learnerOuts(barcode){ return issues.filter(x=>x.learnerBarcode===barcode && x.status==='OUT'); }
+function filteredLearners(){
+  let q=(document.getElementById('searchInput').value||'').toLowerCase(); let gf=document.getElementById('gradeFilter').value; let cf=(document.getElementById('classFilter').value||'').toUpperCase(); let stf=document.getElementById('statusFilter').value; let sort=document.getElementById('sortFilter').value;
+  let list=learners.filter(l=>{
+    if(q && !((l.barcode||'').toLowerCase().includes(q) || (l.name||'').toLowerCase().includes(q))) return false;
+    if(gf && normaliseGrade(l.grade)!==gf) return false;
+    if(cf && !String(l.className||l.class||'').toUpperCase().includes(cf)) return false;
+    if(stf==='WITH' && !learnerOuts(l.barcode).length) return false;
+    if(stf==='NONE' && learnerOuts(l.barcode).length) return false;
+    return true;
+  });
+  if(sort==='name') list.sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  else if(sort==='grade') list.sort((a,b)=> normaliseGrade(a.grade).localeCompare(normaliseGrade(b.grade)) || String(a.className||a.class||'').localeCompare(String(b.className||b.class||'')) || String(a.name).localeCompare(String(b.name)));
+  else list.sort((a,b)=>String(a.barcode).localeCompare(String(b.barcode)));
+  return list;
+}
+function prevPage(){ if(page>1){ page--; renderAll(); } }
+window.prevPage=prevPage;
+function nextPage(){ let total=Math.max(1,Math.ceil(filteredLearners().length/PAGE_SIZE)); if(page<total){ page++; renderAll(); } }
+window.nextPage=nextPage;
+function exportCSV(){
+  let f=filteredLearners(); if(!f.length) return alert('No learners to export');
+  let csv='Barcode,Name,Grade,Class,Gender,Phone,Books OUT,Books List\n'+f.map(l=>{ let outs=learnerOuts(l.barcode); return [l.barcode,'"'+(l.name||'').replace(/"/g,'""')+'"',normaliseGrade(l.grade),l.className||l.class||'',l.gender||'',l.phone||'',outs.length,'"'+outs.map(o=>o.bookBarcode+' ('+(SUBJECT_NAMES[o.subjectCode]||o.subjectCode)+')').join('; ')+'"'].join(','); }).join('\n');
+  let a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='Makhanani-Learners-EMIS_'+getSelectedEmis()+'-'+new Date().toISOString().split('T')[0]+'.csv'; a.click();
+}
+window.exportCSV=exportCSV;
+
+// --- Stickers ---
+function showStickers(list){ document.getElementById('stickerCard').style.display='block'; document.getElementById('stickerArea').innerHTML=list.map(l=>'<div class="sticker"><b>'+getSelectedSchool()+'</b><br><small>EMIS '+getSelectedEmis()+'</small><div class="barcode" style="font-size:16px;margin:6px 0">'+l.barcode+'</div><b>'+l.name+'</b><br><small>'+normaliseGrade(l.grade)+' • Class '+(l.className||l.class||'')+'</small></div>').join(''); }
+function printStickers(){ let f=filteredLearners().slice(0,40); if(!f.length) return alert('No learners to print stickers for'); showStickers(f); window.print(); }
+window.printStickers=printStickers;
+
+// --- Grade -> Class ---
+function renderGradeTables(){
+  let grades=['Grade R','Grade 1','Grade 2','Grade 3','Grade 4','Grade 5','Grade 6','Grade 7','Grade 8','Grade 9','Grade 10','Grade 11','Grade 12'];
+  document.getElementById('gradeTables').innerHTML=grades.map(g=>{
+    let list=learners.filter(l=>normaliseGrade(l.grade)===g); if(!list.length) return '';
+    let classes={}; list.forEach(l=>{ let c=String(l.className||l.class||'—').toUpperCase(); if(!classes[c]) classes[c]=[]; classes[c].push(l); });
+    return '<div class="gradeHead">🏫 '+g+' — '+list.length+' learners • '+Object.keys(classes).length+' classes</div>'+Object.keys(classes).sort().map(c=>{
+      let cl=classes[c].slice().sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+      return '<div class="classHead">📚 Class '+c+' — '+cl.length+' learners</div><div style="overflow:auto"><table><thead><tr><th>Barcode</th><th>Name</th><th>Books OUT</th><th>Status</th></tr></thead><tbody>'+cl.map(l=>{ let outs=learnerOuts(l.barcode); return '<tr><td><span class="barcode">'+l.barcode+'</span></td><td><b>'+l.name+'</b></td><td>'+(outs.length?outs.map(o=>'<span class="pill" style="background:#fee2e2">'+o.bookBarcode+' ('+(SUBJECT_NAMES[o.subjectCode]||o.subjectCode)+')</span>').join(' '):'<span class="small">—</span>')+'</td><td>'+(outs.length?'📚 '+outs.length+' OUT':'✅ No Books OUT')+'</td></tr>'; }).join('')+'</tbody></table></div>';
+    }).join('');
+  }).join('')||'<p class="small">No learners yet</p>';
+  let el=document.getElementById('printMeta'); if(el) el.textContent='School: '+getSelectedSchool()+' • EMIS: '+getSelectedEmis()+' • Date: '+new Date().toLocaleDateString()+' • Total Learners: '+learners.length;
+}
+function renderLogs(){ document.getElementById('logRows').innerHTML=logs.map(l=>{ let when=l.createdAt?.toDate?l.createdAt.toDate().toLocaleString():(l.createdAt||''); return '<tr><td><small>'+when+'</small></td><td><b>'+(l.whoName||'')+'</b></td><td>'+(l.action||'')+'</td><td>'+(l.detail||'')+'</td></tr>'; }).join('')||'<tr><td colspan="4">No logs yet</td></tr>'; }
+function renderAll(){
+  let outs=issues.filter(x=>x.status==='OUT');
+  let withBooks=new Set(outs.map(x=>x.learnerBarcode));
+  document.getElementById('sTotal').textContent=learners.length;
+  document.getElementById('sWithBooks').textContent=withBooks.size;
+  document.getElementById('sNoBooks').textContent=learners.length-withBooks.size;
+  document.getElementById('sOverdue').textContent=outs.filter(x=>isOverdue(x.dueDate)).length;
+  let f=filteredLearners(); let totalPages=Math.max(1,Math.ceil(f.length/PAGE_SIZE)); if(page>totalPages) page=totalPages;
+  let start=(page-1)*PAGE_SIZE, p=f.slice(start,start+PAGE_SIZE);
+  document.getElementById('listMeta').textContent='Showing '+(f.length?start+1:0)+'-'+Math.min(start+PAGE_SIZE,f.length)+' of '+f.length+' learners';
+  document.getElementById('pageLabel').textContent='Page '+page+' / '+totalPages;
+  document.getElementById('learnerRows').innerHTML=p.map(l=>{ let outsL=learnerOuts(l.barcode); return '<tr><td><span class="barcode">'+l.barcode+'</span></td><td><b>'+l.name+'</b><br><small>'+(l.phone||'')+'</small></td><td>'+normaliseGrade(l.grade)+' • <b>'+(l.className||l.class||'')+'</b></td><td>'+(outsL.length?outsL.map(o=>'<span class="pill" style="background:#fee2e2">'+o.bookBarcode+' ('+(SUBJECT_NAMES[o.subjectCode]||o.subjectCode)+')</span>').join(' '):'<span class="small">—</span>')+'</td><td>'+(outsL.length?'📚 '+outsL.length+' OUT':'✅ No Books')+'</td><td class="no-print"><button class="btn blue" style="width:auto;padding:6px 10px" onclick="editLearner(\''+l.barcode+'\')">✏️ Edit</button> <button class="btn red" style="width:auto;padding:6px 10px" onclick="deleteLearner(\''+l.barcode+'\')">🗑️</button></td></tr>'; }).join('')||'<tr><td colspan="6">No learners yet — Add above</td></tr>';
+  renderGradeTables(); renderLogs(); updateBarcodePreview();
+}
+window.renderAll=renderAll;
+
+// Init
+setSchoolTitle(); updateLoginUI(); renderLoginSchoolList(); checkSubBanner(); updateBarcodePreview();
+if(getSelectedEmis()) startListeners(); else renderAll();
 </script></body></html>
