@@ -1,14 +1,13 @@
 // Makhanani LTSM — cloud.js v1.87 — Shared Firebase Helper for ALL pages
 // Pages: index.html, learner-barcode.html, textbook-barcode.html, issue.html, librarian.html, admin.html, principal.html
-// Requires: Firebase v10.12.2 via CDN (imported here)
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// ===== 1. YOUR FIREBASE CONFIG — REPLACE WITH YOUR REAL ONE =====
+// ===== 1. YOUR FIREBASE CONFIG — REAL ONE =====
 const firebaseConfig = {
-  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  apiKey: "AIzaSyDPCf5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
   databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
   projectId: "makhanani-ltsm",
@@ -70,14 +69,14 @@ window.firebaseLogin = firebaseLogin;
 window.firebaseLogout = firebaseLogout;
 window.firebaseResetPassword = firebaseResetPassword;
 
-// Keep auth in sync — if Firebase signs out, clear local login
+// Keep auth in sync
 onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    // Don't auto-clear on page load if we have a stored login — pages check Firestore staff doc
-    // Only update status
-    updateCloudStatus('☁️ Cloud: Connected to Firebase — ' + (getSelectedSchool() || 'Select School'));
-  } else {
+  if (user) {
     updateCloudStatus('☁️ Cloud: Connected as ' + user.email);
+  } else {
+    const school = getSelectedSchool();
+    if (school) updateCloudStatus('☁️ Cloud: Connected — ' + school + (getSelectedEmis() ? ' (EMIS ' + getSelectedEmis() + ')' : ''));
+    else updateCloudStatus('☁️ Cloud: Connected to Firebase — Select School');
   }
 });
 
@@ -158,11 +157,9 @@ async function cloudAddBook(emis, data) {
 window.cloudAddBook = cloudAddBook;
 
 // ===== Issue / Return =====
-// Issue doc ID = auto, book status -> OUT, learner 1 Subject check is done in issue.html/librarian.html BEFORE calling this
 async function cloudIssueBook(emis, data) {
   if (!emis) throw new Error('No EMIS selected');
   if (!data.learnerBarcode || !data.bookBarcode) throw new Error('Learner + Book barcode required');
-  // 1. Create issue record
   const issueRef = await addDoc(collection(db, 'schools', schoolDocPath(emis), 'issues'), {
     learnerBarcode: data.learnerBarcode,
     learnerName: data.learnerName || '',
@@ -179,7 +176,6 @@ async function cloudIssueBook(emis, data) {
     issuedByName: data.issuedByName || '',
     createdAt: serverTimestamp()
   });
-  // 2. Mark book OUT
   try {
     await updateDoc(doc(db, 'schools', schoolDocPath(emis), 'books', String(data.bookBarcode)), { status: 'OUT' });
   } catch (e) { console.warn('Could not mark book OUT', e); }
@@ -196,7 +192,6 @@ async function cloudReturnBook(emis, issueId, returnData) {
   if (!snap.exists()) throw new Error('Issue record not found');
   const issue = snap.data();
   const cond = (returnData.returnCondition || 'Good');
-  // 1. Update issue to RETURNED
   await updateDoc(issueRef, {
     status: 'RETURNED',
     returnDate: returnData.returnDate || new Date().toISOString().split('T')[0],
@@ -205,8 +200,6 @@ async function cloudReturnBook(emis, issueId, returnData) {
     returnedByName: returnData.returnedByName || '',
     updatedAt: serverTimestamp()
   });
-  // 2. Update book status based on condition
-  // Good/Fair -> AVAILABLE, Damaged -> DAMAGED, Lost -> LOST
   let bookStatus = 'AVAILABLE';
   let bookCondition = cond;
   if (cond === 'Damaged') bookStatus = 'DAMAGED';
