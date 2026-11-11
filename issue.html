@@ -1,53 +1,435 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Issue / Return — v1.78</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0a1f4d"><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#e5e7eb;padding:16px}.wrap{max-width:1100px;margin:auto}header{text-align:center;background:#0a1f4d;color:#fff;padding:16px;border-radius:14px}.logo{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;border:3px solid #d4af37}.card{background:#fff;border-radius:14px;padding:16px;margin:12px 0}label{font-size:12px;font-weight:800;color:#555}input,select,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;margin:4px 0 10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.btn{border:none;padding:11px;border-radius:10px;font-weight:900;cursor:pointer;width:100%}.btn:disabled{opacity:.5}.gold{background:#d4af37}.blue{background:#2563eb;color:#fff}.green{background:#059669;color:#fff}.dark{background:#0a1f4d;color:#fff}.red{background:#dc2626;color:#fff}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}.nav a{background:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;color:#0a1f4d;font-weight:900;font-size:13px}.small{font-size:12px;color:#666}.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.pass-wrap{position:relative}.pass-wrap button{position:absolute;right:8px;top:12px;border:none;background:none;cursor:pointer}.step{border:2px solid #0a1f4d;border-radius:12px;padding:12px;margin:10px 0}.subBanner{padding:12px;text-align:center;font-weight:900;border-radius:10px;margin:10px 0}.subBanner.ACTIVE{background:#dcfce7;color:#065f46;border:2px solid #059669}.subBanner.NONE,.subBanner.EXPIRED{background:#fee2e2;color:#7f1d1d;border:2px solid #dc2626}.subBanner.PENDING{background:#dbeafe;color:#1e40af;border:2px solid #2563eb}.subBanner.TRIAL{background:#fef3c7;color:#92400e;border:2px solid #f59e0b}.cond-Excellent{background:#dcfce7}.cond-Good{background:#dbeafe}.cond-Fair{background:#fef3c7}.cond-Poor{background:#ffedd5}.cond-Damaged,.cond-Lost{background:#fee2e2}.cond-NeedsRepair{background:#e0e7ff}@media(max-width:700px){.grid,.grid3{grid-template-columns:1fr 1fr}}</style></head><body><div class="wrap">
-<header><img src="logo.png" class="logo" onerror="this.style.display='none'"><h1 style="margin:4px 0 0">📚 Issue / Return</h1><p style="margin:4px 0 0" id="schoolTitle">— Select School to Log In —</p><p class="small" style="color:#fff;opacity:.85">Due: 30 Nov • Condition on Return • v1.78</p></header>
-<div id="subBanner" class="subBanner" style="display:none"></div>
-<div class="card" id="loginCard"><h2 style="margin:0">🔐 Log In — Select School First</h2><div class="step"><p style="font-weight:900;margin:0 0 8px">STEP 1 — 🔍 Select / Search School</p><div class="grid3"><div><label>DBE Dropdown</label><select id="loginSchoolSelect" onchange="onLoginSchoolSelect()"><option value="">-- Select School --</option></select></div><div><label>Search EMIS / NAME / TOWN / Province</label><input id="loginSchoolSearch" placeholder="Makhanani / 12345 / Giyani" oninput="renderLoginSchoolList()"></div><div><label>&nbsp;</label><button class="btn dark" onclick="renderLoginSchoolList()">🔍 Search</button></div></div><div id="loginSchoolBox" style="margin-top:8px"></div><div id="loginSchoolList" style="overflow:auto;max-height:220px;margin-top:8px"></div></div><div class="step" id="step2Box" style="opacity:.5"><p style="font-weight:900;margin:0 0 8px">STEP 2 — 👤 Email + Password</p><div class="grid3"><div><label>Email</label><input id="loginEmail" placeholder="Enter your email"></div><div><label>Password</label><div class="pass-wrap"><input id="loginPass" type="password" placeholder="Enter password"><button type="button" onclick="togglePass()">👁️</button></div></div><div><label>&nbsp;</label><button id="loginBtn" class="btn dark" onclick="doLogin()" disabled>Login</button></div></div><div id="loginMsg" class="small" style="color:#dc2626"></div><p class="small" id="loginHint">⚠️ Select school first.</p></div></div>
-<div class="card" id="loggedCard" style="display:none"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><b id="whoName">-</b><br><small id="whoDetail">-</small><br><small id="whoSchool">-</small></div><div style="display:flex;gap:8px"><button class="btn gold" onclick="switchSchool()" style="width:auto">🏫 Switch School</button><button class="btn red" onclick="logout()" style="width:auto">Logout</button></div></div></div>
-<div style="background:#059669;color:#fff;padding:10px;border-radius:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-weight:800;font-size:13px"><span id="cloudStatus">☁️ Cloud: Connecting...</span><button onclick="pushToCloud()" class="btn" style="background:#fff;color:#059669;width:auto">☁️ SYNC</button><button onclick="pullFromCloud()" class="btn" style="background:#0a1f4d;color:#fff;width:auto">⬇️ DOWNLOAD</button></div><p class="small" style="text-align:center">Cloud ID: <b id="cloudIdLabel">schools/...</b></p>
-<div class="nav"><a href="index.html">🏠 Home</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="learner-barcode.html">🎓 Learners</a><a href="admin.html">⚙️ Admin</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="librarian.html">📚 Librarian</a></div>
-<div class="card"><h2>🏫 My School</h2><div id="mySchoolBox"></div></div>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Issue / Return — v1.86 Firebase</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0a1f4d"><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#e5e7eb;padding:16px}.wrap{max-width:1150px;margin:auto}header{text-align:center;background:#0a1f4d;color:#fff;padding:16px;border-radius:14px;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}.logo{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;border:3px solid #d4af37}.badge{background:#d4af37;color:#0a1f4d;font-size:11px;font-weight:900;padding:5px 10px;border-radius:20px}.card{background:#fff;border-radius:14px;padding:16px;margin:12px 0}label{font-size:12px;font-weight:800;color:#555}input,select,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;margin:4px 0 10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}.btn{border:none;padding:11px;border-radius:10px;font-weight:900;cursor:pointer;width:100%}.btn:disabled{opacity:.5}.gold{background:#d4af37}.blue{background:#2563eb;color:#fff}.green{background:#059669;color:#fff}.dark{background:#0a1f4d;color:#fff}.red{background:#dc2626;color:#fff}.orange{background:#ea580c;color:#fff}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}.nav a{background:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;color:#0a1f4d;font-weight:900;font-size:13px}.small{font-size:12px;color:#666}.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.pass-wrap{position:relative}.pass-wrap button{position:absolute;right:8px;top:12px;border:none;background:none;cursor:pointer}.step{border:2px solid #0a1f4d;border-radius:12px;padding:12px;margin:10px 0}.subBanner{padding:12px;text-align:center;font-weight:900;border-radius:10px;margin:10px 0}.subBanner.ACTIVE{background:#dcfce7;color:#065f46;border:2px solid #059669}.subBanner.NONE,.subBanner.EXPIRED{background:#fee2e2;color:#7f1d1d;border:2px solid #dc2626}.subBanner.PENDING{background:#dbeafe;color:#1e40af;border:2px solid #2563eb}.subBanner.TRIAL{background:#fef3c7;color:#92400e;border:2px solid #f59e0b}.cond-Excellent{background:#dcfce7}.cond-Good{background:#dbeafe}.cond-Fair{background:#fef3c7}.cond-Poor{background:#ffedd5}.cond-Damaged,.cond-Lost{background:#fee2e2}.cond-NeedsRepair{background:#e0e7ff}.bigScan{font-size:18px;font-weight:900;text-align:center}.scanOk{background:#dcfce7;border:2px solid #059669}.scanBad{background:#fee2e2;border:2px solid #dc2626}.print-header{display:none}.deptHead{padding:12px;border-radius:10px;margin:14px 0 6px;font-weight:900}.subjHead{padding:8px 10px;border-radius:8px;margin:10px 0 4px;background:#f8fafc;border-left:5px solid #0a1f4d;font-weight:800}@media(max-width:700px){.grid,.grid3,.grid4{grid-template-columns:1fr 1fr}}@media print{.no-print{display:none!important}body{background:#fff;padding:0}.card{border:1px solid #000;break-inside:avoid;box-shadow:none}.print-header{display:block!important;text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:10px}.deptHead{break-before:page}.deptHead:first-of-type{break-before:auto}table{font-size:11px}}</style></head><body><div class="wrap">
+<div class="print-header"><h1 style="margin:0">Makhanani LTSM — Issue / Return Report</h1><p id="printMeta" style="margin:4px 0 0"></p><p style="font-size:12px">NO FINES • Due 30 Nov • Condition OUT vs RETURN</p></div>
+<header class="no-print"><img src="logo.png" class="logo" onerror="this.style.display='none'"><div><h1 style="margin:0">📚 Issue / Return</h1><p style="margin:4px 0 0" id="schoolTitle">— Select School to Log In —</p><p style="font-size:12px;opacity:.8">Firebase Live • Grade Match • 1 Subject per Learner • Audit Log • v1.86</p></div><span class="badge">v1.86 FIREBASE</span></header>
+<div id="subBanner" class="subBanner no-print" style="display:none"></div>
 
-<div class="card"><h2>📚 Issue a Book</h2><div class="grid"><div><label>Learner Barcode / Search</label><input id="learnerInput" placeholder="Scan / type learner barcode or name" oninput="findLearner()"></div><div><label>Book Barcode / Search</label><input id="bookInput" placeholder="Scan / type book barcode or title" oninput="findBook()"></div></div><div id="learnerFound" class="small"></div><div id="bookFound" class="small"></div><div class="grid"><div><label>Condition OUT (when issuing)</label><select id="issueCondition"><option>Excellent</option><option selected>Good</option><option>Fair</option><option>Poor</option><option>Damaged</option><option>Needs Repair</option></select></div><div><label>Due Date</label><input id="dueDate" type="date"></div></div><button class="btn green" onclick="issueBook()">✅ ISSUE BOOK</button><div id="issueMsg" class="small"></div></div>
+<!-- LOGIN -->
+<div class="card no-print" id="loginCard"><h2 style="margin:0">🔐 Log In — Select School First (by EMIS)</h2><div class="step"><p style="font-weight:900;margin:0 0 8px">STEP 1 — 🔍 Select / Search School by EMIS</p><div class="grid3"><div><label>DBE Dropdown (Value = EMIS)</label><select id="loginSchoolSelect" onchange="onLoginSchoolSelect()"><option value="">-- Select School by EMIS --</option></select></div><div><label>Search EMIS / NAME / TOWN</label><input id="loginSchoolSearch" placeholder="123456789 / Makhanani / Giyani" oninput="onDBESearch()"></div><div><label>&nbsp;</label><button class="btn dark" onclick="renderLoginSchoolList()">🔍 Search</button></div></div><div id="loginSchoolBox" style="margin-top:8px"></div><div id="loginSchoolList" style="overflow:auto;max-height:220px;margin-top:8px"></div></div><div class="step" id="step2Box" style="opacity:.5"><p style="font-weight:900;margin:0 0 8px">STEP 2 — 👤 Email + Password (Firebase)</p><div class="grid3"><div><label>Email</label><input id="loginEmail" placeholder="Enter your email"></div><div><label>Password</label><div class="pass-wrap"><input id="loginPass" type="password" placeholder="Enter password"><button type="button" onclick="togglePass()">👁️</button></div></div><div><label>&nbsp;</label><button id="loginBtn" class="btn dark" onclick="doLogin()" disabled>Login</button><button class="btn" onclick="forgotPass()" style="background:#fff;color:#0a1f4d;margin-top:6px;border:1px solid #0a1f4d">Forgot Password?</button></div></div><div id="loginMsg" class="small" style="color:#dc2626"></div><p class="small" id="loginHint">⚠️ Select school first.</p></div></div>
+<div class="card no-print" id="loggedCard" style="display:none"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><b id="whoName">-</b><br><small id="whoDetail">-</small><br><small id="whoSchool">-</small></div><div style="display:flex;gap:8px"><button class="btn gold" onclick="switchSchool()" style="width:auto">🏫 Switch School</button><button class="btn red" onclick="logout()" style="width:auto">Logout</button></div></div></div>
 
-<div class="card" style="border:3px solid #2563eb"><h2>↩️ Return a Book — Pick Condition</h2><div class="grid"><div><label>Book Barcode</label><input id="returnInput" placeholder="Scan book barcode" oninput="findReturnBook()"></div><div><label>Condition ON RETURN *</label><select id="returnCondition"><option value="">-- Select Condition on Return --</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option><option>Damaged</option><option>Needs Repair</option><option>Lost</option></select></div></div><div id="returnFound" class="small"></div><div><label>Damage / Notes (optional) — e.g. Torn page 12, Water damage, Missing cover</label><textarea id="returnNotes" rows="2" placeholder="Torn page 12..."></textarea></div><div class="grid"><div><label>Charge / Fine (R) — if Damaged / Lost</label><input id="returnFine" type="number" value="0" min="0"></div><div><label>&nbsp;</label><button class="btn blue" onclick="returnBook()">↩️ RETURN BOOK WITH CONDITION</button></div></div><div id="returnMsg" class="small"></div><p class="small">✅ Condition saves on the Issue + updates the Textbook record. Damaged / Lost stays flagged.</p></div>
+<div style="background:#059669;color:#fff;padding:10px;border-radius:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-weight:800;font-size:13px" class="no-print"><span id="cloudStatus">☁️ Cloud: Connecting to Firebase...</span><button onclick="pushToCloud()" class="btn" style="background:#fff;color:#059669;width:auto">☁️ SYNC STATUS</button></div><p class="small no-print" style="text-align:center">Cloud: Firestore • <b id="cloudIdLabel">schools/...</b> • Live listeners ON</p>
+<div class="nav no-print"><a href="index.html">🏠 Home</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="learner-barcode.html">🎓 Learners</a><a href="admin.html">⚙️ Admin</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="librarian.html">📚 Librarian</a></div>
 
-<div class="card"><h2>📋 Current Issues — OUT + Returned with Condition</h2><div class="grid"><div><label>Search</label><input id="issueSearch" placeholder="Learner / Book" oninput="renderAll()"></div><div><label>Filter by Return Condition</label><select id="condFilter" onchange="renderAll()"><option value="">All Conditions</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option><option>Damaged</option><option>Needs Repair</option><option>Lost</option></select></div></div><div style="overflow:auto"><table><thead><tr><th>Learner</th><th>Book</th><th>Issued By</th><th>Cond OUT</th><th>Cond RETURN</th><th>Notes / Fine</th><th>Due</th><th>Status</th><th>Action</th></tr></thead><tbody id="issueRows"></tbody></table></div></div>
-<p class="small" style="text-align:center">Makhanani LTSM v1.78 • Condition on Return • Due 30 Nov</p></div>
-<script type="module" src="cloud.js"></script><script>
+<div class="grid4 no-print"><div class="card" style="text-align:center;margin:0"><b id="sBooks">0</b><br><span class="small">📖 Books (Firestore)</span></div><div class="card" style="text-align:center;margin:0"><b id="sLearners">0</b><br><span class="small">🎓 Learners</span></div><div class="card" style="text-align:center;margin:0"><b id="sOut">0</b><br><span class="small">📚 Out</span></div><div class="card" style="text-align:center;margin:0"><b id="sOverdue" style="color:#dc2626">0</b><br><span class="small">🔴 Overdue</span></div></div>
+
+<!-- SCAN -->
+<div class="card no-print"><h2>📷 Scan — Learner First, Then Book</h2>
+<div class="grid"><div><label>1️⃣ Learner Barcode — Scan / Type</label><input id="scanLearner" class="bigScan" placeholder="LRN-G10-0001" autocomplete="off" oninput="onScanLearner()"><div id="learnerPreview" style="margin-top:8px"></div></div><div><label>2️⃣ Book Barcode — Scan / Type</label><input id="scanBook" class="bigScan" placeholder="ACC-G10-0001" autocomplete="off" oninput="onScanBook()"><div id="bookPreview" style="margin-top:8px"></div></div></div>
+<div id="matchBox" style="margin-top:10px"></div>
+<div class="grid"><div><label>Condition OUT (When Issuing)</label><select id="condOut"><option>Excellent</option><option selected>Good</option><option>Fair</option><option>Poor</option><option>Damaged</option><option>Needs Repair</option></select></div><div><label>Condition RETURN (When Returning)</label><select id="condReturn"><option>Excellent</option><option selected>Good</option><option>Fair</option><option>Poor</option><option>Damaged</option><option>Needs Repair</option><option>Lost</option></select></div></div>
+<div><label>Return Notes (If Damaged / Lost — NO FINES, just record)</label><input id="returnNotes" placeholder="e.g. Cover torn, pages missing..."></div>
+<div><label>Issued / Retrieved By (Auto from Login)</label><input id="byName" readonly placeholder="Login first"></div>
+<div class="grid3" style="margin-top:10px"><button id="btnIssue" class="btn green" onclick="doIssue()" disabled>📚 ISSUE Book</button><button id="btnReturn" class="btn orange" onclick="doReturn()" disabled>↩️ RETURN Book</button><button class="btn dark" onclick="clearScan()">🧹 Clear Scan</button></div>
+<div id="scanMsg" style="margin-top:10px;font-weight:900"></div>
+</div>
+
+<!-- DEPARTMENT -> SUBJECT -->
+<div class="card" id="deptCard"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center"><h2 style="margin:0">🏢 Stock by Department → Subject (Live)</h2><div style="display:flex;gap:8px;flex-wrap:wrap" class="no-print"><select id="deptFilter" onchange="renderDepartments()" style="width:auto"><option value="">All Departments</option><option>Mathematics</option><option>Science</option><option>Life Skills</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option></select><select id="subjFilter" onchange="renderDepartments()" style="width:auto"><option value="">All Subjects</option><option value="ACC">Accounting (ACC)</option><option value="BUS">Business Studies (BUS)</option><option value="EMS">EMS (EMS)</option><option value="ECO">Economics (ECO)</option><option value="CST">Consumer Studies (CST)</option><option value="MAT">Mathematics (MAT)</option><option value="MLT">Maths Literacy (MLT)</option><option value="LSC">Life Sciences (LSC)</option><option value="PSC">Physical Sciences (PSC)</option><option value="NSC">Natural Sciences (NSC)</option><option value="LOR">Life Orientation (LOR)</option><option value="CRA">Creative Arts (CRA)</option><option value="VRT">Virtual Arts (VRT)</option><option value="DRM">Dramatic Arts (DRM)</option><option value="ENG">English HL (ENG)</option><option value="EFA">English FAL (EFA)</option><option value="AFR">Afrikaans FAL (AFR)</option><option value="ZUL">Isizulu HL (ZUL)</option><option value="SEP">Sepedi HL (SEP)</option><option value="XIT">Xitsonga HL (XIT)</option><option value="TSH">Tshivenda HL (TSH)</option><option value="HIS">History (HIS)</option><option value="GEO">Geography (GEO)</option><option value="SSC">Social Sciences (SSC)</option><option value="TOU">Tourism (TOU)</option><option value="CAT">CAT (CAT)</option><option value="TEC">Technology (TEC)</option></select><button class="btn dark" onclick="window.print()" style="width:auto">🖨️ Print</button></div></div><div id="deptGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin:12px 0"></div><div id="deptTables"></div></div>
+
+<!-- ISSUES -->
+<div class="card no-print"><h2>📚 Currently OUT — Click to Return</h2><div class="grid"><div><label>Search Learner / Book</label><input id="outSearch" placeholder="Thabo / ACC-G10" oninput="renderOut()"></div><div><label>Filter Grade</label><select id="outGradeFilter" onchange="renderOut()"><option value="">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div></div><div style="overflow:auto;margin-top:10px"><table><thead><tr><th>Learner (Grade)</th><th>Book No</th><th>Department → Subject</th><th>Cond OUT</th><th>Due</th><th>Status</th><th>Action</th></tr></thead><tbody id="outRows"></tbody></table></div></div>
+
+<div class="card no-print"><h2>↩️ Recently Returned — Condition OUT vs RETURN</h2><div style="overflow:auto"><table><thead><tr><th>Learner</th><th>Book</th><th>Department → Subject</th><th>Cond OUT</th><th>Cond RETURN</th><th>Notes</th><th>Returned By</th><th>Date</th></tr></thead><tbody id="returnedRows"></tbody></table></div></div>
+
+<div class="card no-print"><h2>📜 Audit Log (Last 30 — Cannot Edit)</h2><div style="overflow:auto"><table><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Detail</th></tr></thead><tbody id="logRows"></tbody></table></div><p class="small">Logs are stored in Firestore `logs` — Rules: Create only, Update/Delete = Denied.</p></div>
+
+<p class="small no-print" style="text-align:center">Makhanani LTSM v1.86 Firebase • Dept → Subject • NO FINES • Due 30 Nov • Audit Log</p></div>
+
+<script type="module" src="cloud.js"></script>
+<script type="module">
+import { doc, getDoc, getDocs, query, where, orderBy, limit, updateDoc, serverTimestamp, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const DEPARTMENTS={'Mathematics':['MAT','MLT'],'Science':['LSC','PSC','NSC'],'Life Skills':['LOR','CRA','VRT','DRM'],'Languages':['ENG','EFA','AFR','ZUL','SEP','XIT','TSH'],'Commerce':['ACC','BUS','EMS','ECO','CST'],'Humanities':['HIS','GEO','SSC','TOU'],'Technology':['CAT','TEC']};
+const SUBJECT_NAMES={ACC:'Accounting',AGR:'Agricultural Sciences',BUS:'Business Studies',ECO:'Economics',EMS:'Economic and Management Sciences',CST:'Consumer Studies',ENG:'English Home Language',EFA:'English First Additional Language',AFR:'Afrikaans First Additional Language',ZUL:'Isizulu Home Language',GEO:'Geography',HIS:'History',LSC:'Life Sciences',LOR:'Life Orientation',MLT:'Mathematical Literacy',MAT:'Mathematics',NSC:'Natural Sciences',PSC:'Physical Sciences',SEP:'Sepedi Home Language',SSC:'Social Sciences',XIT:'Xitsonga Home Language',TSH:'Tshivenda Home Language',TEC:'Technology',CRA:'Creative Arts',VRT:'Virtual Arts',DRM:'Dramatic Arts',CAT:'Computer Application Technology',TOU:'Tourism',OTH:'Other'};
+function deptOf(code){code=String(code||'').toUpperCase();for(let d in DEPARTMENTS){if(DEPARTMENTS[d].includes(code)) return d;}return 'Other';}
+function deptColor(d){return {'Mathematics':'#dbeafe','Science':'#dcfce7','Life Skills':'#fef3c7','Languages':'#e0e7ff','Commerce':'#ffedd5','Humanities':'#fce7f3','Technology':'#e0f2fe','Other':'#f3f4f6'}[d]||'#f3f4f6';}
+function normaliseGrade(g){if(!g) return '';let s=String(g).trim().toUpperCase();if(s==='GRADE R'||s==='R'||s==='GRR') return 'Grade R';let m=s.match(/(\d+)/);if(!m) return s;return 'Grade '+parseInt(m[1]);}
+function condPill(c){if(!c) return '<span class="small">—</span>';return '<span class="pill cond-'+String(c).replace(' ','')+'">'+c+'</span>';}
+function isOverdue(d){if(!d) return false;let t=new Date();t.setHours(0,0,0,0);let x=new Date(d);x.setHours(0,0,0,0);return t>x;}
+function getSelectedSchool(){return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL')||'';}
+function getSelectedEmis(){return localStorage.getItem('MAKHANANI_SELECTED_EMIS')||'';}
+function getDB(){return window.MAKHANANI.db;}
 function togglePass(){let p=document.getElementById('loginPass');p.type=p.type==='password'?'text':'password';}
-function getSchoolName(){return localStorage.getItem('MAKHANANI_SCHOOL_NAME')||'';}
-function getSelectedSchool(){return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL')||getSchoolName();}
-function getDBE(){return JSON.parse(localStorage.getItem('MAKHANANI_DBE_SCHOOLS')||'[]');}
-function normaliseSchool(x){return {emis:String(x.emis||x.EMIS||'').trim(),name:String(x.name||x.NAME||x.school||'').trim().toUpperCase(),town:String(x.town||x.TOWN||x.district||'').trim(),province:String(x.province||x.Province||'').trim()};}
-function dbeForSchool(n){return getDBE().map(normaliseSchool).find(x=>x.name.toLowerCase()===(n||'').toLowerCase());}
-function getStaff(){return JSON.parse(localStorage.getItem('MAKHANANI_STAFF')||'[]');}
-function seedIfEmpty(){if(getStaff().length)return;localStorage.setItem('MAKHANANI_STAFF',JSON.stringify([{name:'Admin User',email:'admin@makhanani.co.za',role:'ADMIN',subject:'Library',password:'Admin123'},{name:'Principal Dube',email:'principal@makhanani.co.za',role:'PRINCIPAL',subject:'Management',password:'Principal123'},{name:'Librarian Nkosi',email:'librarian@makhanani.co.za',role:'LIBRARIAN',subject:'Library',password:'Lib123'},{name:'Teacher Maths',email:'teacher-maths@makhanani.co.za',role:'TEACHER',subject:'Maths',password:'Teacher123'}]));}
-function getSubs(){return JSON.parse(localStorage.getItem('MAKHANANI_SUBSCRIPTIONS')||'[]');}
-function daysLeft(end){if(!end)return 0;let t=new Date();t.setHours(0,0,0,0);let e=new Date(end);e.setHours(0,0,0,0);return Math.ceil((e-t)/86400000);}
-function isOverdue(d){if(!d)return false;let t=new Date();t.setHours(0,0,0,0);let x=new Date(d);x.setHours(0,0,0,0);return t>x;}
-function setSchoolTitle(){let n=getSelectedSchool();document.getElementById('schoolTitle').textContent=n||'— Select School to Log In —';document.getElementById('cloudIdLabel').textContent=n?'schools/'+n.toUpperCase().replace(/[^A-Z0-9]+/g,'_'):'schools/...';}
-function condPill(c){if(!c)return '<span class="small">—</span>';let cls='cond-'+c.replace(' ','');return '<span class="pill '+cls+'">'+c+'</span>';}
-function renderLoginSchoolList(){let dbe=getDBE().map(normaliseSchool);let q=(document.getElementById('loginSchoolSearch').value||'').toLowerCase();let sel=getSelectedSchool();document.getElementById('loginSchoolSelect').innerHTML='<option value="">-- Select School --</option>'+dbe.map(x=>'<option value="'+x.name+'"'+(x.name===sel?' selected':'')+'>'+x.name+' ('+x.emis+') — '+x.town+', '+x.province+'</option>').join('');let f=dbe.filter(x=>!q||x.name.toLowerCase().includes(q)||x.emis.includes(q)||x.town.toLowerCase().includes(q)||x.province.toLowerCase().includes(q));let show=q?f:f.slice(0,10);document.getElementById('loginSchoolList').innerHTML=f.length?'<table><thead><tr><th>EMIS</th><th>NAME</th><th>TOWN</th><th>Province</th><th></th></tr></thead><tbody>'+show.map(x=>'<tr><td><b>'+x.emis+'</b></td><td><b>'+x.name+'</b></td><td>'+x.town+'</td><td>'+x.province+'</td><td><button class="btn '+(x.name===sel?'green':'blue')+'" style="width:auto;padding:6px 10px" onclick="pickLoginSchool(\''+x.name.replace(/'/g,"\\'")+'\')">'+(x.name===sel?'✅ Selected':'Select')+'</button></td></tr>').join('')+'</tbody></table>':'<p class="small">No schools found.</p>';updateLoginStepUI();}
-function pickLoginSchool(name){let s=dbeForSchool(name);if(!s)return;localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',s.name);localStorage.setItem('MAKHANANI_SCHOOL_NAME',s.name);document.getElementById('loginSchoolSelect').value=s.name;document.getElementById('loginSchoolBox').innerHTML='<div style="background:#f0fdf4;border:2px solid #059669;border-radius:12px;padding:12px"><b>✅ Selected: '+s.name+'</b><br><small>EMIS: <b>'+s.emis+'</b> • TOWN: <b>'+s.town+'</b> • Province: <b>'+s.province+'</b></small></div>';setSchoolTitle();renderLoginSchoolList();renderAll();document.getElementById('loginEmail').focus();if(typeof pullFromCloud==='function')pullFromCloud();}
-function onLoginSchoolSelect(){let v=document.getElementById('loginSchoolSelect').value;if(v)pickLoginSchool(v);}
-function updateLoginStepUI(){let sel=getSelectedSchool();document.getElementById('step2Box').style.opacity=sel?'1':'.5';document.getElementById('loginBtn').disabled=!sel;document.getElementById('loginHint').textContent=sel?'✅ School: '+sel:'⚠️ Select school first.';if(sel&&!document.getElementById('loginSchoolBox').innerHTML){let s=dbeForSchool(sel);if(s)document.getElementById('loginSchoolBox').innerHTML='<div style="background:#f0fdf4;border:2px solid #059669;border-radius:12px;padding:12px"><b>✅ Selected: '+s.name+'</b><br><small>EMIS: <b>'+s.emis+'</b> • TOWN: <b>'+s.town+'</b> • Province: <b>'+s.province+'</b></small></div>';}}
-function switchSchool(){if(!confirm('Switch school? You will log in again.'))return;localStorage.removeItem('MAKHANANI_LOGGED_IN');localStorage.removeItem('MAKHANANI_SELECTED_SCHOOL');localStorage.removeItem('MAKHANANI_SCHOOL_NAME');document.getElementById('loginSchoolBox').innerHTML='';updateLoginUI();setSchoolTitle();renderLoginSchoolList();renderAll();}
-function updateLoginUI(){let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');let sel=getSelectedSchool();document.getElementById('loginCard').style.display=l?'none':'block';document.getElementById('loggedCard').style.display=l?'block':'none';if(l){document.getElementById('whoName').textContent=l.name+' — '+l.role;document.getElementById('whoDetail').textContent=l.email+' • '+(l.subject||'');let s=dbeForSchool(l.school||sel);document.getElementById('whoSchool').textContent='🏫 '+(l.school||sel||'-')+(s?' • EMIS '+s.emis+' • '+s.town+', '+s.province:'');}}
-function doLogin(){let sel=getSelectedSchool();if(!sel)return alert('⚠️ Step 1: Select school first.');seedIfEmpty();let e=document.getElementById('loginEmail').value.trim().toLowerCase(),p=document.getElementById('loginPass').value;if(!e||!p)return document.getElementById('loginMsg').textContent='❌ Enter email + password.';let f=getStaff().find(x=>x.email.toLowerCase()===e&&x.password===p);if(!f)return document.getElementById('loginMsg').textContent='❌ Wrong email or password for '+sel+'.';f.school=sel;let dbe=dbeForSchool(sel);if(dbe){f.schoolEmis=dbe.emis;f.schoolTown=dbe.town;f.schoolProvince=dbe.province;}localStorage.setItem('MAKHANANI_LOGGED_IN',JSON.stringify(f));localStorage.setItem('MAKHANANI_SCHOOL_NAME',sel);updateLoginUI();setSchoolTitle();renderAll();alert('✅ Welcome '+f.name+'\n🏫 '+sel);}
-function logout(){localStorage.removeItem('MAKHANANI_LOGGED_IN');updateLoginUI();}
-function checkSubBanner(){let el=document.getElementById('subBanner');let school=getSelectedSchool();if(!school){el.innerHTML='🏫 Select your school above to log in';el.className='subBanner PENDING';el.style.display='block';return;}let s=getSubs().find(x=>(x.school||'').toLowerCase()===school.toLowerCase());if(!s){el.innerHTML='🔴 NO SUBSCRIPTION — '+school+' • <a href="principal.html" style="color:#7f1d1d">Request →</a>';el.className='subBanner NONE';el.style.display='block';return;}let d=daysLeft(s.end);let total=(+s.setup||0)+(+s.amount||0);el.innerHTML=(s.status==='EXPIRED'||d<0)?'🔴 EXPIRED! '+s.school+' — '+s.plan+' • R'+total:(s.status==='TRIAL'?'🟡 TRIAL: '+s.school+' — '+s.plan+' ('+d+' days) • R'+total:(s.status==='PENDING'?'🔵 PENDING: '+s.school+' — '+s.plan+' • R'+total:'✅ '+s.school+' — '+s.plan+' • '+s.status+' • '+d+' days left • R'+total));el.className='subBanner '+(s.status==='EXPIRED'||d<0?'EXPIRED':s.status);el.style.display='block';}
-function getBooks(){return JSON.parse(localStorage.getItem('LTSM_BARCODES_TEXTBOOK_v158')||'[]');}
-function saveBooks(a){localStorage.setItem('LTSM_BARCODES_TEXTBOOK_v158',JSON.stringify(a));}
-function getLearners(){return JSON.parse(localStorage.getItem('LTSM_BARCODES_LEARNER_v158')||'[]');}
-function getIssues(){return JSON.parse(localStorage.getItem('MAKHANANI_ISSUES')||'[]');}
-function saveIssues(a){localStorage.setItem('MAKHANANI_ISSUES',JSON.stringify(a));}
-function findLearner(){let q=document.getElementById('learnerInput').value.trim().toLowerCase();if(!q){document.getElementById('learnerFound').innerHTML='';return;}let f=getLearners().find(x=>(x.barcode||'').toLowerCase()===q||(x.name||'').toLowerCase().includes(q));document.getElementById('learnerFound').innerHTML=f?'<b>✅ Learner: '+f.name+' • '+(f.grade||'')+' • Barcode '+f.barcode+'</b>':'<span style="color:#dc2626">❌ Learner not found</span>';}
-function findBook(){let q=document.getElementById('bookInput').value.trim().toLowerCase();if(!q){document.getElementById('bookFound').innerHTML='';return;}let f=getBooks().find(x=>(x.barcode||'').toLowerCase()===q||(x.title||'').toLowerCase().includes(q));let out=getIssues().find(x=>x.bookBarcode===f?.barcode&&x.status==='OUT');document.getElementById('bookFound').innerHTML=f?'<b>✅ Book: '+f.title+' • '+(f.grade||'')+' • Barcode '+f.barcode+' • Condition: '+condPill(f.condition||'Good')+'</b> '+(out?'<span style="color:#dc2626">⚠️ ALREADY OUT to '+out.learnerName+'</span>':'<span style="color:#059669">• Available</span>'):'<span style="color:#dc2626">❌ Book not found</span>';}
-function findReturnBook(){let q=document.getElementById('returnInput').value.trim().toLowerCase();if(!q){document.getElementById('returnFound').innerHTML='';return;}let issues=getIssues();let f=issues.find(x=>x.bookBarcode.toLowerCase()===q&&x.status==='OUT');if(!f){document.getElementById('returnFound').innerHTML='<span style="color:#dc2626">❌ No OUT record for this book — It may already be returned</span>';return;}document.getElementById('returnFound').innerHTML='<b>↩️ Found OUT: '+f.bookTitle+' → '+f.learnerName+' • Issued by '+f.issuedByName+' • Cond OUT: '+condPill(f.conditionOut||f.condition||'Good')+' • Due '+f.dueDate+'</b><br><small>Now select Condition ON RETURN below.</small>';}
-function issueBook(){let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');if(!login)return alert('Login first');let lq=document.getElementById('learnerInput').value.trim().toLowerCase();let bq=document.getElementById('bookInput').value.trim().toLowerCase();let learner=getLearners().find(x=>(x.barcode||'').toLowerCase()===lq||(x.name||'').toLowerCase().includes(lq));let book=getBooks().find(x=>(x.barcode||'').toLowerCase()===bq||(x.title||'').toLowerCase().includes(bq));if(!learner)return alert('Learner not found');if(!book)return alert('Book not found');let issues=getIssues();if(issues.find(x=>x.bookBarcode===book.barcode&&x.status==='OUT'))return alert('Book already OUT');let due=document.getElementById('dueDate').value||(new Date().getFullYear()+'-11-30');let condOut=document.getElementById('issueCondition').value;issues.push({id:Date.now(),learnerName:learner.name,learnerBarcode:learner.barcode,bookTitle:book.title,bookBarcode:book.barcode,issuedByName:login.name,issuedByEmail:login.email,dueDate:due,status:'OUT',conditionOut:condOut,condition:condOut,school:getSelectedSchool(),createdAt:new Date().toISOString()});saveIssues(issues);document.getElementById('issueMsg').innerHTML='<b style="color:#059669">✅ Issued: '+book.title+' → '+learner.name+' • Cond OUT: '+condOut+' • Due '+due+'</b>';document.getElementById('learnerInput').value='';document.getElementById('bookInput').value='';document.getElementById('learnerFound').innerHTML='';document.getElementById('bookFound').innerHTML='';renderAll();if(typeof pushToCloud==='function')pushToCloud();}
-function doReturn(id,fromTable){let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');if(!login)return alert('Login first');let issues=getIssues();let f=issues.find(x=>x.id===id);if(!f)return alert('Record not found');let cond='';let notes='';let fine=0;if(fromTable){cond=prompt('Condition ON RETURN for:\n'+f.bookTitle+' → '+f.learnerName+'\n\nType: Excellent / Good / Fair / Poor / Damaged / Needs Repair / Lost');if(!cond)return;cond=cond.trim();let ok=['Excellent','Good','Fair','Poor','Damaged','Needs Repair','Lost'];let match=ok.find(x=>x.toLowerCase()===cond.toLowerCase());if(!match)return alert('Invalid condition. Use: Excellent, Good, Fair, Poor, Damaged, Needs Repair, Lost');cond=match;notes=prompt('Damage / Notes (optional):')||'';let fineStr=prompt('Fine / Charge R (0 if none):','0');fine=+fineStr||0;}else{cond=document.getElementById('returnCondition').value;notes=document.getElementById('returnNotes').value.trim();fine=+document.getElementById('returnFine').value||0;if(!cond)return alert('⚠️ Select Condition ON RETURN first!');}f.status='RETURNED';f.returnCondition=cond;f.conditionReturn=cond;f.returnNotes=notes;f.returnFine=fine;f.retrievedByName=login.name;f.retrievedByEmail=login.email;f.returnedAt=new Date().toISOString();let books=getBooks();let b=books.find(x=>x.barcode===f.bookBarcode);if(b){b.condition=cond;b.lastReturnCondition=cond;b.lastReturnNotes=notes;b.lastReturnBy=login.name;b.lastReturnedAt=f.returnedAt;if(cond==='Damaged'||cond==='Lost'||cond==='Needs Repair'){b.needsAttention=true;b.attentionReason=cond+(notes?' — '+notes:'');}else{b.needsAttention=false;b.attentionReason='';}saveBooks(books);}saveIssues(issues);if(!fromTable){document.getElementById('returnMsg').innerHTML='<b style="color:#059669">✅ Returned: '+f.bookTitle+' from '+f.learnerName+' • Condition: '+cond+(fine?' • Fine R'+fine:'')+(notes?' • '+notes:'')+'</b>';document.getElementById('returnInput').value='';document.getElementById('returnCondition').value='';document.getElementById('returnNotes').value='';document.getElementById('returnFine').value=0;document.getElementById('returnFound').innerHTML='';}else{alert('✅ Returned: '+f.bookTitle+' • Condition: '+cond);}renderAll();if(typeof pushToCloud==='function')pushToCloud();}
-function returnBook(){let q=document.getElementById('returnInput').value.trim().toLowerCase();if(!q)return alert('Scan book barcode');let f=getIssues().find(x=>x.bookBarcode.toLowerCase()===q&&x.status==='OUT');if(!f)return alert('No OUT record for this book');doReturn(f.id,false);}
-function returnById(id){doReturn(id,true);}
-function renderAll(){let school=getSelectedSchool();let dbe=dbeForSchool(school);document.getElementById('mySchoolBox').innerHTML=school?(dbe?'<div style="background:#eff6ff;border:2px solid #2563eb;border-radius:12px;padding:12px"><b>'+dbe.name+'</b><br><small>EMIS: <b>'+dbe.emis+'</b> • TOWN: <b>'+dbe.town+'</b> • Province: <b>'+dbe.province+'</b></small></div>':'<b>'+school+'</b>'):'<small>No school selected yet — Top → Step 1</small>';let issues=getIssues();let q=(document.getElementById('issueSearch').value||'').toLowerCase();let cf=document.getElementById('condFilter').value;let fi=issues.filter(x=>(!q||(x.learnerName||'').toLowerCase().includes(q)||(x.bookTitle||'').toLowerCase().includes(q))&&(!cf||(x.returnCondition||x.conditionReturn||'')===cf));document.getElementById('issueRows').innerHTML=fi.slice().reverse().slice(0,50).map(x=>'<tr><td><b>'+(x.learnerName||'')+'</b></td><td><b>'+(x.bookTitle||'')+'</b></td><td>'+(x.issuedByName||'-')+'</td><td>'+condPill(x.conditionOut||x.condition||'')+'</td><td>'+(x.status==='RETURNED'?condPill(x.returnCondition||x.conditionReturn||''):'<span class="small">— Still Out —</span>')+'</td><td>'+(x.status==='RETURNED'?((x.returnNotes||'')+(x.returnFine?'<br><b>Fine: R'+x.returnFine+'</b>':'')+(x.retrievedByName?'<br><small>By: '+x.retrievedByName+'</small>':'')):'—')+'</td><td>'+(x.dueDate||'30 Nov')+'</td><td>'+(x.status==='RETURNED'?'✅ Returned':(isOverdue(x.dueDate)?'🔴 OVERDUE':'🟢 OUT'))+'</td><td>'+(x.status==='OUT'?'<button class="btn blue" style="width:auto;padding:6px 10px" onclick="returnById('+x.id+')">↩️ Return</button>':'—')+'</td></tr>').join('')||'<tr><td colspan="9">No records</td></tr>';renderLoginSchoolList();checkSubBanner();}
-seedIfEmpty();setSchoolTitle();updateLoginUI();document.getElementById('dueDate').value=new Date().getFullYear()+'-11-30';renderAll();
+window.togglePass=togglePass;
+
+// --- State (Live from Firestore) ---
+let books=[], learners=[], issues=[], logs=[];
+let curLearner=null, curBook=null, curIssue=null;
+let unsubBooks=null, unsubLearners=null, unsubIssues=null, unsubLogs=null;
+
+// --- DBE (Firestore dbe_schools, paginated) ---
+let _dbeCache=[], _dbeLoaded=false, _dbePage=1; const DBE_PAGE_SIZE=20; let _searchTimer=null;
+async function loadDBE(){
+  if(_dbeLoaded) return _dbeCache;
+  try{
+    let snap=await getDocs(collection(getDB(),'dbe_schools'));
+    _dbeCache=snap.docs.map(d=>{let x=d.data();return {emis:String(x.emis||d.id).trim(),name:String(x.name||'').trim().toUpperCase(),town:String(x.town||'').trim(),province:String(x.province||'').trim()};});
+  }catch(e){
+    // Fallback to localStorage DBE if Firestore not yet migrated
+    try{ _dbeCache=JSON.parse(localStorage.getItem('MAKHANANI_DBE_SCHOOLS')||'[]').map(x=>({emis:String(x.emis||'').trim(),name:String(x.name||'').trim().toUpperCase(),town:String(x.town||'').trim(),province:String(x.province||'').trim()})); }catch(_){ _dbeCache=[]; }
+  }
+  _dbeLoaded=true; return _dbeCache;
+}
+function onDBESearch(){ clearTimeout(_searchTimer); _searchTimer=setTimeout(()=>{ _dbePage=1; renderLoginSchoolList(); },250); }
+window.onDBESearch=onDBESearch;
+async function renderLoginSchoolList(){
+  let dbe=await loadDBE();
+  let q=(document.getElementById('loginSchoolSearch').value||'').trim().toLowerCase();
+  let selEmis=getSelectedEmis();
+  let sel=document.getElementById('loginSchoolSelect');
+  if(sel && !sel.dataset.built){
+    let opts='<option value="">-- Select School by EMIS --</option>';
+    let selected=dbe.find(x=>String(x.emis)===String(selEmis));
+    if(selected) opts+='<option value="'+selected.emis+'" selected>'+selected.emis+' — '+selected.name+' — '+selected.town+'</option>';
+    opts+=dbe.slice(0,200).map(x=>'<option value="'+x.emis+'">'+x.emis+' — '+x.name+' — '+x.town+'</option>').join('');
+    sel.innerHTML=opts; sel.dataset.built='1'; if(selected) sel.value=selected.emis;
+  } else if(sel && selEmis && sel.value!==selEmis){ sel.value=selEmis; }
+  let filtered=q ? dbe.filter(x=> x.emis.includes(q)||x.name.toLowerCase().includes(q)||x.town.toLowerCase().includes(q)||x.province.toLowerCase().includes(q)) : dbe;
+  let total=filtered.length, totalPages=Math.max(1,Math.ceil(total/DBE_PAGE_SIZE));
+  if(_dbePage>totalPages) _dbePage=totalPages;
+  let start=(_dbePage-1)*DBE_PAGE_SIZE, page=filtered.slice(start,start+DBE_PAGE_SIZE);
+  let listEl=document.getElementById('loginSchoolList');
+  if(!listEl){ updateLoginStepUI(); return; }
+  let html='<p class="small">Showing '+(total?start+1:0)+'-'+Math.min(start+DBE_PAGE_SIZE,total)+' of '+total+' schools '+(q?'(filtered)':'')+'</p>';
+  if(page.length){
+    html+='<table><thead><tr><th>EMIS</th><th>NAME</th><th>TOWN</th><th>Province</th><th></th></tr></thead><tbody>'+page.map(x=>'<tr><td><b>'+x.emis+'</b></td><td><b>'+x.name+'</b></td><td>'+x.town+'</td><td>'+x.province+'</td><td><button class="btn '+(String(x.emis)===String(selEmis)?'green':'blue')+'" style="width:auto;padding:6px 10px" onclick="pickLoginSchoolByEmis(\''+x.emis+'\')">'+(String(x.emis)===String(selEmis)?'✅ Selected':'Select')+'</button></td></tr>').join('')+'</tbody></table>';
+    html+='<div style="display:flex;gap:8px;margin-top:8px"><button class="btn dark" style="width:auto" onclick="dbePrev()" '+(_dbePage<=1?'disabled':'')+'>⬅️ Prev</button><span class="small" style="align-self:center">Page '+_dbePage+' / '+totalPages+'</span><button class="btn dark" style="width:auto" onclick="dbeNext('+totalPages+')" '+(_dbePage>=totalPages?'disabled':'')+'>Next ➡️</button></div>';
+  } else html+='<p class="small">No schools found.</p>';
+  listEl.innerHTML=html; updateLoginStepUI();
+}
+window.renderLoginSchoolList=renderLoginSchoolList;
+window.dbePrev=()=>{ if(_dbePage>1){ _dbePage--; renderLoginSchoolList(); } };
+window.dbeNext=(tp)=>{ if(_dbePage<tp){ _dbePage++; renderLoginSchoolList(); } };
+async function pickLoginSchoolByEmis(emis){
+  let dbe=await loadDBE();
+  let s=dbe.find(x=>String(x.emis)===String(emis));
+  if(!s) return alert('School not found for EMIS '+emis);
+  localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',s.name);
+  localStorage.setItem('MAKHANANI_SCHOOL_NAME',s.name);
+  localStorage.setItem('MAKHANANI_SELECTED_EMIS',s.emis);
+  localStorage.setItem('MAKHANANI_SCHOOL_EMIS',s.emis);
+  document.getElementById('loginSchoolSelect').value=s.emis;
+  document.getElementById('loginSchoolBox').innerHTML='<div style="background:#f0fdf4;border:2px solid #059669;border-radius:12px;padding:12px"><b>✅ Selected: '+s.name+'</b><br><small>EMIS: <b>'+s.emis+'</b> • TOWN: <b>'+s.town+'</b> • Province: <b>'+s.province+'</b></small></div>';
+  setSchoolTitle(); updateLoginStepUI(); renderLoginSchoolList();
+  document.getElementById('loginEmail').focus();
+  startListeners();
+}
+window.pickLoginSchoolByEmis=pickLoginSchoolByEmis;
+function onLoginSchoolSelect(){ let v=document.getElementById('loginSchoolSelect').value; if(v) pickLoginSchoolByEmis(v); }
+window.onLoginSchoolSelect=onLoginSchoolSelect;
+function updateLoginStepUI(){
+  let sel=getSelectedSchool(), emis=getSelectedEmis();
+  document.getElementById('step2Box').style.opacity=sel?'1':'.5';
+  document.getElementById('loginBtn').disabled=!sel;
+  document.getElementById('loginHint').textContent=sel?('✅ School: '+sel+' (EMIS '+emis+')'):'⚠️ Select school first.';
+  if(sel && !document.getElementById('loginSchoolBox').innerHTML){
+    document.getElementById('loginSchoolBox').innerHTML='<div style="background:#f0fdf4;border:2px solid #059669;border-radius:12px;padding:12px"><b>✅ Selected: '+sel+'</b><br><small>EMIS: <b>'+emis+'</b></small></div>';
+  }
+}
+function setSchoolTitle(){
+  let n=getSelectedSchool(), e=getSelectedEmis();
+  document.getElementById('schoolTitle').textContent=n?(n+' (EMIS '+e+')'):'— Select School to Log In —';
+  document.getElementById('cloudIdLabel').textContent=e?'schools/EMIS_'+e:'schools/...';
+}
+function updateLoginUI(){
+  let l=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');
+  document.getElementById('loginCard').style.display=l?'none':'block';
+  document.getElementById('loggedCard').style.display=l?'block':'none';
+  if(l){
+    document.getElementById('whoName').textContent=l.name+' — '+l.role;
+    document.getElementById('whoDetail').textContent=l.email+' • '+(l.subject||l.department||'');
+    document.getElementById('whoSchool').textContent='🏫 '+(l.school||getSelectedSchool()||'-')+' • EMIS '+(l.schoolEmis||getSelectedEmis()||'-');
+    document.getElementById('byName').value=l.name+' ('+l.role+')';
+  }
+}
+async function doLogin(){
+  let sel=getSelectedSchool(), emis=getSelectedEmis();
+  if(!sel) return alert('⚠️ Step 1: Select school first (by EMIS).');
+  let e=document.getElementById('loginEmail').value.trim().toLowerCase();
+  let p=document.getElementById('loginPass').value;
+  if(!e||!p) return document.getElementById('loginMsg').textContent='❌ Enter email + password.';
+  try{
+    let user=await window.firebaseLogin(e,p);
+    let staffSnap=await getDoc(doc(getDB(),'schools','EMIS_'+emis,'staff',user.uid));
+    if(!staffSnap.exists()){
+      await window.firebaseLogout();
+      return document.getElementById('loginMsg').textContent='❌ This account is NOT for '+sel+' (EMIS '+emis+'). Switch school or ask Admin to add you to this school.';
+    }
+    let staff=staffSnap.data();
+    localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify({uid:user.uid, ...staff, school:sel, schoolEmis:emis}));
+    localStorage.setItem('MAKHANANI_SCHOOL_NAME', sel);
+    updateLoginUI(); setSchoolTitle(); startListeners();
+    await window.logAction('LOGIN','Logged in as '+staff.role);
+    alert('✅ Welcome '+staff.name+'\n🏫 '+sel+' (EMIS '+emis+')');
+  }catch(err){
+    document.getElementById('loginMsg').textContent='❌ '+String(err.message||err).replace('Firebase: ','');
+  }
+}
+window.doLogin=doLogin;
+async function forgotPass(){
+  let e=document.getElementById('loginEmail').value.trim();
+  if(!e) return alert('Type your email first');
+  try{ await window.firebaseResetPassword(e); alert('✅ Reset email sent to '+e); }catch(err){ alert('❌ '+err.message); }
+}
+window.forgotPass=forgotPass;
+function switchSchool(){
+  if(!confirm('Switch school? You will log in again.')) return;
+  localStorage.removeItem('MAKHANANI_LOGGED_IN');
+  localStorage.removeItem('MAKHANANI_SELECTED_SCHOOL');
+  localStorage.removeItem('MAKHANANI_SCHOOL_NAME');
+  localStorage.removeItem('MAKHANANI_SELECTED_EMIS');
+  document.getElementById('loginSchoolBox').innerHTML='';
+  stopListeners(); updateLoginUI(); setSchoolTitle(); renderLoginSchoolList(); clearScan();
+}
+window.switchSchool=switchSchool;
+async function logout(){ try{ await window.firebaseLogout(); }catch(e){} localStorage.removeItem('MAKHANANI_LOGGED_IN'); updateLoginUI(); }
+window.logout=logout;
+
+// --- Subscription Banner (Firestore) ---
+async function checkSubBanner(){
+  let el=document.getElementById('subBanner');
+  let school=getSelectedSchool(), emis=getSelectedEmis();
+  if(!school){ el.innerHTML='🏫 Select your school above to log in'; el.className='subBanner PENDING'; el.style.display='block'; return; }
+  try{
+    let snap=await getDoc(doc(getDB(),'schools','EMIS_'+emis));
+    let sub=snap.exists() ? snap.data().subscription : null;
+    if(!sub){ el.innerHTML='🔴 NO SUBSCRIPTION — '+school+' • <a href="principal.html" style="color:#7f1d1d">Request →</a>'; el.className='subBanner NONE'; el.style.display='block'; return; }
+    let d=(()=>{ if(!sub.end) return 0; let t=new Date(); t.setHours(0,0,0,0); let e2=new Date(sub.end); e2.setHours(0,0,0,0); return Math.ceil((e2-t)/86400000); })();
+    let total=(+sub.setup||0)+(+sub.amount||0);
+    el.innerHTML=(sub.status==='EXPIRED'||d<0)?'🔴 EXPIRED! '+school+' — '+sub.plan+' • R'+total:(sub.status==='TRIAL'?'🟡 TRIAL: '+school+' — '+sub.plan+' ('+d+' days) • R'+total:(sub.status==='PENDING'?'🔵 PENDING: '+school+' — '+sub.plan+' • R'+total:'✅ '+school+' — '+sub.plan+' • '+sub.status+' • '+d+' days left • R'+total));
+    el.className='subBanner '+(sub.status==='EXPIRED'||d<0?'EXPIRED':sub.status); el.style.display='block';
+  }catch(e){ el.style.display='none'; }
+}
+
+// --- Live Listeners ---
+function stopListeners(){ [unsubBooks,unsubLearners,unsubIssues,unsubLogs].forEach(u=>{ try{ u&&u(); }catch(e){} }); unsubBooks=unsubLearners=unsubIssues=unsubLogs=null; }
+function startListeners(){
+  let emis=getSelectedEmis(); if(!emis) return;
+  stopListeners();
+  let db=getDB();
+  unsubBooks=onSnapshot(query(collection(db,'schools','EMIS_'+emis,'books'), orderBy('barcode')), snap=>{ books=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, ()=>{});
+  unsubLearners=onSnapshot(query(collection(db,'schools','EMIS_'+emis,'learners'), orderBy('barcode')), snap=>{ learners=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, ()=>{});
+  unsubIssues=onSnapshot(query(collection(db,'schools','EMIS_'+emis,'issues'), orderBy('createdAt','desc'), limit(200)), snap=>{ issues=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, ()=>{});
+  unsubLogs=onSnapshot(query(collection(db,'schools','EMIS_'+emis,'logs'), orderBy('createdAt','desc'), limit(30)), snap=>{ logs=snap.docs.map(d=>({id:d.id,...d.data()})); renderLogs(); }, ()=>{});
+}
+
+// --- Scan Logic ---
+async function findLearner(code){
+  code=String(code||'').trim();
+  if(!code) return null;
+  let found=learners.find(x=>String(x.barcode).toLowerCase()===code.toLowerCase());
+  if(found) return found;
+  try{
+    let snap=await getDocs(query(collection(getDB(),'schools','EMIS_'+getSelectedEmis(),'learners'), where('barcode','==',code)));
+    if(!snap.empty) return {id:snap.docs[0].id, ...snap.docs[0].data()};
+  }catch(e){}
+  return null;
+}
+async function findBook(code){
+  code=String(code||'').trim();
+  if(!code) return null;
+  let found=books.find(x=>String(x.barcode).toLowerCase()===code.toLowerCase());
+  if(found) return found;
+  try{
+    let snap=await getDocs(query(collection(getDB(),'schools','EMIS_'+getSelectedEmis(),'books'), where('barcode','==',code)));
+    if(!snap.empty) return {id:snap.docs[0].id, ...snap.docs[0].data()};
+  }catch(e){}
+  return null;
+}
+async function onScanLearner(){
+  let code=document.getElementById('scanLearner').value.trim();
+  if(code.length<3){ document.getElementById('learnerPreview').innerHTML=''; curLearner=null; checkMatch(); return; }
+  let l=await findLearner(code);
+  curLearner=l;
+  document.getElementById('learnerPreview').innerHTML=l
+    ? '<div class="scanOk" style="padding:10px;border-radius:10px"><b>✅ '+l.name+'</b><br><small>'+l.barcode+' • '+normaliseGrade(l.grade)+' • '+(l.className||l.class||'')+'</small></div>'
+    : '<div class="scanBad" style="padding:10px;border-radius:10px">❌ Learner NOT FOUND: '+code+'<br><small>Check barcode or add learner in Learner page</small></div>';
+  checkMatch();
+}
+window.onScanLearner=onScanLearner;
+async function onScanBook(){
+  let code=document.getElementById('scanBook').value.trim();
+  if(code.length<3){ document.getElementById('bookPreview').innerHTML=''; curBook=null; curIssue=null; checkMatch(); return; }
+  let b=await findBook(code);
+  curBook=b;
+  if(b){
+    let outIssue=issues.find(x=>x.bookBarcode===b.barcode && x.status==='OUT');
+    curIssue=outIssue||null;
+    document.getElementById('bookPreview').innerHTML='<div class="'+(outIssue?'scanBad':'scanOk')+'" style="padding:10px;border-radius:10px"><b>'+(outIssue?'📚 OUT — '+(outIssue.learnerName||''):'✅ IN — '+b.title)+'</b><br><small>'+b.barcode+' • '+(SUBJECT_NAMES[b.subjectCode]||b.subject)+' ('+b.subjectCode+') • '+normaliseGrade(b.grade)+' • Cond: '+(b.condition||'Good')+'</small></div>';
+  } else {
+    document.getElementById('bookPreview').innerHTML='<div class="scanBad" style="padding:10px;border-radius:10px">❌ Book NOT FOUND: '+code+'</div>';
+  }
+  checkMatch();
+}
+window.onScanBook=onScanBook;
+function checkMatch(){
+  let box=document.getElementById('matchBox');
+  let btnI=document.getElementById('btnIssue'), btnR=document.getElementById('btnReturn');
+  btnI.disabled=true; btnR.disabled=true;
+  if(!curLearner || !curBook){ box.innerHTML='<p class="small">Scan Learner + Book to continue</p>'; return; }
+  let learnerGrade=normaliseGrade(curLearner.grade), bookGrade=normaliseGrade(curBook.grade);
+  let gradeOk=learnerGrade===bookGrade;
+  // 1 Subject per Learner: Learner cannot have 2 OUT books of same subject
+  let sameSubjectOut=issues.find(x=>x.learnerBarcode===curLearner.barcode && x.status==='OUT' && x.subjectCode===curBook.subjectCode);
+  // Book already OUT?
+  let isOut=curIssue!=null;
+  let html='';
+  html+='<div style="background:#eff6ff;border:2px solid #2563eb;border-radius:12px;padding:12px"><b>Learner:</b> '+curLearner.name+' ('+learnerGrade+') &nbsp;|&nbsp; <b>Book:</b> '+curBook.title+' ('+bookGrade+' • '+(SUBJECT_NAMES[curBook.subjectCode]||curBook.subject)+')<br>';
+  html+='<b>Grade Match:</b> '+(gradeOk?'✅ MATCH — '+learnerGrade+' = '+bookGrade:'🔴 MISMATCH — Learner '+learnerGrade+' vs Book '+bookGrade+' — Cannot Issue')+'<br>';
+  if(sameSubjectOut) html+='🔴 Already has OUT: <b>'+sameSubjectOut.bookBarcode+'</b> for '+(SUBJECT_NAMES[curBook.subjectCode]||'')+' — Return it first (1 Subject per Learner)<br>';
+  if(isOut) html+='📚 Book is OUT to <b>'+curIssue.learnerName+'</b> — You can RETURN it. If same learner, Return button below.<br>';
+  else html+='✅ Book is IN — Ready to Issue<br>';
+  html+='</div>';
+  box.innerHTML=html;
+  if(isOut){
+    // Allow return if scanned learner matches OUT learner, or any staff returning
+    btnR.disabled=false;
+    document.getElementById('scanMsg').textContent='↩️ Ready to RETURN — Select Return Condition below';
+  } else {
+    if(gradeOk && !sameSubjectOut) { btnI.disabled=false; document.getElementById('scanMsg').textContent='📚 Ready to ISSUE'; }
+    else document.getElementById('scanMsg').textContent='❌ Cannot Issue — See mismatch above';
+  }
+}
+function clearScan(){
+  document.getElementById('scanLearner').value=''; document.getElementById('scanBook').value='';
+  document.getElementById('learnerPreview').innerHTML=''; document.getElementById('bookPreview').innerHTML='';
+  document.getElementById('matchBox').innerHTML=''; document.getElementById('scanMsg').textContent='';
+  curLearner=null; curBook=null; curIssue=null;
+  document.getElementById('btnIssue').disabled=true; document.getElementById('btnReturn').disabled=true;
+  document.getElementById('scanLearner').focus();
+}
+window.clearScan=clearScan;
+
+async function doIssue(){
+  let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');
+  if(!login) return alert('Login first');
+  if(!curLearner || !curBook) return alert('Scan Learner + Book first');
+  if(normaliseGrade(curLearner.grade)!==normaliseGrade(curBook.grade)) return alert('🔴 Grade Mismatch — Cannot Issue');
+  if(issues.find(x=>x.learnerBarcode===curLearner.barcode && x.status==='OUT' && x.subjectCode===curBook.subjectCode)) return alert('🔴 Learner already has this Subject OUT');
+  if(curIssue) return alert('Book is already OUT');
+  let emis=getSelectedEmis();
+  let condOut=document.getElementById('condOut').value;
+  let due=new Date(); due.setMonth(10); due.setDate(30); // 30 Nov
+  try{
+    await window.cloudIssueBook(emis, {
+      learnerBarcode: curLearner.barcode, learnerName: curLearner.name, learnerGrade: normaliseGrade(curLearner.grade), learnerClass: curLearner.className||curLearner.class||'',
+      bookBarcode: curBook.barcode, bookTitle: curBook.title, bookGrade: normaliseGrade(curBook.grade),
+      subjectCode: curBook.subjectCode, subject: curBook.subject, department: deptOf(curBook.subjectCode),
+      conditionOut: condOut, condition: condOut,
+      issuedBy: login.uid||'', issuedByName: login.name||'',
+      dueDate: due.toISOString().split('T')[0], status: 'OUT'
+    });
+    // Update book condition to OUT condition in Firestore
+    await updateDoc(doc(getDB(),'schools','EMIS_'+emis,'books', String(curBook.barcode)), { condition: condOut });
+    document.getElementById('scanMsg').textContent='✅ ISSUED: '+curBook.barcode+' to '+curLearner.name+' — Due 30 Nov';
+    alert('✅ ISSUED\n'+curBook.title+' ('+curBook.barcode+')\nTo: '+curLearner.name+' ('+normaliseGrade(curLearner.grade)+')\nCond OUT: '+condOut+'\nDue: 30 Nov');
+    clearScan();
+  }catch(e){ alert('❌ Issue failed: '+e.message); }
+}
+window.doIssue=doIssue;
+
+async function doReturn(){
+  let login=JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null');
+  if(!login) return alert('Login first');
+  // Find OUT issue for this book — use curIssue or search
+  let issueToReturn=curIssue || issues.find(x=>x.bookBarcode===curBook?.barcode && x.status==='OUT');
+  if(!issueToReturn) return alert('This book is not OUT');
+  let emis=getSelectedEmis();
+  let condReturn=document.getElementById('condReturn').value;
+  let notes=document.getElementById('returnNotes').value.trim();
+  let needsAttention=['Damaged','Lost','Needs Repair'].includes(condReturn);
+  try{
+    await window.cloudReturnBook(emis, issueToReturn.id, {
+      bookBarcode: issueToReturn.bookBarcode, learnerName: issueToReturn.learnerName,
+      returnCondition: condReturn, conditionReturn: condReturn,
+      returnNotes: notes, retrievedBy: login.uid||'', retrievedByName: login.name||''
+    });
+    // Update book in Firestore
+    await updateDoc(doc(getDB(),'schools','EMIS_'+emis,'books', String(issueToReturn.bookBarcode)), {
+      condition: condReturn, needsAttention: needsAttention,
+      attentionReason: needsAttention ? (notes || ('Returned as '+condReturn)) : '',
+      lastReturnCondition: condReturn, lastReturnNotes: notes, lastReturnBy: login.name||''
+    });
+    document.getElementById('scanMsg').textContent='✅ RETURNED: '+issueToReturn.bookBarcode+' — Cond: '+condReturn+(needsAttention?' 🔴 Needs Attention':'');
+    alert('✅ RETURNED\n'+issueToReturn.bookTitle+' ('+issueToReturn.bookBarcode+')\nFrom: '+issueToReturn.learnerName+'\nCond OUT: '+(issueToReturn.conditionOut||'')+' → Cond RETURN: '+condReturn+'\n'+(notes?'Notes: '+notes:'')+'\nNO FINES');
+    clearScan();
+  }catch(e){ alert('❌ Return failed: '+e.message); }
+}
+window.doReturn=doReturn;
+
+// Quick Return from OUT table
+window.quickReturn=(issueId)=>{
+  let iss=issues.find(x=>x.id===issueId); if(!iss) return;
+  document.getElementById('scanLearner').value=iss.learnerBarcode;
+  document.getElementById('scanBook').value=iss.bookBarcode;
+  onScanLearner(); onScanBook();
+  document.getElementById('condReturn').value='Good';
+  window.scrollTo({top:0, behavior:'smooth'});
+};
+
+// --- Department -> Subject (v1.84 logic, Firestore data) ---
+function deptStats(){
+  let out=issues.filter(x=>x.status==='OUT');
+  let res={}; Object.keys(DEPARTMENTS).forEach(d=>res[d]={total:0,in:0,out:0,damaged:0,subjects:{}}); res['Other']={total:0,in:0,out:0,damaged:0,subjects:{}};
+  books.forEach(b=>{
+    let d=deptOf(b.subjectCode||''); let s=b.subjectCode||'OTH';
+    let isOut=out.find(o=>o.bookBarcode===b.barcode);
+    let isDam=['Damaged','Lost','Needs Repair'].includes(b.condition)||b.needsAttention;
+    res[d].total++; if(isOut) res[d].out++; else res[d].in++; if(isDam) res[d].damaged++;
+    if(!res[d].subjects[s]) res[d].subjects[s]={code:s,name:SUBJECT_NAMES[s]||b.subject||s,total:0,in:0,out:0,damaged:0,books:[]};
+    res[d].subjects[s].total++; if(isOut) res[d].subjects[s].out++; else res[d].subjects[s].in++;
+    if(isDam) res[d].subjects[s].damaged++; res[d].subjects[s].books.push(b);
+  });
+  return res;
+}
+function renderDepartments(){
+  let stats=deptStats();
+  let deptF=document.getElementById('deptFilter')?document.getElementById('deptFilter').value:'';
+  let subjF=document.getElementById('subjFilter')?document.getElementById('subjFilter').value:'';
+  let depts=Object.keys(DEPARTMENTS).concat(['Other']).filter(d=>!deptF||d===deptF);
+  document.getElementById('deptGrid').innerHTML=depts.map(d=>{
+    let s=stats[d];
+    let subjLines=Object.values(s.subjects).filter(x=>!subjF||x.code===subjF).map(x=>'<div style="border-top:1px dashed #999;padding:4px 0"><b>'+x.name+' ('+x.code+')</b><br><small>'+x.total+' Total • ✅ '+x.in+' IN • 📚 '+x.out+' OUT'+(x.damaged?' • 🔴 '+x.damaged+' Damaged':'')+'</small></div>').join('')||'<small>No subjects</small>';
+    return '<div class="card" style="margin:0;background:'+deptColor(d)+'"><b>🏢 '+d+'</b><br><span style="font-size:22px;font-weight:900">'+s.total+'</span> Total<br><small>✅ IN: '+s.in+' • 📚 OUT: '+s.out+' • 🔴 Damaged: '+s.damaged+'</small>'+subjLines+'</div>';
+  }).join('');
+  document.getElementById('deptTables').innerHTML=depts.map(d=>{
+    let s=stats[d]; let subjects=Object.values(s.subjects).filter(x=>!subjF||x.code===subjF);
+    if(!subjects.length) return '<div class="deptHead" style="background:'+deptColor(d)+'">🏢 '+d+' (0)</div><p class="small">No books yet</p>';
+    return '<div class="deptHead" style="background:'+deptColor(d)+'">🏢 '+d+' — '+s.total+' books • ✅ '+s.in+' IN • 📚 '+s.out+' OUT • 🔴 '+s.damaged+' Damaged</div>'+subjects.map(sub=>{
+      let list=sub.books.slice().sort((a,b)=>String(a.barcode).localeCompare(String(b.barcode)));
+      return '<div class="subjHead">📘 '+sub.name+' ('+sub.code+') — '+sub.total+' books • ✅ '+sub.in+' IN • 📚 '+sub.out+' OUT'+(sub.damaged?' • 🔴 '+sub.damaged+' Damaged':'')+'</div><div style="overflow:auto"><table><thead><tr><th>Book No</th><th>Title</th><th>Grade</th><th>Condition</th><th>Status</th></tr></thead><tbody>'+list.map(b=>{ let isOut=issues.find(o=>o.bookBarcode===b.barcode&&o.status==='OUT'); return '<tr><td><b>'+b.barcode+'</b></td><td>'+b.title+'</td><td>'+normaliseGrade(b.grade)+'</td><td>'+condPill(b.condition||'Good')+'</td><td>'+(isOut?'📚 OUT to '+isOut.learnerName:'✅ IN')+'</td></tr>'; }).join('')+'</tbody></table></div>';
+    }).join('');
+  }).join('');
+  let el=document.getElementById('printMeta'); if(el) el.textContent='School: '+getSelectedSchool()+' • EMIS: '+getSelectedEmis()+' • Date: '+new Date().toLocaleDateString()+' • Total Books: '+books.length+(deptF?' • Department: '+deptF:'')+(subjF?' • Subject: '+subjF+' ('+(SUBJECT_NAMES[subjF]||subjF)+')':'');
+}
+window.renderDepartments=renderDepartments;
+function renderOut(){
+  let q=(document.getElementById('outSearch').value||'').toLowerCase();
+  let gf=document.getElementById('outGradeFilter').value;
+  let out=issues.filter(x=>x.status==='OUT' && (!q||(x.learnerName||'').toLowerCase().includes(q)||(x.bookBarcode||'').toLowerCase().includes(q)||(x.bookTitle||'').toLowerCase().includes(q)) && (!gf||normaliseGrade(x.learnerGrade)===gf));
+  document.getElementById('outRows').innerHTML=out.slice(0,50).map(x=>'<tr><td><b>'+x.learnerName+'</b><br><small>'+normaliseGrade(x.learnerGrade)+'</small></td><td><b>'+x.bookBarcode+'</b><br><small>'+(x.bookTitle||'')+'</small></td><td>'+deptOf(x.subjectCode||'')+' → '+(SUBJECT_NAMES[x.subjectCode]||x.subject||'')+'</td><td>'+condPill(x.conditionOut||x.condition||'')+'</td><td>'+(x.dueDate||'30 Nov')+'</td><td>'+(isOverdue(x.dueDate)?'🔴 OVERDUE':'🟢 OUT')+'</td><td><button class="btn orange" style="width:auto;padding:6px 10px" onclick="quickReturn(\''+x.id+'\')">↩️ Return</button></td></tr>').join('')||'<tr><td colspan="7">✅ No books OUT</td></tr>';
+}
+window.renderOut=renderOut;
+function renderLogs(){
+  document.getElementById('logRows').innerHTML=logs.map(l=>{
+    let when=l.createdAt?.toDate ? l.createdAt.toDate().toLocaleString() : (l.createdAt||'');
+    return '<tr><td><small>'+when+'</small></td><td><b>'+(l.whoName||'')+'</b></td><td>'+(l.action||'')+'</td><td>'+(l.detail||'')+'</td></tr>';
+  }).join('')||'<tr><td colspan="4">No logs yet</td></tr>';
+}
+function renderAll(){
+  let out=issues.filter(x=>x.status==='OUT');
+  document.getElementById('sBooks').textContent=books.length;
+  document.getElementById('sLearners').textContent=learners.length;
+  document.getElementById('sOut').textContent=out.length;
+  document.getElementById('sOverdue').textContent=out.filter(x=>isOverdue(x.dueDate)).length;
+  renderDepartments(); renderOut();
+  document.getElementById('returnedRows').innerHTML=issues.filter(x=>x.status==='RETURNED').slice(0,30).map(x=>'<tr><td><b>'+x.learnerName+'</b></td><td><b>'+x.bookTitle+'</b><br><small>'+x.bookBarcode+'</small></td><td>'+deptOf(x.subjectCode||'')+' → '+(SUBJECT_NAMES[x.subjectCode]||x.subject||'')+'</td><td>'+condPill(x.conditionOut||x.condition||'')+'</td><td>'+condPill(x.returnCondition||x.conditionReturn||'')+'</td><td>'+(x.returnNotes||'')+'</td><td>'+(x.retrievedByName||'')+'</td><td>'+(x.returnedAt?.toDate?x.returnedAt.toDate().toLocaleDateString():'')+'</td></tr>').join('')||'<tr><td colspan="8">No returned books yet</td></tr>';
+  renderLogs();
+}
+window.renderAll=renderAll;
+
+// Init
+setSchoolTitle(); updateLoginUI(); renderLoginSchoolList(); checkSubBanner();
+if(getSelectedEmis()) startListeners();
+else renderAll();
 </script></body></html>
