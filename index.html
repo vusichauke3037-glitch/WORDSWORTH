@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Home v1.87</title>
+<title>Makhanani LTSM — Home v1.88</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a1f4d">
 <style>
@@ -36,7 +36,6 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 .menu a span{display:block;font-size:22px;margin-bottom:4px}
 .pill{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}
 .pill-ACTIVE{background:#dcfce7;color:#166534}.pill-PENDING{background:#fef3c7;color:#92400e}.pill-SUSPENDED{background:#fee2e2;color:#991b1b}
-/* --- PRICING --- */
 .pricing{max-width:1000px;margin:14px auto;padding:0 14px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:600px){.pricing{grid-template-columns:1fr}}
 .pcard{background:#fff;border:2px solid #0a1f4d;border-radius:16px;padding:18px 14px;text-align:center;position:relative}
@@ -51,15 +50,14 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 </head>
 <body>
 <header>
-<div><h1>📚 Makhanani LTSM</h1><p>Textbook Management System<br>Firebase Live • v1.87</p></div>
-<div><span class="badge">v1.87 FIREBASE</span></div>
+<div><h1>📚 Makhanani LTSM</h1><p>Textbook Management System<br>Firebase Live • v1.88</p></div>
+<div><span class="badge">v1.88 FIREBASE</span></div>
 </header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <div id="cloudIdLabel">schools/...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
-<!-- LOGIN -->
 <div class="card" id="loginCard">
 <h2>🔐 Login — Select School First (by EMIS)</h2>
 <h2 style="font-size:15px;border:none;padding:0">STEP 1 — 🔍 Select / Search School by EMIS</h2>
@@ -68,7 +66,7 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 <div><label>Search EMIS / NAME / TOWN</label><input id="schoolSearch" placeholder="Type e.g. benoni, wordsworth, 7001..."><div class="small">Type to filter dropdown LIVE. No Search button needed. Then click school in dropdown.</div></div>
 </div>
 <div id="selectedSchoolBox" class="ok" style="display:none"></div>
-<div class="manual"><b>⚠️ If dropdown is empty — Manual Entry:</b><br><input id="manualEmis" placeholder="Type EMIS e.g. 700110123" style="margin-top:6px"><input id="manualName" placeholder="Type School Name e.g. WORDSWORTH HIGH SCHOOL" style="margin-top:6px"><button class="btn btn-gold" onclick="manualSelect()">✅ Use This School</button></div>
+<div class="manual"><b>⚠️ If dropdown is empty — Manual Entry:</b><br><input id="manualEmis" placeholder="Type EMIS e.g. 700310854" style="margin-top:6px"><input id="manualName" placeholder="Type School Name e.g. WORDSWORTH HIGH SCHOOL" style="margin-top:6px"><button class="btn btn-gold" onclick="manualSelect()">✅ Use This School</button></div>
 <h2 style="font-size:15px;border:none;padding:0;margin-top:16px">STEP 2 — 👤 Email + Password (Firebase)</h2>
 <div class="grid2">
 <div><label>Email (full email, not name)</label><input id="emailInput" type="email" placeholder="e.g. admin@wordsworth.co.za" autocomplete="email"></div>
@@ -80,7 +78,6 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 <p class="small" style="margin-top:10px">Admin / Principal must have staff doc with <b>role: ADMIN</b> or <b>PRINCIPAL</b> and <b>status: ACTIVE</b> in <b>schools/EMIS_xxx/staff/UID</b>.</p>
 </div>
 
-<!-- DASHBOARD -->
 <div class="card" id="dashCard" style="display:none">
 <h2>👋 Welcome <span id="welcomeName"></span></h2>
 <p><b id="welcomeSchool"></b> • EMIS <span id="welcomeEmis"></span> • <span id="welcomeRole"></span> • <span id="welcomeEmail"></span></p>
@@ -98,7 +95,6 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 <div id="dashMsg"></div>
 </div>
 
-<!-- PRICING — FROM SCREENSHOT -->
 <div style="max-width:1000px;margin:18px auto 0;padding:0 14px">
   <h2 style="text-align:center;color:#0a1f4d;margin:0">💳 Choose Your Plan</h2>
   <p style="text-align:center;font-size:13px;color:#64748b;margin:6px 0 18px">Wordsworth is on <b>PREMIUM Once-off R9 000</b> — Valid to 31 Dec 2027</p>
@@ -145,17 +141,17 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, getDocs, getDoc, doc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const firebaseConfig = {
-  apiKey: "AIzaSyDPCf5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
   databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
   projectId: "makhanani-ltsm",
   storageBucket: "makhanani-ltsm.firebasestorage.app",
   messagingSenderId: "247180363183",
-  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
-  measurementId: "G-PEST1XFCR8"
+  appId: "1:247180363183:web:760b5163fdf421bae01b5a",
+  measurementId: "G-TDFSSF6NTB"
 };
 let app, db, auth;
-try { app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); window.MAKHANANI = { db, auth, app, version: "v1.87" }; } catch(e){ console.error(e); }
+try { app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); window.MAKHANANI = { db, auth, app, version: "v1.88" }; } catch(e){ console.error(e); }
 let ALL_SCHOOLS = [];
 const $ = id => document.getElementById(id);
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || ''; }
@@ -171,7 +167,7 @@ window.selectPlanHome = function(plan, status, amount, billing){
   var m = document.getElementById('planMsg'); if(m) m.innerHTML = '✅ You selected <b>'+plan+'</b> — R'+amount+' '+billing+'. Going to Admin to save...';
   setTimeout(()=>{ window.location.href = 'admin.html'; }, 800);
 };
-window.pushToCloud = async function(){ const emis = getEmis(); if(!emis){ alert('⚠️ Select school first'); return; } try{ const snap = await getDoc(doc(db,'schools','EMIS_'+emis)); const sub = snap.exists() ? snap.data().subscription : null; alert('✅ Cloud OK\n\nSchool: '+getSchool()+'\nEMIS: '+emis+'\nPath: schools/EMIS_'+emis+'\nSubscription: '+(sub ? (sub.plan||'-')+' / '+(sub.status||'-')+' • End: '+(sub.end||'-')+' • R'+(sub.amount||0) : 'NONE')+'\n\nVersion: v1.87'); }catch(e){ alert('❌ '+e.message); } };
+window.pushToCloud = async function(){ const emis = getEmis(); if(!emis){ alert('⚠️ Select school first'); return; } try{ const snap = await getDoc(doc(db,'schools','EMIS_'+emis)); const sub = snap.exists() ? snap.data().subscription : null; alert('✅ Cloud OK\n\nSchool: '+getSchool()+'\nEMIS: '+emis+'\nPath: schools/EMIS_'+emis+'\nSubscription: '+(sub ? (sub.plan||'-')+' / '+(sub.status||'-')+' • End: '+(sub.end||'-')+' • R'+(sub.amount||0) : 'NONE')+'\n\nVersion: v1.88'); }catch(e){ alert('❌ '+e.message); } };
 async function loadDbeSchools(){
   const dd = $('schoolDropdown');
   try{
