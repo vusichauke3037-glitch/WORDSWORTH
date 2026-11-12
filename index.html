@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Home v2.01</title>
+<title>Makhanani LTSM — Home v2.02</title>
 <meta name="theme-color" content="#0a1f4d">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -18,7 +18,7 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
@@ -30,95 +30,72 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
-.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
-.pill-green{background:#dcfce7;color:#166534}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}
 .menuGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px}
 @media(max-width:700px){.menuGrid{grid-template-columns:1fr 1fr}}
 .menuCard{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:16px;text-align:center;cursor:pointer;text-decoration:none;color:#111;display:block}
 .menuCard:hover{border-color:#0a1f4d}
 .menuCard b{font-size:15px;display:block;margin-top:6px}
 .menuCard span{font-size:12px;color:#64748b}
+.diag{background:#fffbeb;border:1.5px solid #d4af37;border-radius:10px;padding:12px;font-size:13px;margin-top:10px;white-space:pre-wrap}
 </style>
 </head>
 <body>
-<header><div><h1>📚 Makhanani LTSM</h1><p>Learner Textbook Management System • v2.01<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.01 HOME FIX</span></div></header>
+<header><div><h1>📚 Makhanani LTSM</h1><p>Learner Textbook Management System • v2.02<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.02 LOGIN FIX</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connected — Select School Below</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
 <div class="card">
 <h2>🔐 Login — Select School First (by EMIS)</h2>
-<div class="small">STEP 1 — Select School, STEP 2 — Login. School is saved on this device for all pages.</div>
-
-<label>STEP 1 — 🏫 Select / Search School by EMIS</label>
+<label>STEP 1 — 🏫 Select School</label>
 <div class="grid2">
-<div>
-<label style="margin-top:0">DBE Dropdown (Value = EMIS) — No Cloud Needed</label>
-<select id="schoolDropdown" onchange="onSchoolDropdown()">
-<option value="">— Select School —</option>
-<option value="700310854|WORDSWORTH HIGH SCHOOL">WORDSWORTH HIGH SCHOOL — EMIS 700310854</option>
-<option value="900000001|TIVANANI PRIMARY SCHOOL">TIVANANI PRIMARY SCHOOL — EMIS 900000001</option>
-</select>
-</div>
-<div>
-<label style="margin-top:0">🔍 Search EMIS / Name</label>
-<input id="schoolSearch" placeholder="Type e.g. 7003 or WORDSWORTH" oninput="filterSchools()">
-<div class="small">Type to filter the dropdown above.</div>
-</div>
+<div><select id="schoolDropdown" onchange="onSchoolDropdown()"><option value="">— Select School —</option><option value="700310854|WORDSWORTH HIGH SCHOOL">WORDSWORTH HIGH SCHOOL — EMIS 700310854</option><option value="900000001|TIVANANI PRIMARY SCHOOL">TIVANANI PRIMARY SCHOOL — EMIS 900000001</option></select></div>
+<div><input id="schoolSearch" placeholder="Type e.g. 7003 or WORDSWORTH to filter" oninput="filterSchools()"></div>
 </div>
 <div class="ok" id="selectedBox" style="display:none">✅ Selected: <b id="selectedText">—</b> — Now do STEP 2 below.</div>
-
-<div class="info" style="margin-top:12px">
-<b>⚠️ If dropdown is empty — Manual Entry:</b><br>
-Type EMIS + School Name below, then click Use This School.
-</div>
-<div class="grid2">
-<div><label>Type EMIS e.g. 700310854</label><input id="manualEmis" placeholder="Type EMIS e.g. 700310854"></div>
-<div><label>Type School Name e.g. WORDSWORTH HIGH SCHOOL</label><input id="manualName" placeholder="Type School Name e.g. WORDSWORTH HIGH SCHOOL"></div>
-</div>
+<div class="info" style="margin-top:12px"><b>⚠️ Manual Entry:</b> If dropdown is empty, type EMIS + Name below.</div>
+<div class="grid2"><div><label>Type EMIS e.g. 700310854</label><input id="manualEmis" placeholder="Type EMIS e.g. 700310854"></div><div><label>Type School Name</label><input id="manualName" placeholder="Type School Name"></div></div>
 <button class="btn btn-gold" onclick="useManualSchool()">✅ Use This School</button>
 
 <label style="margin-top:16px">STEP 2 — 🔐 Login</label>
 <label>Email</label>
-<input id="loginEmail" placeholder="e.g. naledi@wordsworth.co.za" autocomplete="email">
+<input id="loginEmail" placeholder="e.g. vusi@makhanani.co.za" autocomplete="email">
 <label>Password</label>
 <input id="loginPass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter') doLogin()">
 <button class="btn btn-blue" onclick="doLogin()">🔐 Login</button>
 <button class="btn btn-grey" onclick="doLogout()">🚪 Logout</button>
 <div id="loginMsg"></div>
+<div id="diagBox"></div>
 <div class="info" id="currentLoginBox">Not logged in</div>
-<div class="small">First time? Admin must create your user in Admin page first. Default setup: Create ADMIN user there, then login here.</div>
+
+<!-- ===== v2.02 EMERGENCY CREATE ADMIN ===== -->
+<div style="border:2px dashed #7c3aed;border-radius:12px;padding:14px;margin-top:14px;background:#ede9fe">
+<b>🆘 User not found? Create Admin Here (Use ONCE)</b><br>
+<span class="small">If login says "User not found", your user was never saved (Rules blocked it before). Use this to create it now — under the school selected above. It uses the SAME Email + Password you typed above.</span>
+<label>Full Name for Admin</label>
+<input id="adminName" placeholder="e.g. Vusi Chauke" value="Vusi Chauke">
+<button class="btn btn-purple" onclick="createAdminHere()">🆘 Create ADMIN User With This Email + Password</button>
+<button class="btn btn-grey" onclick="diagnoseUsers()">🔍 Diagnose — Where Are My Users?</button>
+<div class="small">After Create, click 🔐 Login again with same Email + Password.</div>
+</div>
 </div>
 
 <div class="card">
 <h2>📊 Quick Menu</h2>
-<div class="small">Click a card to open that page. School + Login carry over automatically.</div>
 <div class="menuGrid">
-<a class="menuCard" href="learner-barcode.html"><div style="font-size:32px">🎓</div><b>Learners</b><span>Add • Print Barcodes • Upload List</span></a>
-<a class="menuCard" href="textbook-barcode.html"><div style="font-size:32px">📖</div><b>Textbooks</b><span>Add • Print Barcodes • Per Subject / Grade</span></a>
-<a class="menuCard" href="issue.html"><div style="font-size:32px">📚</div><b>Issue / Return</b><span>Scan Learner + Book • Teacher Rules</span></a>
-<a class="menuCard" href="librarian.html"><div style="font-size:32px">📚</div><b>Librarian</b><span>Dashboard • Out Now • Returns</span></a>
-<a class="menuCard" href="principal.html"><div style="font-size:32px">👩🏾‍🏫</div><b>Principal</b><span>Reports • All Schools</span></a>
-<a class="menuCard" href="admin.html"><div style="font-size:32px">⚙️</div><b>Admin</b><span>Users • Teacher Subjects • School</span></a>
+<a class="menuCard" href="learner-barcode.html"><div style="font-size:32px">🎓</div><b>Learners</b><span>Add • Print Barcodes</span></a>
+<a class="menuCard" href="textbook-barcode.html"><div style="font-size:32px">📖</div><b>Textbooks</b><span>Add • Print Barcodes</span></a>
+<a class="menuCard" href="issue.html"><div style="font-size:32px">📚</div><b>Issue / Return</b><span>Scan Learner + Book</span></a>
+<a class="menuCard" href="librarian.html"><div style="font-size:32px">📚</div><b>Librarian</b><span>Dashboard</span></a>
+<a class="menuCard" href="principal.html"><div style="font-size:32px">👩🏾‍🏫</div><b>Principal</b><span>Reports</span></a>
+<a class="menuCard" href="admin.html"><div style="font-size:32px">⚙️</div><b>Admin</b><span>Users • Teacher Subjects</span></a>
 </div>
-</div>
-
-<div class="card">
-<h2>📏 Rules Reminder</h2>
-<table>
-<tr><th>Rule</th><th>What happens</th></tr>
-<tr><td>Teacher Issue</td><td>Teacher can Issue ONLY their own Subject (from dropdown in Admin)</td></tr>
-<tr><td>Teacher Return</td><td>Teacher can Return ANY book, any subject</td></tr>
-<tr><td>Learner Grade</td><td>Learner can ONLY receive books of THEIR grade</td></tr>
-<tr><td>Same Title Twice</td><td>Learner CANNOT get same Title twice while first copy is OUT</td></tr>
-<tr><td>Teacher Edit</td><td>Teacher CANNOT edit/delete books or learners — can only ADD learners</td></tr>
-</table>
 </div>
 </main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
@@ -131,7 +108,6 @@ const firebaseConfig = {
 };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){}
 const $ = id => document.getElementById(id);
-// ===== v2.01 - HARDCODED SCHOOLS, NO FIRESTORE READ NEEDED =====
 const SCHOOLS = [
   { emis:'700310854', name:'WORDSWORTH HIGH SCHOOL' },
   { emis:'900000001', name:'TIVANANI PRIMARY SCHOOL' }
@@ -154,54 +130,112 @@ function rebuildDropdown(filter){
   $('schoolDropdown').innerHTML='<option value="">— Select School —</option>'+list.map(s=>`<option value="${s.emis}|${s.name}" ${cur===s.emis+'|'+s.name?'selected':''}>${s.name} — EMIS ${s.emis}</option>`).join('');
 }
 window.filterSchools = function(){ rebuildDropdown($('schoolSearch').value); };
-window.onSchoolDropdown = function(){
-  const v=$('schoolDropdown').value; if(!v) return;
-  const [emis, name]=v.split('|'); saveSchool(emis, name);
-};
+window.onSchoolDropdown = function(){ const v=$('schoolDropdown').value; if(!v) return; const [emis, name]=v.split('|'); saveSchool(emis, name); };
 window.useManualSchool = function(){
-  const emis=($('manualEmis').value||'').trim();
-  const name=($('manualName').value||'').trim().toUpperCase();
+  const emis=($('manualEmis').value||'').trim(); const name=($('manualName').value||'').trim().toUpperCase();
   if(!emis || !name){ alert('Type EMIS + School Name first.'); return; }
   saveSchool(emis, name);
-  // Add to dropdown if new
   if(!SCHOOLS.find(s=>s.emis===emis)) SCHOOLS.push({emis:emis, name:name});
-  rebuildDropdown('');
-  $('schoolDropdown').value=emis+'|'+name;
+  rebuildDropdown(''); $('schoolDropdown').value=emis+'|'+name;
 };
+// ===== v2.02 LOGIN - searches selected EMIS, then global, then ALL known EMIS =====
+async function findUser(email){
+  const emis=localStorage.getItem('MAKHANANI_SELECTED_EMIS')||'700310854';
+  let found=null; let foundWhere='';
+  // 1. Selected school
+  try{
+    const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'users'));
+    snap.forEach(d=>{ const u=d.data(); if(String(u.email||'').toLowerCase()===email) { found={id:d.id, ...u}; foundWhere='schools/EMIS_'+emis+'/users'; } });
+    if(found) return {found, foundWhere};
+  }catch(e){}
+  // 2. Global users
+  try{
+    const g=await getDocs(collection(db,'users'));
+    g.forEach(d=>{ const u=d.data(); if(String(u.email||'').toLowerCase()===email) { found={id:d.id, ...u}; foundWhere='users (global)'; } });
+    if(found) return {found, foundWhere};
+  }catch(e){}
+  // 3. Other known EMIS - user may have been created under wrong school
+  for(const s of SCHOOLS){
+    if(s.emis===emis) continue;
+    try{
+      const snap=await getDocs(collection(db,'schools','EMIS_'+s.emis,'users'));
+      snap.forEach(d=>{ const u=d.data(); if(String(u.email||'').toLowerCase()===email) { found={id:d.id, ...u}; foundWhere='schools/EMIS_'+s.emis+'/users — WRONG SCHOOL! You created it under '+s.name; } });
+      if(found) return {found, foundWhere};
+    }catch(e){}
+  }
+  return {found:null, foundWhere:''};
+}
 window.doLogin = async function(){
   const email=($('loginEmail').value||'').trim().toLowerCase();
   const pass=$('loginPass').value||'';
   const emis=localStorage.getItem('MAKHANANI_SELECTED_EMIS')||'700310854';
   const school=localStorage.getItem('MAKHANANI_SELECTED_SCHOOL')||'WORDSWORTH HIGH SCHOOL';
   if(!email || !pass){ $('loginMsg').innerHTML='<div class="warn">⚠️ Type Email + Password.</div>'; return; }
-  $('loginMsg').innerHTML='<div class="info">Logging in...</div>';
+  $('loginMsg').innerHTML='<div class="info">Logging in... searching all schools...</div>';
+  $('diagBox').innerHTML='';
   try{
-    let found=null;
-    // Try school users first - if permissions block, we catch and show clear message, NOT "Failed to load schools"
-    try{
-      const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'users'));
-      snap.forEach(d=>{ const u=d.data(); if(String(u.email||'').toLowerCase()===email) found={id:d.id, ...u}; });
-    }catch(e){
-      // Permissions blocked for this read - try global users
-      try{
-        const g=await getDocs(collection(db,'users'));
-        g.forEach(d=>{ const u=d.data(); if(String(u.email||'').toLowerCase()===email) found={id:d.id, ...u}; });
-      }catch(e2){}
-    }
+    const {found, foundWhere} = await findUser(email);
     if(!found){
-      $('loginMsg').innerHTML='<div class="warn">❌ User not found for <b>'+school+'</b>.<br>1. Check Email spelling<br>2. Check School selected is correct<br>3. Admin must create this user in Admin page first.<br><span class="small">If you just created the user, wait 5 seconds and try again.</span></div>';
+      $('loginMsg').innerHTML='<div class="warn">❌ User not found for <b>'+school+'</b> (EMIS '+emis+').<br>1. Check Email spelling: you typed <b>'+email+'</b><br>2. Check School is correct<br>3. User was never saved — Rules blocked it before. Use <b>🆘 Create ADMIN User</b> below with same Email + Password, then Login again.</div>';
       return;
     }
-    if(String(found.password||'')!==pass){ $('loginMsg').innerHTML='<div class="warn">❌ Wrong password for '+email+'</div>'; return; }
-    const loginObj={ email:found.email, name:found.name||found.fullName||'', role:(found.role||'TEACHER').toUpperCase(), subject:found.subject||'', subjects:found.subjects|| (found.subject? [found.subject] : []), grades:found.grades||'', emis:emis, school:school };
+    if(String(found.password||'')!==pass){ $('loginMsg').innerHTML='<div class="warn">❌ Wrong password for '+email+'<br>Found in: '+foundWhere+'</div>'; return; }
+    // If found under wrong school, tell user but still login and fix school
+    if(foundWhere.includes('WRONG SCHOOL')){
+      // Auto-save correct school? No - switch to the school where user actually lives
+      const m=foundWhere.match(/EMIS_(\d+)/);
+      if(m){
+        const realEmis=m[1]; const realSchool=SCHOOLS.find(s=>s.emis===realEmis)?.name || found.school || school;
+        saveSchool(realEmis, realSchool);
+        $('schoolDropdown').value=realEmis+'|'+realSchool;
+      }
+    }
+    const loginObj={ email:found.email, name:found.name||found.fullName||'', role:(found.role||'TEACHER').toUpperCase(), subject:found.subject||'', subjects:found.subjects|| (found.subject? [found.subject] : []), grades:found.grades||'', emis:localStorage.getItem('MAKHANANI_SELECTED_EMIS'), school:localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') };
     setLogin(loginObj);
-    $('loginMsg').innerHTML='<div class="ok">✅ Logged in as <b>'+loginObj.name+' • '+loginObj.role+'</b>'+(loginObj.subject? ' • Subject: '+loginObj.subject : '')+'<br>School: '+school+'</div>';
+    $('loginMsg').innerHTML='<div class="ok">✅ Logged in as <b>'+loginObj.name+' • '+loginObj.role+'</b>'+(loginObj.subject? ' • Subject: '+loginObj.subject : '')+'<br>School: '+loginObj.school+'<br><span class="small">Found in: '+foundWhere+'</span></div>';
     updateLoginBox();
-  }catch(e){ $('loginMsg').innerHTML='<div class="warn">❌ Login failed: '+e.message+'<br>Check internet / try again.</div>'; }
+  }catch(e){ $('loginMsg').innerHTML='<div class="warn">❌ Login failed: '+e.message+'</div>'; }
 };
-window.doLogout = function(){
-  localStorage.removeItem('MAKHANANI_LOGGED_IN');
-  $('loginMsg').innerHTML='<div class="info">Logged out.</div>'; updateLoginBox();
+window.doLogout = function(){ localStorage.removeItem('MAKHANANI_LOGGED_IN'); $('loginMsg').innerHTML='<div class="info">Logged out.</div>'; updateLoginBox(); };
+// ===== v2.02 CREATE ADMIN HERE =====
+window.createAdminHere = async function(){
+  const email=($('loginEmail').value||'').trim().toLowerCase();
+  const pass=$('loginPass').value||'';
+  const name=($('adminName').value||'').trim() || 'Vusi Chauke';
+  const emis=localStorage.getItem('MAKHANANI_SELECTED_EMIS')||'700310854';
+  const school=localStorage.getItem('MAKHANANI_SELECTED_SCHOOL')||'WORDSWORTH HIGH SCHOOL';
+  if(!email || !pass){ alert('Type Email + Password above first, then click Create Admin.'); return; }
+  if(!confirm('Create ADMIN user:\n\n'+name+'\n'+email+'\nSchool: '+school+' (EMIS '+emis+')\n\nContinue?')) return;
+  $('loginMsg').innerHTML='<div class="info">Creating ADMIN user...</div>';
+  try{
+    const id=email.replace(/[^a-z0-9]/g,'_');
+    const data={ name:name, fullName:name, email:email, password:pass, role:'ADMIN', subject:'', subjects:[], grades:'', emis:emis, school:school, createdAt:serverTimestamp(), updatedAt:serverTimestamp() };
+    // Save to BOTH places so login always finds it
+    await setDoc(doc(db,'schools','EMIS_'+emis,'users',id), data, {merge:true});
+    await setDoc(doc(db,'users',id), data, {merge:true});
+    $('loginMsg').innerHTML='<div class="ok">✅ ADMIN Created: <b>'+name+' • '+email+'</b><br>School: '+school+' (EMIS '+emis+')<br>Now click <b>🔐 Login</b> with same Email + Password.</div>';
+    $('diagBox').innerHTML='<div class="diag">Saved to:\n- schools/EMIS_'+emis+'/users/'+id+'\n- users/'+id+'</div>';
+  }catch(e){
+    $('loginMsg').innerHTML='<div class="warn">❌ Create failed: '+e.message+'<br><br>This means Firestore Rules are NOT yet published. Go to Firebase Console → Firestore → Rules → Paste Open Rules → Publish → Try again.</div>';
+  }
+};
+window.diagnoseUsers = async function(){
+  $('diagBox').innerHTML='<div class="diag">Diagnosing... checking all schools...</div>';
+  let out='DIAGNOSIS:\n';
+  for(const s of SCHOOLS){
+    try{
+      const snap=await getDocs(collection(db,'schools','EMIS_'+s.emis,'users'));
+      out+='\n'+s.name+' (EMIS '+s.emis+'): '+snap.size+' user(s)\n';
+      snap.forEach(d=>{ const u=d.data(); out+='  - '+(u.email||'')+' • '+(u.name||'')+' • '+(u.role||'')+(u.subject? ' • '+u.subject : '')+'\n'; });
+    }catch(e){ out+='\n'+s.name+': ❌ Read blocked: '+e.message+'\n'; }
+  }
+  try{
+    const g=await getDocs(collection(db,'users'));
+    out+='\nGlobal users collection: '+g.size+' user(s)\n';
+    g.forEach(d=>{ const u=d.data(); out+='  - '+(u.email||'')+' • '+(u.name||'')+' • '+(u.role||'')+'\n'; });
+  }catch(e){ out+='\nGlobal users: ❌ '+e.message+'\n'; }
+  out+='\nSelected school now: '+(localStorage.getItem('MAKHANANI_SELECTED_SCHOOL')||'')+' EMIS '+(localStorage.getItem('MAKHANANI_SELECTED_EMIS')||'');
+  $('diagBox').innerHTML='<div class="diag">'+out+'</div>';
 };
 function updateLoginBox(){
   const l=getLogin();
@@ -215,7 +249,6 @@ function updateLoginBox(){
   }
 }
 document.addEventListener('DOMContentLoaded', ()=>{
-  // Restore saved school - NO Firestore call, so NO permission error
   const emis=localStorage.getItem('MAKHANANI_SELECTED_EMIS')||'700310854';
   const school=localStorage.getItem('MAKHANANI_SELECTED_SCHOOL')||'WORDSWORTH HIGH SCHOOL';
   rebuildDropdown('');
