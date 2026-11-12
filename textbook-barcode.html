@@ -3,24 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v2.01</title>
+<title>Makhanani LTSM — Textbooks v2.03</title>
 <meta name="theme-color" content="#0a1f4d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
 header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:12px;opacity:.85}
+.logoHeader{display:flex;align-items:center;gap:12px}
+.logoHeader img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:12px;padding:4px;flex-shrink:0}
+.logoHeader h1{margin:0;font-size:20px}
+.logoHeader p{margin:2px 0 0;font-size:12px;opacity:.85}
+@media(max-width:700px){.logoHeader img{width:44px;height:44px}}
 .badge{background:#d4af37;color:#0a1f4d;font-weight:900;padding:4px 10px;border-radius:20px;font-size:12px}
 main{max-width:1100px;margin:auto;padding:14px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
-input:disabled,select:disabled{opacity:.5;background:#f1f5f9}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 @media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}.btn-orange{background:#ea580c;color:#fff}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
@@ -34,126 +43,95 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
-.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}
+.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}.pill-orange{background:#ffedd5;color:#9a3412}
 .dueBanner{background:#fffbeb;border:2px solid #d4af37;border-radius:12px;padding:14px;text-align:center;font-weight:900;font-size:16px;color:#92400e;margin-top:10px}
 .dueBanner b{color:#0a1f4d}
-.statRow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:10px}
-@media(max-width:700px){.statRow{grid-template-columns:1fr 1fr}}
-.stat{background:#f8fafc;border-radius:10px;padding:12px;text-align:center}
-.stat b{font-size:22px;display:block;color:#0a1f4d}
-.stat span{font-size:12px;color:#64748b}
-.barcodeBox{border:2px dashed #0a1f4d;border-radius:12px;padding:14px;text-align:center;background:#fff;margin:10px 0}
-.barcodeBox .code{font-family:'Courier New',monospace;font-size:28px;font-weight:900;letter-spacing:4px}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .tabs button{padding:10px 16px;border:none;border-radius:20px;font-weight:900;cursor:pointer;background:#e2e8f0}
 .tabs button.active{background:#0a1f4d;color:#fff}
-.locked{opacity:.6;pointer-events:none;filter:grayscale(0.3)}
-@page{ size:A4; margin:10mm; }
+.lockNote{background:#fef3c7;border:1.5px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;text-align:center;font-weight:700}
+.barcodeBox{background:#fff;border:2px solid #111;border-radius:8px;padding:10px;text-align:center;margin:8px}
+.barcodeBox .bcode{font-family:'Courier New',monospace;font-weight:900;font-size:18px;letter-spacing:2px}
+.barcodeBox .bname{font-weight:900;font-size:14px}
+.barcodeBox .bmeta{font-size:11px;color:#555}
+.printOnly{display:none}
+@page{ size:A4; margin:8mm; }
 @media print{
   header,#cloudStatus,.topnav,.btn,.noPrint{display:none!important}
-  body{background:#fff} main{max-width:100%;padding:0} .card{box-shadow:none;border:none}
+  body{background:#fff} main{max-width:100%;padding:0} .card{box-shadow:none;border:none;padding:0;margin:0}
   .printOnly{display:block!important}
-  .barcodePrint{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-  .barcodePrint .barcodeBox{break-inside:avoid}
+  .printGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .printGrid .barcodeBox{margin:0;break-inside:avoid}
+  .printLogo{width:48px;height:48px;object-fit:contain}
 }
-.printOnly{display:none}
 </style>
 </head>
 <body>
-<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Textbook Barcodes • Due 30 Nov • v2.01<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.01 TEXTBOOKS</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Textbooks — Makhanani LTSM</h1><p>Add Books • Print Barcodes • Due 30 Nov • v2.03<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.03 TEXTBOOKS</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
-<div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
+<div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
-<div class="card">
-<h2>🏫 School + Role</h2>
+<div class="card noPrint">
+<h2>📖 Add / Edit Book</h2>
 <div class="info" id="schoolBox">School: —</div>
 <div class="info" id="roleBox">Role: —</div>
-<div class="dueBanner" id="dueBanner">📅 ALL BOOKS DUE: <b>30 November</b> — <span id="dueCountdown">—</span></div>
-<div class="statRow">
-<div class="stat"><b id="statTotal">0</b><span>📖 Total Books</span></div>
-<div class="stat"><b id="statAvail">0</b><span>✅ Available</span></div>
-<div class="stat"><b id="statIssued">0</b><span>📚 Out Now</span></div>
-<div class="stat"><b id="statOverdue">0</b><span>⚠️ Overdue (Past 30 Nov)</span></div>
-</div>
-</div>
-
-<div class="card noPrint" id="addBookCard">
-<h2>➕ Add / Edit Textbook — One Book = One Barcode</h2>
-<div class="small">Each physical copy gets its OWN barcode: WHS000001, WHS000002... If you have 10 copies of same Title, add with Quantity = 10.<br><b>TEACHER CANNOT Add / Edit / Delete books — View Only. Only Librarian / Admin / Principal / HOD can manage books.</b></div>
-<div id="addLockedMsg"></div>
-<div id="addBookForm">
-<label>Title *</label>
-<input id="bTitle" placeholder="e.g. Study and Master Grade 10 Accounting">
-<div class="grid3">
-<div><label>Subject *</label><select id="bSubject"><option value="">— Select Subject —</option><option>Accounting</option><option>Afrikaans</option><option>Agricultural Sciences</option><option>Business Studies</option><option>CAT</option><option>Consumer Studies</option><option>Economics</option><option>English</option><option>Geography</option><option>History</option><option>Life Orientation</option><option>Life Sciences</option><option>Mathematical Literacy</option><option>Mathematics</option><option>Natural Sciences</option><option>Physical Sciences</option><option>Sepedi</option><option>Setswana</option><option>Social Sciences</option><option>Technology</option><option>Tourism</option><option>Visual Arts</option><option>isiZulu</option><option>isiXhosa</option></select></div>
-<div><label>Grade *</label><select id="bGrade"><option value="">— Select Grade —</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
-<div><label>Quantity — How many copies?</label><input id="bQty" type="number" min="1" max="100" value="1"></div>
+<div class="lockNote" id="permissionNote"></div>
+<div class="small">Teacher CANNOT Add / Edit Books — View + Print only. Librarian / Admin can Add + Edit + Delete.<br>Book Code is auto-generated if blank — e.g. <b>WHS-ACC10-001</b>. Or type your own sticker number.</div>
+<label>Book Title</label>
+<input id="bTitle" placeholder="e.g. Accounting Grade 10 Learner Book">
+<div class="grid2">
+<div><label>Subject</label><select id="bSubject"><option value="">— Subject —</option><option>Accounting</option><option>Afrikaans</option><option>Agricultural Sciences</option><option>Business Studies</option><option>CAT</option><option>Consumer Studies</option><option>Economics</option><option>English</option><option>Geography</option><option>History</option><option>Life Orientation</option><option>Life Sciences</option><option>Mathematical Literacy</option><option>Mathematics</option><option>Natural Sciences</option><option>Physical Sciences</option><option>Sepedi</option><option>Setswana</option><option>Social Sciences</option><option>Technology</option><option>Tourism</option><option>Visual Arts</option><option>isiZulu</option><option>isiXhosa</option></select></div>
+<div><label>Grade</label><select id="bGrade"><option value="">— Grade —</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option></select></div>
 </div>
 <div class="grid2">
-<div><label>Publisher / Edition (optional)</label><input id="bPublisher" placeholder="e.g. Cambridge, 2023"></div>
-<div><label>Barcode (Auto — Leave Blank for New)</label><input id="bBarcode" placeholder="Auto: WHS000002" style="text-transform:uppercase"></div>
+<div><label>Book Code / Barcode (auto if blank)</label><input id="bCode" placeholder="e.g. WHS-ACC10-001" style="text-transform:uppercase"></div>
+<div><label>Quantity — How many copies? (Add Multiple at once)</label><input id="bQty" type="number" min="1" max="100" value="1"></div>
 </div>
-<button class="btn btn-green" id="saveBookBtn" onclick="saveBook()">✅ Save Textbook</button>
-<button class="btn btn-grey" onclick="clearBookForm()">🔄 Clear — New Textbook</button>
+<div class="grid2">
+<div><label>Publisher (optional)</label><input id="bPublisher" placeholder="e.g. Via Afrika"></div>
+<div><label>Condition (optional)</label><select id="bCondition"><option value="GOOD">GOOD</option><option value="DAMAGED">DAMAGED</option><option value="LOST">LOST</option></select></div>
 </div>
+<button class="btn btn-green" id="saveBookBtn" onclick="saveBook()">✅ Save Book</button>
+<button class="btn btn-grey" onclick="clearBookForm()">🔄 Clear Form — New Book</button>
 <div id="bookMsg"></div>
-<div id="newBarcodeBox"></div>
 </div>
 
-<div class="card noPrint" id="bulkCard">
-<h2>📥 Bulk Upload — Paste Book List</h2>
-<div class="small">One book per line: <b>Title, Subject, Grade, Quantity</b><br>Example:<br><code>Study and Master Grade 10 Accounting, Accounting, Grade 10, 5<br>Platinum Grade 10 Mathematics, Mathematics, Grade 10, 10</code><br>Each copy gets its own WHS barcode automatically. <b>Teacher CANNOT bulk upload.</b></div>
-<div id="bulkLockedMsg"></div>
-<div id="bulkForm">
-<label>Paste List Here</label>
-<textarea id="bulkText" rows="5" style="width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:13px" placeholder="Study and Master Grade 10 Accounting, Accounting, Grade 10, 5&#10;Platinum Grade 10 Mathematics, Mathematics, Grade 10, 10"></textarea>
-<button class="btn btn-purple" onclick="bulkUpload()">📥 Upload List</button>
-</div>
-<div id="bulkMsg"></div>
-</div>
-
-<div class="card">
-<h2>📖 All Textbooks (<span id="bookCount">0</span>)</h2>
-<div class="tabs">
-<button id="tabAllB" class="active" onclick="setTab('ALL')">🌍 All</button>
-<button id="tabAvail" onclick="setTab('AVAIL')">✅ Available</button>
-<button id="tabOut" onclick="setTab('OUT')">📚 Out Now</button>
-<button id="tabOver" onclick="setTab('OVERDUE')">⚠️ Overdue</button>
-</div>
+<div class="card noPrint">
+<h2>📖 All Books (<span id="bookCount">0</span>)</h2>
 <div class="grid2">
-<div><label>🔍 Search title / barcode / subject</label><input id="bookSearch" placeholder="Accounting, WHS000001, Study and Master..." oninput="renderBooks()"></div>
-<div><label>Filter by Grade</label><select id="bookGradeFilter" onchange="renderBooks()"><option value="">All Grades</option></select></div>
-</div>
-<div class="grid2">
+<div><label>🔍 Search title / code / subject</label><input id="bookSearch" placeholder="Search..." oninput="renderBooks()"></div>
 <div><label>Filter by Subject</label><select id="bookSubjectFilter" onchange="renderBooks()"><option value="">All Subjects</option></select></div>
-<div><label>Sort</label><select id="bookSort" onchange="renderBooks()"><option value="TITLE">Title A-Z</option><option value="SUBJECT">Subject → Title</option><option value="GRADE">Grade → Title</option><option value="BARCODE">Barcode</option></select></div>
 </div>
-<div class="small"><span id="bookCountText">Loading...</span> • Teacher can VIEW + PRINT barcodes, but CANNOT Add / Edit / Delete.</div>
+<div class="grid2">
+<div><label>Filter by Grade</label><select id="bookGradeFilter" onchange="renderBooks()"><option value="">All Grades</option></select></div>
+<div><label>Filter by Status</label><select id="bookStatusFilter" onchange="renderBooks()"><option value="">All Status</option><option value="AVAILABLE">✅ AVAILABLE</option><option value="ISSUED">📚 ISSUED</option><option value="DAMAGED">🩹 DAMAGED</option><option value="LOST">❌ LOST</option></select></div>
+</div>
+<div class="grid2">
+<div><label>Print Filter</label><select id="printFilter"><option value="FILTERED">🖨️ Print FILTERED list (what you see)</option><option value="ALL">🖨️ Print ALL books</option><option value="AVAILABLE">🖨️ Print only AVAILABLE</option></select></div>
+<div><label>—</label><button class="btn btn-blue" onclick="printBarcodes()" style="margin-top:0">🖨️ Print Barcodes</button></div>
+</div>
+<button class="btn btn-gold" onclick="exportBooksCSV()">📥 Export Books (CSV)</button>
 <div id="bookList"></div>
-<div class="grid2 noPrint">
-<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button>
-<button class="btn btn-gold" onclick="printAllBarcodes()">🖨️ Print All Barcodes (This Filter)</button>
-</div>
+<button class="btn btn-grey" onclick="loadAll()">🔄 Refresh</button>
 </div>
 
-<div class="card">
-<h2>📊 Stock by Title — How Many Copies?</h2>
-<div class="small">Grouped by Title + Grade. Shows total copies, how many OUT, how many on shelf.</div>
-<div id="stockList"></div>
+<div class="card printOnly" id="printCard">
+<div style="text-align:center;border-bottom:3px solid #0a1f4d;padding-bottom:8px">
+<img src="logo.png" alt="Makhanani Logo" class="printLogo" onerror="this.style.display='none'">
+<h2 style="border:none;margin:4px 0 0;font-size:20px">MAKHANANI LTSM — TEXTBOOK BARCODES</h2>
+<div style="font-size:14px;font-weight:900" id="printTitle">WORDSWORTH HIGH SCHOOL</div>
+<div style="font-size:12px" id="printMeta">Printed: —</div>
 </div>
-
-<div class="card printOnly" id="printBarcodesCard">
-<h2>🖨️ Textbook Barcodes — <span id="printSchoolName"></span></h2>
-<div class="small">Stick one label inside front cover of each book. Scan with Issue page.</div>
-<div class="barcodePrint" id="printBarcodesList"></div>
+<div style="font-size:12px;margin:8px 0" id="printSummary"></div>
+<div class="printGrid" id="printList"></div>
+<div style="margin-top:10px;font-size:11px;text-align:center">Makhanani LTSM • WORDSWORTH HIGH SCHOOL • EMIS 700310854 • ALL BOOKS DUE 30 NOVEMBER • Stick barcode inside front cover</div>
 </div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
@@ -166,294 +144,166 @@ const firebaseConfig = {
 };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
-let ALL_BOOKS=[], ALL_ISSUES=[], TAB='ALL', EDIT_ID=null;
+let ALL_BOOKS=[], EDIT_ID=null;
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
-// ===== v2.01 PERMISSIONS — TEACHER CANNOT ADD/EDIT BOOKS =====
-function canManageBooks(){
-  const r=getRole();
-  return r==='ADMIN' || r==='LIBRARIAN' || r==='PRINCIPAL' || r==='HOD';
+function canManage(){ return ['LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
+function applyRole(){
+  const login=getLogin();
+  if(!login){ $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; $('permissionNote').innerHTML='⚠️ Login in Home first.'; return; }
+  if(getRole()==='TEACHER'){ $('roleBox').innerHTML='Role: <b>TEACHER</b> • View + Print only • CANNOT Add / Edit / Delete Books'; $('permissionNote').innerHTML='🔒 TEACHER — You can VIEW + PRINT book barcodes, but CANNOT Add / Edit / Delete books. Ask Librarian / Admin.'; $('saveBookBtn').disabled=true; $('saveBookBtn').textContent='🔒 TEACHER — Cannot Add Books'; }
+  else if(getRole()==='LIBRARIAN'){ $('roleBox').innerHTML='Role: <b>LIBRARIAN</b> • Can Add + Edit + Delete Books'; $('permissionNote').innerHTML='✅ LIBRARIAN — Full book control.'; }
+  else if(getRole()==='ADMIN'){ $('roleBox').innerHTML='Role: <b>ADMIN</b> • Full Access'; $('permissionNote').innerHTML='✅ ADMIN — Full book control.'; }
+  else { $('roleBox').innerHTML='Role: <b>'+getRole()+'</b>'; $('permissionNote').innerHTML=''; }
 }
-function canAdd(){ return canManageBooks(); }
-function canEditDelete(){ return canManageBooks(); }
-function applyBookAccess(){
-  const login=getLogin(); const role=getRole();
-  const can=canManageBooks();
-  if(!login){
-    $('addLockedMsg').innerHTML='<div class="warn">⚠️ Login first to manage books.</div>';
-    $('addBookForm').classList.add('locked');
-    $('addBookForm').querySelectorAll('input,select,button').forEach(el=>el.disabled=true);
-    $('bulkForm').classList.add('locked');
-    $('bulkForm').querySelectorAll('textarea,button').forEach(el=>el.disabled=true);
-    $('bulkLockedMsg').innerHTML='<div class="warn">⚠️ Login first.</div>';
-    return;
-  }
-  if(!can){
-    // TEACHER
-    $('addLockedMsg').innerHTML='<div class="warn">🚫 <b>TEACHER CANNOT Add / Edit Books.</b><br>You can VIEW + PRINT barcodes below. Only Librarian / Admin / Principal / HOD can Add / Edit / Delete books. Ask Librarian to add books.</div>';
-    $('addBookForm').classList.add('locked');
-    $('addBookForm').querySelectorAll('input,select,button').forEach(el=>el.disabled=true);
-    $('bulkLockedMsg').innerHTML='<div class="warn">🚫 Teacher CANNOT bulk upload books.</div>';
-    $('bulkForm').classList.add('locked');
-    $('bulkForm').querySelectorAll('textarea,button').forEach(el=>el.disabled=true);
-  } else {
-    $('addLockedMsg').innerHTML='';
-    $('addBookForm').classList.remove('locked');
-    $('addBookForm').querySelectorAll('input,select,button').forEach(el=>el.disabled=false);
-    $('bulkLockedMsg').innerHTML='';
-    $('bulkForm').classList.remove('locked');
-    $('bulkForm').querySelectorAll('textarea,button').forEach(el=>el.disabled=false);
-  }
-}
-function getPrefix(){ const emis=getEmis(); if(emis==='700310854') return 'WHS'; return 'BKS'; }
-function getDueDateForIssue(d){ const dt=d?new Date(d):new Date(); let y=dt.getFullYear(); if(dt.getMonth()===11) y++; return new Date(y,10,30); }
-function getDueDateForRecord(x){
-  if(x.dueDate){ try{ const d=x.dueDate.toDate?x.dueDate.toDate():new Date(x.dueDate); if(!isNaN(d.getTime())) return d; }catch(e){} }
-  if(x.issuedAt){ try{ const d=x.issuedAt.toDate?x.issuedAt.toDate():new Date(x.issuedAt); return getDueDateForIssue(d); }catch(e){} }
-  return getDueDateForIssue(new Date());
-}
-function fmtDue(d){ try{ return d.toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'}); }catch(e){ return '30 Nov'; } }
-function daysUntilDue(x){ const due=getDueDateForRecord(x); const today=new Date(); today.setHours(0,0,0,0); const dueDay=new Date(due); dueDay.setHours(0,0,0,0); return Math.ceil((dueDay-today)/(1000*60*60*24)); }
-function isOverdue(x){ return x.status==='OUT' && daysUntilDue(x) < 0; }
-function updateDueBanner(){
-  const due=getDueDateForIssue(new Date());
-  const today=new Date(); today.setHours(0,0,0,0);
-  const days=Math.ceil((new Date(due).setHours(0,0,0,0)-today)/(1000*60*60*24));
-  let txt=''; if(days<0) txt='⚠️ OVERDUE — '+Math.abs(days)+' day(s) PAST due.'; else if(days===0) txt='⚠️ DUE TODAY!'; else if(days===1) txt='⏰ 1 day left — Due TOMORROW!'; else txt=days+' days left until due date';
-  $('dueBanner').innerHTML='📅 ALL BOOKS DUE: <b>'+fmtDue(due)+'</b> — '+txt;
-}
-window.setTab = function(t){
-  TAB=t; ['tabAllB','tabAvail','tabOut','tabOver'].forEach(id=>$(id).classList.remove('active'));
-  if(t==='ALL') $('tabAllB').classList.add('active');
-  if(t==='AVAIL') $('tabAvail').classList.add('active');
-  if(t==='OUT') $('tabOut').classList.add('active');
-  if(t==='OVERDUE') $('tabOver').classList.add('active');
-  renderBooks();
-};
 window.clearBookForm = function(){
-  EDIT_ID=null; $('bTitle').value=''; $('bSubject').value=''; $('bGrade').value=''; $('bQty').value='1'; $('bPublisher').value=''; $('bBarcode').value='';
-  $('saveBookBtn').textContent='✅ Save Textbook'; $('bookMsg').innerHTML=''; $('newBarcodeBox').innerHTML='';
-  $('bBarcode').disabled=false; $('bQty').disabled=false;
-  applyBookAccess();
+  EDIT_ID=null;
+  $('bTitle').value=''; $('bSubject').value=''; $('bGrade').value=''; $('bCode').value=''; $('bQty').value='1'; $('bPublisher').value=''; $('bCondition').value='GOOD';
+  $('saveBookBtn').textContent='✅ Save Book';
+  if(getRole()==='TEACHER'){ $('saveBookBtn').disabled=true; $('saveBookBtn').textContent='🔒 TEACHER — Cannot Add Books'; } else { $('saveBookBtn').disabled=false; }
+  $('bookMsg').innerHTML='';
 };
+function makeBookCode(subject, grade){
+  const subj = String(subject||'').replace(/[^A-Za-z]/g,'').substring(0,3).toUpperCase() || 'GEN';
+  const gNum = String(grade||'').replace(/[^0-9]/g,'') || '10';
+  let maxNum=0;
+  ALL_BOOKS.filter(b=> (b.subject||'')===subject && (b.grade||'')===grade).forEach(b=>{
+    const m=String(b.code||'').match(/(\d+)$/);
+    if(m) maxNum=Math.max(maxNum, parseInt(m[1]));
+  });
+  const next=maxNum+1;
+  return 'WHS-'+subj+gNum+'-'+String(next).padStart(3,'0');
+}
 window.saveBook = async function(){
-  if(!canManageBooks()){
-    alert('🚫 TEACHER CANNOT Add / Edit Books.\n\nOnly Librarian / Admin / Principal / HOD can add books.\nAsk Librarian to add the book.');
-    $('bookMsg').innerHTML='<div class="warn">🚫 <b>TEACHER CANNOT Add / Edit Books.</b> Ask Librarian / Admin.</div>';
-    return;
-  }
-  const emis=getEmis(); const school=getSchool();
+  if(!canManage()){ alert('🚫 TEACHER cannot Add / Edit Books. View + Print only.'); return; }
+  const emis=getEmis();
   const title=($('bTitle').value||'').trim();
   const subject=$('bSubject').value;
   const grade=$('bGrade').value;
+  let code=($('bCode').value||'').trim().toUpperCase();
+  const qty=parseInt($('bQty').value||'1') || 1;
   const publisher=($('bPublisher').value||'').trim();
-  let qty=parseInt($('bQty').value||'1'); if(isNaN(qty)||qty<1) qty=1; if(qty>100) qty=100;
-  let barcode=($('bBarcode').value||'').trim().toUpperCase();
+  const condition=$('bCondition').value;
   if(!title || !subject || !grade){ $('bookMsg').innerHTML='<div class="warn">⚠️ Fill Title + Subject + Grade.</div>'; return; }
   if(EDIT_ID){
-    if(!barcode) barcode=EDIT_ID;
+    if(!code){ $('bookMsg').innerHTML='<div class="warn">⚠️ Code required when Editing.</div>'; return; }
     try{
-      await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',EDIT_ID), {code:barcode, barcode:barcode, title:title, subject:subject, grade:grade, publisher:publisher, updatedAt:serverTimestamp()}, {merge:true});
-      $('bookMsg').innerHTML='<div class="ok">✅ Updated: <b>'+title+' • '+barcode+'</b></div>';
+      await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), {title:title, subject:subject, grade:grade, code:code, publisher:publisher, condition:condition, status:condition==='GOOD'?'AVAILABLE':condition, emis:emis, school:getSchool(), updatedAt:serverTimestamp()}, {merge:true});
+      $('bookMsg').innerHTML='<div class="ok">✅ Book Updated: <b>'+title+' • '+code+'</b></div>';
       await loadAll(); clearBookForm();
     }catch(e){ $('bookMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
     return;
   }
-  const prefix=getPrefix();
-  let max=0; ALL_BOOKS.forEach(b=>{ const n=parseInt(String(b.code||'').replace(/\D/g,'')); if(!isNaN(n)&&n>max) max=n; });
-  if(barcode && qty===1){
-    if(ALL_BOOKS.some(b=>b.code===barcode)){ $('bookMsg').innerHTML='<div class="warn">⚠️ Barcode '+barcode+' already exists. Leave Barcode blank for auto.</div>'; return; }
-  } else { barcode=''; }
-  $('saveBookBtn').disabled=true; $('saveBookBtn').textContent='Saving...';
-  try{
-    let firstCode='', lastCode='';
+  // New — create qty copies
+  if(!code && qty>1){
+    // Generate qty codes
+    let created=[];
     for(let i=0;i<qty;i++){
-      let code;
-      if(qty===1 && barcode){ code=barcode; }
-      else { max++; code=prefix+String(max).padStart(6,'0'); }
-      if(i===0) firstCode=code; lastCode=code;
-      await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), {code:code, barcode:code, title:title, subject:subject, grade:grade, publisher:publisher, status:'AVAILABLE', emis:emis, school:school, createdAt:serverTimestamp(), updatedAt:serverTimestamp()});
+      const newCode=makeBookCode(subject, grade);
+      // Push temp to avoid duplicate in loop
+      ALL_BOOKS.push({code:newCode, subject:subject, grade:grade});
+      try{ await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',newCode), {title:title, subject:subject, grade:grade, code:newCode, publisher:publisher, condition:'GOOD', status:'AVAILABLE', emis:emis, school:getSchool(), createdAt:serverTimestamp(), updatedAt:serverTimestamp()}, {merge:true}); created.push(newCode); }catch(e){}
     }
-    $('bookMsg').innerHTML='<div class="ok">✅ Saved <b>'+qty+' copy/copies</b> of <b>'+title+'</b><br>Barcodes: <b>'+firstCode+(qty>1 ? ' → '+lastCode : '')+'</b> • '+subject+' • '+grade+'</div>';
-    $('newBarcodeBox').innerHTML='<div class="barcodeBox"><b>'+title+'</b><br><span class="small">'+subject+' • '+grade+' • '+school+'</span><br><svg id="bcNew"></svg><div class="code">'+firstCode+(qty>1 ? ' → '+lastCode : '')+'</div><button class="btn btn-gold" style="width:auto" onclick="window.print()">🖨️ Print Barcodes</button></div>';
-    try{ JsBarcode('#bcNew', firstCode, {format:'CODE128', width:2, height:50, displayValue:false}); }catch(e){}
-    await loadAll();
-    const box=$('newBarcodeBox').innerHTML;
-    $('bQty').value='1'; $('bBarcode').value='';
-    $('newBarcodeBox').innerHTML=box;
-    try{ JsBarcode('#bcNew', firstCode, {format:'CODE128', width:2, height:50, displayValue:false}); }catch(e){}
+    $('bookMsg').innerHTML='<div class="ok">✅ Added <b>'+created.length+' copies</b> of <b>'+title+'</b><br>Codes: '+created.join(', ')+'</div>';
+    await loadAll(); clearBookForm();
+    return;
+  }
+  if(!code) code=makeBookCode(subject, grade);
+  if(ALL_BOOKS.some(b=>b.code===code)){ $('bookMsg').innerHTML='<div class="warn">❌ Code <b>'+code+'</b> already exists.</div>'; return; }
+  try{
+    await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), {title:title, subject:subject, grade:grade, code:code, publisher:publisher, condition:condition, status:condition==='GOOD'?'AVAILABLE':condition, emis:emis, school:getSchool(), createdAt:serverTimestamp(), updatedAt:serverTimestamp()}, {merge:true});
+    $('bookMsg').innerHTML='<div class="ok">✅ Book Saved: <b>'+title+' • '+code+'</b></div>';
+    await loadAll(); clearBookForm();
   }catch(e){ $('bookMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
-  $('saveBookBtn').disabled=false; $('saveBookBtn').textContent='✅ Save Textbook';
 };
 window.editBook = function(id){
-  if(!canEditDelete()){ alert('🚫 TEACHER CANNOT Edit Books.\n\nOnly Librarian / Admin / Principal / HOD can edit.'); return; }
+  if(!canManage()){ alert('🚫 TEACHER cannot Edit Books.'); return; }
   const b=ALL_BOOKS.find(x=>x.id===id); if(!b) return;
   EDIT_ID=id;
-  $('bTitle').value=b.title||''; $('bSubject').value=b.subject||''; $('bGrade').value=b.grade||''; $('bPublisher').value=b.publisher||''; $('bBarcode').value=b.code||'';
-  $('bQty').value='1'; $('bQty').disabled=true;
+  $('bTitle').value=b.title||''; $('bSubject').value=b.subject||''; $('bGrade').value=b.grade||''; $('bCode').value=b.code||''; $('bQty').value='1'; $('bPublisher').value=b.publisher||''; $('bCondition').value=b.condition||'GOOD';
   $('saveBookBtn').textContent='✏️ Update Book — '+b.code;
-  $('bookMsg').innerHTML='<div class="info">Editing: <b>'+b.title+' ('+b.code+')</b> — Quantity locked to 1 when editing.</div>';
   window.scrollTo({top:0, behavior:'smooth'});
 };
 window.deleteBook = async function(id, title, code){
-  if(!canEditDelete()){ alert('🚫 TEACHER CANNOT Delete Books.'); return; }
-  const emis=getEmis();
-  const isOut = ALL_ISSUES.some(x=>x.bookCode===code && x.status==='OUT');
-  if(isOut){ alert('🚫 CANNOT DELETE: '+code+' is OUT to a learner. Return it first.'); return; }
+  if(!canManage()){ alert('🚫 TEACHER cannot Delete Books.'); return; }
+  const b=ALL_BOOKS.find(x=>x.id===id);
+  if(b && b.status==='ISSUED'){ alert('🚫 Cannot delete '+code+' — it is ISSUED OUT. Return it first.'); return; }
   if(!confirm('Delete book '+title+' ('+code+')?')) return;
-  try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',id)); await loadAll(); }catch(e){ alert('Delete failed: '+e.message); }
-};
-window.bulkUpload = async function(){
-  if(!canManageBooks()){ alert('🚫 TEACHER CANNOT bulk upload books. Ask Librarian / Admin.'); $('bulkMsg').innerHTML='<div class="warn">🚫 Teacher CANNOT bulk upload books.</div>'; return; }
-  const emis=getEmis(); const school=getSchool();
-  const text=($('bulkText').value||'').trim();
-  if(!text){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Paste list first.</div>'; return; }
-  const lines=text.split('\n').map(s=>s.trim()).filter(Boolean);
-  let added=0, errors=[];
-  const prefix=getPrefix();
-  let max=0; ALL_BOOKS.forEach(b=>{ const n=parseInt(String(b.code||'').replace(/\D/g,'')); if(!isNaN(n)&&n>max) max=n; });
-  for(const line of lines){
-    const parts=line.split(',').map(s=>s.trim());
-    if(parts.length<3){ errors.push('Skipped: '+line+' — need Title, Subject, Grade'); continue; }
-    let [title, subject, grade, qtyStr]=parts;
-    let qty=parseInt(qtyStr||'1'); if(isNaN(qty)||qty<1) qty=1;
-    if(!grade.toLowerCase().startsWith('grade')) grade='Grade '+grade.replace(/\D/g,'');
-    for(let i=0;i<qty;i++){
-      max++; const code=prefix+String(max).padStart(6,'0');
-      try{
-        await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), {code:code, barcode:code, title:title, subject:subject, grade:grade, status:'AVAILABLE', emis:emis, school:school, createdAt:serverTimestamp(), updatedAt:serverTimestamp()});
-        added++;
-      }catch(e){ errors.push('Failed: '+title+' — '+e.message); }
-    }
-  }
-  $('bulkMsg').innerHTML='<div class="ok">✅ Bulk Upload Done: <b>'+added+' copy/copies added</b><br>'+errors.join('<br>')+'</div>';
-  $('bulkText').value='';
-  await loadAll();
+  const emis=getEmis();
+  try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',id)); $('bookMsg').innerHTML='<div class="ok">✅ Deleted: '+title+'</div>'; await loadAll(); }catch(e){ alert(e.message); }
 };
 async function loadAll(){
   const emis=getEmis();
   try{
-    const [bs, is] = await Promise.all([
-      getDocs(collection(db,'schools','EMIS_'+emis,'textbooks')),
-      getDocs(query(collection(db,'schools','EMIS_'+emis,'issues'), orderBy('issuedAt','desc')))
-    ]);
-    ALL_BOOKS=[]; bs.forEach(d=>{ const b=d.data(); ALL_BOOKS.push({id:d.id, code:b.code||b.barcode||d.id, title:b.title||'', subject:b.subject||'', grade:b.grade||'', publisher:b.publisher||'', status:b.status||'AVAILABLE', issuedTo:b.issuedTo||'', issuedToName:b.issuedToName||''}); });
-    ALL_ISSUES=[]; is.forEach(d=>{ const y=d.data(); ALL_ISSUES.push({id:d.id, ...y}); });
-    const outBooks=new Set(ALL_ISSUES.filter(x=>x.status==='OUT').map(x=>x.bookCode));
-    const overdueBooks=new Set(ALL_ISSUES.filter(x=>isOverdue(x)).map(x=>x.bookCode));
-    $('statTotal').textContent=ALL_BOOKS.length;
-    $('statAvail').textContent=ALL_BOOKS.filter(b=>b.status!=='ISSUED').length;
-    $('statIssued').textContent=ALL_BOOKS.filter(b=>b.status==='ISSUED').length;
-    $('statOverdue').textContent=overdueBooks.size;
+    const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'textbooks'));
+    ALL_BOOKS=[]; snap.forEach(d=>{ const b=d.data(); ALL_BOOKS.push({id:d.id, code:b.code||b.barcode||d.id, title:b.title||'', subject:b.subject||'', grade:b.grade||'', publisher:b.publisher||'', status:b.status||'AVAILABLE', condition:b.condition||'GOOD'}); });
+    ALL_BOOKS.sort((a,b)=> (a.subject||'').localeCompare(b.subject||'') || (a.grade||'').localeCompare(b.grade||'') || (a.code||'').localeCompare(b.code||''));
     $('bookCount').textContent=ALL_BOOKS.length;
-    const grades=[...new Set(ALL_BOOKS.map(b=>b.grade).filter(Boolean))].sort();
     const subjects=[...new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean))].sort();
-    const prevG=$('bookGradeFilter').value, prevS=$('bookSubjectFilter').value;
-    $('bookGradeFilter').innerHTML='<option value="">All Grades</option>'+grades.map(g=>`<option ${g===prevG?'selected':''}>${g}</option>`).join('');
-    $('bookSubjectFilter').innerHTML='<option value="">All Subjects</option>'+subjects.map(s=>`<option ${s===prevS?'selected':''}>${s}</option>`).join('');
-    updateDueBanner();
-    renderBooks(); renderStock();
+    const grades=[...new Set(ALL_BOOKS.map(b=>b.grade).filter(Boolean))].sort();
+    const fill=(id, arr, label)=>{ const el=$(id); const cur=el.value; el.innerHTML='<option value="">All '+label+'</option>'+arr.map(v=>`<option ${v===cur?'selected':''}>${v}</option>`).join(''); };
+    fill('bookSubjectFilter', subjects, 'Subjects'); fill('bookGradeFilter', grades, 'Grades');
+    renderBooks();
   }catch(e){ $('bookList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
 }
 window.loadAll = loadAll;
-function getBookIssue(code){ return ALL_ISSUES.find(x=>x.bookCode===code && x.status==='OUT'); }
-function renderBooks(){
+function getFiltered(){
   let list=[...ALL_BOOKS];
-  if(TAB==='AVAIL') list=list.filter(b=>b.status!=='ISSUED');
-  if(TAB==='OUT') list=list.filter(b=>b.status==='ISSUED');
-  if(TAB==='OVERDUE'){
-    const overdueCodes=new Set(ALL_ISSUES.filter(x=>isOverdue(x)).map(x=>x.bookCode));
-    list=list.filter(b=>overdueCodes.has(b.code));
-  }
   const q=($('bookSearch').value||'').toLowerCase().trim();
-  const gf=$('bookGradeFilter').value, sf=$('bookSubjectFilter').value;
-  if(gf) list=list.filter(b=>b.grade===gf);
+  const sf=$('bookSubjectFilter').value; const gf=$('bookGradeFilter').value; const stf=$('bookStatusFilter').value;
   if(sf) list=list.filter(b=>b.subject===sf);
-  if(q) list=list.filter(b=> (b.title+' '+b.code+' '+b.subject).toLowerCase().includes(q));
-  const sort=$('bookSort').value;
-  if(sort==='TITLE') list.sort((a,b)=>a.title.localeCompare(b.title));
-  if(sort==='SUBJECT') list.sort((a,b)=> (a.subject||'').localeCompare(b.subject||'') || a.title.localeCompare(b.title));
-  if(sort==='GRADE') list.sort((a,b)=> (a.grade||'').localeCompare(b.grade||'') || a.title.localeCompare(b.title));
-  if(sort==='BARCODE') list.sort((a,b)=> (a.code||'').localeCompare(b.code||''));
-  $('bookCountText').textContent=list.length+' shown • '+ALL_BOOKS.length+' total';
-  if(list.length===0){ $('bookList').innerHTML='<div class="info">No books for this filter.</div>'; return; }
-  let html='<table><tr><th>Book</th><th>Subject / Grade</th><th>Status</th><th>Out To / Due</th><th>Barcode / Action</th></tr>';
-  list.slice(0,200).forEach(b=>{
-    const issue=getBookIssue(b.code);
-    const over = issue ? isOverdue(issue) : false;
-    const status = b.status==='ISSUED' ? (over ? '<span class="pill pill-red">⚠️ OVERDUE</span>' : '<span class="pill pill-red">📚 OUT</span>') : '<span class="pill pill-green">✅ AVAILABLE</span>';
-    const outTo = issue ? '<b>'+(issue.learnerName||'')+'</b><br><span class="small">'+(issue.learnerCode||'')+' • '+(issue.learnerGrade||'')+' '+(issue.learnerClass||'')+'</span><br>Due: <b>'+fmtDue(getDueDateForRecord(issue))+'</b><br><span class="small">'+(daysUntilDue(issue)<0 ? '<b style="color:#dc2626">'+Math.abs(daysUntilDue(issue))+' days OVERDUE</b>' : daysUntilDue(issue)+' days left')+'</span>' : '—';
-    const canED=canEditDelete();
-    const editBtn = canED ? `<button class="btn btn-blue btn-sm" onclick="editBook('${b.id}')">✏️ Edit</button>` : `<button class="btn btn-grey btn-sm" disabled title="Teacher cannot edit books">🔒 Edit</button>`;
-    const delBtn = canED ? `<button class="btn btn-red btn-sm" onclick="deleteBook('${b.id}','${b.title.replace(/'/g,"")}','${b.code}')">🗑️ Delete</button>` : '';
-    html+='<tr><td><b>'+b.title+'</b><br><span class="small">'+b.code+(b.publisher ? ' • '+b.publisher : '')+'</span></td><td>'+b.subject+'<br>'+b.grade+'</td><td>'+status+'</td><td class="small">'+outTo+'</td><td><svg id="bc_'+b.code+'"></svg><div class="small">'+b.code+'</div><button class="btn btn-gold btn-sm" onclick="printOneBarcode(\''+b.code+'\',\''+b.title.replace(/'/g,"")+'\',\''+b.subject+'\',\''+b.grade+'\')">🖨️ Barcode</button>'+editBtn+delBtn+'</td></tr>';
+  if(gf) list=list.filter(b=>b.grade===gf);
+  if(stf) list=list.filter(b=>b.status===stf);
+  if(q) list=list.filter(b=> (b.title+' '+b.code+' '+b.subject+' '+b.grade).toLowerCase().includes(q));
+  return list;
+}
+window.renderBooks = function(){
+  const list=getFiltered();
+  if(list.length===0){ $('bookList').innerHTML='<div class="info">No books for this filter. Add one above.</div>'; return; }
+  const canED=canManage();
+  let html='<table><tr><th>Book</th><th>Subject / Grade</th><th>Code</th><th>Status</th><th>Action</th></tr>';
+  list.slice(0,300).forEach(b=>{
+    const pill = b.status==='AVAILABLE' ? '<span class="pill pill-green">✅ AVAILABLE</span>' : b.status==='ISSUED' ? '<span class="pill pill-blue">📚 ISSUED</span>' : b.status==='DAMAGED' ? '<span class="pill pill-orange">🩹 DAMAGED</span>' : '<span class="pill pill-red">❌ LOST</span>';
+    const action = canED ? `<button class="btn btn-blue btn-sm" onclick="editBook('${b.id}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="deleteBook('${b.id}','${b.title.replace(/'/g,"")}','${b.code}')">🗑️ Delete</button>` : `<button class="btn btn-grey btn-sm" disabled>🔒 View Only</button>`;
+    html+='<tr><td><b>'+b.title+'</b><br><span class="small">'+(b.publisher||'')+'</span></td><td>'+b.subject+'<br><span class="small">'+b.grade+'</span></td><td><b>'+b.code+'</b></td><td>'+pill+'</td><td>'+action+'<button class="btn btn-gold btn-sm" onclick="printOneBarcode(\''+b.id+'\')">🖨️ Print This</button></td></tr>';
   });
   html+='</table>';
   $('bookList').innerHTML=html;
-  list.slice(0,200).forEach(b=>{ try{ JsBarcode('#bc_'+b.code, b.code, {format:'CODE128', width:1.5, height:35, displayValue:false}); }catch(e){} });
-}
-window.renderBooks = renderBooks;
-function renderStock(){
-  const map={};
-  ALL_BOOKS.forEach(b=>{
-    const key=b.title+'|'+b.subject+'|'+b.grade;
-    if(!map[key]) map[key]={title:b.title, subject:b.subject, grade:b.grade, total:0, out:0};
-    map[key].total++;
-    if(b.status==='ISSUED') map[key].out++;
-  });
-  const list=Object.values(map).sort((a,b)=>a.title.localeCompare(b.title));
-  if(list.length===0){ $('stockList').innerHTML='<div class="info">No books yet.</div>'; return; }
-  let html='<table><tr><th>Title</th><th>Subject / Grade</th><th>Total Copies</th><th>Out</th><th>Available</th><th>% Out</th></tr>';
-  list.forEach(r=>{
-    const pct=r.total? Math.round(r.out/r.total*100):0;
-    html+='<tr><td><b>'+r.title+'</b></td><td>'+r.subject+' • '+r.grade+'</td><td>'+r.total+'</td><td>'+r.out+'</td><td>'+(r.total-r.out)+'</td><td>'+pct+'%</td></tr>';
-  });
-  html+='</table>';
-  $('stockList').innerHTML=html;
-}
-window.printOneBarcode = function(code, title, subject, grade){
-  $('printSchoolName').textContent=getSchool();
-  $('printBarcodesList').innerHTML='<div class="barcodeBox"><b>'+title+'</b><br><span class="small">'+subject+' • '+grade+' • '+getSchool()+'</span><br><svg id="bcPrintOne"></svg><div class="code">'+code+'</div></div>';
-  try{ JsBarcode('#bcPrintOne', code, {format:'CODE128', width:2, height:60, displayValue:false}); }catch(e){}
-  document.getElementById('printBarcodesCard').style.display='block';
-  window.print();
 };
-window.printAllBarcodes = function(){
-  let list=[...ALL_BOOKS];
-  if(TAB==='AVAIL') list=list.filter(b=>b.status!=='ISSUED');
-  if(TAB==='OUT') list=list.filter(b=>b.status==='ISSUED');
-  if(TAB==='OVERDUE'){ const overdueCodes=new Set(ALL_ISSUES.filter(x=>isOverdue(x)).map(x=>x.bookCode)); list=list.filter(b=>overdueCodes.has(b.code)); }
-  const q=($('bookSearch').value||'').toLowerCase().trim();
-  const gf=$('bookGradeFilter').value, sf=$('bookSubjectFilter').value;
-  if(gf) list=list.filter(b=>b.grade===gf);
-  if(sf) list=list.filter(b=>b.subject===sf);
-  if(q) list=list.filter(b=> (b.title+' '+b.code).toLowerCase().includes(q));
+window.printOneBarcode = function(id){
+  const b=ALL_BOOKS.find(x=>x.id===id); if(!b) return;
+  printBarcodes([b]);
+};
+window.printBarcodes = function(singleList){
+  let list = singleList || getFiltered();
+  if($('printFilter').value==='ALL' && !singleList) list=[...ALL_BOOKS];
+  if($('printFilter').value==='AVAILABLE' && !singleList) list=ALL_BOOKS.filter(b=>b.status==='AVAILABLE');
   if(list.length===0){ alert('No books to print.'); return; }
-  $('printSchoolName').textContent=getSchool();
-  $('printBarcodesList').innerHTML=list.map(b=>'<div class="barcodeBox"><b>'+b.title+'</b><br><span class="small">'+b.subject+' • '+b.grade+' • '+getSchool()+'</span><br><svg id="pbc_'+b.code+'"></svg><div class="code">'+b.code+'</div></div>').join('');
-  list.forEach(b=>{ try{ JsBarcode('#pbc_'+b.code, b.code, {format:'CODE128', width:2, height:50, displayValue:false}); }catch(e){} });
-  document.getElementById('printBarcodesCard').style.display='block';
-  window.print();
+  $('printTitle').textContent=getSchool()+' — EMIS '+getEmis();
+  $('printMeta').textContent='Printed: '+new Date().toLocaleString('en-ZA')+' • Books: '+list.length+' • By: '+(getLogin()?getLogin().name:'');
+  $('printSummary').innerHTML='<b>Books:</b> '+list.length;
+  $('printList').innerHTML=list.map(b=> '<div class="barcodeBox"><div style="font-size:10px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+b.title+'</div><div class="bmeta">'+b.subject+' • '+b.grade+'</div><div style="font-size:28px;letter-spacing:4px;font-family:monospace">|||| |||| |||| ||||</div><div class="bcode">'+b.code+'</div><div class="bmeta">Stick inside front cover • Due 30 Nov</div></div>').join('');
+  document.getElementById('printCard').style.display='block';
+  setTimeout(()=>{ window.print(); }, 300);
+};
+window.exportBooksCSV = function(){
+  const list=getFiltered();
+  if(list.length===0){ alert('No books to export.'); return; }
+  let csv='Title,Code,Subject,Grade,Publisher,Status,Condition\n';
+  list.forEach(b=>{ csv+='"'+(b.title||'')+'","'+(b.code||'')+'","'+(b.subject||'')+'","'+(b.grade||'')+'","'+(b.publisher||'')+'","'+(b.status||'')+'","'+(b.condition||'')+'"\n'; });
+  const blob=new Blob([csv], {type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='Makhanani_Books_'+getEmis()+'_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+  URL.revokeObjectURL(url);
 };
 document.addEventListener('DOMContentLoaded', async ()=>{
   const emis=getEmis(); const school=getSchool(); const login=getLogin();
-  if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'')+(login.subject? ' • Subject: '+login.subject : '');
+  if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'');
   if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
-  if(login){
-    let roleTxt='Role: <b>'+getRole()+'</b>';
-    if(getRole()==='TEACHER') roleTxt+=' • 🚫 CANNOT Add / Edit / Delete books — VIEW + PRINT only • Can Issue own Subject / Return ANY';
-    else roleTxt+=' • ✅ Can Add / Edit / Delete books';
-    $('roleBox').innerHTML=roleTxt;
-  } else {
-    $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b> • Login in Home first';
-  }
-  $('cloudStatus').textContent='☁️ Cloud: Connected — '+school;
-  applyBookAccess();
-  updateDueBanner();
+  applyRole();
   await loadAll();
-  applyBookAccess();
 });
 </script>
 </body>
