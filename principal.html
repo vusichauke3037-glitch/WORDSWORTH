@@ -3,12 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Principal v2.00</title>
+<title>Makhanani LTSM — Principal Report v2.03</title>
 <meta name="theme-color" content="#0a1f4d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
 header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:12px;opacity:.85}
+.logoHeader{display:flex;align-items:center;gap:12px}
+.logoHeader img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:12px;padding:4px;flex-shrink:0}
+.logoHeader h1{margin:0;font-size:20px}
+.logoHeader p{margin:2px 0 0;font-size:12px;opacity:.85}
+@media(max-width:700px){.logoHeader img{width:44px;height:44px}}
 .badge{background:#d4af37;color:#0a1f4d;font-weight:900;padding:4px 10px;border-radius:20px;font-size:12px}
 main{max-width:1100px;margin:auto;padding:14px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -17,10 +27,13 @@ h3{margin:14px 0 6px;color:#0a1f4d;font-size:15px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+@media(max-width:700px){.grid2,.grid3,.grid4{grid-template-columns:1fr 1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}.btn-orange{background:#ea580c;color:#fff}
 .btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
@@ -32,130 +45,137 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
-.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}
-.statRow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:10px}
-@media(max-width:700px){.statRow{grid-template-columns:1fr 1fr}}
-.stat{background:#f8fafc;border-radius:10px;padding:12px;text-align:center}
-.stat b{font-size:22px;display:block;color:#0a1f4d}
-.stat span{font-size:12px;color:#64748b}
-.stat.overdueStat{background:#fef2f2}.stat.overdueStat b{color:#dc2626}
-.stat.okStat{background:#ecfdf5}.stat.okStat b{color:#059669}
+.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}.pill-orange{background:#ffedd5;color:#9a3412}
 .dueBanner{background:#fffbeb;border:2px solid #d4af37;border-radius:12px;padding:14px;text-align:center;font-weight:900;font-size:16px;color:#92400e;margin-top:10px}
 .dueBanner b{color:#0a1f4d}
+.stat{background:#f8fafc;border-radius:10px;padding:14px;text-align:center}
+.stat b{font-size:26px;display:block;color:#0a1f4d}
+.stat span{font-size:12px;color:#64748b}
+.stat.big{background:#0a1f4d;color:#fff}
+.stat.big b{color:#d4af37}
+.stat.big span{color:#fff;opacity:.85}
+.progressBar{background:#e2e8f0;border-radius:20px;overflow:hidden;height:22px;margin:6px 0}
+.progressFill{background:#059669;height:100%;text-align:center;color:#fff;font-size:12px;font-weight:900;line-height:22px;transition:width .3s}
+.progressFill.orange{background:#ea580c}
+.progressFill.red{background:#dc2626}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .tabs button{padding:10px 16px;border:none;border-radius:20px;font-weight:900;cursor:pointer;background:#e2e8f0}
 .tabs button.active{background:#0a1f4d;color:#fff}
-.barRow{display:flex;align-items:center;gap:8px;margin:6px 0}
-.barRow span:first-child{width:110px;font-size:12px;font-weight:700}
-.barRow span:last-child{width:60px;font-size:12px;font-weight:900;text-align:right}
-.bar{flex:1;height:16px;background:#e2e8f0;border-radius:8px;overflow:hidden}
-.barFill{height:100%;background:#0a1f4d}
-.barFill.green{background:#059669}.barFill.red{background:#dc2626}.barFill.gold{background:#d4af37}
+.lockNote{background:#fef3c7;border:1.5px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;text-align:center;font-weight:700}
+.printOnly{display:none}
 @page{ size:A4; margin:10mm; }
 @media print{
   header,#cloudStatus,.topnav,.btn,.noPrint{display:none!important}
-  body{background:#fff} main{max-width:100%;padding:0} .card{box-shadow:none;border:none}
+  body{background:#fff} main{max-width:100%;padding:0} .card{box-shadow:none;border:none;padding:0;margin:0}
+  .printOnly{display:block!important}
+  .printSheet th,.printSheet td{border:1px solid #000;padding:6px;font-size:11px}
+  .printSheet th{background:#0a1f4d!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .printLogo{width:60px;height:60px;object-fit:contain}
 }
 </style>
 </head>
 <body>
-<header><div><h1>👩🏾‍🏫 Principal — Makhanani LTSM</h1><p>Whole School Report • Due 30 November Every Year • v2.00<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.00 PRINCIPAL</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Principal — Makhanani LTSM</h1><p>Whole School Report • By Grade / Subject • Due 30 Nov • v2.03<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.03 PRINCIPAL</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
-<div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
+<div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
-<div class="card">
-<h2>🏫 School Overview</h2>
+<div class="card noPrint">
+<h2>👩🏾‍🏫 Principal Dashboard — Whole School</h2>
 <div class="info" id="schoolBox">School: —</div>
 <div class="info" id="roleBox">Role: —</div>
+<div class="lockNote">Principal = View Reports • Can Issue ANY Subject • CANNOT Create Users — Only ADMIN can. • Passwords are hidden.</div>
 <div class="dueBanner" id="dueBanner">📅 ALL BOOKS DUE: <b>30 November</b> — <span id="dueCountdown">—</span></div>
-<div class="statRow">
-<div class="stat"><b id="statLearners">0</b><span>🎓 Total Learners</span></div>
-<div class="stat"><b id="statBooks">0</b><span>📖 Total Books</span></div>
-<div class="stat"><b id="statIssued">0</b><span>📚 Out Now</span></div>
-<div class="stat"><b id="statAvailable">0</b><span>✅ Available</span></div>
+<div class="grid4" style="margin-top:12px">
+<div class="stat big"><b id="statCollectionPct">—</b><span>📦 COLLECTION % — Returned / Total Issued</span></div>
+<div class="stat"><b id="statLearners">0</b><span>🎓 Learners</span></div>
+<div class="stat"><b id="statBooks">0</b><span>📖 Books in Stock</span></div>
+<div class="stat"><b id="statOut">0</b><span>📚 Out Now</span></div>
 </div>
-<div class="statRow">
-<div class="stat"><b id="statReturnRate">0%</b><span>✅ Return Rate (All Time)</span></div>
-<div class="stat"><b id="statWithBook">0%</b><span>🎓 Learners With Book Out</span></div>
-<div class="stat overdueStat"><b id="statOverdue">0</b><span>⚠️ Overdue (Past 30 Nov)</span></div>
-<div class="stat"><b id="statDueSoon">0</b><span>⏰ Due in 30 Days</span></div>
+<div class="grid4" style="margin-top:10px">
+<div class="stat"><b id="statReturned">0</b><span>✅ Returned</span></div>
+<div class="stat"><b id="statOverdue">0</b><span>⚠️ Overdue</span></div>
+<div class="stat"><b id="statDamaged">0</b><span>🩹 Damaged</span></div>
+<div class="stat"><b id="statLost">0</b><span>❌ Lost</span></div>
 </div>
-<div class="statRow">
-<div class="stat okStat"><b id="statReturned">0</b><span>✅ Total Returned</span></div>
-<div class="stat"><b id="statIssuedToday">0</b><span>📚 Issued Today</span></div>
-<div class="stat"><b id="statReturnedToday">0</b><span>✅ Returned Today</span></div>
-<div class="stat"><b id="statNoBook">0</b><span>🎓 Learners With No Book</span></div>
+<div class="grid3">
+<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh Report</button>
+<button class="btn btn-gold" onclick="printReport()">🖨️ Print Principal Report</button>
+<button class="btn btn-green" onclick="exportCSV()">📥 Export Full Report (CSV)</button>
 </div>
-</div>
-
-<div class="card">
-<h2>📊 By Grade — Coverage</h2>
-<div class="small">How many learners in each Grade have at least 1 book OUT? Target: 100%.</div>
-<div id="gradeReport"></div>
-</div>
-
-<div class="card">
-<h2>📚 By Subject — Out vs Available</h2>
-<div class="small">How many books per Subject are OUT vs still on shelf.</div>
-<div id="subjectReport"></div>
-</div>
-
-<div class="card">
-<h2>👩🏾‍🏫 By Teacher — Who Issued What</h2>
-<div class="small">Issues by the person who issued them. Shows who is using the system.</div>
-<div id="teacherReport"></div>
-</div>
-
-<div class="card">
-<h2>📋 Full Issues List — Out / Overdue / Returned</h2>
-<div class="tabs">
-<button id="tabOut" class="active" onclick="setTab('OUT')">📚 Out Now (<span id="cntOut">0</span>)</button>
-<button id="tabOver" onclick="setTab('OVERDUE')">⚠️ Overdue (<span id="cntOver">0</span>)</button>
-<button id="tabDueSoon" onclick="setTab('DUE_SOON')">⏰ Due in 30 Days (<span id="cntDueSoon">0</span>)</button>
-<button id="tabRet" onclick="setTab('RETURNED')">✅ Returned (<span id="cntRet">0</span>)</button>
-<button id="tabAll" onclick="setTab('ALL')">🌍 All (<span id="cntAll">0</span>)</button>
-</div>
-<div class="grid2">
-<div><label>🔍 Search learner, book, title, subject, teacher</label><input id="issueSearch" placeholder="Lesedi, WHS000001, Accounting, Vusi..." oninput="renderIssues()"></div>
-<div><label>Filter by Grade</label><select id="issueGradeFilter" onchange="renderIssues()"><option value="">All Grades</option></select></div>
-</div>
-<div class="grid2">
-<div><label>Filter by Subject</label><select id="issueSubjectFilter" onchange="renderIssues()"><option value="">All Subjects</option></select></div>
-<div><label>Filter by Class</label><select id="issueClassFilter" onchange="renderIssues()"><option value="">All Classes</option></select></div>
-</div>
-<div class="small"><span id="issueCount">Loading...</span> • Due Date = <b>30 November</b> every year. Overdue = still OUT after 30 Nov.</div>
-<div id="issueList"></div>
-<div class="grid2">
-<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh All</button>
-<button class="btn btn-gold noPrint" onclick="window.print()">🖨️ Print Principal Report</button>
-</div>
-</div>
-
-<div class="card">
-<h2>🎓 Learners With No Book Out — Need Books</h2>
-<div class="small">Principal action list: These learners have 0 books OUT. Follow up with class teacher.</div>
-<div class="grid2">
-<div><label>Filter by Grade</label><select id="noBookGrade" onchange="renderNoBook()"><option value="">All Grades</option></select></div>
-<div><label>🔍 Search name / code</label><input id="noBookSearch" placeholder="Search..." oninput="renderNoBook()"></div>
-</div>
-<div class="small"><span id="noBookCount">—</span></div>
-<div id="noBookList"></div>
 </div>
 
 <div class="card noPrint">
-<h2>⚙️ Principal Actions</h2>
-<div class="small">Principal is view-only here — no Issue / Return / Delete. Use Librarian / Issue pages for daily work.</div>
+<h2>📊 By Grade — Collection Progress</h2>
+<div class="small">Which Grade is collecting fastest? Which Grade needs chasing? Progress = Learners with 0 books OUT / Total Learners in Grade.</div>
+<div id="gradeList"></div>
+</div>
+
+<div class="card noPrint">
+<h2>📚 By Subject — Books OUT / Returned / Lost / Damaged</h2>
+<div class="small">Which Subject has most books still OUT? Which Subject has most Lost / Damaged?</div>
+<div id="subjectList"></div>
+</div>
+
+<div class="card noPrint">
+<h2>👩🏾‍🏫 By Teacher — Who Issued / Collected Most</h2>
+<div class="small">Issued = Books they gave OUT. Collected = Books they took BACK (Good / Damaged / Lost). Use this to see who is working hardest at collection.</div>
+<div id="teacherList"></div>
+</div>
+
+<div class="card noPrint">
+<h2>🏫 By Class — Worst Classes (Most Books Still OUT)</h2>
+<div class="small">Top 20 classes with most books still OUT. Start chasing these classes first.</div>
 <div class="grid2">
-<a href="librarian.html" style="text-decoration:none"><button class="btn btn-blue">📚 Go to Librarian</button></a>
-<a href="issue.html" style="text-decoration:none"><button class="btn btn-green">📚 Go to Issue / Return</button></a>
+<div><label>Filter by Grade</label><select id="classGradeFilter" onchange="renderClass()"><option value="">All Grades</option></select></div>
+<div><label>Search class</label><input id="classSearch" placeholder="Search 10A, 11B..." oninput="renderClass()"></div>
+</div>
+<div id="classList"></div>
+</div>
+
+<div class="card noPrint">
+<h2>🚫 No Book List — Learners With 0 Books OUT</h2>
+<div class="small">These learners have NO book OUT — either they never got one, or they already returned all. Check with teacher if they should have one.</div>
+<div class="grid2">
+<div><label>Filter by Grade</label><select id="noBookGrade" onchange="renderNoBook()"><option value="">All Grades</option></select></div>
+<div><label>Search learner</label><input id="noBookSearch" placeholder="Search name..." oninput="renderNoBook()"></div>
+</div>
+<div id="noBookList"></div>
+<button class="btn btn-green" onclick="exportNoBookCSV()">📥 Export No Book List (CSV)</button>
+</div>
+
+<div class="card noPrint">
+<h2>📋 Recent Activity</h2>
+<div id="logList"></div>
+<button class="btn btn-grey" onclick="loadLogs()">🔄 Refresh Logs</button>
+</div>
+
+<div class="card printOnly printSheet" id="printReportCard">
+<div style="text-align:center;border-bottom:3px solid #0a1f4d;padding-bottom:8px">
+<img src="logo.png" alt="Makhanani Logo" class="printLogo" onerror="this.style.display='none'">
+<h2 style="border:none;margin:4px 0 0;font-size:20px">MAKHANANI LTSM — PRINCIPAL REPORT</h2>
+<div style="font-size:14px;font-weight:900" id="printTitle">WORDSWORTH HIGH SCHOOL — EMIS 700310854</div>
+<div style="font-size:12px" id="printMeta">Printed: —</div>
+</div>
+<div style="font-size:12px;margin:10px 0" id="printSummary"></div>
+<h3>By Grade</h3>
+<div id="printGrade"></div>
+<h3>By Subject</h3>
+<div id="printSubject"></div>
+<h3>By Teacher</h3>
+<div id="printTeacher"></div>
+<h3>By Class — Worst 20</h3>
+<div id="printClass"></div>
+<div style="margin-top:14px;font-size:12px">
+<table style="width:100%;border-collapse:collapse"><tr><td style="border:1px solid #000;padding:10px">Principal Signature: ___________________________<br><span class="small">Name: ___________________________ Date: ____ / ____ / ______</span></td><td style="border:1px solid #000;padding:10px">Librarian / HOD Check: ___________________________<br><span class="small">Books counted: _______ / _______ • Missing: _______ • Damaged: _______ • Lost: _______</span></td></tr></table>
+<div style="margin-top:8px;font-size:11px;text-align:center">Makhanani LTSM • WORDSWORTH HIGH SCHOOL • EMIS 700310854 • ALL BOOKS DUE 30 NOVEMBER</div>
 </div>
 </div>
 </main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
@@ -168,209 +188,231 @@ const firebaseConfig = {
 };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
-let ALL_ISSUES=[], ALL_LEARNERS=[], ALL_BOOKS=[], TAB='OUT';
+let ALL_LEARNERS=[], ALL_BOOKS=[], ALL_ISSUES=[], ALL_USERS=[];
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
-// ===== DUE DATE: 30 NOVEMBER EVERY YEAR =====
-function getDueDateForIssue(issuedDate){
-  const d = issuedDate ? new Date(issuedDate) : new Date();
-  let year = d.getFullYear();
-  if(d.getMonth() === 11){ year = year + 1; }
-  return new Date(year, 10, 30);
-}
+function getDueDateForIssue(d){ const dt=d?new Date(d):new Date(); let y=dt.getFullYear(); if(dt.getMonth()===11) y++; return new Date(y,10,30); }
 function getDueDateForRecord(x){
-  if(x.dueDate){
-    try{ const d = x.dueDate.toDate ? x.dueDate.toDate() : new Date(x.dueDate); if(!isNaN(d.getTime())) return d; }catch(e){}
-  }
-  if(x.issuedAt){
-    try{ const d = x.issuedAt.toDate ? x.issuedAt.toDate() : new Date(x.issuedAt); return getDueDateForIssue(d); }catch(e){}
-  }
+  if(x.dueDate){ try{ const d=x.dueDate.toDate?x.dueDate.toDate():new Date(x.dueDate); if(!isNaN(d.getTime())) return d; }catch(e){} }
+  if(x.issuedAt){ try{ const d=x.issuedAt.toDate?x.issuedAt.toDate():new Date(x.issuedAt); return getDueDateForIssue(d); }catch(e){} }
   return getDueDateForIssue(new Date());
 }
-function fmtDue(d){ try{ return d.toLocaleDateString('en-ZA', {day:'2-digit', month:'short', year:'numeric'}); }catch(e){ return '30 Nov'; } }
-function fmtDate(ts){
-  if(!ts) return '—';
-  try{ const d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleDateString('en-ZA') + ' ' + d.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return '—'; }
-}
-function daysUntilDue(x){
-  const due=getDueDateForRecord(x);
-  const today=new Date(); today.setHours(0,0,0,0);
-  const dueDay=new Date(due); dueDay.setHours(0,0,0,0);
-  return Math.ceil((dueDay - today)/(1000*60*60*24));
-}
+function fmtDue(d){ try{ return d.toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'}); }catch(e){ return '30 Nov'; } }
+function daysUntilDue(x){ const due=getDueDateForRecord(x); const today=new Date(); today.setHours(0,0,0,0); const dueDay=new Date(due); dueDay.setHours(0,0,0,0); return Math.ceil((dueDay-today)/(1000*60*60*24)); }
 function isOverdue(x){ return x.status==='OUT' && daysUntilDue(x) < 0; }
-function isDueSoon(x){ return x.status==='OUT' && daysUntilDue(x) >= 0 && daysUntilDue(x) <= 30; }
 function updateDueBanner(){
   const due=getDueDateForIssue(new Date());
   const today=new Date(); today.setHours(0,0,0,0);
-  const days=Math.ceil((new Date(due).setHours(0,0,0,0) - today)/(1000*60*60*24));
-  let txt='';
-  if(days < 0) txt='⚠️ OVERDUE — ' + Math.abs(days) + ' day(s) PAST due. All books should have been returned!';
-  else if(days===0) txt='⚠️ DUE TODAY — All books must be returned TODAY!';
-  else if(days===1) txt='⏰ 1 day left — Due TOMORROW!';
-  else txt=days + ' days left until due date';
+  const days=Math.ceil((new Date(due).setHours(0,0,0,0)-today)/(1000*60*60*24));
+  let txt=''; if(days<0) txt='⚠️ OVERDUE — '+Math.abs(days)+' day(s) PAST due.'; else if(days===0) txt='⚠️ DUE TODAY!'; else if(days===1) txt='⏰ 1 day left — Due TOMORROW!'; else txt=days+' days left until due date';
   $('dueBanner').innerHTML='📅 ALL BOOKS DUE: <b>'+fmtDue(due)+'</b> — '+txt;
 }
-window.setTab = function(t){
-  TAB=t; ['tabOut','tabOver','tabDueSoon','tabRet','tabAll'].forEach(id=>$(id).classList.remove('active'));
-  if(t==='OUT') $('tabOut').classList.add('active');
-  if(t==='OVERDUE') $('tabOver').classList.add('active');
-  if(t==='DUE_SOON') $('tabDueSoon').classList.add('active');
-  if(t==='RETURNED') $('tabRet').classList.add('active');
-  if(t==='ALL') $('tabAll').classList.add('active');
-  renderIssues();
-};
+function pct(n, d){ if(!d) return 0; return Math.round(n/d*100); }
+function bar(p, cls){
+  const color = p>=80 ? 'green' : p>=50 ? 'orange' : 'red';
+  return '<div class="progressBar"><div class="progressFill '+color+'" style="width:'+p+'%">'+p+'%</div></div>';
+}
 async function loadAll(){
   const emis=getEmis();
   try{
-    const [ls, bs, is] = await Promise.all([
+    const [ls, bs, is, us] = await Promise.all([
       getDocs(collection(db,'schools','EMIS_'+emis,'learners')),
       getDocs(collection(db,'schools','EMIS_'+emis,'textbooks')),
-      getDocs(query(collection(db,'schools','EMIS_'+emis,'issues'), orderBy('issuedAt','desc')))
+      getDocs(query(collection(db,'schools','EMIS_'+emis,'issues'), orderBy('issuedAt','desc'), limit(2000))),
+      getDocs(collection(db,'schools','EMIS_'+emis,'users'))
     ]);
     ALL_LEARNERS=[]; ls.forEach(d=>{ const b=d.data(); ALL_LEARNERS.push({id:d.id, barcode:b.barcode||b.code||d.id, name:b.name||b.fullName||'', grade:b.grade||'', class:b.class||''}); });
     ALL_BOOKS=[]; bs.forEach(d=>{ const b=d.data(); ALL_BOOKS.push({id:d.id, code:b.code||b.barcode||d.id, title:b.title||'', subject:b.subject||'', grade:b.grade||'', status:b.status||'AVAILABLE'}); });
     ALL_ISSUES=[]; is.forEach(d=>{ const y=d.data(); ALL_ISSUES.push({id:d.id, ...y}); });
-    const today=new Date(); today.setHours(0,0,0,0);
-    let out=0, retToday=0, issuedToday=0, totalRet=0;
-    ALL_ISSUES.forEach(x=>{
-      if(x.status==='OUT') out++;
-      if(x.status==='RETURNED'){ totalRet++;
-        if(x.returnedAt){ try{ const d=x.returnedAt.toDate(); if(d>=today) retToday++; }catch(e){} }
-      }
-      if(x.issuedAt){ try{ const d=x.issuedAt.toDate(); if(d>=today) issuedToday++; }catch(e){} }
-    });
-    const avail=ALL_BOOKS.filter(b=>b.status!=='ISSUED').length;
-    const overdue=ALL_ISSUES.filter(x=>isOverdue(x)).length;
-    const dueSoon=ALL_ISSUES.filter(x=>isDueSoon(x)).length;
-    const outCodes=new Set(ALL_ISSUES.filter(x=>x.status==='OUT').map(x=>x.learnerCode));
-    const noBook=ALL_LEARNERS.filter(l=>!outCodes.has(l.barcode)).length;
-    const withBook=ALL_LEARNERS.length ? Math.round((ALL_LEARNERS.length - noBook)/ALL_LEARNERS.length*100) : 0;
-    const totalIssues=ALL_ISSUES.length;
-    const returnRate=totalIssues ? Math.round(totalRet/totalIssues*100) : 0;
+    ALL_USERS=[]; us.forEach(d=>{ const u=d.data(); ALL_USERS.push({id:d.id, ...u}); });
+    const outs=ALL_ISSUES.filter(x=>x.status==='OUT');
+    const returned=ALL_ISSUES.filter(x=>['RETURNED','RETURNED_DAMAGED','RETURNED_LOST'].includes(x.status));
+    const totalIssued=ALL_ISSUES.length;
+    const collPct = totalIssued ? pct(returned.length, totalIssued) : 100;
+    $('statCollectionPct').textContent=collPct+'%';
     $('statLearners').textContent=ALL_LEARNERS.length;
     $('statBooks').textContent=ALL_BOOKS.length;
-    $('statIssued').textContent=out;
-    $('statAvailable').textContent=avail;
-    $('statReturnRate').textContent=returnRate+'%';
-    $('statWithBook').textContent=withBook+'%';
-    $('statOverdue').textContent=overdue;
-    $('statDueSoon').textContent=dueSoon;
-    $('statReturned').textContent=totalRet;
-    $('statIssuedToday').textContent=issuedToday;
-    $('statReturnedToday').textContent=retToday;
-    $('statNoBook').textContent=noBook;
-    $('cntOut').textContent=out; $('cntOver').textContent=overdue; $('cntDueSoon').textContent=dueSoon; $('cntRet').textContent=totalRet; $('cntAll').textContent=totalIssues;
-    const grades=[...new Set(ALL_ISSUES.map(x=>x.learnerGrade).filter(Boolean))].sort();
-    const subjects=[...new Set(ALL_ISSUES.map(x=>x.bookSubject).filter(Boolean))].sort();
-    const classes=[...new Set(ALL_ISSUES.map(x=>x.learnerClass).filter(Boolean))].sort();
-    const lgrades=[...new Set(ALL_LEARNERS.map(x=>x.grade).filter(Boolean))].sort();
-    const prevG=$('issueGradeFilter').value, prevS=$('issueSubjectFilter').value, prevC=$('issueClassFilter').value, prevNG=$('noBookGrade').value;
-    $('issueGradeFilter').innerHTML='<option value="">All Grades</option>'+grades.map(g=>`<option ${g===prevG?'selected':''}>${g}</option>`).join('');
-    $('issueSubjectFilter').innerHTML='<option value="">All Subjects</option>'+subjects.map(s=>`<option ${s===prevS?'selected':''}>${s}</option>`).join('');
-    $('issueClassFilter').innerHTML='<option value="">All Classes</option>'+classes.map(c=>`<option ${c===prevC?'selected':''}>${c}</option>`).join('');
-    $('noBookGrade').innerHTML='<option value="">All Grades</option>'+lgrades.map(g=>`<option ${g===prevNG?'selected':''}>${g}</option>`).join('');
+    $('statOut').textContent=outs.length;
+    $('statReturned').textContent=returned.length;
+    $('statOverdue').textContent=outs.filter(x=>isOverdue(x)).length;
+    $('statDamaged').textContent=ALL_BOOKS.filter(b=>b.status==='DAMAGED').length;
+    $('statLost').textContent=ALL_BOOKS.filter(b=>b.status==='LOST').length;
+    const grades=[...new Set(ALL_LEARNERS.map(l=>l.grade).filter(Boolean))].sort();
+    const fill=(id, arr)=>{ const el=$(id); const cur=el.value; el.innerHTML='<option value="">All Grades</option>'+arr.map(v=>`<option ${v===cur?'selected':''}>${v}</option>`).join(''); };
+    fill('classGradeFilter', grades); fill('noBookGrade', grades);
     updateDueBanner();
-    renderGradeReport(); renderSubjectReport(); renderTeacherReport(); renderIssues(); renderNoBook();
-  }catch(e){ $('issueList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
+    renderGrade(); renderSubject(); renderTeacher(); renderClass(); renderNoBook(); loadLogs();
+  }catch(e){ $('gradeList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
 }
 window.loadAll = loadAll;
-function renderGradeReport(){
-  const grades=[...new Set(ALL_LEARNERS.map(l=>l.grade).filter(Boolean))].sort();
-  if(grades.length===0){ $('gradeReport').innerHTML='<div class="info">No learners yet.</div>'; return; }
-  const outCodes=new Set(ALL_ISSUES.filter(x=>x.status==='OUT').map(x=>x.learnerCode));
-  let html='';
+function renderGrade(){
+  const grades=[...new Set(ALL_LEARNERS.map(l=>l.grade).filter(Boolean))].sort((a,b)=> String(a).localeCompare(String(b), undefined, {numeric:true}));
+  if(grades.length===0){ $('gradeList').innerHTML='<div class="info">No learners yet.</div>'; return; }
+  let html='<table><tr><th>Grade</th><th>Learners</th><th>Done (0 books)</th><th>Still Have Books</th><th>Books OUT</th><th>Collection %</th></tr>';
   grades.forEach(g=>{
     const learners=ALL_LEARNERS.filter(l=>l.grade===g);
-    const withBook=learners.filter(l=>outCodes.has(l.barcode)).length;
-    const pct=learners.length? Math.round(withBook/learners.length*100):0;
-    const color = pct>=90 ? 'green' : pct>=50 ? 'gold' : 'red';
-    html+='<div class="barRow"><span>'+g+' ('+withBook+'/'+learners.length+')</span><div class="bar"><div class="barFill '+color+'" style="width:'+pct+'%"></div></div><span>'+pct+'%</span></div>';
-  });
-  $('gradeReport').innerHTML=html;
-}
-function renderSubjectReport(){
-  const subjects=[...new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean))].sort();
-  if(subjects.length===0){ $('subjectReport').innerHTML='<div class="info">No books yet.</div>'; return; }
-  let html='<table><tr><th>Subject</th><th>Total Books</th><th>Out Now</th><th>Available</th><th>% Out</th></tr>';
-  subjects.forEach(s=>{
-    const books=ALL_BOOKS.filter(b=>b.subject===s);
-    const out=books.filter(b=>b.status==='ISSUED').length;
-    const pct=books.length? Math.round(out/books.length*100):0;
-    html+='<tr><td><b>'+s+'</b></td><td>'+books.length+'</td><td>'+out+'</td><td>'+(books.length-out)+'</td><td>'+pct+'%</td></tr>';
+    const done=learners.filter(l=> ALL_ISSUES.filter(x=>x.learnerCode===l.barcode && x.status==='OUT').length===0).length;
+    const still=learners.length-done;
+    const booksOut=learners.reduce((sum,l)=> sum+ALL_ISSUES.filter(x=>x.learnerCode===l.barcode && x.status==='OUT').length, 0);
+    const p=pct(done, learners.length);
+    html+='<tr><td><b>'+g+'</b></td><td>'+learners.length+'</td><td style="color:#059669"><b>'+done+'</b></td><td style="color:#dc2626"><b>'+still+'</b></td><td><b>'+booksOut+'</b></td><td style="min-width:140px">'+bar(p)+'<span class="small">'+p+'% collected</span></td></tr>';
   });
   html+='</table>';
-  $('subjectReport').innerHTML=html;
+  $('gradeList').innerHTML=html;
 }
-function renderTeacherReport(){
-  if(ALL_ISSUES.length===0){ $('teacherReport').innerHTML='<div class="info">No issues yet.</div>'; return; }
+function renderSubject(){
+  const subjects=[...new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean))].sort();
+  if(subjects.length===0){ $('subjectList').innerHTML='<div class="info">No books yet.</div>'; return; }
+  let html='<table><tr><th>Subject</th><th>Stock</th><th>OUT Now</th><th>Returned</th><th>Damaged</th><th>Lost</th><th>OUT %</th></tr>';
+  subjects.forEach(s=>{
+    const stock=ALL_BOOKS.filter(b=>b.subject===s).length;
+    const out=ALL_ISSUES.filter(x=>x.bookSubject===s && x.status==='OUT').length;
+    const ret=ALL_ISSUES.filter(x=>x.bookSubject===s && ['RETURNED','RETURNED_DAMAGED','RETURNED_LOST'].includes(x.status)).length;
+    const dmg=ALL_BOOKS.filter(b=>b.subject===s && b.status==='DAMAGED').length;
+    const lost=ALL_BOOKS.filter(b=>b.subject===s && b.status==='LOST').length;
+    const outPct = stock ? pct(out, stock) : 0;
+    html+='<tr><td><b>'+s+'</b></td><td>'+stock+'</td><td style="color:#dc2626"><b>'+out+'</b></td><td style="color:#059669">'+ret+'</td><td style="color:#ea580c">'+dmg+'</td><td style="color:#dc2626">'+lost+'</td><td>'+outPct+'% OUT</td></tr>';
+  });
+  html+='</table>';
+  $('subjectList').innerHTML=html;
+}
+function renderTeacher(){
   const map={};
   ALL_ISSUES.forEach(x=>{
-    const key=(x.issuedByName||x.issuedBy||'Unknown') + '|' + (x.issuedByRole||'');
-    if(!map[key]) map[key]={name:x.issuedByName||x.issuedBy||'Unknown', role:x.issuedByRole||'', total:0, out:0, returned:0};
-    map[key].total++;
-    if(x.status==='OUT') map[key].out++;
-    if(x.status==='RETURNED') map[key].returned++;
+    const issuer = x.issuedByName || x.issuedBy || 'Unknown';
+    if(!map[issuer]) map[issuer]={name:issuer, issued:0, collected:0};
+    map[issuer].issued++;
+    if(['RETURNED','RETURNED_DAMAGED','RETURNED_LOST'].includes(x.status)){
+      const collector = x.returnedByName || x.returnedBy || issuer;
+      if(!map[collector]) map[collector]={name:collector, issued:0, collected:0};
+      map[collector].collected++;
+    }
   });
-  const list=Object.values(map).sort((a,b)=>b.total-a.total);
-  let html='<table><tr><th>Who Issued</th><th>Role</th><th>Total Issued</th><th>Out Now</th><th>Returned</th></tr>';
-  list.forEach(r=>{ html+='<tr><td><b>'+r.name+'</b></td><td>'+r.role+'</td><td>'+r.total+'</td><td>'+r.out+'</td><td>'+r.returned+'</td></tr>'; });
-  html+='</table>';
-  $('teacherReport').innerHTML=html;
-}
-function renderIssues(){
-  let filtered=ALL_ISSUES;
-  if(TAB==='OUT') filtered=filtered.filter(x=>x.status==='OUT');
-  if(TAB==='OVERDUE') filtered=filtered.filter(x=>isOverdue(x));
-  if(TAB==='DUE_SOON') filtered=filtered.filter(x=>isDueSoon(x));
-  if(TAB==='RETURNED') filtered=filtered.filter(x=>x.status==='RETURNED');
-  const q=($('issueSearch').value||'').toLowerCase().trim();
-  const gf=$('issueGradeFilter').value, sf=$('issueSubjectFilter').value, cf=$('issueClassFilter').value;
-  if(gf) filtered=filtered.filter(x=>x.learnerGrade===gf);
-  if(sf) filtered=filtered.filter(x=>x.bookSubject===sf);
-  if(cf) filtered=filtered.filter(x=>x.learnerClass===cf);
-  if(q) filtered=filtered.filter(x=> (x.learnerName+' '+x.learnerCode+' '+x.bookCode+' '+x.bookTitle+' '+x.bookSubject+' '+(x.issuedByName||'')+' '+(x.issuedBy||'')).toLowerCase().includes(q));
-  $('issueCount').textContent=filtered.length+' shown • '+ALL_ISSUES.length+' total';
-  if(filtered.length===0){ $('issueList').innerHTML='<div class="info">No issues for this filter.</div>'; return; }
-  let html='<table><tr><th>Learner</th><th>Book</th><th>Status</th><th>Issued</th><th>Due Date</th><th>Days Left</th><th>Issued By</th><th>Returned</th></tr>';
-  filtered.slice(0,200).forEach(x=>{
-    const over=isOverdue(x);
-    const days=daysUntilDue(x);
-    const dueStr=fmtDue(getDueDateForRecord(x));
-    let daysTxt='';
-    if(x.status==='RETURNED') daysTxt='—';
-    else if(days < 0) daysTxt='<b style="color:#dc2626">'+Math.abs(days)+' days OVERDUE</b>';
-    else if(days===0) daysTxt='<b style="color:#dc2626">DUE TODAY</b>';
-    else daysTxt=days+' days left';
-    const pill = x.status==='OUT' ? (over ? '<span class="pill pill-red">⚠️ OVERDUE</span>' : '<span class="pill pill-red">📚 OUT</span>') : '<span class="pill pill-green">✅ RETURNED</span>';
-    html+='<tr><td><b>'+(x.learnerName||'')+'</b><br><span class="small">'+(x.learnerCode||'')+' • '+(x.learnerGrade||'')+' '+(x.learnerClass||'')+'</span></td><td><b>'+(x.bookCode||'')+'</b><br><span class="small">'+(x.bookTitle||'')+' • '+(x.bookSubject||'')+'</span></td><td>'+pill+'</td><td class="small">'+fmtDate(x.issuedAt)+'</td><td><b>'+dueStr+'</b></td><td>'+daysTxt+'</td><td class="small">'+(x.issuedByName||x.issuedBy||'—')+'<br>'+(x.issuedByRole||'')+'</td><td class="small">'+fmtDate(x.returnedAt)+'</td></tr>';
+  // Also count users with no activity
+  ALL_USERS.forEach(u=>{
+    const n=u.name||u.fullName||'';
+    if(n && !map[n]) map[n]={name:n, issued:0, collected:0};
+  });
+  let list=Object.values(map).sort((a,b)=> (b.issued+b.collected)-(a.issued+a.collected));
+  if(list.length===0){ $('teacherList').innerHTML='<div class="info">No teacher activity yet.</div>'; return; }
+  let html='<table><tr><th>Teacher / Staff</th><th>📚 Issued</th><th>📦 Collected</th><th>Total Activity</th></tr>';
+  list.slice(0,50).forEach(t=>{
+    const user=ALL_USERS.find(u=> (u.name||u.fullName)===t.name);
+    const role = user ? ' <span class="pill pill-blue">'+(user.role||'')+'</span>' : '';
+    const subj = user && user.subjects && user.subjects.length ? ' <span class="small">'+user.subjects.join(', ')+'</span>' : (user && user.subject ? ' <span class="small">'+user.subject+'</span>' : '');
+    html+='<tr><td><b>'+t.name+'</b>'+role+subj+'</td><td><b>'+t.issued+'</b></td><td><b>'+t.collected+'</b></td><td><b>'+(t.issued+t.collected)+'</b></td></tr>';
   });
   html+='</table>';
-  $('issueList').innerHTML=html;
+  $('teacherList').innerHTML=html;
 }
-window.renderIssues = renderIssues;
+function renderClass(){
+  const gf=$('classGradeFilter').value; const q=($('classSearch').value||'').toLowerCase().trim();
+  const classMap={};
+  ALL_LEARNERS.forEach(l=>{
+    const key=(l.grade||'')+' '+(l.class||'');
+    if(!classMap[key]) classMap[key]={label:key, grade:l.grade||'', class:l.class||'', learners:0, booksOut:0, done:0};
+    classMap[key].learners++;
+    const outs=ALL_ISSUES.filter(x=>x.learnerCode===l.barcode && x.status==='OUT').length;
+    classMap[key].booksOut+=outs;
+    if(outs===0) classMap[key].done++;
+  });
+  let list=Object.values(classMap);
+  if(gf) list=list.filter(c=>c.grade===gf);
+  if(q) list=list.filter(c=>c.label.toLowerCase().includes(q));
+  list.sort((a,b)=> b.booksOut-a.booksOut);
+  if(list.length===0){ $('classList').innerHTML='<div class="info">No classes yet.</div>'; return; }
+  let html='<table><tr><th>Class</th><th>Learners</th><th>Done</th><th>Still Have Books</th><th>Books OUT</th><th>Collection %</th></tr>';
+  list.slice(0,20).forEach(c=>{
+    const still=c.learners-c.done;
+    const p=pct(c.done, c.learners);
+    html+='<tr><td><b>'+c.label+'</b></td><td>'+c.learners+'</td><td style="color:#059669"><b>'+c.done+'</b></td><td style="color:#dc2626"><b>'+still+'</b></td><td><b>'+c.booksOut+'</b></td><td style="min-width:140px">'+bar(p)+'<span class="small">'+p+'%</span></td></tr>';
+  });
+  html+='</table>';
+  $('classList').innerHTML=html;
+}
+window.renderClass = renderClass;
 function renderNoBook(){
-  const outCodes=new Set(ALL_ISSUES.filter(x=>x.status==='OUT').map(x=>x.learnerCode));
-  let list=ALL_LEARNERS.filter(l=>!outCodes.has(l.barcode));
   const gf=$('noBookGrade').value; const q=($('noBookSearch').value||'').toLowerCase().trim();
+  let list=ALL_LEARNERS.map(l=> ({...l, outCount: ALL_ISSUES.filter(x=>x.learnerCode===l.barcode && x.status==='OUT').length }));
+  list=list.filter(l=>l.outCount===0);
   if(gf) list=list.filter(l=>l.grade===gf);
   if(q) list=list.filter(l=> (l.name+' '+l.barcode).toLowerCase().includes(q));
-  $('noBookCount').textContent=list.length+' learner(s) with no book out';
-  if(list.length===0){ $('noBookList').innerHTML='<div class="ok">✅ Every learner has a book out (for this filter).</div>'; return; }
-  let html='<table><tr><th>Learner</th><th>Grade</th><th>Class</th></tr>';
-  list.slice(0,100).forEach(l=>{ html+='<tr><td><b>'+l.name+'</b><br><span class="small">'+l.barcode+'</span></td><td>'+l.grade+'</td><td>'+(l.class||'')+'</td></tr>'; });
+  list.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
+  if(list.length===0){ $('noBookList').innerHTML='<div class="ok">✅ No one on No Book List — everyone has a book or has returned all.</div>'; return; }
+  let html='<div class="info">Total on No Book List: <b>'+list.length+'</b></div><table><tr><th>Learner</th><th>Grade / Class</th><th>Status</th></tr>';
+  list.slice(0,200).forEach(l=>{ html+='<tr><td><b>'+l.name+'</b><br><span class="small">'+l.barcode+'</span></td><td>'+l.grade+' '+l.class+'</td><td><span class="pill pill-red">🚫 NO BOOK</span></td></tr>'; });
   html+='</table>';
   $('noBookList').innerHTML=html;
 }
 window.renderNoBook = renderNoBook;
+window.exportCSV = function(){
+  let csv='Report Type,Name,Grade/Class,Subject,Value\n';
+  // Grade
+  const grades=[...new Set(ALL_LEARNERS.map(l=>l.grade).filter(Boolean))].sort();
+  grades.forEach(g=>{
+    const learners=ALL_LEARNERS.filter(l=>l.grade===g);
+    const done=learners.filter(l=> ALL_ISSUES.filter(x=>x.learnerCode===l.barcode && x.status==='OUT').length===0).length;
+    csv+='By Grade,'+g+',,,Learners '+learners.length+' Done '+done+'\n';
+  });
+  // Subject
+  const subjects=[...new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean))].sort();
+  subjects.forEach(s=>{
+    const out=ALL_ISSUES.filter(x=>x.bookSubject===s && x.status==='OUT').length;
+    csv+='By Subject,'+s+',,'+s+',OUT '+out+'\n';
+  });
+  const blob=new Blob([csv], {type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='Makhanani_PrincipalReport_'+getEmis()+'_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+  URL.revokeObjectURL(url);
+};
+window.exportNoBookCSV = function(){
+  const noBook = ALL_LEARNERS.filter(l=> ALL_ISSUES.filter(x=>x.learnerCode===l.barcode && x.status==='OUT').length===0);
+  if(noBook.length===0){ alert('No one on No Book List! 🎉'); return; }
+  let csv='Name,Barcode,Grade,Class,Books OUT,Status\n';
+  noBook.forEach(l=>{ csv+='"'+(l.name||'')+'","'+(l.barcode||'')+'","'+(l.grade||'')+'","'+(l.class||'')+'",0,NO BOOK\n'; });
+  const blob=new Blob([csv], {type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='Makhanani_NoBookList_'+getEmis()+'_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+  URL.revokeObjectURL(url);
+};
+window.printReport = function(){
+  const emis=getEmis(); const school=getSchool();
+  $('printTitle').textContent=school+' — EMIS '+emis;
+  $('printMeta').textContent='Printed: '+new Date().toLocaleString('en-ZA')+' • Due: 30 November • By: '+(getLogin()?getLogin().name:'');
+  const outs=ALL_ISSUES.filter(x=>x.status==='OUT');
+  const returned=ALL_ISSUES.filter(x=>['RETURNED','RETURNED_DAMAGED','RETURNED_LOST'].includes(x.status));
+  const collPct = ALL_ISSUES.length ? pct(returned.length, ALL_ISSUES.length) : 100;
+  $('printSummary').innerHTML='<b>Learners:</b> '+ALL_LEARNERS.length+' | <b>Books in Stock:</b> '+ALL_BOOKS.length+' | <b>Out Now:</b> '+outs.length+' | <b>Returned:</b> '+returned.length+' | <b>Overdue:</b> '+outs.filter(x=>isOverdue(x)).length+' | <b>Damaged:</b> '+ALL_BOOKS.filter(b=>b.status==='DAMAGED').length+' | <b>Lost:</b> '+ALL_BOOKS.filter(b=>b.status==='LOST').length+' | <b>Collection:</b> '+collPct+'%';
+  $('printGrade').innerHTML=$('gradeList').innerHTML;
+  $('printSubject').innerHTML=$('subjectList').innerHTML;
+  $('printTeacher').innerHTML=$('teacherList').innerHTML;
+  $('printClass').innerHTML=$('classList').innerHTML;
+  document.getElementById('printReportCard').style.display='block';
+  setTimeout(()=>{ window.print(); }, 300);
+};
+window.loadLogs = async function(){
+  const emis=getEmis();
+  try{
+    const snap=await getDocs(query(collection(db,'schools','EMIS_'+emis,'logs'), orderBy('createdAt','desc'), limit(30)));
+    if(snap.empty){ $('logList').innerHTML='<div class="info">No logs yet.</div>'; return; }
+    let html='<table><tr><th>When</th><th>Action</th><th>Detail</th><th>Who</th></tr>';
+    snap.forEach(d=>{ const l=d.data(); let when='—'; try{ when=l.createdAt ? l.createdAt.toDate().toLocaleString('en-ZA') : '—'; }catch(e){} html+='<tr><td class="small">'+when+'</td><td><span class="pill pill-blue">'+(l.action||'')+'</span></td><td>'+(l.detail||'')+'</td><td class="small">'+(l.whoName||l.whoEmail||'')+'</td></tr>'; });
+    html+='</table>';
+    $('logList').innerHTML=html;
+  }catch(e){ $('logList').innerHTML='<div class="warn">❌ Logs failed: '+e.message+'</div>'; }
+};
 document.addEventListener('DOMContentLoaded', async ()=>{
   const emis=getEmis(); const school=getSchool(); const login=getLogin();
   if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'');
   if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
-  $('roleBox').innerHTML = login ? 'Role: <b>'+getRole()+'</b> • View-only report — Principal cannot Issue / Return / Delete here' : 'Role: <b>NOT LOGGED IN</b> • Login in Admin / Home first';
-  $('cloudStatus').textContent='☁️ Cloud: Connected — '+school;
+  if(login){
+    if(getRole()==='PRINCIPAL') $('roleBox').innerHTML='Role: <b>PRINCIPAL</b> • View Reports • Can Issue ANY Subject • CANNOT Create Users.';
+    else if(getRole()==='ADMIN') $('roleBox').innerHTML='Role: <b>ADMIN</b> • Full Access.';
+    else if(getRole()==='LIBRARIAN') $('roleBox').innerHTML='Role: <b>LIBRARIAN</b> • View Reports • Issue ANY Subject.';
+    else $('roleBox').innerHTML='Role: <b>'+getRole()+'</b> • View Only in Principal Report.';
+  } else { $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; }
   updateDueBanner();
   await loadAll();
 });
