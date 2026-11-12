@@ -1,109 +1,348 @@
-// Makhanani LTSM — Service Worker v2.06
-// Caches all pages + logo.png so App works OFFLINE
-// Update CACHE_NAME every time you update any page
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makhanani LTSM — Learners v2.03</title>
+<meta name="theme-color" content="#0a1f4d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
+header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:12px;opacity:.85}
+.logoHeader{display:flex;align-items:center;gap:12px}
+.logoHeader img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:12px;padding:4px;flex-shrink:0}
+.logoHeader h1{margin:0;font-size:20px}
+.logoHeader p{margin:2px 0 0;font-size:12px;opacity:.85}
+@media(max-width:700px){.logoHeader img{width:44px;height:44px}}
+.badge{background:#d4af37;color:#0a1f4d;font-weight:900;padding:4px 10px;border-radius:20px;font-size:12px}
+main{max-width:1100px;margin:auto;padding:14px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
+label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
+input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}.btn-orange{background:#ea580c;color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
+#cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
+.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.small{font-size:12px;color:#64748b}
+.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
+th{background:#0a1f4d;color:#fff}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
+.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}
+.dueBanner{background:#fffbeb;border:2px solid #d4af37;border-radius:12px;padding:14px;text-align:center;font-weight:900;font-size:16px;color:#92400e;margin-top:10px}
+.dueBanner b{color:#0a1f4d}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{padding:10px 16px;border:none;border-radius:20px;font-weight:900;cursor:pointer;background:#e2e8f0}
+.tabs button.active{background:#0a1f4d;color:#fff}
+.lockNote{background:#fef3c7;border:1.5px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;text-align:center;font-weight:700}
+.barcodeBox{background:#fff;border:2px solid #111;border-radius:8px;padding:10px;text-align:center;margin:8px}
+.barcodeBox .bcode{font-family:'Courier New',monospace;font-weight:900;font-size:18px;letter-spacing:2px}
+.barcodeBox .bname{font-weight:900;font-size:14px}
+.barcodeBox .bmeta{font-size:11px;color:#555}
+.printOnly{display:none}
+@page{ size:A4; margin:8mm; }
+@media print{
+  header,#cloudStatus,.topnav,.btn,.noPrint{display:none!important}
+  body{background:#fff} main{max-width:100%;padding:0} .card{box-shadow:none;border:none;padding:0;margin:0}
+  .printOnly{display:block!important}
+  .printGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .printGrid .barcodeBox{margin:0;break-inside:avoid}
+  .printLogo{width:48px;height:48px;object-fit:contain}
+}
+</style>
+</head>
+<body>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Learners — Makhanani LTSM</h1><p>Add Learners • Print Barcodes • Due 30 Nov • v2.03<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.03 LEARNERS</span></div></header>
+<div id="cloudStatus">☁️ Cloud: Connecting...</div>
+<main>
+<div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
-const CACHE_NAME = 'makhanani-ltsm-v2.06';
+<div class="card noPrint">
+<h2>🎓 Add / Edit Learner</h2>
+<div class="info" id="schoolBox">School: —</div>
+<div class="info" id="roleBox">Role: —</div>
+<div class="lockNote" id="permissionNote"></div>
+<div class="small">Teacher can ADD learners, but CANNOT Edit / Delete. Librarian / Admin can Add + Edit + Delete.<br>Barcode is auto-generated: <b>Grade + Class + Number</b> — e.g. <b>10A001</b>. You can also type your own.</div>
+<label>Full Name</label>
+<input id="lName" placeholder="e.g. Lesedi Mokoena">
+<div class="grid3">
+<div><label>Grade</label><select id="lGrade"><option value="">— Grade —</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option></select></div>
+<div><label>Class</label><input id="lClass" placeholder="e.g. 10A, 11B" style="text-transform:uppercase"></div>
+<div><label>Barcode (auto if blank)</label><input id="lBarcode" placeholder="e.g. 10A001 — Leave blank to auto-generate" style="text-transform:uppercase"></div>
+</div>
+<div class="grid2">
+<div><label>Gender (optional)</label><select id="lGender"><option value="">—</option><option>Female</option><option>Male</option></select></div>
+<div><label>Parent Phone (optional)</label><input id="lPhone" placeholder="e.g. 082 123 4567"></div>
+</div>
+<button class="btn btn-green" id="saveLearnerBtn" onclick="saveLearner()">✅ Save Learner</button>
+<button class="btn btn-grey" onclick="clearLearnerForm()">🔄 Clear Form — New Learner</button>
+<div id="learnerMsg"></div>
+</div>
 
-const FILES = [
-  './',
-  'index.html',
-  'admin.html',
-  'issue.html',
-  'learner-barcode.html',
-  'textbook-barcode.html',
-  'librarian.html',
-  'principal.html',
-  'manifest.json',
-  'logo.png'
-];
+<div class="card noPrint">
+<h2>📥 Bulk Add Learners — Paste List</h2>
+<div class="small">Paste from Excel / Word: <b>One learner per line</b> — Format: <b>Name, Grade, Class</b><br>Example:<br>Lesedi Mokoena, Grade 10, 10A<br>Thabo Nkosi, Grade 10, 10A<br>Then select Grade + Class below and click Bulk Add.</div>
+<div class="grid2">
+<div><label>Bulk Grade</label><select id="bulkGrade"><option value="">— Grade —</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option></select></div>
+<div><label>Bulk Class</label><input id="bulkClass" placeholder="e.g. 10A" style="text-transform:uppercase"></div>
+</div>
+<label>Paste Learners (Name per line)</label>
+<textarea id="bulkText" rows="6" style="width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px" placeholder="Lesedi Mokoena&#10;Thabo Nkosi&#10;Naledi Dube"></textarea>
+<button class="btn btn-purple" onclick="bulkAdd()">📥 Bulk Add Learners</button>
+<div id="bulkMsg"></div>
+</div>
 
-// Install — Download all files + logo.png for offline
-self.addEventListener('install', event => {
-  console.log('[Makhanani SW] Installing v2.06 — Caching pages + logo.png');
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[Makhanani SW] Caching:', FILES);
-        return cache.addAll(FILES);
-      })
-      .then(() => {
-        console.log('[Makhanani SW] ✅ All files cached — App works offline');
-        return self.skipWaiting();
-      })
-      .catch(err => {
-        console.log('[Makhanani SW] ⚠️ Cache failed for some files (maybe logo.png missing?):', err);
-        // Still activate even if logo.png missing — don't block app
-        return self.skipWaiting();
-      })
-  );
-});
+<div class="card noPrint">
+<h2>🎓 All Learners (<span id="learnerCount">0</span>)</h2>
+<div class="grid2">
+<div><label>🔍 Search name / barcode</label><input id="learnerSearch" placeholder="Search..." oninput="renderLearners()"></div>
+<div><label>Filter by Grade</label><select id="learnerGradeFilter" onchange="renderLearners()"><option value="">All Grades</option></select></div>
+</div>
+<div class="grid2">
+<div><label>Filter by Class</label><select id="learnerClassFilter" onchange="renderLearners()"><option value="">All Classes</option></select></div>
+<div><label>Print Filter</label><select id="printFilter"><option value="FILTERED">🖨️ Print FILTERED list (what you see)</option><option value="ALL">🖨️ Print ALL learners</option></select></div>
+</div>
+<div class="grid2">
+<button class="btn btn-blue" onclick="printBarcodes()">🖨️ Print Barcodes — Filtered / All</button>
+<button class="btn btn-gold" onclick="exportLearnersCSV()">📥 Export Learners (CSV)</button>
+</div>
+<div id="learnerList"></div>
+<button class="btn btn-grey" onclick="loadAll()">🔄 Refresh</button>
+</div>
 
-// Activate — Delete old caches (old versions)
-self.addEventListener('activate', event => {
-  console.log('[Makhanani SW] Activating v2.06 — Cleaning old caches');
-  event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            console.log('[Makhanani SW] Deleting old cache:', key);
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => {
-      return self.clients.claim();
-    })
-  );
-});
+<div class="card printOnly" id="printCard">
+<div style="text-align:center;border-bottom:3px solid #0a1f4d;padding-bottom:8px">
+<img src="logo.png" alt="Makhanani Logo" class="printLogo" onerror="this.style.display='none'">
+<h2 style="border:none;margin:4px 0 0;font-size:20px">MAKHANANI LTSM — LEARNER BARCODES</h2>
+<div style="font-size:14px;font-weight:900" id="printTitle">WORDSWORTH HIGH SCHOOL</div>
+<div style="font-size:12px" id="printMeta">Printed: —</div>
+</div>
+<div style="font-size:12px;margin:8px 0" id="printSummary"></div>
+<div class="printGrid" id="printList"></div>
+<div style="margin-top:10px;font-size:11px;text-align:center">Makhanani LTSM • WORDSWORTH HIGH SCHOOL • EMIS 700310854 • ALL BOOKS DUE 30 NOVEMBER • Cut out barcode, stick on learner card / exercise book</div>
+</div>
+</main>
 
-// Fetch — Serve from cache if offline, else from network
-self.addEventListener('fetch', event => {
-  // Only handle GET requests, same origin
-  if (event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
-  // Don't cache Firebase / Google APIs — always go to network
-  if (url.hostname.includes('firebase') || url.hostname.includes('googleapis') || url.hostname.includes('gstatic')) {
-    return;
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:760b5163fdf421bae01b5a",
+  measurementId: "G-TDFSSF6NTB"
+};
+let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
+const $ = id => document.getElementById(id);
+let ALL_LEARNERS=[], ALL_ISSUES=[], EDIT_ID=null;
+function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
+function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
+function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
+function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
+function canAdd(){ return ['TEACHER','LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
+function canEditDelete(){ return ['LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
+function applyRole(){
+  const login=getLogin();
+  if(!login){ $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; $('permissionNote').innerHTML='⚠️ Login in Home first.'; return; }
+  if(getRole()==='TEACHER'){ $('roleBox').innerHTML='Role: <b>TEACHER</b> • Can ADD learners • CANNOT Edit / Delete'; $('permissionNote').innerHTML='🔒 TEACHER — You can ADD learners, but CANNOT Edit / Delete. Ask Librarian / Admin to fix mistakes.'; }
+  else if(getRole()==='LIBRARIAN'){ $('roleBox').innerHTML='Role: <b>LIBRARIAN</b> • Can Add + Edit + Delete learners'; $('permissionNote').innerHTML='✅ LIBRARIAN — Full learner control.'; }
+  else if(getRole()==='ADMIN'){ $('roleBox').innerHTML='Role: <b>ADMIN</b> • Full Access'; $('permissionNote').innerHTML='✅ ADMIN — Full learner control.'; }
+  else { $('roleBox').innerHTML='Role: <b>'+getRole()+'</b>'; $('permissionNote').innerHTML=''; }
+}
+window.clearLearnerForm = function(){
+  EDIT_ID=null;
+  $('lName').value=''; $('lGrade').value=''; $('lClass').value=''; $('lBarcode').value=''; $('lGender').value=''; $('lPhone').value='';
+  $('saveLearnerBtn').textContent='✅ Save Learner';
+  $('learnerMsg').innerHTML='';
+  $('lBarcode').placeholder='e.g. 10A001 — Leave blank to auto-generate';
+};
+function makeBarcode(grade, cls, existingCount){
+  const gNum = String(grade||'').replace(/[^0-9]/g,'') || '10';
+  const c = String(cls||'').trim().toUpperCase().replace(/\s+/g,'') || (gNum+'A');
+  // If class already like 10A, use it as prefix
+  let prefix = c;
+  if(/^\d+$/.test(c)) prefix = gNum + 'A';
+  // Find next number for this class
+  let maxNum=0;
+  ALL_LEARNERS.filter(l=> (l.class||'').toUpperCase()===c.toUpperCase()).forEach(l=>{
+    const m=String(l.barcode||'').match(/(\d+)$/);
+    if(m) maxNum=Math.max(maxNum, parseInt(m[1]));
+  });
+  const next = Math.max(maxNum+1, existingCount+1);
+  return prefix + String(next).padStart(3,'0');
+}
+window.saveLearner = async function(){
+  if(!canAdd()){ alert('Login first.'); return; }
+  const emis=getEmis();
+  const name=($('lName').value||'').trim();
+  const grade=$('lGrade').value;
+  const cls=($('lClass').value||'').trim().toUpperCase();
+  let barcode=($('lBarcode').value||'').trim().toUpperCase();
+  const gender=$('lGender').value; const phone=($('lPhone').value||'').trim();
+  if(!name || !grade || !cls){ $('learnerMsg').innerHTML='<div class="warn">⚠️ Fill Name + Grade + Class.</div>'; return; }
+  if(!barcode) barcode=makeBarcode(grade, cls, ALL_LEARNERS.length);
+  if(!EDIT_ID && ALL_LEARNERS.some(l=>l.barcode===barcode)){ $('learnerMsg').innerHTML='<div class="warn">❌ Barcode <b>'+barcode+'</b> already exists. Choose another.</div>'; return; }
+  if(EDIT_ID && !canEditDelete()){ alert('🚫 TEACHER cannot Edit. Ask Librarian / Admin.'); return; }
+  const id = EDIT_ID || barcode;
+  const data={ name:name, fullName:name, barcode:barcode, code:barcode, grade:grade, class:cls, gender:gender, phone:phone, emis:emis, school:getSchool(), updatedAt:serverTimestamp() };
+  if(!EDIT_ID) data.createdAt=serverTimestamp();
+  $('saveLearnerBtn').disabled=true; $('saveLearnerBtn').textContent='Saving...';
+  try{
+    await setDoc(doc(db,'schools','EMIS_'+emis,'learners',id), data, {merge:true});
+    await setDoc(doc(db,'schools','EMIS_'+emis,'logs','log_'+Date.now()), {action: EDIT_ID ? 'LEARNER_EDITED' : 'LEARNER_ADDED', detail:'Learner '+name+' ('+barcode+') '+grade+' '+cls, whoEmail:(getLogin()||{}).email||'', whoName:(getLogin()||{}).name||'', whoRole:(getLogin()||{}).role||'', createdAt:serverTimestamp()});
+    $('learnerMsg').innerHTML='<div class="ok">✅ Learner Saved: <b>'+name+' • '+barcode+' • '+grade+' '+cls+'</b></div>';
+    await loadAll(); clearLearnerForm();
+  }catch(e){ $('learnerMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
+  $('saveLearnerBtn').disabled=false; $('saveLearnerBtn').textContent='✅ Save Learner';
+};
+window.editLearner = function(id){
+  if(!canEditDelete()){ alert('🚫 TEACHER cannot Edit learners. Ask Librarian / Admin.'); return; }
+  const l=ALL_LEARNERS.find(x=>x.id===id); if(!l) return;
+  EDIT_ID=id;
+  $('lName').value=l.name||''; $('lGrade').value=l.grade||''; $('lClass').value=l.class||''; $('lBarcode').value=l.barcode||''; $('lGender').value=l.gender||''; $('lPhone').value=l.phone||'';
+  $('saveLearnerBtn').textContent='✏️ Update Learner — '+l.barcode;
+  window.scrollTo({top:0, behavior:'smooth'});
+};
+window.deleteLearner = async function(id, name, barcode){
+  if(!canEditDelete()){ alert('🚫 TEACHER cannot Delete. Ask Librarian / Admin.'); return; }
+  const outs=ALL_ISSUES.filter(x=>x.learnerCode===barcode && x.status==='OUT').length;
+  if(outs>0){ alert('🚫 Cannot delete '+name+' — they still have '+outs+' book(s) OUT. Return books first.'); return; }
+  if(!confirm('Delete learner '+name+' ('+barcode+')?')) return;
+  const emis=getEmis();
+  try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'learners',id)); $('learnerMsg').innerHTML='<div class="ok">✅ Deleted: '+name+'</div>'; await loadAll(); }catch(e){ alert(e.message); }
+};
+window.bulkAdd = async function(){
+  if(!canAdd()){ alert('Login first.'); return; }
+  const grade=$('bulkGrade').value; const cls=($('bulkClass').value||'').trim().toUpperCase();
+  const text=($('bulkText').value||'').trim();
+  if(!grade || !cls){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Select Bulk Grade + Class first.</div>'; return; }
+  if(!text){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Paste learners first.</div>'; return; }
+  const lines=text.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(lines.length===0){ $('bulkMsg').innerHTML='<div class="warn">⚠️ No learners found.</div>'; return; }
+  if(!confirm('Bulk Add '+lines.length+' learners to '+grade+' '+cls+'?')) return;
+  const emis=getEmis();
+  let done=0, skipped=[];
+  for(const line of lines){
+    let name=line, g=grade, c=cls;
+    // Support "Name, Grade, Class" format
+    if(line.includes(',')){
+      const parts=line.split(',').map(s=>s.trim());
+      name=parts[0]||'';
+      if(parts[1]) g=parts[1];
+      if(parts[2]) c=parts[2].toUpperCase();
+    }
+    if(!name) continue;
+    // Use current ALL_LEARNERS count for barcode — reload max each time via makeBarcode logic
+    let barcode=makeBarcode(g, c, ALL_LEARNERS.length + done);
+    // Avoid duplicate barcode
+    let tries=0;
+    while(ALL_LEARNERS.some(l=>l.barcode===barcode) && tries<20){ tries++; barcode=makeBarcode(g, c, ALL_LEARNERS.length + done + tries); }
+    if(ALL_LEARNERS.some(l=>l.barcode===barcode)){ skipped.push(name); continue; }
+    try{
+      await setDoc(doc(db,'schools','EMIS_'+emis,'learners',barcode), {name:name, fullName:name, barcode:barcode, code:barcode, grade:g, class:c, emis:emis, school:getSchool(), createdAt:serverTimestamp(), updatedAt:serverTimestamp()}, {merge:true});
+      ALL_LEARNERS.push({id:barcode, barcode:barcode, name:name, grade:g, class:c});
+      done++;
+    }catch(e){ skipped.push(name+' — '+e.message); }
   }
-
-  event.respondWith(
-    // Try network first, fall back to cache
-    fetch(event.request)
-      .then(response => {
-        // If network works, update cache in background
-        if (response && response.status === 200 && url.origin === self.location.origin) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return response;
-      })
-      .catch(() => {
-        // Network failed = OFFLINE — serve from cache
-        return caches.match(event.request).then(cached => {
-          if (cached) {
-            console.log('[Makhanani SW] 📴 OFFLINE — Serving from cache:', event.request.url);
-            return cached;
-          }
-          // If logo.png not cached and offline, return empty — page will show 📚 fallback
-          if (event.request.url.includes('logo.png')) {
-            console.log('[Makhanani SW] ⚠️ logo.png not in cache — check WORDSWORTH/logo.png exists');
-          }
-          // If navigating to a page and offline, serve index.html
-          if (event.request.mode === 'navigate') {
-            return caches.match('index.html');
-          }
-          throw new Error('Offline and not cached: ' + event.request.url);
-        });
-      })
-  );
+  $('bulkMsg').innerHTML='<div class="ok">✅ Bulk Added <b>'+done+' learner(s)</b> to '+grade+' '+cls+(skipped.length ? '<br>Skipped: '+skipped.join(', ') : '')+'</div>';
+  $('bulkText').value='';
+  await loadAll();
+};
+async function loadAll(){
+  const emis=getEmis();
+  try{
+    const [ls, is] = await Promise.all([
+      getDocs(collection(db,'schools','EMIS_'+emis,'learners')),
+      getDocs(collection(db,'schools','EMIS_'+emis,'issues'))
+    ]);
+    ALL_LEARNERS=[]; ls.forEach(d=>{ const b=d.data(); ALL_LEARNERS.push({id:d.id, barcode:b.barcode||b.code||d.id, name:b.name||b.fullName||'', grade:b.grade||'', class:b.class||'', gender:b.gender||'', phone:b.phone||''}); });
+    ALL_ISSUES=[]; is.forEach(d=>{ ALL_ISSUES.push({id:d.id, ...d.data()}); });
+    ALL_LEARNERS.sort((a,b)=> (a.grade||'').localeCompare(b.grade||'') || (a.class||'').localeCompare(b.class||'') || (a.name||'').localeCompare(b.name||''));
+    $('learnerCount').textContent=ALL_LEARNERS.length;
+    const grades=[...new Set(ALL_LEARNERS.map(l=>l.grade).filter(Boolean))].sort();
+    const classes=[...new Set(ALL_LEARNERS.map(l=>l.class).filter(Boolean))].sort();
+    const fill=(id, arr, label)=>{ const el=$(id); const cur=el.value; el.innerHTML='<option value="">All '+label+'</option>'+arr.map(v=>`<option ${v===cur?'selected':''}>${v}</option>`).join(''); };
+    fill('learnerGradeFilter', grades, 'Grades'); fill('learnerClassFilter', classes, 'Classes');
+    renderLearners();
+  }catch(e){ $('learnerList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
+}
+window.loadAll = loadAll;
+function getFiltered(){
+  let list=[...ALL_LEARNERS];
+  const q=($('learnerSearch').value||'').toLowerCase().trim();
+  const gf=$('learnerGradeFilter').value; const cf=$('learnerClassFilter').value;
+  if(gf) list=list.filter(l=>l.grade===gf);
+  if(cf) list=list.filter(l=>l.class===cf);
+  if(q) list=list.filter(l=> (l.name+' '+l.barcode+' '+l.grade+' '+l.class).toLowerCase().includes(q));
+  return list;
+}
+window.renderLearners = function(){
+  const list=getFiltered();
+  if(list.length===0){ $('learnerList').innerHTML='<div class="info">No learners for this filter. Add one above.</div>'; return; }
+  const canED=canEditDelete();
+  let html='<table><tr><th>Learner</th><th>Grade / Class</th><th>Barcode</th><th>Books OUT</th><th>Action</th></tr>';
+  list.slice(0,300).forEach(l=>{
+    const outs=ALL_ISSUES.filter(x=>x.learnerCode===l.barcode && x.status==='OUT');
+    const outPill = outs.length===0 ? '<span class="pill pill-green">✅ 0 — Done</span>' : '<span class="pill pill-red">'+outs.length+' OUT</span>';
+    const action = canED ? `<button class="btn btn-blue btn-sm" onclick="editLearner('${l.id}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="deleteLearner('${l.id}','${l.name.replace(/'/g,"")}','${l.barcode}')">🗑️ Delete</button>` : `<button class="btn btn-grey btn-sm" disabled>🔒 View Only</button>`;
+    html+='<tr><td><b>'+l.name+'</b><br><span class="small">'+(l.phone||'')+'</span></td><td>'+l.grade+' '+l.class+'</td><td><b>'+l.barcode+'</b></td><td>'+outPill+(outs.length ? '<br><span class="small">'+outs.map(o=>o.bookCode).join(', ')+'</span>' : '')+'</td><td>'+action+'<button class="btn btn-gold btn-sm" onclick="printOneBarcode(\''+l.id+'\')">🖨️ Print This</button></td></tr>';
+  });
+  html+='</table>';
+  $('learnerList').innerHTML=html;
+};
+window.printOneBarcode = function(id){
+  const l=ALL_LEARNERS.find(x=>x.id===id); if(!l) return;
+  printBarcodes([l]);
+};
+window.printBarcodes = function(singleList){
+  let list = singleList || ( $('printFilter').value==='ALL' ? [...ALL_LEARNERS] : getFiltered() );
+  if(list.length===0){ alert('No learners to print.'); return; }
+  $('printTitle').textContent=getSchool()+' — EMIS '+getEmis();
+  $('printMeta').textContent='Printed: '+new Date().toLocaleString('en-ZA')+' • Learners: '+list.length+' • By: '+(getLogin()?getLogin().name:'');
+  $('printSummary').innerHTML='<b>Learners:</b> '+list.length;
+  $('printList').innerHTML=list.map(l=> '<div class="barcodeBox"><div style="font-size:10px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+l.name+'</div><div class="bmeta">'+l.grade+' '+l.class+'</div><div style="font-size:28px;letter-spacing:4px;font-family:monospace">|||| |||| |||| ||||</div><div class="bcode">'+l.barcode+'</div><div class="bmeta">Scan to Issue / Return</div></div>').join('');
+  document.getElementById('printCard').style.display='block';
+  setTimeout(()=>{ window.print(); }, 300);
+};
+window.exportLearnersCSV = function(){
+  const list=getFiltered();
+  if(list.length===0){ alert('No learners to export.'); return; }
+  let csv='Name,Barcode,Grade,Class,Gender,Phone,Books OUT\n';
+  list.forEach(l=>{
+    const outs=ALL_ISSUES.filter(x=>x.learnerCode===l.barcode && x.status==='OUT').length;
+    csv+='"'+(l.name||'')+'","'+(l.barcode||'')+'","'+(l.grade||'')+'","'+(l.class||'')+'","'+(l.gender||'')+'","'+(l.phone||'')+'",'+outs+'\n';
+  });
+  const blob=new Blob([csv], {type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='Makhanani_Learners_'+getEmis()+'_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+  URL.revokeObjectURL(url);
+};
+document.addEventListener('DOMContentLoaded', async ()=>{
+  const emis=getEmis(); const school=getSchool(); const login=getLogin();
+  if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'');
+  if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
+  applyRole();
+  await loadAll();
 });
-
-// Listen for message from page — Skip waiting when new version found
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-});
+</script>
+</body>
+</html>
