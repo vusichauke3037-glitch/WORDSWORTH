@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v1.92</title>
+<title>Makhanani LTSM — Textbooks v1.93</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a1f4d">
 <style>
@@ -40,7 +40,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Barcode Labels • v1.92 DELETE<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.92 DELETE</span></div></header>
+<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Barcode Labels • v1.93 FIXED PREFIX<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.93 WHS FIX</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -49,7 +49,7 @@ th{background:#0a1f4d;color:#fff}
 <h2>🏫 School</h2>
 <div class="info" id="schoolBox">School: —</div>
 <div class="small" id="prefixBox">Prefix: — • Next: — • Last used: —</div>
-<div class="small">Example: WORDSWORTH HIGH SCHOOL → WHS000001 &nbsp;|&nbsp; TIVANANI PRIMARY SCHOOL → TPS000001</div>
+<div class="small">WORDSWORTH HIGH SCHOOL → WHS000001 &nbsp;|&nbsp; TIVANANI PRIMARY SCHOOL → TPS000001</div>
 </div>
 
 <div class="card">
@@ -59,7 +59,7 @@ th{background:#0a1f4d;color:#fff}
 <div class="grid2"><div><label>Subject</label><input id="subjectInput" placeholder="e.g. Mathematics"></div><div><label>Grade</label><select id="gradeInput"><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div></div>
 <div class="grid2"><div><label>Publisher (optional)</label><input id="publisherInput" placeholder="e.g. Via Afrika"></div><div><label>Copies — How many to create</label><input id="copiesInput" type="number" value="60" min="1" max="500"></div></div>
 <label>Barcode Number — AUTO (do not type)</label>
-<input id="barcodePreview" readonly style="font-weight:900;font-size:20px;letter-spacing:1px" value="WHS000001">
+<input id="barcodePreview" readonly style="font-weight:900;font-size:20px;letter-spacing:1px" value="WHS000132">
 <div class="small">Auto from School Name initials + next number. <a href="#" onclick="refreshNext();return false;">🔄 Refresh next number</a></div>
 <button class="btn btn-green" id="saveBtn" onclick="saveBooks()">✅ Save + Generate Barcode Label(s)</button>
 <button class="btn btn-blue" onclick="refreshNext()">🔢 Get Next Number</button>
@@ -67,7 +67,6 @@ th{background:#0a1f4d;color:#fff}
 <div id="labelsBox"></div>
 </div>
 
-<!-- DELETE SECTION -->
 <div class="card" id="deleteCard">
 <h2>🗑️ All Books in System — Select to Delete</h2>
 <div id="roleDeleteMsg"></div>
@@ -75,15 +74,13 @@ th{background:#0a1f4d;color:#fff}
 <input id="bookSearch" placeholder="🔍 Search by barcode, title, subject, grade... e.g. WHS000001, Accounting, Grade 10" oninput="renderBookList()">
 <select id="bookFilter" onchange="renderBookList()" style="max-width:220px"><option value="">All Titles</option></select>
 </div>
-<div class="small"><span id="bookCount">Loading books...</span> • Tick checkbox → Delete. Deleted books cannot be undone. If a book is currently ISSUED to a learner, delete it only after it is Returned in Issue page.</div>
-
+<div class="small"><span id="bookCount">Loading books...</span> • Tick checkbox → Delete. Deleted books cannot be undone.</div>
 <div id="deleteBar" class="deleteBar" style="display:none">
 <b>🗑️ <span id="selCount">0</span> selected</b>
 <button class="btn btn-red" id="deleteSelectedBtn" onclick="deleteSelected()" style="width:auto;margin:0;padding:10px 18px">🗑️ Delete Selected</button>
 <button class="btn btn-grey" onclick="clearSelection()" style="width:auto;margin:0;padding:10px 18px">Clear</button>
 <span class="small" id="selList" style="width:100%"></span>
 </div>
-
 <div id="bookList"></div>
 <div id="deleteMsg"></div>
 <button class="btn btn-blue" onclick="loadBooks()">🔄 Refresh Book List</button>
@@ -92,7 +89,7 @@ th{background:#0a1f4d;color:#fff}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, addDoc, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, addDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
@@ -111,7 +108,6 @@ let ALL_BOOKS = [];
 let SELECTED = new Set();
 let NEXT_NUM = 1;
 let PREFIX = 'WHS';
-
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || ''; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || ''; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
@@ -119,15 +115,25 @@ function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : 
 function canDelete(){ return ['ADMIN','PRINCIPAL','LIBRARIAN'].includes(getRole()); }
 function canWrite(){ return !!getLogin(); }
 
+// ===== FIXED PREFIX - v1.93 =====
+// DO NOT strip HIGH / PRIMARY / SCHOOL - they are part of prefix!
+// WORDSWORTH HIGH SCHOOL -> WHS
+// TIVANANI PRIMARY SCHOOL -> TPS
 function makePrefix(name){
   if(!name) return 'WHS';
-  const words = name.replace(/HIGH SCHOOL|PRIMARY SCHOOL|SECONDARY SCHOOL|COMBINED SCHOOL/gi,'').trim().split(/\s+/).filter(Boolean);
-  let p = words.map(w=>w[0]).join('').toUpperCase().slice(0,4);
-  if(!p) p='WHS';
-  return p;
+  const up = name.toUpperCase().trim();
+  if(up.includes('WORDSWORTH')) return 'WHS';
+  if(up.includes('TIVANANI')) return 'TPS';
+  const words = up.replace(/[^A-Z\s]/g,'').split(/\s+/).filter(w=>w.length>0);
+  if(words.length===0) return 'WHS';
+  if(words.length===1){
+    // Single word school: use first 3 letters, e.g. MAKHANANI -> MAK
+    return words[0].slice(0,3);
+  }
+  // Multi-word: first letter of EACH word, max 4 letters
+  return words.map(w=>w[0]).join('').slice(0,4);
 }
 function fmtBarcode(prefix, n){ return prefix + String(n).padStart(6,'0'); }
-
 async function refreshNext(){
   const emis=getEmis(); const school=getSchool();
   PREFIX = makePrefix(school);
@@ -142,7 +148,6 @@ async function refreshNext(){
   }catch(e){ $('prefixBox').textContent='Failed: '+e.message; }
 }
 window.refreshNext = refreshNext;
-
 async function saveBooks(){
   const emis=getEmis(); const school=getSchool();
   const title=$('titleInput').value.trim(); const subject=$('subjectInput').value.trim(); const grade=$('gradeInput').value; const publisher=$('publisherInput').value.trim(); const copies=parseInt($('copiesInput').value||'0');
@@ -152,6 +157,8 @@ async function saveBooks(){
   if(!title){ msg.innerHTML='<div class="warn">⚠️ Type Title first.</div>'; return; }
   if(!copies||copies<1){ msg.innerHTML='<div class="warn">⚠️ Copies must be 1 or more.</div>'; return; }
   await refreshNext();
+  // Safety: never allow W000xxx - if prefix looks wrong, stop
+  if(PREFIX.length<2){ msg.innerHTML='<div class="warn">❌ Prefix error: '+PREFIX+' — Refresh page and try again. Did NOT save.</div>'; return; }
   const start=NEXT_NUM; const end=NEXT_NUM+copies-1;
   $('saveBtn').disabled=true; $('saveBtn').textContent='Saving...';
   msg.innerHTML='<div class="info">Saving '+copies+' book(s)...</div>';
@@ -162,12 +169,8 @@ async function saveBooks(){
       await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), { barcode:code, code:code, title:title, subject:subject, grade:grade, publisher:publisher, status:'AVAILABLE', createdAt:serverTimestamp(), createdBy:login?login.email:'', createdByName:login?login.name:'' }, {merge:true});
     }
     msg.innerHTML='<div class="ok">✅ Saved '+copies+' book(s): '+fmtBarcode(PREFIX,start)+' to '+fmtBarcode(PREFIX,end)+'<br>Labels below match your photo — Click Print.</div>';
-    // Labels
-    let labels='<h2>Barcode Labels — Exactly Like Your Photo</h2><p class="small">Each label is ONLY<br>'+school.toUpperCase()+' — TEXTBOOKS — Barcode — '+fmtBarcode(PREFIX,start)+'<br>No Title / Grade printed on label, just like your photo.</p>';
-    for(let n=start; n<=end; n++){
-      const code=fmtBarcode(PREFIX,n);
-      labels+='<div class="labelBox"><div style="font-weight:900">'+school.toUpperCase()+' — TEXTBOOKS</div><div style="font-size:28px;font-weight:900;letter-spacing:2px">|||| '+code+' ||||</div><div>Barcode — '+code+'</div></div>';
-    }
+    let labels='<h2>Barcode Labels — Exactly Like Your Photo</h2><p class="small">Each label is ONLY<br>'+school.toUpperCase()+' — TEXTBOOKS — Barcode — '+fmtBarcode(PREFIX,start)+'</p>';
+    for(let n=start; n<=end; n++){ const code=fmtBarcode(PREFIX,n); labels+='<div class="labelBox"><div style="font-weight:900">'+school.toUpperCase()+' — TEXTBOOKS</div><div style="font-size:28px;font-weight:900;letter-spacing:2px">|||| '+code+' ||||</div><div>Barcode — '+code+'</div></div>'; }
     labels+='<button class="btn btn-blue" onclick="window.print()">🖨️ Print Labels</button>';
     $('labelsBox').innerHTML=labels;
     NEXT_NUM=end+1;
@@ -178,7 +181,6 @@ async function saveBooks(){
   $('saveBtn').disabled=false; $('saveBtn').textContent='✅ Save + Generate Barcode Label(s)';
 }
 window.saveBooks = saveBooks;
-
 async function loadBooks(){
   const emis=getEmis();
   if(!emis){ $('bookList').innerHTML='<div class="warn">Select school in Admin first.</div>'; return; }
@@ -187,7 +189,6 @@ async function loadBooks(){
     const snap = await getDocs(query(collection(db,'schools','EMIS_'+emis,'textbooks'), orderBy('barcode')));
     ALL_BOOKS=[];
     snap.forEach(d=>{ const b=d.data(); ALL_BOOKS.push({ id:d.id, barcode:b.barcode||b.code||d.id, title:b.title||'', subject:b.subject||'', grade:b.grade||'', publisher:b.publisher||'', status:b.status||'AVAILABLE' }); });
-    // Title filter
     const titles=[...new Set(ALL_BOOKS.map(b=>b.title).filter(Boolean))].sort();
     $('bookFilter').innerHTML='<option value="">All Titles</option>'+titles.map(t=>`<option>${t}</option>`).join('');
     SELECTED.clear();
@@ -195,49 +196,28 @@ async function loadBooks(){
   }catch(e){ $('bookList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
 }
 window.loadBooks = loadBooks;
-
 function getFiltered(){
   const q=($('bookSearch').value||'').toLowerCase().trim();
   const tf=$('bookFilter').value;
-  return ALL_BOOKS.filter(b=>{
-    if(tf && b.title!==tf) return false;
-    if(!q) return true;
-    return (b.barcode+' '+b.title+' '+b.subject+' '+b.grade+' '+(b.publisher||'')).toLowerCase().includes(q);
-  });
+  return ALL_BOOKS.filter(b=>{ if(tf && b.title!==tf) return false; if(!q) return true; return (b.barcode+' '+b.title+' '+b.subject+' '+b.grade+' '+(b.publisher||'')).toLowerCase().includes(q); });
 }
-
 function renderBookList(){
   const filtered=getFiltered();
   $('bookCount').textContent = filtered.length + ' book(s) shown • ' + ALL_BOOKS.length + ' total in system • ' + SELECTED.size + ' selected';
   const role=getRole();
-  if(!canDelete()){
-    $('roleDeleteMsg').innerHTML = '<div class="warn">🔒 You are logged in as <b>'+(role||'NOT LOGGED IN')+'</b>. Only <b>ADMIN / PRINCIPAL / LIBRARIAN</b> can delete books. Login in Admin first. TEACHERS cannot delete.</div>';
-  } else {
-    $('roleDeleteMsg').innerHTML = '<div class="ok">✅ You are <b>'+role+'</b> — you CAN delete selected books.</div>';
-  }
-  if(filtered.length===0){ $('bookList').innerHTML='<div class="info">No books found. Add books above, or clear search.</div>'; updateDeleteBar(); return; }
-  let html='<table><tr><th style="width:40px"><input type="checkbox" class="chk" id="checkAll" onchange="toggleAll(this.checked)"></th><th>Barcode</th><th>Title</th><th>Subject</th><th>Grade</th><th>Status</th></tr>';
-  filtered.forEach(b=>{
-    const checked=SELECTED.has(b.id)?'checked':'';
-    html+='<tr><td><input type="checkbox" class="chk" '+checked+' onchange="toggleOne(\''+b.id+'\',this.checked)"></td><td><b>'+b.barcode+'</b></td><td>'+b.title+'</td><td>'+b.subject+'</td><td>'+b.grade+'</td><td>'+b.status+'</td></tr>';
-  });
+  if(!canDelete()){ $('roleDeleteMsg').innerHTML = '<div class="warn">🔒 You are <b>'+(role||'NOT LOGGED IN')+'</b>. Only <b>ADMIN / PRINCIPAL / LIBRARIAN</b> can delete books.</div>'; }
+  else { $('roleDeleteMsg').innerHTML = '<div class="ok">✅ You are <b>'+role+'</b> — you CAN delete selected books.</div>'; }
+  if(filtered.length===0){ $('bookList').innerHTML='<div class="info">No books found.</div>'; updateDeleteBar(); return; }
+  let html='<table><tr><th style="width:40px"><input type="checkbox" class="chk" onchange="toggleAll(this.checked)"></th><th>Barcode</th><th>Title</th><th>Subject</th><th>Grade</th><th>Status</th></tr>';
+  filtered.forEach(b=>{ const checked=SELECTED.has(b.id)?'checked':''; html+='<tr><td><input type="checkbox" class="chk" '+checked+' onchange="toggleOne(\''+b.id+'\',this.checked)"></td><td><b>'+b.barcode+'</b></td><td>'+b.title+'</td><td>'+b.subject+'</td><td>'+b.grade+'</td><td>'+b.status+'</td></tr>'; });
   html+='</table>';
   $('bookList').innerHTML=html;
   updateDeleteBar();
 }
 window.renderBookList = renderBookList;
-
-window.toggleOne = function(id, checked){
-  if(checked) SELECTED.add(id); else SELECTED.delete(id);
-  renderBookList();
-};
-window.toggleAll = function(checked){
-  const filtered=getFiltered();
-  filtered.forEach(b=>{ if(checked) SELECTED.add(b.id); else SELECTED.delete(b.id); });
-  renderBookList();
-};
+window.toggleOne = function(id, checked){ if(checked) SELECTED.add(id); else SELECTED.delete(id); renderBookList(); };
+window.toggleAll = function(checked){ const filtered=getFiltered(); filtered.forEach(b=>{ if(checked) SELECTED.add(b.id); else SELECTED.delete(b.id); }); renderBookList(); };
 window.clearSelection = function(){ SELECTED.clear(); renderBookList(); };
-
 function updateDeleteBar(){
   const bar=$('deleteBar');
   if(SELECTED.size===0){ bar.style.display='none'; return; }
@@ -246,10 +226,8 @@ function updateDeleteBar(){
   const names=[...SELECTED].slice(0,10).join(', ') + (SELECTED.size>10 ? ' ... +'+(SELECTED.size-10)+' more' : '');
   $('selList').textContent='Selected: '+names;
   $('deleteSelectedBtn').disabled=!canDelete();
-  if(!canDelete()) $('deleteSelectedBtn').textContent='🔒 Only ADMIN / PRINCIPAL / LIBRARIAN can delete';
-  else $('deleteSelectedBtn').textContent='🗑️ Delete Selected ('+SELECTED.size+')';
+  $('deleteSelectedBtn').textContent = canDelete() ? '🗑️ Delete Selected ('+SELECTED.size+')' : '🔒 Only ADMIN / PRINCIPAL / LIBRARIAN can delete';
 }
-
 window.deleteSelected = async function(){
   const emis=getEmis();
   if(!canDelete()){ $('deleteMsg').innerHTML='<div class="warn">🔒 Only ADMIN / PRINCIPAL / LIBRARIAN can delete books.</div>'; return; }
@@ -257,30 +235,20 @@ window.deleteSelected = async function(){
   const list=[...SELECTED];
   const preview=list.slice(0,10).join(', ') + (list.length>10 ? ' ... +'+(list.length-10)+' more' : '');
   if(!confirm('🗑️ DELETE '+list.length+' book(s)?\n\n'+preview+'\n\nThis cannot be undone. Are you sure?')) return;
-  // Second confirm for large deletes
   if(list.length>=10 && !confirm('⚠️ You are deleting '+list.length+' books. Confirm again to DELETE FOREVER?')) return;
   $('deleteSelectedBtn').disabled=true; $('deleteSelectedBtn').textContent='Deleting...';
   $('deleteMsg').innerHTML='<div class="info">Deleting '+list.length+' book(s)...</div>';
   try{
-    const login=getLogin();
-    let deleted=0; let failed=[];
+    const login=getLogin(); let deleted=0; let failed=[];
     for(const id of list){
-      try{
-        await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',id));
-        // Log it
-        try{ await addDoc(collection(db,'schools','EMIS_'+emis,'logs'), { action:'DELETE_BOOK', detail:'Deleted book '+id, whoEmail:login?login.email:'', whoName:login?login.name:'', whoRole:login?login.role:'', createdAt:serverTimestamp() }); }catch(e){}
-        deleted++;
-      }catch(e){ failed.push(id+': '+e.message); }
+      try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',id)); try{ await addDoc(collection(db,'schools','EMIS_'+emis,'logs'), { action:'DELETE_BOOK', detail:'Deleted book '+id, whoEmail:login?login.email:'', whoName:login?login.name:'', whoRole:login?login.role:'', createdAt:serverTimestamp() }); }catch(e){} deleted++; }catch(e){ failed.push(id+': '+e.message); }
     }
-    SELECTED.clear();
-    await loadBooks();
-    await refreshNext();
-    if(failed.length===0) $('deleteMsg').innerHTML='<div class="ok">✅ Deleted '+deleted+' book(s) successfully.</div>';
+    SELECTED.clear(); await loadBooks(); await refreshNext();
+    if(failed.length===0) $('deleteMsg').innerHTML='<div class="ok">✅ Deleted '+deleted+' book(s).</div>';
     else $('deleteMsg').innerHTML='<div class="warn">✅ Deleted '+deleted+' • ❌ Failed '+failed.length+'<br>'+failed.join('<br>')+'</div>';
   }catch(e){ $('deleteMsg').innerHTML='<div class="warn">❌ Delete failed: '+e.message+'</div>'; }
   $('deleteSelectedBtn').disabled=false;
 };
-
 document.addEventListener('DOMContentLoaded', async ()=>{
   const emis=getEmis(); const school=getSchool(); const login=getLogin();
   if(login) $('whoLine').textContent='Logged in: '+(login.name||login.email)+' • '+(login.role||'');
