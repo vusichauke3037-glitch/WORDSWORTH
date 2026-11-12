@@ -3,15 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Issue / Return v2.08</title>
+<title>Makhanani LTSM — Issue / Return v2.09</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
 header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:12px;opacity:.85}
+.logoHeader{display:flex;align-items:center;gap:12px}
+.logoHeader img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:12px;padding:4px;flex-shrink:0}
+.logoHeader h1{margin:0;font-size:20px}
+.logoHeader p{margin:2px 0 0;font-size:12px;opacity:.85}
+@media(max-width:700px){.logoHeader img{width:44px;height:44px}}
 .badge{background:#d4af37;color:#0a1f4d;font-weight:900;padding:4px 10px;border-radius:20px;font-size:12px}
 main{max-width:1100px;margin:auto;padding:14px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -68,11 +75,12 @@ th{background:#0a1f4d;color:#fff}
   .printSheet th,.printSheet td{border:1px solid #000;padding:6px}
   .printSheet th{background:#0a1f4d!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .checkbox{width:16px;height:16px;border:1.5px solid #000;display:inline-block}
+  .printLogo{width:60px;height:60px;object-fit:contain}
 }
 </style>
 </head>
 <body>
-<header><div><h1>📚 Issue / Return — Makhanani LTSM</h1><p>Offline Mode • Print Sheet • Collect By Class • Due 30 Nov • v2.08<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.08 ISSUE • OFFLINE</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Issue / Return — Makhanani LTSM</h1><p>Offline Mode • Print Sheet • Collect By Class • Due 30 Nov • v2.09<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.09 ISSUE • OFFLINE</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <div id="offlineBanner">🔴 OFFLINE — No WiFi. Issue / Return will be <b>saved on this phone</b> and synced automatically when WiFi returns.<br><span id="offlineCount">0 waiting to sync</span><br><button class="btn btn-blue btn-sm" onclick="trySyncNow()">🔄 Try Sync Now</button></div>
 <main>
@@ -201,7 +209,8 @@ th{background:#0a1f4d;color:#fff}
 
 <div class="card printOnly printSheet" id="printSheetCard">
 <div style="text-align:center;border-bottom:3px solid #0a1f4d;padding-bottom:8px">
-<h2 style="border:none;margin:0;font-size:20px">📚 MAKHANANI LTSM — CLASS COLLECTION SHEET</h2>
+<img src="logo.png" alt="Makhanani Logo" class="printLogo" onerror="this.style.display='none'">
+<h2 style="border:none;margin:4px 0 0;font-size:20px">MAKHANANI LTSM — CLASS COLLECTION SHEET</h2>
 <div style="font-size:14px;font-weight:900" id="printSheetTitle">Grade 10 10A — WORDSWORTH HIGH SCHOOL</div>
 <div style="font-size:12px" id="printSheetMeta">Printed: —</div>
 </div>
@@ -250,7 +259,6 @@ function canIssueSubject(bookSubject){
   if(!match) return {ok:false, reason:'🚫 BLOCKED: Teacher Subject: <b>'+subs.join(', ')+'</b> — CANNOT Issue <b>'+bookSubject+'</b>.'};
   return {ok:true, reason:''};
 }
-// ===== OFFLINE QUEUE — v2.08 =====
 function getQueue(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_OFFLINE_QUEUE')||'[]'); }catch(e){ return []; } }
 function saveQueue(q){ localStorage.setItem('MAKHANANI_OFFLINE_QUEUE', JSON.stringify(q)); updateOfflineUI(); }
 function addToQueue(item){
@@ -320,7 +328,6 @@ window.trySyncNow = async function(){
           await setDoc(doc(db,'schools','EMIS_'+item.emis,'textbooks',sub.bookCode), sub.bookUpdate, {merge:true});
         }
       }
-      // Log
       try{ await setDoc(doc(db,'schools','EMIS_'+item.emis,'logs','log_'+Date.now()+'_'+Math.floor(Math.random()*1000)), {action:item.type+'_SYNCED', detail:'Synced offline: '+(item.type)+' — '+(item.bookCode||item.learnerName||''), whoEmail:item.loginEmail||'', whoName:item.loginName||'', whoRole:item.loginRole||'', createdAt:serverTimestamp()}); }catch(e){}
       remaining=remaining.filter(x=>x._id!==item._id);
       done++;
@@ -337,7 +344,6 @@ window.trySyncNow = async function(){
 };
 window.addEventListener('online', ()=>{ updateOfflineUI(); trySyncNow(); });
 window.addEventListener('offline', ()=>{ updateOfflineUI(); });
-// Optimistic local update — so OFFLINE UI looks correct even before sync
 function optimisticIssue(learner, book){
   ALL_BOOKS = ALL_BOOKS.map(b=> b.code===book.code ? {...b, status:'ISSUED'} : b);
   ALL_ISSUES.unshift({id:'TEMP_'+Date.now(), learnerCode:learner.barcode, learnerName:learner.name, learnerGrade:learner.grade, learnerClass:learner.class||'', bookCode:book.code, bookTitle:book.title, bookSubject:book.subject, bookGrade:book.grade, status:'OUT', dueDate:getDueDateForIssue(new Date()), issuedAt:new Date(), issuedByName:(getLogin()||{}).name||'', issuedByRole:(getLogin()||{}).role||''});
@@ -472,7 +478,6 @@ window.doCollectAll = async function(){
       await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',issue.bookCode), {status:'AVAILABLE', issuedTo:'', issuedToName:'', condition:'GOOD', updatedAt:serverTimestamp()}, {merge:true});
       done++;
     }catch(e){
-      // If save fails (WiFi dropped mid-save), queue it
       addToQueue({type:'RETURN', issueId:issue.id, bookCode:issue.bookCode, learnerName:COLLECT_LEARNER.name, condition:'GOOD', issueUpdate:{status:'RETURNED', returnCondition:'GOOD', returnedBy:login.email||'', returnedByName:login.name||'', returnedByRole:login.role||''}, bookUpdate:{status:'AVAILABLE', issuedTo:'', issuedToName:''}, loginEmail:login.email, loginName:login.name, loginRole:login.role});
     }
   }
@@ -660,7 +665,6 @@ window.doIssue = async function(){
     $('issueMsg').innerHTML='<div class="ok">✅ <b>ISSUED!</b> '+book.title+' → <b>'+learner.name+'</b> • Due '+fmtDue(due)+'</div>';
     await loadAll(); clearScan();
   }catch(e){
-    // WiFi dropped during save — queue it
     addToQueue({type:'ISSUE', issueId:issueId, bookCode:book.code, learnerName:learner.name, learnerCode:learner.barcode, issueData:{...issueData, issuedAt:new Date().toISOString()}, loginEmail:login.email, loginName:login.name, loginRole:login.role});
     optimisticIssue(learner, book);
     $('issueMsg').innerHTML='<div class="ok">✅ <b>ISSUED (SAVED OFFLINE)!</b> WiFi dropped — saved on phone, will sync.</div>';
@@ -771,7 +775,6 @@ async function loadAll(){
     if($('classGrade').value && $('className').value) renderClassCollect();
     updateOfflineUI();
   }catch(e){
-    // If load fails (offline first load), show cached + queue UI
     $('issueList').innerHTML='<div class="warn">🔴 OFFLINE — Showing last saved data. Issue / Return still works — will sync later.</div>';
     updateOfflineUI();
   }
@@ -846,7 +849,6 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   } else { $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; }
   updateDueBanner(); updateRuleBox(); updateOfflineUI();
   await loadAll();
-  // Auto-sync if we came back online with queue
   if(navigator.onLine && getQueue().length>0) trySyncNow();
 });
 </script>
