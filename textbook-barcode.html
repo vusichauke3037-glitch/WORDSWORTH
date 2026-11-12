@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v1.94</title>
-<link rel="manifest" href="manifest.json">
+<title>Makhanani LTSM — Textbooks v1.95</title>
 <meta name="theme-color" content="#0a1f4d">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <style>
@@ -34,6 +33,8 @@ th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .labelBox{border:1.5px dashed #0a1f4d;padding:10px;margin:8px 0;text-align:center;background:#fff;page-break-inside:avoid}
 .labelBox svg{width:100%;max-width:280px;height:60px}
+.schoolName{font-weight:900;font-size:16px;line-height:1.2}
+.typeWord{font-weight:900;font-size:14px;letter-spacing:3px;margin-top:2px}
 .deleteBar{position:sticky;top:0;z-index:5;background:#fff7ed;border:2px solid #ea580c;border-radius:10px;padding:10px;margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .deleteBar b{color:#9a3412}
 .chk{width:20px;height:20px;accent-color:#dc2626;cursor:pointer}
@@ -43,7 +44,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Real Barcode • v1.94<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.94 REAL BARCODE</span></div></header>
+<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Textbook Barcode Labels • v1.95<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.95 TEXTBOOKS UNDER SCHOOL</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -62,7 +63,7 @@ th{background:#0a1f4d;color:#fff}
 <div class="grid2"><div><label>Subject</label><input id="subjectInput" placeholder="e.g. Mathematics"></div><div><label>Grade</label><select id="gradeInput"><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div></div>
 <div class="grid2"><div><label>Publisher (optional)</label><input id="publisherInput" placeholder="e.g. Via Afrika"></div><div><label>Copies — How many to create</label><input id="copiesInput" type="number" value="60" min="1" max="500"></div></div>
 <label>Barcode Number — AUTO (do not type)</label>
-<input id="barcodePreview" readonly style="font-weight:900;font-size:20px;letter-spacing:1px" value="WHS000214">
+<input id="barcodePreview" readonly style="font-weight:900;font-size:20px;letter-spacing:1px" value="WHS000001">
 <div class="small">Auto from School Name initials + next number. <a href="#" onclick="refreshNext();return false;">🔄 Refresh next number</a></div>
 <button class="btn btn-green" id="saveBtn" onclick="saveBooks()">✅ Save + Generate Barcode Label(s)</button>
 <button class="btn btn-blue" onclick="refreshNext()">🔢 Get Next Number</button>
@@ -93,7 +94,6 @@ th{background:#0a1f4d;color:#fff}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, addDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
@@ -104,15 +104,14 @@ const firebaseConfig = {
   appId: "1:247180363183:web:760b5163fdf421bae01b5a",
   measurementId: "G-TDFSSF6NTB"
 };
-let app, db, auth;
-try { app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); } catch(e){ console.error(e); }
+let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
 let ALL_BOOKS = [];
 let SELECTED = new Set();
 let NEXT_NUM = 1;
 let PREFIX = 'WHS';
-function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || ''; }
-function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || ''; }
+function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
+function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
 function canDelete(){ return ['ADMIN','PRINCIPAL','LIBRARIAN'].includes(getRole()); }
@@ -143,22 +142,25 @@ async function refreshNext(){
 }
 window.refreshNext = refreshNext;
 
-// Render REAL barcodes with JsBarcode
+// ===== v1.95 - TEXTBOOKS UNDER SCHOOL NAME =====
+// Layout:
+// WORDSWORTH HIGH SCHOOL  <- line 1
+// TEXTBOOKS                <- line 2, under school name
+// [real barcode]
+// WHS000xxx
 function renderLabels(school, start, end){
-  let html='<h2>Barcode Labels — Real Scannable Barcodes</h2><p class="small">Each label is:<br>'+school.toUpperCase()+' — TEXTBOOKS — Real Barcode — '+fmtBarcode(PREFIX,start)+'<br>Print this page — scanner will read it.</p>';
+  let html='<h2>Barcode Labels — Real Scannable Barcodes</h2><p class="small">Each label is:<br>'+school.toUpperCase()+'<br>TEXTBOOKS<br>Real Barcode — '+fmtBarcode(PREFIX,start)+'</p>';
   for(let n=start; n<=end; n++){
     const code=fmtBarcode(PREFIX,n);
-    html+='<div class="labelBox"><div style="font-weight:900">'+school.toUpperCase()+' — TEXTBOOKS</div><svg id="bc-'+code+'"></svg><div style="font-weight:900;font-size:14px">'+code+'</div></div>';
+    html+='<div class="labelBox"><div class="schoolName">'+school.toUpperCase()+'</div><div class="typeWord">TEXTBOOKS</div><svg id="bc-'+code+'"></svg><div style="font-weight:900;font-size:14px">'+code+'</div></div>';
   }
   html+='<button class="btn btn-blue" onclick="window.print()">🖨️ Print Labels</button>';
   $('labelsBox').innerHTML=html;
-  // Draw barcodes after DOM insert
   for(let n=start; n<=end; n++){
     const code=fmtBarcode(PREFIX,n);
     try{ JsBarcode('#bc-'+code, code, { format:'CODE128', lineWidth:2, height:60, displayValue:false, margin:0 }); }catch(e){ console.error(e); }
   }
 }
-
 async function saveBooks(){
   const emis=getEmis(); const school=getSchool();
   const title=$('titleInput').value.trim(); const subject=$('subjectInput').value.trim(); const grade=$('gradeInput').value; const publisher=$('publisherInput').value.trim(); const copies=parseInt($('copiesInput').value||'0');
@@ -244,8 +246,8 @@ window.deleteSelected = async function(){
   $('deleteSelectedBtn').disabled=true; $('deleteSelectedBtn').textContent='Deleting...';
   $('deleteMsg').innerHTML='<div class="info">Deleting '+list.length+'...</div>';
   try{
-    const login=getLogin(); let deleted=0; let failed=[];
-    for(const id of list){ try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',id)); try{ await addDoc(collection(db,'schools','EMIS_'+emis,'logs'), { action:'DELETE_BOOK', detail:'Deleted book '+id, whoEmail:login?login.email:'', whoName:login?login.name:'', whoRole:login?login.role:'', createdAt:serverTimestamp() }); }catch(e){} deleted++; }catch(e){ failed.push(id); } }
+    const login=getLogin(); let deleted=0;
+    for(const id of list){ try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',id)); try{ await addDoc(collection(db,'schools','EMIS_'+emis,'logs'), { action:'DELETE_BOOK', detail:'Deleted book '+id, whoEmail:login?login.email:'', whoName:login?login.name:'', whoRole:login?login.role:'', createdAt:serverTimestamp() }); }catch(e){} deleted++; }catch(e){} }
     SELECTED.clear(); await loadBooks(); await refreshNext();
     $('deleteMsg').innerHTML='<div class="ok">✅ Deleted '+deleted+' book(s).</div>';
   }catch(e){ $('deleteMsg').innerHTML='<div class="warn">❌ Delete failed: '+e.message+'</div>'; }
@@ -253,7 +255,8 @@ window.deleteSelected = async function(){
 };
 document.addEventListener('DOMContentLoaded', async ()=>{
   const emis=getEmis(); const school=getSchool(); const login=getLogin();
-  if(login) $('whoLine').textContent='Logged in: '+(login.name||login.email)+' • '+(login.role||'');
+  const nm = login ? (login.name||login.fullName||'') : '';
+  if(login) $('whoLine').textContent='Logged in: '+nm+' • '+(login.role||'')+' • '+(login.email||'');
   if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
   $('cloudStatus').textContent='☁️ Cloud: Connected — '+(school||'Select School in Admin');
   await refreshNext();
