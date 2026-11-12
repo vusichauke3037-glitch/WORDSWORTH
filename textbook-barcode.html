@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v1.90</title>
+<title>Makhanani LTSM — Textbooks v1.92</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a1f4d">
 <style>
@@ -17,13 +17,11 @@ h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0}.btn-red{background:#dc2626;color:#fff}
-.btn-small{width:auto;padding:7px 12px;font-size:12px;margin:2px;display:inline-block}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
-#cloudIdLabel{text-align:center;font-size:11px;color:#64748b;padding:4px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
@@ -33,81 +31,68 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
-
-/* ===== LABEL - MATCHES YOUR PHOTO EXACTLY ===== */
-/* White label on light yellow backing like the roll */
-.label-wrap{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;background:#fef9c3;padding:12px;border-radius:10px}
-.barcode-label{background:#fff;border-radius:12px;padding:12px 14px 10px;text-align:center;width:300px;box-shadow:0 1px 3px rgba(0,0,0,.1);page-break-inside:avoid}
-.barcode-label .school-name{font-family:Arial,sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;line-height:1.3;text-transform:uppercase;color:#4b5563;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.barcode-label .label-type{font-family:Arial,sans-serif;font-size:15px;font-weight:500;letter-spacing:2px;color:#4b5563;margin:2px 0 8px;text-transform:uppercase}
-.barcode-label svg{width:100%;height:48px;display:block}
-.barcode-label .barcode-number{font-family:Arial,sans-serif;font-size:20px;font-weight:500;letter-spacing:1px;margin-top:4px;color:#4b5563}
-@media print{
-  body{background:#fff} header,.topnav,.no-print{display:none!important} main{max-width:none;padding:0} .card{box-shadow:none;border:none;padding:0}
-  .label-wrap{background:#fef9c3!important;padding:8px;gap:8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .barcode-label{border:1px solid #e5e7eb;box-shadow:none}
-}
+.labelBox{border:1.5px dashed #0a1f4d;padding:10px;margin:8px 0;text-align:center;background:#fff}
+.deleteBar{position:sticky;top:0;z-index:5;background:#fff7ed;border:2px solid #ea580c;border-radius:10px;padding:10px;margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.deleteBar b{color:#9a3412}
+.chk{width:20px;height:20px;accent-color:#dc2626;cursor:pointer}
+.searchRow{display:flex;gap:10px;flex-wrap:wrap}
+.searchRow input{flex:1;min-width:180px}
 </style>
 </head>
 <body>
-<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Barcode — Same as Printed Roll<br>Firebase Live • v1.90</p></div><div><span class="badge">v1.90 TEXTBOOKS</span></div></header>
-<div id="cloudStatus" class="no-print">☁️ Cloud: Connecting...</div>
-<div id="cloudIdLabel" class="no-print">schools/...</div>
+<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Barcode Labels • v1.92 DELETE<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.92 DELETE</span></div></header>
+<div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
-<div class="topnav no-print"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
+<div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
-<div class="card no-print">
-<h2>🏫 School — Select by EMIS</h2>
-<div class="grid2">
-<div><label>DBE Dropdown (Value = EMIS)</label><select id="schoolDropdown"><option value="">-- Loading schools... --</option></select><div class="small" id="schoolCount">Loading...</div></div>
-<div><label>Search EMIS / NAME / TOWN</label><input id="schoolSearch" placeholder="Type e.g. wordsworth, tivanani, 7003..."><div class="small">Type to filter LIVE.</div></div>
-</div>
-<div id="selectedSchoolBox" class="ok" style="display:none"></div>
-<div class="grid2"><div><label>Or Manual EMIS</label><input id="manualEmis" placeholder="e.g. 700310854"></div><div><label>Or Manual School Name</label><input id="manualName" placeholder="e.g. WORDSWORTH HIGH SCHOOL"></div></div>
-<button class="btn btn-gold" onclick="manualSelect()">✅ Use This School</button>
+<div class="card">
+<h2>🏫 School</h2>
+<div class="info" id="schoolBox">School: —</div>
+<div class="small" id="prefixBox">Prefix: — • Next: — • Last used: —</div>
+<div class="small">Example: WORDSWORTH HIGH SCHOOL → WHS000001 &nbsp;|&nbsp; TIVANANI PRIMARY SCHOOL → TPS000001</div>
 </div>
 
-<div class="card no-print">
-<h2>📖 Add Textbook — Auto Numbering ON</h2>
-<div class="info" id="prefixBox">Prefix: — • Next: —<br>Example: WORDSWORTH HIGH SCHOOL → <b>WHS000001</b> &nbsp;|&nbsp; TIVANANI PRIMARY SCHOOL → <b>TPS000001</b></div>
-<div class="grid2">
-<div><label>Title * (saved in system, NOT printed on label)</label><input id="tbTitle" placeholder="e.g. Mathematics Grade 10"></div>
-<div><label>Subject</label><input id="tbSubject" placeholder="e.g. Mathematics"></div>
-</div>
-<div class="grid3">
-<div><label>Grade</label><select id="tbGrade"><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option selected>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
-<div><label>Publisher (optional)</label><input id="tbPublisher" placeholder="e.g. Via Afrika"></div>
-<div><label>Condition</label><select id="tbCondition"><option>NEW</option><option>GOOD</option><option>FAIR</option><option>POOR</option></select></div>
-</div>
-<div class="grid2">
-<div><label>Barcode Number — AUTO (do not type)</label><input id="tbBarcode" readonly style="background:#fef9c3;font-weight:900;font-size:18px;letter-spacing:2px" placeholder="WHS000001"><div class="small">Auto from School Name initials + next number. <a href="#" onclick="refreshNextNumber();return false;">↻ Refresh next number</a></div></div>
-<div><label>Copies — How many to create?</label><input id="tbCopies" type="number" value="1" min="1" max="100"><div class="small">If Copies = 5 → Creates WHS000001 to WHS000005 and shows 5 labels like your roll.</div></div>
-</div>
-<button class="btn btn-green" onclick="addTextbook()">✅ Save + Generate Barcode Label(s)</button>
-<button class="btn btn-blue" onclick="refreshNextNumber()">🔄 Get Next Number</button>
-<div id="tbMsg"></div>
+<div class="card">
+<h2>📖 Add New Textbooks</h2>
+<label>Title * (saved in system, NOT printed on label)</label>
+<input id="titleInput" placeholder="e.g. Mathematics Grade 10">
+<div class="grid2"><div><label>Subject</label><input id="subjectInput" placeholder="e.g. Mathematics"></div><div><label>Grade</label><select id="gradeInput"><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div></div>
+<div class="grid2"><div><label>Publisher (optional)</label><input id="publisherInput" placeholder="e.g. Via Afrika"></div><div><label>Copies — How many to create</label><input id="copiesInput" type="number" value="60" min="1" max="500"></div></div>
+<label>Barcode Number — AUTO (do not type)</label>
+<input id="barcodePreview" readonly style="font-weight:900;font-size:20px;letter-spacing:1px" value="WHS000001">
+<div class="small">Auto from School Name initials + next number. <a href="#" onclick="refreshNext();return false;">🔄 Refresh next number</a></div>
+<button class="btn btn-green" id="saveBtn" onclick="saveBooks()">✅ Save + Generate Barcode Label(s)</button>
+<button class="btn btn-blue" onclick="refreshNext()">🔢 Get Next Number</button>
+<div id="saveMsg"></div>
+<div id="labelsBox"></div>
 </div>
 
-<div class="card print-area">
-<h2 class="no-print">🏷️ Barcode Labels — Exactly Like Your Photo</h2>
-<p class="small no-print">Each label is ONLY:<br><b>WORDSWORTH HIGH SCHOOL</b> → <b>TEXTBOOKS</b> → Barcode → <b>WHS000005</b><br>No Title / Grade printed on label, just like your roll.</p>
-<div class="no-print" style="margin-top:8px"><button class="btn btn-gold" onclick="window.print()">🖨️ Print Labels</button></div>
-<div id="labelsArea" class="label-wrap">
-<div class="small">No label yet. Add a textbook above — label will appear here like your photo.</div>
+<!-- DELETE SECTION -->
+<div class="card" id="deleteCard">
+<h2>🗑️ All Books in System — Select to Delete</h2>
+<div id="roleDeleteMsg"></div>
+<div class="searchRow">
+<input id="bookSearch" placeholder="🔍 Search by barcode, title, subject, grade... e.g. WHS000001, Accounting, Grade 10" oninput="renderBookList()">
+<select id="bookFilter" onchange="renderBookList()" style="max-width:220px"><option value="">All Titles</option></select>
 </div>
+<div class="small"><span id="bookCount">Loading books...</span> • Tick checkbox → Delete. Deleted books cannot be undone. If a book is currently ISSUED to a learner, delete it only after it is Returned in Issue page.</div>
+
+<div id="deleteBar" class="deleteBar" style="display:none">
+<b>🗑️ <span id="selCount">0</span> selected</b>
+<button class="btn btn-red" id="deleteSelectedBtn" onclick="deleteSelected()" style="width:auto;margin:0;padding:10px 18px">🗑️ Delete Selected</button>
+<button class="btn btn-grey" onclick="clearSelection()" style="width:auto;margin:0;padding:10px 18px">Clear</button>
+<span class="small" id="selList" style="width:100%"></span>
 </div>
 
-<div class="card no-print">
-<h2>📚 All Textbooks for This School</h2>
-<div class="grid2"><div><label>Search Title / Barcode / Subject</label><input id="searchTb" placeholder="Type e.g. Maths, WHS000..."></div><div><label>&nbsp;</label><button class="btn btn-blue" onclick="loadTextbooks()">🔄 Reload</button></div></div>
-<div id="tbList"></div>
+<div id="bookList"></div>
+<div id="deleteMsg"></div>
+<button class="btn btn-blue" onclick="loadBooks()">🔄 Refresh Book List</button>
 </div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, addDoc, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
@@ -121,157 +106,189 @@ const firebaseConfig = {
 };
 let app, db, auth;
 try { app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); } catch(e){ console.error(e); }
-let ALL_SCHOOLS = [];
-let ALL_TB = [];
-let NEXT_NUM = 1;
 const $ = id => document.getElementById(id);
-function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || ''; }
-function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || ''; }
-function updateCloudStatus(msg, ok=true){ const el=$('cloudStatus'); if(el){ el.textContent=msg; el.style.background = ok ? '#059669' : '#dc2626'; } const lab=$('cloudIdLabel'); if(lab){ const e=getEmis(); lab.textContent = e ? 'schools/EMIS_'+e : 'schools/...'; } }
+let ALL_BOOKS = [];
+let SELECTED = new Set();
+let NEXT_NUM = 1;
+let PREFIX = 'WHS';
 
-// ===== PREFIX - FIRST LETTER OF EACH WORD =====
-// WORDSWORTH HIGH SCHOOL -> WHS
-// TIVANANI PRIMARY SCHOOL -> TPS
-function getPrefix(schoolName){
-  const name = (schoolName||'').trim().toUpperCase().replace(/[^A-Z ]/g,' ').replace(/\s+/g,' ').trim();
-  if(!name) return 'SCH';
-  const words = name.split(' ').filter(w=>w.length>0);
-  const stop = ['OF','AND','THE','FOR'];
-  const filtered = words.filter(w=>!stop.includes(w));
-  const use = filtered.length >= 2 ? filtered : words;
-  if(use.length === 1) return use[0].substring(0,3);
-  return use.map(w=>w[0]).join('');
+function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || ''; }
+function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || ''; }
+function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
+function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
+function canDelete(){ return ['ADMIN','PRINCIPAL','LIBRARIAN'].includes(getRole()); }
+function canWrite(){ return !!getLogin(); }
+
+function makePrefix(name){
+  if(!name) return 'WHS';
+  const words = name.replace(/HIGH SCHOOL|PRIMARY SCHOOL|SECONDARY SCHOOL|COMBINED SCHOOL/gi,'').trim().split(/\s+/).filter(Boolean);
+  let p = words.map(w=>w[0]).join('').toUpperCase().slice(0,4);
+  if(!p) p='WHS';
+  return p;
 }
-function pad6(n){ return String(n).padStart(6,'0'); }
-function makeBarcode(prefix, num){ return prefix + pad6(num); }
-async function refreshNextNumber(){
-  const emis = getEmis(); const school = getSchool();
-  const prefix = getPrefix(school);
-  if(!emis){ $('prefixBox').innerHTML = 'Select school first.'; return; }
+function fmtBarcode(prefix, n){ return prefix + String(n).padStart(6,'0'); }
+
+async function refreshNext(){
+  const emis=getEmis(); const school=getSchool();
+  PREFIX = makePrefix(school);
+  if(!emis){ $('prefixBox').textContent='Prefix: '+PREFIX+' • Select school in Admin first'; return; }
   try{
     const snap = await getDocs(collection(db,'schools','EMIS_'+emis,'textbooks'));
-    let max = 0;
-    snap.forEach(d=>{
-      const b = (d.data().barcode||'').toUpperCase();
-      if(b.startsWith(prefix)){
-        const numPart = b.replace(prefix,'').replace(/\D/g,'');
-        const n = parseInt(numPart||'0',10);
-        if(n > max) max = n;
-      }
-    });
-    NEXT_NUM = max + 1;
-    const next = makeBarcode(prefix, NEXT_NUM);
-    $('tbBarcode').value = next;
-    $('prefixBox').innerHTML = 'School: <b>'+school+'</b><br>Prefix: <b>'+prefix+'</b> • Next: <b>'+next+'</b> • Last used: '+(max===0?'None — this is first book':prefix+pad6(max))+'<br>Example: WORDSWORTH HIGH SCHOOL → <b>WHS000001</b> &nbsp;|&nbsp; TIVANANI PRIMARY SCHOOL → <b>TPS000001</b>';
-    return next;
-  }catch(e){ $('prefixBox').innerHTML = 'Failed to get next number: '+e.message; }
+    let max=0;
+    snap.forEach(d=>{ const b=d.data(); const code=(b.barcode||b.code||d.id||''); const m=String(code).match(/(\d+)$/); if(m) max=Math.max(max, parseInt(m[1])); });
+    NEXT_NUM = max+1;
+    $('barcodePreview').value = fmtBarcode(PREFIX, NEXT_NUM);
+    $('prefixBox').textContent = 'Prefix: '+PREFIX+' • Next: '+fmtBarcode(PREFIX, NEXT_NUM)+' • Last used: '+(max?fmtBarcode(PREFIX,max):'—');
+  }catch(e){ $('prefixBox').textContent='Failed: '+e.message; }
 }
-window.refreshNextNumber = refreshNextNumber;
+window.refreshNext = refreshNext;
 
-// ===== LABEL - EXACTLY LIKE YOUR PHOTO =====
-// Line 1: WORDSWORTH HIGH SCHOOL
-// Line 2: TEXTBOOKS
-// Line 3: Barcode
-// Line 4: WHS000005
-function renderLabel(schoolName, barcode){
-  const div = document.createElement('div');
-  div.className = 'barcode-label';
-  const safeSchool = (schoolName||'').toUpperCase();
-  div.innerHTML = `
-    <p class="school-name">${safeSchool}</p>
-    <p class="label-type">TEXTBOOKS</p>
-    <svg class="bc"></svg>
-    <div class="barcode-number">${barcode}</div>
-  `;
-  const svg = div.querySelector('.bc');
-  try{ JsBarcode(svg, barcode, {format:'CODE128', displayValue:false, height:48, width:1.8, margin:0}); }catch(e){ svg.outerHTML = '<div style="font-size:11px">Barcode: '+barcode+'</div>'; }
-  return div;
+async function saveBooks(){
+  const emis=getEmis(); const school=getSchool();
+  const title=$('titleInput').value.trim(); const subject=$('subjectInput').value.trim(); const grade=$('gradeInput').value; const publisher=$('publisherInput').value.trim(); const copies=parseInt($('copiesInput').value||'0');
+  const msg=$('saveMsg');
+  if(!emis){ msg.innerHTML='<div class="warn">⚠️ Select school in Admin first.</div>'; return; }
+  if(!canWrite()){ msg.innerHTML='<div class="warn">⚠️ Login in Admin first as ADMIN / PRINCIPAL / LIBRARIAN.</div>'; return; }
+  if(!title){ msg.innerHTML='<div class="warn">⚠️ Type Title first.</div>'; return; }
+  if(!copies||copies<1){ msg.innerHTML='<div class="warn">⚠️ Copies must be 1 or more.</div>'; return; }
+  await refreshNext();
+  const start=NEXT_NUM; const end=NEXT_NUM+copies-1;
+  $('saveBtn').disabled=true; $('saveBtn').textContent='Saving...';
+  msg.innerHTML='<div class="info">Saving '+copies+' book(s)...</div>';
+  try{
+    const login=getLogin();
+    for(let n=start; n<=end; n++){
+      const code=fmtBarcode(PREFIX,n);
+      await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), { barcode:code, code:code, title:title, subject:subject, grade:grade, publisher:publisher, status:'AVAILABLE', createdAt:serverTimestamp(), createdBy:login?login.email:'', createdByName:login?login.name:'' }, {merge:true});
+    }
+    msg.innerHTML='<div class="ok">✅ Saved '+copies+' book(s): '+fmtBarcode(PREFIX,start)+' to '+fmtBarcode(PREFIX,end)+'<br>Labels below match your photo — Click Print.</div>';
+    // Labels
+    let labels='<h2>Barcode Labels — Exactly Like Your Photo</h2><p class="small">Each label is ONLY<br>'+school.toUpperCase()+' — TEXTBOOKS — Barcode — '+fmtBarcode(PREFIX,start)+'<br>No Title / Grade printed on label, just like your photo.</p>';
+    for(let n=start; n<=end; n++){
+      const code=fmtBarcode(PREFIX,n);
+      labels+='<div class="labelBox"><div style="font-weight:900">'+school.toUpperCase()+' — TEXTBOOKS</div><div style="font-size:28px;font-weight:900;letter-spacing:2px">|||| '+code+' ||||</div><div>Barcode — '+code+'</div></div>';
+    }
+    labels+='<button class="btn btn-blue" onclick="window.print()">🖨️ Print Labels</button>';
+    $('labelsBox').innerHTML=labels;
+    NEXT_NUM=end+1;
+    $('barcodePreview').value=fmtBarcode(PREFIX,NEXT_NUM);
+    $('prefixBox').textContent='Prefix: '+PREFIX+' • Next: '+fmtBarcode(PREFIX,NEXT_NUM)+' • Last used: '+fmtBarcode(PREFIX,end);
+    await loadBooks();
+  }catch(e){ msg.innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
+  $('saveBtn').disabled=false; $('saveBtn').textContent='✅ Save + Generate Barcode Label(s)';
 }
-function showLabels(list){
-  const area = $('labelsArea');
-  area.innerHTML = '';
-  list.forEach(item=>{
-    area.appendChild(renderLabel(getSchool(), item.barcode));
+window.saveBooks = saveBooks;
+
+async function loadBooks(){
+  const emis=getEmis();
+  if(!emis){ $('bookList').innerHTML='<div class="warn">Select school in Admin first.</div>'; return; }
+  $('bookCount').textContent='Loading books...';
+  try{
+    const snap = await getDocs(query(collection(db,'schools','EMIS_'+emis,'textbooks'), orderBy('barcode')));
+    ALL_BOOKS=[];
+    snap.forEach(d=>{ const b=d.data(); ALL_BOOKS.push({ id:d.id, barcode:b.barcode||b.code||d.id, title:b.title||'', subject:b.subject||'', grade:b.grade||'', publisher:b.publisher||'', status:b.status||'AVAILABLE' }); });
+    // Title filter
+    const titles=[...new Set(ALL_BOOKS.map(b=>b.title).filter(Boolean))].sort();
+    $('bookFilter').innerHTML='<option value="">All Titles</option>'+titles.map(t=>`<option>${t}</option>`).join('');
+    SELECTED.clear();
+    renderBookList();
+  }catch(e){ $('bookList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
+}
+window.loadBooks = loadBooks;
+
+function getFiltered(){
+  const q=($('bookSearch').value||'').toLowerCase().trim();
+  const tf=$('bookFilter').value;
+  return ALL_BOOKS.filter(b=>{
+    if(tf && b.title!==tf) return false;
+    if(!q) return true;
+    return (b.barcode+' '+b.title+' '+b.subject+' '+b.grade+' '+(b.publisher||'')).toLowerCase().includes(q);
   });
 }
-window.addTextbook = async function(){
-  const emis = getEmis(); if(!emis){ $('tbMsg').innerHTML='<div class="warn">⚠️ Select school first.</div>'; return; }
-  const title = $('tbTitle').value.trim(); if(!title){ $('tbMsg').innerHTML='<div class="warn">⚠️ Type Title.</div>'; return; }
-  const subject = $('tbSubject').value.trim(); const grade = $('tbGrade').value; const publisher = $('tbPublisher').value.trim(); const condition = $('tbCondition').value;
-  let copies = parseInt($('tbCopies').value||'1',10); if(isNaN(copies)||copies<1) copies=1; if(copies>100) copies=100;
-  const prefix = getPrefix(getSchool());
-  $('tbMsg').innerHTML = '<div class="info">Saving '+copies+' book(s)...</div>';
-  try{
-    await refreshNextNumber();
-    let created = [];
-    for(let i=0;i<copies;i++){
-      const num = NEXT_NUM + i;
-      const barcode = makeBarcode(prefix, num);
-      await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',barcode), { barcode, title, subject, grade, publisher, condition, status:'AVAILABLE', school:getSchool(), emis:emis, createdAt: serverTimestamp() });
-      created.push({barcode, title, grade, subject});
-    }
-    NEXT_NUM += copies;
-    $('tbBarcode').value = makeBarcode(prefix, NEXT_NUM);
-    $('tbMsg').innerHTML = '<div class="ok">✅ Saved '+copies+' book(s): <b>'+created[0].barcode+'</b> to <b>'+created[created.length-1].barcode+'</b><br>Labels below match your photo — Click Print.</div>';
-    showLabels(created);
-    $('tbTitle').value=''; $('tbSubject').value='';
-    loadTextbooks();
-  }catch(e){ $('tbMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
-};
-async function loadDbeSchools(){
-  const dd = $('schoolDropdown');
-  try{
-    let snap = await getDocs(collection(db,'dbe_schools')); ALL_SCHOOLS = [];
-    snap.forEach(d=>{ const s=d.data(); ALL_SCHOOLS.push({emis:String(s.emis||d.id), name:s.name||'', town:s.town||'', province:s.province||''}); });
-    if(ALL_SCHOOLS.length===0){ const snap2 = await getDocs(collection(db,'schools')); snap2.forEach(d=>{ const s=d.data(); const emis=String(d.id).replace('EMIS_',''); ALL_SCHOOLS.push({emis:emis, name:s.name||'', town:s.town||'', province:s.province||''}); }); }
-    ALL_SCHOOLS.sort((a,b)=>a.name.localeCompare(b.name));
-    $('schoolCount').textContent = ALL_SCHOOLS.length + ' schools loaded from DBE';
-    renderDropdown(''); const emis=getEmis(); if(emis && ALL_SCHOOLS.some(s=>s.emis===emis)){ dd.value=emis; showSelected(); refreshNextNumber(); loadTextbooks(); }
-  }catch(e){ dd.innerHTML='<option value="">-- Failed to load schools --</option>'; $('schoolCount').textContent='Failed: '+e.message; }
+
+function renderBookList(){
+  const filtered=getFiltered();
+  $('bookCount').textContent = filtered.length + ' book(s) shown • ' + ALL_BOOKS.length + ' total in system • ' + SELECTED.size + ' selected';
+  const role=getRole();
+  if(!canDelete()){
+    $('roleDeleteMsg').innerHTML = '<div class="warn">🔒 You are logged in as <b>'+(role||'NOT LOGGED IN')+'</b>. Only <b>ADMIN / PRINCIPAL / LIBRARIAN</b> can delete books. Login in Admin first. TEACHERS cannot delete.</div>';
+  } else {
+    $('roleDeleteMsg').innerHTML = '<div class="ok">✅ You are <b>'+role+'</b> — you CAN delete selected books.</div>';
+  }
+  if(filtered.length===0){ $('bookList').innerHTML='<div class="info">No books found. Add books above, or clear search.</div>'; updateDeleteBar(); return; }
+  let html='<table><tr><th style="width:40px"><input type="checkbox" class="chk" id="checkAll" onchange="toggleAll(this.checked)"></th><th>Barcode</th><th>Title</th><th>Subject</th><th>Grade</th><th>Status</th></tr>';
+  filtered.forEach(b=>{
+    const checked=SELECTED.has(b.id)?'checked':'';
+    html+='<tr><td><input type="checkbox" class="chk" '+checked+' onchange="toggleOne(\''+b.id+'\',this.checked)"></td><td><b>'+b.barcode+'</b></td><td>'+b.title+'</td><td>'+b.subject+'</td><td>'+b.grade+'</td><td>'+b.status+'</td></tr>';
+  });
+  html+='</table>';
+  $('bookList').innerHTML=html;
+  updateDeleteBar();
 }
-function renderDropdown(filter){ const dd=$('schoolDropdown'); const f=(filter||'').toLowerCase().trim(); const filtered=!f?ALL_SCHOOLS:ALL_SCHOOLS.filter(s=>(s.emis+' '+s.name+' '+s.town+' '+(s.province||'')).toLowerCase().includes(f)); if(filtered.length===0){ dd.innerHTML='<option value="">-- No school found --</option>'; return; } dd.innerHTML='<option value="">-- Select School by EMIS --</option>'+filtered.map(s=>`<option value="${s.emis}">${s.emis} — ${s.name} — ${s.town}</option>`).join(''); const emis=getEmis(); if(emis && filtered.some(s=>s.emis===emis)) dd.value=emis; }
-function showSelected(){ const emis=getEmis(); const name=getSchool(); const box=$('selectedSchoolBox'); if(emis&&name){ box.style.display='block'; box.innerHTML='✅ Selected: <b>'+name+'</b> • EMIS <b>'+emis+'</b> • Prefix: <b>'+getPrefix(name)+'</b>'; } else box.style.display='none'; }
-$('schoolSearch').addEventListener('input', e=> renderDropdown(e.target.value));
-$('schoolDropdown').addEventListener('change', e=>{ const emis=e.target.value; if(!emis) return; const s=ALL_SCHOOLS.find(x=>x.emis===emis); if(!s) return; localStorage.setItem('MAKHANANI_SELECTED_EMIS',emis); localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',s.name); localStorage.setItem('MAKHANANI_SCHOOL_EMIS',emis); localStorage.setItem('MAKHANANI_SCHOOL_NAME',s.name); showSelected(); updateCloudStatus('☁️ Cloud: Connected — '+s.name+' (EMIS '+emis+')'); refreshNextNumber(); loadTextbooks(); });
-window.manualSelect = function(){ const emis=$('manualEmis').value.trim(); const name=$('manualName').value.trim()||'WORDSWORTH HIGH SCHOOL'; if(!emis){ alert('Type EMIS first'); return; } localStorage.setItem('MAKHANANI_SELECTED_EMIS',emis); localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',name); localStorage.setItem('MAKHANANI_SCHOOL_EMIS',emis); localStorage.setItem('MAKHANANI_SCHOOL_NAME',name); showSelected(); updateCloudStatus('☁️ Cloud: Connected — '+name+' (EMIS '+emis+')'); refreshNextNumber(); loadTextbooks(); };
-window.loadTextbooks = async function(){
-  const emis=getEmis(); if(!emis) return;
-  try{
-    const snap = await getDocs(collection(db,'schools','EMIS_'+emis,'textbooks'));
-    ALL_TB = []; snap.forEach(d=>{ ALL_TB.push(d.data()); });
-    ALL_TB.sort((a,b)=>(a.barcode||'').localeCompare(b.barcode||''));
-    renderTbList($('searchTb').value||'');
-    refreshNextNumber();
-  }catch(e){ $('tbList').innerHTML='<div class="warn">'+e.message+'</div>'; }
+window.renderBookList = renderBookList;
+
+window.toggleOne = function(id, checked){
+  if(checked) SELECTED.add(id); else SELECTED.delete(id);
+  renderBookList();
 };
-function renderTbList(filter){
-  const f=(filter||'').toLowerCase().trim();
-  const list = !f ? ALL_TB : ALL_TB.filter(t=>((t.barcode||'')+' '+(t.title||'')+' '+(t.subject||'')+' '+(t.grade||'')).toLowerCase().includes(f));
-  if(list.length===0){ $('tbList').innerHTML='<p class="small">No textbooks yet for this school.</p>'; return; }
-  let html='<table><tr><th>Barcode</th><th>Title</th><th>Grade / Subject</th><th>Status</th><th>Action</th></tr>';
-  list.forEach(t=>{ html+='<tr><td><b>'+(t.barcode||'')+'</b></td><td>'+(t.title||'')+'</td><td>'+(t.grade||'')+' '+(t.subject||'')+'</td><td>'+(t.status||'')+'</td><td><button class="btn-small btn-blue" onclick="reprintLabel(\''+(t.barcode||'')+'\')">🏷️ Label</button> <button class="btn-small btn-red" onclick="deleteTb(\''+(t.barcode||'')+'\')">🗑️ Delete</button></td></tr>'; });
-  html+='</table><p class="small">'+list.length+' textbook(s) • Prefix: <b>'+getPrefix(getSchool())+'</b></p>';
-  $('tbList').innerHTML=html;
+window.toggleAll = function(checked){
+  const filtered=getFiltered();
+  filtered.forEach(b=>{ if(checked) SELECTED.add(b.id); else SELECTED.delete(b.id); });
+  renderBookList();
+};
+window.clearSelection = function(){ SELECTED.clear(); renderBookList(); };
+
+function updateDeleteBar(){
+  const bar=$('deleteBar');
+  if(SELECTED.size===0){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  $('selCount').textContent=SELECTED.size;
+  const names=[...SELECTED].slice(0,10).join(', ') + (SELECTED.size>10 ? ' ... +'+(SELECTED.size-10)+' more' : '');
+  $('selList').textContent='Selected: '+names;
+  $('deleteSelectedBtn').disabled=!canDelete();
+  if(!canDelete()) $('deleteSelectedBtn').textContent='🔒 Only ADMIN / PRINCIPAL / LIBRARIAN can delete';
+  else $('deleteSelectedBtn').textContent='🗑️ Delete Selected ('+SELECTED.size+')';
 }
-window.reprintLabel = function(barcode){
-  const t = ALL_TB.find(x=>x.barcode===barcode); if(!t) return;
-  showLabels([t]);
-  document.getElementById('labelsArea').scrollIntoView({behavior:'smooth'});
-};
-window.deleteTb = async function(barcode){
-  if(!confirm('Delete '+barcode+'?')) return;
+
+window.deleteSelected = async function(){
   const emis=getEmis();
-  try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',barcode)); loadTextbooks(); }catch(e){ alert(e.message); }
+  if(!canDelete()){ $('deleteMsg').innerHTML='<div class="warn">🔒 Only ADMIN / PRINCIPAL / LIBRARIAN can delete books.</div>'; return; }
+  if(SELECTED.size===0){ $('deleteMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 book first.</div>'; return; }
+  const list=[...SELECTED];
+  const preview=list.slice(0,10).join(', ') + (list.length>10 ? ' ... +'+(list.length-10)+' more' : '');
+  if(!confirm('🗑️ DELETE '+list.length+' book(s)?\n\n'+preview+'\n\nThis cannot be undone. Are you sure?')) return;
+  // Second confirm for large deletes
+  if(list.length>=10 && !confirm('⚠️ You are deleting '+list.length+' books. Confirm again to DELETE FOREVER?')) return;
+  $('deleteSelectedBtn').disabled=true; $('deleteSelectedBtn').textContent='Deleting...';
+  $('deleteMsg').innerHTML='<div class="info">Deleting '+list.length+' book(s)...</div>';
+  try{
+    const login=getLogin();
+    let deleted=0; let failed=[];
+    for(const id of list){
+      try{
+        await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',id));
+        // Log it
+        try{ await addDoc(collection(db,'schools','EMIS_'+emis,'logs'), { action:'DELETE_BOOK', detail:'Deleted book '+id, whoEmail:login?login.email:'', whoName:login?login.name:'', whoRole:login?login.role:'', createdAt:serverTimestamp() }); }catch(e){}
+        deleted++;
+      }catch(e){ failed.push(id+': '+e.message); }
+    }
+    SELECTED.clear();
+    await loadBooks();
+    await refreshNext();
+    if(failed.length===0) $('deleteMsg').innerHTML='<div class="ok">✅ Deleted '+deleted+' book(s) successfully.</div>';
+    else $('deleteMsg').innerHTML='<div class="warn">✅ Deleted '+deleted+' • ❌ Failed '+failed.length+'<br>'+failed.join('<br>')+'</div>';
+  }catch(e){ $('deleteMsg').innerHTML='<div class="warn">❌ Delete failed: '+e.message+'</div>'; }
+  $('deleteSelectedBtn').disabled=false;
 };
-$('searchTb').addEventListener('input', e=> renderTbList(e.target.value));
-document.addEventListener('DOMContentLoaded', ()=>{
-  const emis=getEmis(); const school=getSchool();
-  if(school) updateCloudStatus('☁️ Cloud: Connected — '+school+(emis?' (EMIS '+emis+')':''));
-  else updateCloudStatus('☁️ Cloud: Connected to Firebase — Select School');
-  showSelected();
-  if(emis) refreshNextNumber();
+
+document.addEventListener('DOMContentLoaded', async ()=>{
+  const emis=getEmis(); const school=getSchool(); const login=getLogin();
+  if(login) $('whoLine').textContent='Logged in: '+(login.name||login.email)+' • '+(login.role||'');
+  if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
+  $('cloudStatus').textContent='☁️ Cloud: Connected — '+(school||'Select School in Admin');
+  await refreshNext();
+  await loadBooks();
 });
-loadDbeSchools();
 </script>
 </body>
 </html>
