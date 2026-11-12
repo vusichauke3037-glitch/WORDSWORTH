@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v1.96</title>
+<title>Makhanani LTSM — Textbooks v1.97</title>
 <meta name="theme-color" content="#0a1f4d">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <style>
@@ -16,10 +16,11 @@ main{max-width:1100px;margin:auto;padding:14px}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
+input[type=radio]{width:20px;height:20px;accent-color:#7c3aed;cursor:pointer}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-print{background:#7c3aed;color:#fff;font-size:16px;padding:16px}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
@@ -37,10 +38,16 @@ th{background:#0a1f4d;color:#fff}
 .typeWord{font-weight:900;font-size:14px;letter-spacing:3px;margin-top:2px}
 .deleteBar{position:sticky;top:0;z-index:5;background:#fff7ed;border:2px solid #ea580c;border-radius:10px;padding:10px;margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .deleteBar b{color:#9a3412}
+.printBar{position:sticky;top:0;z-index:5;background:#ede9fe;border:2px solid #7c3aed;border-radius:10px;padding:10px;margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.printBar b{color:#5b21b6}
 .chk{width:20px;height:20px;accent-color:#dc2626;cursor:pointer}
 .searchRow{display:flex;gap:10px;flex-wrap:wrap}
 .searchRow input{flex:1;min-width:180px}
-/* ===== v1.96 PRINT: 3 columns x 5 rows ===== */
+.selOpt{display:flex;gap:10px;align-items:center;background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px;cursor:pointer;margin-bottom:8px}
+.selOpt.active{border-color:#7c3aed;background:#ede9fe}
+.selOpt b{font-size:14px}
+.selOpt span{font-size:12px;color:#64748b;display:block}
+.selOpt input{flex-shrink:0}
 .labelsGrid{display:block}
 @page{ size:A4; margin:8mm; }
 @media print{
@@ -62,7 +69,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Textbook Barcode Labels • v1.96<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.96 3×5 PRINT</span></div></header>
+<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Textbook Barcode Labels • v1.97<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.97 SELECT PRINT</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -86,17 +93,83 @@ th{background:#0a1f4d;color:#fff}
 <button class="btn btn-green" id="saveBtn" onclick="saveBooks()">✅ Save + Generate Barcode Label(s)</button>
 <button class="btn btn-blue" onclick="refreshNext()">🔢 Get Next Number</button>
 <div id="saveMsg"></div>
+<div id="printArea" style="display:none">
+<button class="btn btn-print" onclick="window.print()">🖨️ PRINT BARCODE LABELS — 3 × 5</button>
+<div class="small" style="text-align:center">Print: A4 • Margins: None / Minimum • Scale: 100% • Background graphics: ON</div>
+</div>
 <div id="labelsBox"></div>
 </div>
 
+<!-- ===== v1.97 PRINT SELECTION ===== -->
+<div class="card" style="border:2px solid #7c3aed">
+<h2>🖨️ Print Barcodes — Choose What To Print</h2>
+<div class="small">Step 1: Choose one option below, Step 2: Click the big purple PRINT button</div>
+
+<label class="selOpt" id="optBookBox" onclick="setPrintMode('book')">
+<input type="radio" name="printMode" value="book" checked>
+<div><b>📖 Per Book — Tick one or more books</b><span>Use this when 1 book label is torn / lost, or you want to re-print 5 books only</span></div>
+</label>
+
+<label class="selOpt" id="optTitleBox" onclick="setPrintMode('title')">
+<input type="radio" name="printMode" value="title">
+<div><b>📚 Per Title — Print one whole title</b><span>Example: Print all copies of Mathematics Grade 10 only</span></div>
+</label>
+
+<label class="selOpt" id="optGradeBox" onclick="setPrintMode('grade')">
+<input type="radio" name="printMode" value="grade">
+<div><b>🎓 Per Grade — Print one whole grade</b><span>Example: Print all Grade 8 books (all subjects, all titles)</span></div>
+</label>
+
+<label class="selOpt" id="optSubjectBox" onclick="setPrintMode('subject')">
+<input type="radio" name="printMode" value="subject">
+<div><b>📐 Per Subject — Print one whole subject</b><span>Example: Print all Mathematics books (all grades, all titles)</span></div>
+</label>
+
+<label class="selOpt" id="optAllBox" onclick="setPrintMode('all')">
+<input type="radio" name="printMode" value="all">
+<div><b>🌍 All Books — Print everything</b><span>Prints every book in the system</span></div>
+</label>
+
+<div id="titlePicker" style="display:none">
+<label>Choose Title to Print</label>
+<select id="printTitleSelect"><option value="">— Choose Title —</option></select>
+<div class="small" id="titleCountInfo"></div>
+</div>
+
+<div id="gradePicker" style="display:none">
+<label>Choose Grade to Print</label>
+<select id="printGradeSelect"><option value="">— Choose Grade —</option></select>
+<div class="small" id="gradeCountInfo"></div>
+</div>
+
+<div id="subjectPicker" style="display:none">
+<label>Choose Subject to Print</label>
+<select id="printSubjectSelect"><option value="">— Choose Subject —</option></select>
+<div class="small" id="subjectCountInfo"></div>
+</div>
+
+<div class="info" id="printSummary">📋 Selected: <b>Per Book</b> — Tick books below, then click PRINT</div>
+<button class="btn btn-print" onclick="printBySelection()">🖨️ PRINT BARCODE LABELS — By Selection</button>
+<div class="small" style="text-align:center">It will show labels first, then open Print dialog automatically</div>
+<div id="printSelMsg"></div>
+</div>
+
 <div class="card" id="deleteCard">
-<h2>🗑️ All Books in System — Select to Delete</h2>
+<h2>🗑️ All Books in System — Tick to Print / Delete</h2>
 <div id="roleDeleteMsg"></div>
 <div class="searchRow">
 <input id="bookSearch" placeholder="🔍 Search by barcode, title, subject, grade... e.g. WHS000001, Accounting, Grade 10" oninput="renderBookList()">
 <select id="bookFilter" onchange="renderBookList()" style="max-width:220px"><option value="">All Titles</option></select>
+<select id="subjectFilter" onchange="renderBookList()" style="max-width:220px"><option value="">All Subjects</option></select>
+<select id="gradeFilter" onchange="renderBookList()" style="max-width:220px"><option value="">All Grades</option></select>
 </div>
 <div class="small"><span id="bookCount">Loading books...</span></div>
+<div id="printBar" class="printBar" style="display:none">
+<b>🖨️ <span id="printSelCount">0</span> ticked for Per Book print</b>
+<button class="btn btn-print" onclick="printBySelection()" style="width:auto;margin:0;padding:12px 18px;font-size:14px">🖨️ Print Ticked Books</button>
+<button class="btn btn-grey" onclick="clearSelection()" style="width:auto;margin:0;padding:10px 18px">Clear</button>
+<span class="small" id="printSelList" style="width:100%"></span>
+</div>
 <div id="deleteBar" class="deleteBar" style="display:none">
 <b>🗑️ <span id="selCount">0</span> selected</b>
 <button class="btn btn-red" id="deleteSelectedBtn" onclick="deleteSelected()" style="width:auto;margin:0;padding:10px 18px">🗑️ Delete Selected</button>
@@ -128,6 +201,7 @@ let ALL_BOOKS = [];
 let SELECTED = new Set();
 let NEXT_NUM = 1;
 let PREFIX = 'WHS';
+let PRINT_MODE = 'book';
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
@@ -159,27 +233,105 @@ async function refreshNext(){
   }catch(e){ $('prefixBox').textContent='Failed: '+e.message; }
 }
 window.refreshNext = refreshNext;
-
-// ===== v1.96 - 3 columns x 5 rows print =====
-function renderLabels(school, start, end){
-  const total = end-start+1;
-  let html='<div class="noPrint"><h2>Barcode Labels — Real Scannable Barcodes</h2><p class="small">Print: <b>3 columns × 5 rows = 15 per A4 page</b><br>Each label:<br>'+school.toUpperCase()+'<br>TEXTBOOKS<br>Real Barcode — '+fmtBarcode(PREFIX,start)+'<br>Total: '+total+' label(s) = '+Math.ceil(total/15)+' page(s)</p></div>';
-  for(let p=start; p<=end; p+=15){
-    const pageEnd=Math.min(p+14, end);
+function renderLabels(school, codes){
+  const total=codes.length;
+  let html='<div class="noPrint"><h2>Barcode Labels — Real Scannable Barcodes</h2><p class="small">Print: <b>3 columns × 5 rows = 15 per A4 page</b><br>Total: '+total+' label(s) = '+Math.ceil(total/15)+' page(s)</p></div>';
+  for(let p=0; p<codes.length; p+=15){
+    const pageCodes=codes.slice(p, p+15);
     html+='<div class="printPage"><div class="labelsGrid">';
-    for(let n=p; n<=pageEnd; n++){
-      const code=fmtBarcode(PREFIX,n);
+    pageCodes.forEach(code=>{
       html+='<div class="labelBox"><div class="schoolName">'+school.toUpperCase()+'</div><div class="typeWord">TEXTBOOKS</div><svg id="bc-'+code+'"></svg><div class="codeLine" style="font-weight:900;font-size:14px">'+code+'</div></div>';
-    }
+    });
     html+='</div></div>';
   }
-  html+='<div class="noPrint"><button class="btn btn-blue" onclick="window.print()">🖨️ Print Labels — 3 × 5</button><div class="small">Print settings: A4 • Margins: None / Minimum • Scale: 100% • Background graphics: ON</div></div>';
   $('labelsBox').innerHTML=html;
-  for(let n=start; n<=end; n++){
-    const code=fmtBarcode(PREFIX,n);
-    try{ JsBarcode('#bc-'+code, code, { format:'CODE128', lineWidth:2, height:60, displayValue:false, margin:0 }); }catch(e){ console.error(e); }
-  }
+  $('printArea').style.display='block';
+  setTimeout(()=>{ document.getElementById('printArea').scrollIntoView({behavior:'smooth', block:'center'}); }, 300);
+  codes.forEach(code=>{ try{ JsBarcode('#bc-'+code, code, { format:'CODE128', lineWidth:2, height:60, displayValue:false, margin:0 }); }catch(e){} });
 }
+function renderLabelsRange(school, start, end){
+  let codes=[]; for(let n=start;n<=end;n++) codes.push(fmtBarcode(PREFIX,n));
+  renderLabels(school, codes);
+}
+// ===== v1.97 SELECTION LOGIC =====
+window.setPrintMode = function(mode){
+  PRINT_MODE=mode;
+  ['book','title','grade','subject','all'].forEach(m=>{
+    const el=$('opt'+m.charAt(0).toUpperCase()+m.slice(1)+'Box');
+    if(el) el.classList.toggle('active', m===mode);
+  });
+  document.querySelectorAll('input[name="printMode"]').forEach(r=>{ r.checked = (r.value===mode); });
+  $('titlePicker').style.display = (mode==='title') ? 'block' : 'none';
+  $('gradePicker').style.display = (mode==='grade') ? 'block' : 'none';
+  $('subjectPicker').style.display = (mode==='subject') ? 'block' : 'none';
+  updatePrintSummary();
+};
+function updatePrintSummary(){
+  let txt='';
+  if(PRINT_MODE==='book'){ txt='📋 Selected: <b>Per Book</b> — Tick books below ('+SELECTED.size+' ticked), then click PRINT'; }
+  if(PRINT_MODE==='title'){
+    const t=$('printTitleSelect').value;
+    const n=t? ALL_BOOKS.filter(b=>b.title===t).length : 0;
+    txt='📋 Selected: <b>Per Title — '+(t||'— choose title —')+'</b> — Will print <b>'+n+'</b> book(s) = '+Math.ceil(n/15)+' page(s)';
+    $('titleCountInfo').textContent = t ? n+' copy(ies) of '+t : '';
+  }
+  if(PRINT_MODE==='grade'){
+    const g=$('printGradeSelect').value;
+    const n=g? ALL_BOOKS.filter(b=>b.grade===g).length : 0;
+    txt='📋 Selected: <b>Per Grade — '+(g||'— choose grade —')+'</b> — Will print <b>'+n+'</b> book(s) = '+Math.ceil(n/15)+' page(s)';
+    $('gradeCountInfo').textContent = g ? n+' book(s) in '+g : '';
+  }
+  if(PRINT_MODE==='subject'){
+    const s=$('printSubjectSelect').value;
+    const n=s? ALL_BOOKS.filter(b=>b.subject===s).length : 0;
+    txt='📋 Selected: <b>Per Subject — '+(s||'— choose subject —')+'</b> — Will print <b>'+n+'</b> book(s) = '+Math.ceil(n/15)+' page(s)';
+    $('subjectCountInfo').textContent = s ? n+' book(s) in '+s : '';
+  }
+  if(PRINT_MODE==='all'){ txt='📋 Selected: <b>All Books</b> — Will print <b>'+ALL_BOOKS.length+'</b> book(s) = '+Math.ceil(ALL_BOOKS.length/15)+' page(s)'; }
+  $('printSummary').innerHTML=txt;
+}
+window.printBySelection = function(){
+  const school=getSchool();
+  let codes=[]; let label='';
+  if(PRINT_MODE==='book'){
+    if(SELECTED.size===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 book below first — tick the checkbox next to the barcode.</div>'; return; }
+    codes=ALL_BOOKS.filter(b=>SELECTED.has(b.id)).map(b=>b.barcode);
+    label='Per Book — '+codes.length+' book(s)';
+  }
+  if(PRINT_MODE==='title'){
+    const t=$('printTitleSelect').value;
+    if(!t){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Choose a Title first.</div>'; return; }
+    codes=ALL_BOOKS.filter(b=>b.title===t).map(b=>b.barcode);
+    label='Title '+t+' — '+codes.length+' book(s)';
+    if(codes.length===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ No books for title '+t+'.</div>'; return; }
+  }
+  if(PRINT_MODE==='grade'){
+    const g=$('printGradeSelect').value;
+    if(!g){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Choose a Grade first.</div>'; return; }
+    codes=ALL_BOOKS.filter(b=>b.grade===g).map(b=>b.barcode);
+    label='Grade '+g+' — '+codes.length+' book(s)';
+    if(codes.length===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ No books in '+g+'.</div>'; return; }
+  }
+  if(PRINT_MODE==='subject'){
+    const s=$('printSubjectSelect').value;
+    if(!s){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Choose a Subject first.</div>'; return; }
+    codes=ALL_BOOKS.filter(b=>b.subject===s).map(b=>b.barcode);
+    label='Subject '+s+' — '+codes.length+' book(s)';
+    if(codes.length===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ No books in subject '+s+'.</div>'; return; }
+  }
+  if(PRINT_MODE==='all'){
+    if(ALL_BOOKS.length===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ No books in system.</div>'; return; }
+    codes=ALL_BOOKS.map(b=>b.barcode);
+    label='All Books — '+codes.length+' book(s)';
+  }
+  codes.sort();
+  $('printSelMsg').innerHTML='<div class="ok">✅ Ready to print: <b>'+label+'</b> — '+Math.ceil(codes.length/15)+' page(s). Print dialog opening...</div>';
+  renderLabels(school, codes);
+  setTimeout(()=>{ window.print(); }, 700);
+};
+document.addEventListener('change', (e)=>{
+  if(['printTitleSelect','printGradeSelect','printSubjectSelect'].includes(e.target.id)) updatePrintSummary();
+});
 async function saveBooks(){
   const emis=getEmis(); const school=getSchool();
   const title=$('titleInput').value.trim(); const subject=$('subjectInput').value.trim(); const grade=$('gradeInput').value; const publisher=$('publisherInput').value.trim(); const copies=parseInt($('copiesInput').value||'0');
@@ -200,7 +352,7 @@ async function saveBooks(){
       await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), { barcode:code, code:code, title:title, subject:subject, grade:grade, publisher:publisher, status:'AVAILABLE', createdAt:serverTimestamp(), createdBy:login?login.email:'', createdByName:login?login.name:'' }, {merge:true});
     }
     msg.innerHTML='<div class="ok">✅ Saved '+copies+' book(s): '+fmtBarcode(PREFIX,start)+' to '+fmtBarcode(PREFIX,end)+' — '+Math.ceil(copies/15)+' page(s) to print</div>';
-    renderLabels(school, start, end);
+    renderLabelsRange(school, start, end);
     NEXT_NUM=end+1;
     $('barcodePreview').value=fmtBarcode(PREFIX,NEXT_NUM);
     $('prefixBox').textContent='Prefix: '+PREFIX+' • Next: '+fmtBarcode(PREFIX,NEXT_NUM)+' • Last used: '+fmtBarcode(PREFIX,end);
@@ -218,33 +370,44 @@ async function loadBooks(){
     ALL_BOOKS=[];
     snap.forEach(d=>{ const b=d.data(); ALL_BOOKS.push({ id:d.id, barcode:b.barcode||b.code||d.id, title:b.title||'', subject:b.subject||'', grade:b.grade||'', publisher:b.publisher||'', status:b.status||'AVAILABLE' }); });
     const titles=[...new Set(ALL_BOOKS.map(b=>b.title).filter(Boolean))].sort();
+    const subjects=[...new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean))].sort();
+    const grades=[...new Set(ALL_BOOKS.map(b=>b.grade).filter(Boolean))].sort();
     $('bookFilter').innerHTML='<option value="">All Titles</option>'+titles.map(t=>`<option>${t}</option>`).join('');
+    $('subjectFilter').innerHTML='<option value="">All Subjects</option>'+subjects.map(t=>`<option>${t}</option>`).join('');
+    $('gradeFilter').innerHTML='<option value="">All Grades</option>'+grades.map(t=>`<option>${t}</option>`).join('');
+    const prevT=$('printTitleSelect').value; const prevG=$('printGradeSelect').value; const prevS=$('printSubjectSelect').value;
+    $('printTitleSelect').innerHTML='<option value="">— Choose Title —</option>'+titles.map(t=>`<option ${t===prevT?'selected':''}>${t}</option>`).join('');
+    $('printGradeSelect').innerHTML='<option value="">— Choose Grade —</option>'+grades.map(t=>`<option ${t===prevG?'selected':''}>${t}</option>`).join('');
+    $('printSubjectSelect').innerHTML='<option value="">— Choose Subject —</option>'+subjects.map(t=>`<option ${t===prevS?'selected':''}>${t}</option>`).join('');
     SELECTED.clear();
     renderBookList();
+    updatePrintSummary();
   }catch(e){ $('bookList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
 }
 window.loadBooks = loadBooks;
 function getFiltered(){
   const q=($('bookSearch').value||'').toLowerCase().trim();
   const tf=$('bookFilter').value;
-  return ALL_BOOKS.filter(b=>{ if(tf && b.title!==tf) return false; if(!q) return true; return (b.barcode+' '+b.title+' '+b.subject+' '+b.grade+' '+(b.publisher||'')).toLowerCase().includes(q); });
+  const sf=$('subjectFilter').value;
+  const gf=$('gradeFilter').value;
+  return ALL_BOOKS.filter(b=>{ if(tf && b.title!==tf) return false; if(sf && b.subject!==sf) return false; if(gf && b.grade!==gf) return false; if(!q) return true; return (b.barcode+' '+b.title+' '+b.subject+' '+b.grade+' '+(b.publisher||'')).toLowerCase().includes(q); });
 }
 function renderBookList(){
   const filtered=getFiltered();
-  $('bookCount').textContent = filtered.length + ' book(s) shown • ' + ALL_BOOKS.length + ' total • ' + SELECTED.size + ' selected';
+  $('bookCount').textContent = filtered.length + ' book(s) shown • ' + ALL_BOOKS.length + ' total • ' + SELECTED.size + ' ticked';
   const role=getRole();
   $('roleDeleteMsg').innerHTML = canDelete() ? '<div class="ok">✅ You are <b>'+role+'</b> — you CAN delete.</div>' : '<div class="warn">🔒 You are <b>'+(role||'NOT LOGGED IN')+'</b>. Only ADMIN / PRINCIPAL / LIBRARIAN can delete.</div>';
-  if(filtered.length===0){ $('bookList').innerHTML='<div class="info">No books found.</div>'; updateDeleteBar(); return; }
+  if(filtered.length===0){ $('bookList').innerHTML='<div class="info">No books found.</div>'; updateDeleteBar(); updatePrintBar(); return; }
   let html='<table><tr><th style="width:40px"><input type="checkbox" class="chk" onchange="toggleAll(this.checked)"></th><th>Barcode</th><th>Title</th><th>Subject</th><th>Grade</th><th>Status</th></tr>';
   filtered.forEach(b=>{ const checked=SELECTED.has(b.id)?'checked':''; html+='<tr><td><input type="checkbox" class="chk" '+checked+' onchange="toggleOne(\''+b.id+'\',this.checked)"></td><td><b>'+b.barcode+'</b></td><td>'+b.title+'</td><td>'+b.subject+'</td><td>'+b.grade+'</td><td>'+b.status+'</td></tr>'; });
   html+='</table>';
   $('bookList').innerHTML=html;
-  updateDeleteBar();
+  updateDeleteBar(); updatePrintBar();
 }
 window.renderBookList = renderBookList;
-window.toggleOne = function(id, checked){ if(checked) SELECTED.add(id); else SELECTED.delete(id); renderBookList(); };
-window.toggleAll = function(checked){ const filtered=getFiltered(); filtered.forEach(b=>{ if(checked) SELECTED.add(b.id); else SELECTED.delete(b.id); }); renderBookList(); };
-window.clearSelection = function(){ SELECTED.clear(); renderBookList(); };
+window.toggleOne = function(id, checked){ if(checked) SELECTED.add(id); else SELECTED.delete(id); renderBookList(); updatePrintSummary(); };
+window.toggleAll = function(checked){ const filtered=getFiltered(); filtered.forEach(b=>{ if(checked) SELECTED.add(b.id); else SELECTED.delete(b.id); }); renderBookList(); updatePrintSummary(); };
+window.clearSelection = function(){ SELECTED.clear(); renderBookList(); updatePrintSummary(); };
 function updateDeleteBar(){
   const bar=$('deleteBar');
   if(SELECTED.size===0){ bar.style.display='none'; return; }
@@ -254,6 +417,14 @@ function updateDeleteBar(){
   $('selList').textContent='Selected: '+names;
   $('deleteSelectedBtn').disabled=!canDelete();
   $('deleteSelectedBtn').textContent = canDelete() ? '🗑️ Delete Selected ('+SELECTED.size+')' : '🔒 Only ADMIN / PRINCIPAL / LIBRARIAN can delete';
+}
+function updatePrintBar(){
+  const bar=$('printBar');
+  if(SELECTED.size===0){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  $('printSelCount').textContent=SELECTED.size;
+  const names=ALL_BOOKS.filter(b=>SELECTED.has(b.id)).slice(0,10).map(b=>b.barcode).join(', ') + (SELECTED.size>10 ? ' ... +'+(SELECTED.size-10)+' more' : '');
+  $('printSelList').textContent='Will print: '+names;
 }
 window.deleteSelected = async function(){
   const emis=getEmis();
@@ -278,6 +449,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if(login) $('whoLine').textContent='Logged in: '+nm+' • '+(login.role||'')+' • '+(login.email||'');
   if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
   $('cloudStatus').textContent='☁️ Cloud: Connected — '+(school||'Select School in Admin');
+  setPrintMode('book');
   await refreshNext();
   await loadBooks();
 });
