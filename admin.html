@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Admin v2.01</title>
+<title>Makhanani LTSM — Admin v2.02</title>
 <meta name="theme-color" content="#0a1f4d">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -19,7 +19,7 @@ input:disabled,select:disabled{opacity:.5;background:#f1f5f9}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}.btn-orange{background:#ea580c;color:#fff}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
@@ -33,7 +33,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
-.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}
+.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}.pill-orange{background:#ffedd5;color:#9a3412}
 .dueBanner{background:#fffbeb;border:2px solid #d4af37;border-radius:12px;padding:14px;text-align:center;font-weight:900;font-size:16px;color:#92400e;margin-top:10px}
 .dueBanner b{color:#0a1f4d}
 .checkGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
@@ -53,7 +53,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>⚙️ Admin — Makhanani LTSM</h1><p>Users • Teacher Subjects • School • Due 30 Nov • v2.01<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.01 ADMIN</span></div></header>
+<header><div><h1>⚙️ Admin — Makhanani LTSM</h1><p>Users • Teacher Subjects • School • Due 30 Nov • v2.02<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.02 ADMIN • PASSWORDS HIDDEN</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -84,33 +84,31 @@ th{background:#0a1f4d;color:#fff}
 
 <div class="card" id="createUserCard">
 <h2>👤 Create / Edit User</h2>
-<div class="small">Admin creates all logins here. Teacher Subject controls what they can Issue in Issue page. <b>Teacher Issue = ONLY own Subject. Teacher Return = ANY book.</b> Librarian / Admin / Principal can Issue ANY subject.</div>
+<div class="small">Admin creates all logins here. Teacher Subject controls what they can Issue. <b>Passwords are NEVER shown in the list below — they show as •••• for security.</b><br>To reset a Teacher's password: Click <b>Edit</b> → Type new password → Save. Or use <b>🔑 Reset to Password123</b> button.</div>
 <div id="createLockedMsg"></div>
 <div id="createForm">
 <label>Full Name</label>
 <input id="uName" placeholder="e.g. Naledi Mokoena">
 <div class="grid2">
 <div><label>Email (Login)</label><input id="uEmail" placeholder="e.g. naledi@wordsworth.co.za" autocomplete="email"></div>
-<div><label>Password</label><input id="uPass" placeholder="e.g. Naledi123" autocomplete="new-password"></div>
+<div><label>Password — Leave blank when Editing to KEEP old password</label><input id="uPass" type="password" placeholder="New password — leave blank to keep old" autocomplete="new-password"></div>
 </div>
 <div class="grid2">
 <div><label>Role</label><select id="uRole" onchange="onRoleChange()"><option value="TEACHER">TEACHER</option><option value="LIBRARIAN">LIBRARIAN</option><option value="ADMIN">ADMIN</option><option value="PRINCIPAL">PRINCIPAL</option><option value="HOD">HOD</option></select></div>
-<div><label>Grades Taught (optional, e.g. Grade 10, Grade 11)</label><input id="uGrades" placeholder="e.g. Grade 10, Grade 11"></div>
+<div><label>Grades Taught (optional)</label><input id="uGrades" placeholder="e.g. Grade 10, Grade 11"></div>
 </div>
 <div id="teacherSubjectBox">
-<label>📚 Teacher Subject(s) — Tick ONE or MORE — This Controls Issue</label>
-<div class="small">If Teacher has 1 subject, they can ONLY Issue that subject. If they teach 2 subjects, tick both.</div>
+<label>📚 Teacher Subject(s) — Tick ONE or MORE</label>
 <div class="checkGrid" id="subjectChecks"></div>
 <div class="small" id="subjectPreview">Selected: —</div>
 </div>
-<div id="adminNote" style="display:none"><div class="info">ADMIN / LIBRARIAN / PRINCIPAL / HOD can Issue ANY subject — no Subject tick needed. Subject is ignored for these roles.</div></div>
+<div id="adminNote" style="display:none"><div class="info">ADMIN / LIBRARIAN / PRINCIPAL / HOD can Issue ANY subject — no Subject tick needed.</div></div>
 <label>Phone (optional)</label>
 <input id="uPhone" placeholder="e.g. 082 123 4567">
 <button class="btn btn-green" id="saveUserBtn" onclick="saveUser()">✅ Save User</button>
 <button class="btn btn-grey" onclick="clearUserForm()">🔄 Clear Form — New User</button>
 </div>
 <div id="userMsg"></div>
-<div class="small">Editing: Click <b>Edit</b> on a user below → Form fills → Change Subject / Role / Password → Save. Email is the ID — to change Email, delete and re-create.</div>
 </div>
 
 <div class="card">
@@ -125,6 +123,7 @@ th{background:#0a1f4d;color:#fff}
 <div><label>🔍 Search name / email / subject</label><input id="userSearch" placeholder="Search..." oninput="renderUsers()"></div>
 <div><label>Filter by Subject</label><select id="userSubjectFilter" onchange="renderUsers()"><option value="">All Subjects</option></select></div>
 </div>
+<div class="small">🔒 Passwords are hidden as <b>••••••••</b>. Admin can Reset, but cannot see the password. This protects Teachers if someone looks over your shoulder.</div>
 <div id="userList"></div>
 <button class="btn btn-blue" onclick="loadAll()">🔄 Refresh Users</button>
 </div>
@@ -134,19 +133,16 @@ th{background:#0a1f4d;color:#fff}
 <table>
 <tr><th>Rule</th><th>What happens</th></tr>
 <tr><td>Who can Create Users?</td><td><b>ONLY ADMIN</b> — Teacher / Librarian / HOD / Principal CANNOT create, edit or delete users</td></tr>
-<tr><td>Teacher Issue</td><td>Teacher can Issue ONLY their own Subject(s) ticked above</td></tr>
-<tr><td>Teacher Return</td><td>Teacher can Return ANY book, any subject</td></tr>
-<tr><td>Librarian / Admin / Principal / HOD Issue</td><td>Can Issue ANY subject</td></tr>
-<tr><td>Learner Grade</td><td>Learner can ONLY receive books of THEIR grade</td></tr>
-<tr><td>Same Title Twice</td><td>Learner CANNOT get same Title twice while first copy is OUT</td></tr>
-<tr><td>Due Date</td><td><b>ALL books due 30 November every year.</b> Overdue = still OUT after 30 Nov. If issued in Dec, due 30 Nov next year.</td></tr>
-<tr><td>Teacher Edit Learners / Books</td><td>Teacher CANNOT edit/delete books or learners — can only ADD learners / books</td></tr>
+<tr><td>Passwords</td><td><b>HIDDEN</b> — List shows ••••. Admin can Reset to Password123, but cannot see password. Teacher can Change / Forgot own password in Home.</td></tr>
+<tr><td>Teacher Issue</td><td>Teacher can Issue ONLY their own Subject(s)</td></tr>
+<tr><td>Teacher Return / Collect All</td><td>Teacher can Return / Collect ANY book, ANY subject</td></tr>
+<tr><td>Lost / Damaged</td><td>On Return, Teacher can mark book as LOST or DAMAGED — book goes to LOST / DAMAGED stock, NOT back to shelf</td></tr>
+<tr><td>Due Date</td><td><b>ALL books due 30 November every year.</b></td></tr>
 </table>
 </div>
 
 <div class="card">
 <h2>📋 Recent Activity Log</h2>
-<div class="small">Last 50 actions — Issue / Return / User created.</div>
 <div id="logList"></div>
 <button class="btn btn-grey" onclick="loadLogs()">🔄 Refresh Logs</button>
 </div>
@@ -173,10 +169,8 @@ function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || lo
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
-// ===== v2.01 ACCESS RULES =====
 function isAdmin(){ return getRole()==='ADMIN'; }
-function canManageUsers(){ return getRole()==='ADMIN'; } // ONLY ADMIN
-function canViewUsers(){ const r=getRole(); return r==='ADMIN' || r==='PRINCIPAL'; }
+function canManageUsers(){ return getRole()==='ADMIN'; }
 function applyAccess(){
   const role=getRole(); const login=getLogin();
   const box=$('accessBox'); const detail=$('accessDetail');
@@ -188,20 +182,19 @@ function applyAccess(){
     return;
   }
   if(isAdmin()){
-    box.innerHTML='✅ <b>ADMIN Access — '+login.name+'</b> — You can Create / Edit / Delete users.';
-    detail.textContent='You are ADMIN. Full control.';
+    box.innerHTML='✅ <b>ADMIN Access — '+login.name+'</b> — You can Create / Edit / Delete users. Passwords are hidden for security.';
+    detail.textContent='You are ADMIN. Full control. Passwords show as ••••.';
     unlockCreateForm();
     $('schoolDropdown').disabled=false;
   } else if(role==='PRINCIPAL'){
     box.innerHTML='👩🏾‍🏫 <b>PRINCIPAL — View Only</b> — You can SEE users, but CANNOT Create / Edit / Delete them. Only ADMIN can.';
-    detail.textContent='Principal view-only in Admin. Use Principal page for reports.';
+    detail.textContent='Principal view-only in Admin.';
     lockCreateForm('PRINCIPAL is view-only. Only ADMIN can create users.');
     $('schoolDropdown').disabled=true;
   } else {
-    // TEACHER, LIBRARIAN, HOD
     box.innerHTML='🚫 <b>ACCESS DENIED — '+role+'</b> — '+login.name+', you CANNOT create other teachers or manage users. Only ADMIN can do that.';
-    detail.textContent='Teacher / Librarian / HOD cannot add users. Ask your ADMIN (Vusi) to create accounts.';
-    lockCreateForm('🚫 '+role+' CANNOT create users. Only ADMIN can. Ask ADMIN to create the account.');
+    detail.textContent='Teacher / Librarian / HOD cannot add users.';
+    lockCreateForm('🚫 '+role+' CANNOT create users. Only ADMIN can.');
     $('schoolDropdown').disabled=true;
   }
 }
@@ -224,12 +217,7 @@ function saveSchool(emis, name){
   $('schoolBox').textContent='School: '+name+' • EMIS '+emis;
   $('cloudStatus').textContent='☁️ Cloud: Connected — '+name;
 }
-function getDueDateForIssue(d){
-  const dt = d ? new Date(d) : new Date();
-  let year = dt.getFullYear();
-  if(dt.getMonth() === 11) year = year + 1;
-  return new Date(year, 10, 30);
-}
+function getDueDateForIssue(d){ const dt = d ? new Date(d) : new Date(); let year = dt.getFullYear(); if(dt.getMonth() === 11) year = year + 1; return new Date(year, 10, 30); }
 function fmtDue(d){ try{ return d.toLocaleDateString('en-ZA', {day:'2-digit', month:'short', year:'numeric'}); }catch(e){ return '30 Nov'; } }
 function updateDueBanner(){
   const due=getDueDateForIssue(new Date());
@@ -257,9 +245,7 @@ window.onSubjectTick = function(){
   });
   updateSubjectPreview();
 };
-function getSelectedSubjects(){
-  return [...document.querySelectorAll('#subjectChecks input:checked')].map(c=>c.value);
-}
+function getSelectedSubjects(){ return [...document.querySelectorAll('#subjectChecks input:checked')].map(c=>c.value); }
 function updateSubjectPreview(){
   const sel=getSelectedSubjects();
   $('subjectPreview').textContent = sel.length ? 'Selected: '+sel.join(', ') : 'Selected: — (Teacher with NO subject CANNOT Issue anything)';
@@ -295,13 +281,12 @@ window.clearUserForm = function(){
   $('saveUserBtn').textContent='✅ Save User';
   $('userMsg').innerHTML='';
   $('uEmail').disabled=false;
-  applyAccess(); // re-apply lock if not admin
+  applyAccess();
 };
 window.saveUser = async function(){
-  // ===== HARD BLOCK — ONLY ADMIN =====
   if(!canManageUsers()){
-    alert('🚫 ACCESS DENIED: Only ADMIN can create / edit users.\n\nYou are logged in as: '+getRole()+'\nAsk your ADMIN to create the account.');
-    $('userMsg').innerHTML='<div class="warn">🚫 <b>ACCESS DENIED:</b> Only ADMIN can create users. You are <b>'+getRole()+'</b>. Ask ADMIN to create the account.</div>';
+    alert('🚫 ACCESS DENIED: Only ADMIN can create / edit users.');
+    $('userMsg').innerHTML='<div class="warn">🚫 <b>ACCESS DENIED:</b> Only ADMIN can create users. You are <b>'+getRole()+'</b>.</div>';
     return;
   }
   const emis=getEmis(); const school=getSchool();
@@ -312,24 +297,27 @@ window.saveUser = async function(){
   const grades=($('uGrades').value||'').trim();
   const phone=($('uPhone').value||'').trim();
   const subjects = role==='TEACHER' ? getSelectedSubjects() : [];
-  if(!name || !email || !pass){ $('userMsg').innerHTML='<div class="warn">⚠️ Fill Name + Email + Password.</div>'; return; }
+  if(!name || !email){ $('userMsg').innerHTML='<div class="warn">⚠️ Fill Name + Email.</div>'; return; }
   if(!email.includes('@')){ $('userMsg').innerHTML='<div class="warn">⚠️ Email must contain @.</div>'; return; }
+  // v2.02: Password blank on EDIT = keep old password. Password required on NEW user.
+  if(!EDIT_ID && !pass){ $('userMsg').innerHTML='<div class="warn">⚠️ New user needs a Password. Type one, or use <b>Password123</b> as default.</div>'; return; }
   if(role==='TEACHER' && subjects.length===0){
     if(!confirm('⚠️ This TEACHER has NO Subject ticked.\n\nThey will NOT be able to Issue ANY book.\n\nContinue anyway?')) return;
   }
   const id = EDIT_ID || email.replace(/[^a-z0-9]/g,'_');
   const subjectSingle = subjects.length ? subjects[0] : '';
-  const data={ name:name, fullName:name, email:email, password:pass, role:role, subject:subjectSingle, subjects:subjects, grades:grades, phone:phone, emis:emis, school:school, updatedAt:serverTimestamp() };
+  const data={ name:name, fullName:name, email:email, role:role, subject:subjectSingle, subjects:subjects, grades:grades, phone:phone, emis:emis, school:school, updatedAt:serverTimestamp() };
+  if(pass) data.password=pass; // Only overwrite if typed
   if(!EDIT_ID) data.createdAt=serverTimestamp();
   $('saveUserBtn').disabled=true; $('saveUserBtn').textContent='Saving...';
   try{
     await setDoc(doc(db,'schools','EMIS_'+emis,'users',id), data, {merge:true});
     await setDoc(doc(db,'users',id), data, {merge:true});
     await setDoc(doc(db,'schools','EMIS_'+emis,'logs', 'log_'+Date.now()), { action:'USER_SAVED', detail:'Saved user '+email+' Role '+role+' Subjects '+(subjects.join(', ')||'ANY'), whoEmail:(getLogin()||{}).email||'', whoName:(getLogin()||{}).name||'', whoRole:(getLogin()||{}).role||'', createdAt:serverTimestamp() });
-    $('userMsg').innerHTML='<div class="ok">✅ User Saved: <b>'+name+' • '+email+' • '+role+'</b>'+(role==='TEACHER' ? '<br>Subjects: <b>'+(subjects.join(', ')||'NONE — CANNOT ISSUE')+'</b>' : '<br>Can Issue ANY subject')+'<br>School: '+school+'</div>';
+    $('userMsg').innerHTML='<div class="ok">✅ User Saved: <b>'+name+' • '+email+' • '+role+'</b>'+(role==='TEACHER' ? '<br>Subjects: <b>'+(subjects.join(', ')||'NONE — CANNOT ISSUE')+'</b>' : '<br>Can Issue ANY subject')+'<br>Password: '+(pass ? '✅ Changed to new password' : 'Kept old password (hidden)')+'</div>';
     await loadAll();
     clearUserForm();
-  }catch(e){ $('userMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'<br>Check Firestore Rules are Published.</div>'; }
+  }catch(e){ $('userMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
   $('saveUserBtn').disabled=false; $('saveUserBtn').textContent='✅ Save User';
 };
 window.editUser = function(id){
@@ -338,7 +326,8 @@ window.editUser = function(id){
   EDIT_ID=id;
   $('uName').value=u.name||u.fullName||'';
   $('uEmail').value=u.email||''; $('uEmail').disabled=true;
-  $('uPass').value=u.password||'';
+  $('uPass').value=''; // v2.02: Never show old password — blank = keep old
+  $('uPass').placeholder='Leave blank to KEEP old password • Type new to change';
   $('uRole').value=u.role||'TEACHER';
   $('uGrades').value=u.grades||'';
   $('uPhone').value=u.phone||'';
@@ -346,11 +335,11 @@ window.editUser = function(id){
   let subs = u.subjects && Array.isArray(u.subjects) && u.subjects.length ? u.subjects : (u.subject ? [u.subject] : []);
   renderSubjectChecks(subs);
   $('saveUserBtn').textContent='✏️ Update User — '+u.email;
-  $('userMsg').innerHTML='<div class="info">Editing: <b>'+u.email+'</b> — Change Subject / Role / Password then Save. Email cannot be changed.</div>';
+  $('userMsg').innerHTML='<div class="info">Editing: <b>'+u.email+'</b> — Password is hidden. Leave Password blank to KEEP old password. Type a new one to change it.</div>';
   window.scrollTo({top:0, behavior:'smooth'});
 };
 window.deleteUser = async function(id, email){
-  if(!canManageUsers()){ alert('🚫 Only ADMIN can delete users. You are '+getRole()+'.'); return; }
+  if(!canManageUsers()){ alert('🚫 Only ADMIN can delete users.'); return; }
   const login=getLogin();
   if(login && login.email && login.email.toLowerCase()===email.toLowerCase()){ alert('🚫 You cannot delete yourself.'); return; }
   if(!confirm('Delete user '+email+'?\n\nThey will NOT be able to login anymore.')) return;
@@ -361,6 +350,18 @@ window.deleteUser = async function(id, email){
     $('userMsg').innerHTML='<div class="ok">✅ Deleted: '+email+'</div>';
     await loadAll();
   }catch(e){ alert('Delete failed: '+e.message); }
+};
+// v2.02: One-click reset — Admin cannot see password, only reset it
+window.resetPassword = async function(id, email, name){
+  if(!canManageUsers()){ alert('🚫 Only ADMIN can reset passwords.'); return; }
+  if(!confirm('🔑 Reset password for '+name+' ('+email+')?\n\nNew password will be: Password123\n\nTell them to login with Password123, then Change Password in Home.')) return;
+  const emis=getEmis();
+  try{
+    await setDoc(doc(db,'schools','EMIS_'+emis,'users',id), {password:'Password123', updatedAt:serverTimestamp()}, {merge:true});
+    await setDoc(doc(db,'users',id), {password:'Password123', updatedAt:serverTimestamp()}, {merge:true});
+    $('userMsg').innerHTML='<div class="ok">✅ Password Reset for <b>'+name+' ('+email+')</b><br>New password: <b>Password123</b><br>Tell them: Login with Password123 → Home → Change My Password.</div>';
+    await loadAll();
+  }catch(e){ alert('Reset failed: '+e.message); }
 };
 window.quickFixSubject = async function(id, email){
   if(!canManageUsers()){ alert('🚫 Only ADMIN can change subjects.'); return; }
@@ -405,7 +406,8 @@ function renderUsers(){
   if(sf) list=list.filter(u=> ((u.subjects||[]).includes(sf) || u.subject===sf));
   if(list.length===0){ $('userList').innerHTML='<div class="info">No users for this filter. Create one above.</div>'; return; }
   const canEdit = canManageUsers();
-  let html='<table><tr><th>Name</th><th>Role</th><th>Subject(s) — Controls Issue</th><th>Login</th><th>Action</th></tr>';
+  // v2.02: Password NEVER shown — only ••••••••
+  let html='<table><tr><th>Name</th><th>Role</th><th>Subject(s)</th><th>Login</th><th>Action</th></tr>';
   list.forEach(u=>{
     const role=(u.role||'').toUpperCase();
     const subs = (u.subjects && Array.isArray(u.subjects) && u.subjects.length) ? u.subjects : (u.subject ? [u.subject] : []);
@@ -416,8 +418,8 @@ function renderUsers(){
       subCell='<span class="pill pill-green">✅ ANY Subject</span>';
     }
     const rolePill = role==='ADMIN' ? '<span class="pill pill-purple">ADMIN</span>' : role==='TEACHER' ? '<span class="pill pill-blue">TEACHER</span>' : role==='LIBRARIAN' ? '<span class="pill pill-gold">LIBRARIAN</span>' : role==='PRINCIPAL' ? '<span class="pill pill-green">PRINCIPAL</span>' : '<span class="pill pill-blue">'+role+'</span>';
-    const action = canEdit ? `<button class="btn btn-blue btn-sm" onclick="editUser('${u.id}')">✏️ Edit</button><button class="btn btn-gold btn-sm" onclick="quickFixSubject('${u.id}','${(u.email||'')}')">📚 Set Subject</button><button class="btn btn-red btn-sm" onclick="deleteUser('${u.id}','${(u.email||'')}')">🗑️ Delete</button>` : `<button class="btn btn-grey btn-sm" disabled>🔒 View Only — ADMIN Only</button>`;
-    html+='<tr><td><b>'+(u.name||u.fullName||'')+'</b><br><span class="small">'+(u.grades? 'Grades: '+u.grades : '')+'</span></td><td>'+rolePill+'</td><td>'+subCell+'</td><td><span class="small">'+(u.email||'')+'<br>Pass: '+(u.password||'')+'</span></td><td>'+action+'</td></tr>';
+    const action = canEdit ? `<button class="btn btn-blue btn-sm" onclick="editUser('${u.id}')">✏️ Edit</button><button class="btn btn-orange btn-sm" onclick="resetPassword('${u.id}','${(u.email||'')}','${(u.name||'').replace(/'/g,"")}')">🔑 Reset to Password123</button><button class="btn btn-gold btn-sm" onclick="quickFixSubject('${u.id}','${(u.email||'')}')">📚 Set Subject</button><button class="btn btn-red btn-sm" onclick="deleteUser('${u.id}','${(u.email||'')}')">🗑️ Delete</button>` : `<button class="btn btn-grey btn-sm" disabled>🔒 View Only — ADMIN Only</button>`;
+    html+='<tr><td><b>'+(u.name||u.fullName||'')+'</b><br><span class="small">'+(u.grades? 'Grades: '+u.grades : '')+'</span></td><td>'+rolePill+'</td><td>'+subCell+'</td><td><span class="small">'+(u.email||'')+'<br>Pass: <b>••••••••</b> <span style="color:#059669">🔒 Hidden</span></span></td><td>'+action+'</td></tr>';
   });
   html+='</table>';
   $('userList').innerHTML=html;
@@ -441,7 +443,6 @@ window.loadLogs = async function(){
 document.addEventListener('DOMContentLoaded', async ()=>{
   const emis=getEmis(); const school=getSchool(); const login=getLogin();
   if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'');
-  // Don't auto-save school if not admin — just display
   $('schoolBox').textContent='School: '+school+' • EMIS '+emis;
   $('cloudStatus').textContent='☁️ Cloud: Connected — '+school;
   $('schoolDropdown').value=emis+'|'+school;
@@ -450,7 +451,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   applyAccess();
   updateDueBanner();
   await loadAll();
-  applyAccess(); // re-apply after load
+  applyAccess();
 });
 </script>
 </body>
