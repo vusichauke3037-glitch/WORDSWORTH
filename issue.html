@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Issue / Return v2.00</title>
+<title>Makhanani LTSM — Issue / Return v2.01</title>
 <meta name="theme-color" content="#0a1f4d">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -32,10 +32,11 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
-.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}
+.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}
 .bigBox{border:2px solid #0a1f4d;border-radius:12px;padding:14px;background:#eff6ff}
 .bigBox.found{border-color:#059669;background:#ecfdf5}
 .bigBox.notfound{border-color:#dc2626;background:#fef2f2}
+.bigBox.blocked{border-color:#dc2626;background:#fef2f2}
 .statRow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:10px}
 @media(max-width:700px){.statRow{grid-template-columns:1fr 1fr}}
 .stat{background:#f8fafc;border-radius:10px;padding:12px;text-align:center}
@@ -44,6 +45,7 @@ th{background:#0a1f4d;color:#fff}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .tabs button{padding:10px 16px;border:none;border-radius:20px;font-weight:900;cursor:pointer;background:#e2e8f0}
 .tabs button.active{background:#0a1f4d;color:#fff}
+.ruleBox{background:#fffbeb;border:1.5px solid #d4af37;border-radius:10px;padding:12px;font-size:13px;line-height:1.6}
 @page{ size:A4; margin:10mm; }
 @media print{
   header,#cloudStatus,.topnav,.btn,.noPrint{display:none!important}
@@ -52,14 +54,24 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>📚 Issue / Return — Makhanani LTSM</h1><p>Scan Learner + Book • v2.00<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.00 ISSUE</span></div></header>
+<header><div><h1>📚 Issue / Return — Makhanani LTSM</h1><p>Teacher Issue Rules • v2.01<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.01 TEACHER RULES</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
 <div class="card">
-<h2>🏫 School</h2>
+<h2>🏫 School + Your Role</h2>
 <div class="info" id="schoolBox">School: —</div>
+<div class="info" id="teacherBox">Role: — • Subject: —</div>
+<div class="ruleBox" id="rulesBox">
+<b>📏 Rules in this page:</b><br>
+• Teacher can <b>ISSUE only their own subject</b> — e.g. Maths teacher → Mathematics only<br>
+• Teacher can <b>RETURN any book</b> — any subject<br>
+• Teacher <b>CANNOT edit books</b> — no edit / delete here<br>
+• Teacher <b>CANNOT edit learners</b> — can only ADD learners in Learners page<br>
+• Learner can <b>ONLY receive books of THEIR grade</b><br>
+• Learner <b>CANNOT get same Title twice</b> while first copy is still OUT
+</div>
 <div class="statRow">
 <div class="stat"><b id="statIssued">0</b><span>📚 Out Now</span></div>
 <div class="stat"><b id="statReturned">0</b><span>✅ Returned</span></div>
@@ -77,9 +89,10 @@ th{background:#0a1f4d;color:#fff}
 <label>2️⃣ Textbook Barcode — Scan WHS000xxx / TPS000xxx</label>
 <input id="bookScan" class="scan" placeholder="Scan or type WHS000001 then Enter" autocomplete="off" onkeydown="if(event.key==='Enter'){lookupBook();event.preventDefault();}">
 <div id="bookBox" class="bigBox" style="margin-top:10px">📖 No book scanned yet. Scan textbook label.</div>
+<div id="ruleCheckBox"></div>
 <div class="grid2">
 <button class="btn btn-green" id="issueBtn" onclick="issueBook()" disabled>📚 ISSUE BOOK TO LEARNER</button>
-<button class="btn btn-blue" id="returnBtn" onclick="returnBook()" disabled>↩️ RETURN THIS BOOK</button>
+<button class="btn btn-blue" id="returnBtn" onclick="returnBook()" disabled>↩️ RETURN THIS BOOK (Any Subject)</button>
 </div>
 <button class="btn btn-grey" onclick="clearScans()">🔄 Clear Scans</button>
 <div id="issueMsg"></div>
@@ -125,7 +138,26 @@ let TAB = 'OUT';
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
+function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
 function canWrite(){ return !!getLogin(); }
+// ===== v2.01 TEACHER SUBJECT =====
+function getTeacherSubjects(){
+  const l=getLogin(); if(!l) return [];
+  // Support: subject="Mathematics", subjects=["Mathematics","English"], subjectList, teachingSubject
+  let raw = l.subjects || l.subjectList || l.teachingSubjects || (l.subject ? [l.subject] : []) || (l.teachingSubject ? [l.teachingSubject] : []);
+  if(typeof raw==='string') raw = raw.split(',').map(s=>s.trim());
+  return (raw||[]).map(s=>String(s).trim()).filter(Boolean);
+}
+function norm(s){ return String(s||'').trim().toLowerCase(); }
+function isTeacher(){ return getRole()==='TEACHER'; }
+function isPrivileged(){ return ['ADMIN','PRINCIPAL','LIBRARIAN'].includes(getRole()); }
+// Teacher can issue ONLY own subject. Admin/Principal/Librarian can issue any subject.
+function canIssueSubject(bookSubject){
+  if(!isTeacher()) return true;
+  const subs=getTeacherSubjects();
+  if(subs.length===0) return false; // Teacher with no subject set cannot issue - must be set in Admin
+  return subs.some(s=> norm(s)===norm(bookSubject) || norm(bookSubject).includes(norm(s)) || norm(s).includes(norm(bookSubject)));
+}
 function fmtDate(ts){
   if(!ts) return '—';
   try{ const d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleDateString('en-ZA') + ' ' + d.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return '—'; }
@@ -135,6 +167,7 @@ window.clearScans = function(){
   $('learnerScan').value=''; $('bookScan').value='';
   $('learnerBox').className='bigBox'; $('learnerBox').innerHTML='👤 No learner scanned yet. Scan learner card first.';
   $('bookBox').className='bigBox'; $('bookBox').innerHTML='📖 No book scanned yet. Scan textbook label.';
+  $('ruleCheckBox').innerHTML='';
   $('issueBtn').disabled=true; $('returnBtn').disabled=true;
   $('issueMsg').innerHTML='';
   $('learnerScan').focus();
@@ -158,7 +191,7 @@ async function lookupLearner(){
     CUR_LEARNER={code:code, name:d.name||d.fullName||'', grade:d.grade||'', class:d.class||''};
     $('learnerBox').className='bigBox found';
     $('learnerBox').innerHTML='✅ <b>'+CUR_LEARNER.name+'</b><br><span class="pill pill-blue">'+code+'</span> <span class="pill pill-gold">'+CUR_LEARNER.grade+'</span> <span class="pill pill-blue">'+(CUR_LEARNER.class||'')+'</span>';
-    updateButtons();
+    updateRuleCheck();
     $('bookScan').focus(); $('bookScan').select();
   }catch(e){ $('issueMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
 }
@@ -179,7 +212,6 @@ async function lookupBook(){
     }
     const d=snap.data();
     CUR_BOOK={code:code, title:d.title||'', subject:d.subject||'', grade:d.grade||'', status:d.status||'AVAILABLE'};
-    // Check if already issued
     let issuedTo=null;
     try{
       const isnap=await getDocs(collection(db,'schools','EMIS_'+emis,'issues'));
@@ -188,28 +220,93 @@ async function lookupBook(){
     $('bookBox').className='bigBox found';
     let extra='';
     if(CUR_BOOK.status==='ISSUED' || issuedTo){
-      extra='<br><span class="pill pill-red">📚 ALREADY OUT</span> <span class="small">To: '+(issuedTo? (issuedTo.learnerName+' ('+issuedTo.learnerCode+')') : '—')+'</span><br><span class="small">Scan learner who is returning it, then click RETURN.</span>';
+      extra='<br><span class="pill pill-red">📚 ALREADY OUT</span> <span class="small">To: '+(issuedTo? (issuedTo.learnerName+' ('+issuedTo.learnerCode+')') : '—')+'</span><br><span class="small">Any teacher can RETURN it.</span>';
     } else {
       extra='<br><span class="pill pill-green">✅ AVAILABLE</span>';
     }
     $('bookBox').innerHTML='📖 <b>'+(CUR_BOOK.title||code)+'</b><br><span class="pill pill-blue">'+code+'</span> <span class="pill pill-gold">'+CUR_BOOK.subject+'</span> <span class="pill pill-blue">'+CUR_BOOK.grade+'</span>'+extra;
-    updateButtons();
+    updateRuleCheck();
   }catch(e){ $('issueMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
 }
 window.lookupBook = lookupBook;
-function updateButtons(){
-  const hasBoth = CUR_LEARNER && CUR_BOOK;
-  $('issueBtn').disabled = !hasBoth;
-  $('returnBtn').disabled = !hasBoth;
-  if(hasBoth && (CUR_BOOK.status==='ISSUED')){
+// ===== v2.01 RULE CHECKS - shown live before Issue =====
+async function checkDuplicateTitle(){
+  if(!CUR_LEARNER || !CUR_BOOK) return null;
+  const emis=getEmis();
+  try{
+    const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'issues'));
+    let dup=null;
+    snap.forEach(x=>{ const y=x.data(); if(y.learnerCode===CUR_LEARNER.code && y.status==='OUT' && norm(y.bookTitle)===norm(CUR_BOOK.title)) dup=y; });
+    return dup;
+  }catch(e){ return null; }
+}
+async function updateRuleCheck(){
+  const box=$('ruleCheckBox');
+  if(!CUR_LEARNER || !CUR_BOOK){ box.innerHTML=''; $('issueBtn').disabled=true; $('returnBtn').disabled=true; return; }
+  // RETURN is always allowed for any teacher / any subject
+  $('returnBtn').disabled=false;
+  let checks=[];
+  let blocked=false;
+  // 1. Teacher subject
+  if(isTeacher()){
+    const ok=canIssueSubject(CUR_BOOK.subject);
+    if(ok){ checks.push('✅ Subject: Your subject <b>'+getTeacherSubjects().join(', ')+'</b> matches book <b>'+CUR_BOOK.subject+'</b>'); }
+    else {
+      const mySubs=getTeacherSubjects();
+      checks.push('❌ Subject BLOCKED: You teach <b>'+(mySubs.length? mySubs.join(', ') : '— NO SUBJECT SET IN ADMIN —')+'</b>, but book is <b>'+CUR_BOOK.subject+'</b>. You can only issue your own subject.');
+      blocked=true;
+    }
+  } else {
+    checks.push('✅ Subject: <b>'+getRole()+'</b> can issue any subject');
+  }
+  // 2. Grade match
+  if(norm(CUR_LEARNER.grade)===norm(CUR_BOOK.grade)){
+    checks.push('✅ Grade: Learner <b>'+CUR_LEARNER.grade+'</b> = Book <b>'+CUR_BOOK.grade+'</b>');
+  } else {
+    checks.push('❌ Grade BLOCKED: Learner is <b>'+CUR_LEARNER.grade+'</b>, but book is <b>'+CUR_BOOK.grade+'</b>. Learner can only receive books of their grade.');
+    blocked=true;
+  }
+  // 3. Already issued?
+  if(CUR_BOOK.status==='ISSUED'){
+    checks.push('❌ Book BLOCKED: This copy is already OUT. Return it first.');
+    blocked=true;
+  } else {
+    checks.push('✅ Book is AVAILABLE');
+  }
+  // 4. Duplicate title
+  const dup=await checkDuplicateTitle();
+  if(dup){
+    checks.push('❌ Duplicate BLOCKED: '+CUR_LEARNER.name+' already has <b>'+CUR_BOOK.title+'</b> OUT ('+dup.bookCode+'). Cannot issue same Title twice.');
+    blocked=true;
+  } else {
+    checks.push('✅ Duplicate: Learner does NOT already have this Title OUT');
+  }
+  if(blocked){
+    box.innerHTML='<div class="warn"><b>🚫 CANNOT ISSUE:</b><br>'+checks.join('<br>')+'<br><span class="small">You can still RETURN this book.</span></div>';
     $('issueBtn').disabled=true;
+  } else {
+    box.innerHTML='<div class="ok"><b>✅ READY TO ISSUE:</b><br>'+checks.join('<br>')+'</div>';
+    $('issueBtn').disabled=false;
   }
 }
 window.issueBook = async function(){
   const emis=getEmis();
   if(!canWrite()){ $('issueMsg').innerHTML='<div class="warn">⚠️ Login in Admin first.</div>'; return; }
   if(!CUR_LEARNER || !CUR_BOOK){ $('issueMsg').innerHTML='<div class="warn">⚠️ Scan learner + book first.</div>'; return; }
-  if(CUR_BOOK.status==='ISSUED'){ $('issueMsg').innerHTML='<div class="warn">⚠️ This book is already OUT. Return it first.</div>'; return; }
+  // Re-check all rules at save time (never trust button state alone)
+  if(isTeacher() && !canIssueSubject(CUR_BOOK.subject)){
+    $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED: You teach <b>'+getTeacherSubjects().join(', ')+'</b>. This book is <b>'+CUR_BOOK.subject+'</b>. Teachers can only issue their own subject.</div>'; return;
+  }
+  if(norm(CUR_LEARNER.grade)!==norm(CUR_BOOK.grade)){
+    $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED: Learner is <b>'+CUR_LEARNER.grade+'</b>, book is <b>'+CUR_BOOK.grade+'</b>. Learner can only receive books of their grade.</div>'; return;
+  }
+  if(CUR_BOOK.status==='ISSUED'){
+    $('issueMsg').innerHTML='<div class="warn">⚠️ This book is already OUT. Return it first.</div>'; return;
+  }
+  const dup=await checkDuplicateTitle();
+  if(dup){
+    $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED: '+CUR_LEARNER.name+' already has <b>'+CUR_BOOK.title+'</b> OUT ('+dup.bookCode+'). Learner cannot be issued same Title more than once.</div>'; return;
+  }
   if(!confirm('Issue '+CUR_BOOK.code+' ('+CUR_BOOK.title+')\nto '+CUR_LEARNER.name+' ('+CUR_LEARNER.code+')?')) return;
   $('issueBtn').disabled=true; $('issueBtn').textContent='Issuing...';
   try{
@@ -218,7 +315,7 @@ window.issueBook = async function(){
     await setDoc(doc(db,'schools','EMIS_'+emis,'issues',issueId), {
       learnerCode:CUR_LEARNER.code, learnerName:CUR_LEARNER.name, learnerGrade:CUR_LEARNER.grade, learnerClass:CUR_LEARNER.class,
       bookCode:CUR_BOOK.code, bookTitle:CUR_BOOK.title, bookSubject:CUR_BOOK.subject, bookGrade:CUR_BOOK.grade,
-      status:'OUT', issuedAt:serverTimestamp(), issuedBy:login?login.email:'', issuedByName:login?login.name:'',
+      status:'OUT', issuedAt:serverTimestamp(), issuedBy:login?login.email:'', issuedByName:login?login.name:'', issuedByRole:login?login.role:'',
       returnedAt:null
     });
     await updateDoc(doc(db,'schools','EMIS_'+emis,'textbooks',CUR_BOOK.code), { status:'ISSUED', issuedTo:CUR_LEARNER.code, issuedToName:CUR_LEARNER.name });
@@ -233,16 +330,17 @@ window.returnBook = async function(){
   const emis=getEmis();
   if(!canWrite()){ $('issueMsg').innerHTML='<div class="warn">⚠️ Login in Admin first.</div>'; return; }
   if(!CUR_LEARNER || !CUR_BOOK){ $('issueMsg').innerHTML='<div class="warn">⚠️ Scan learner + book first.</div>'; return; }
+  // Teachers CAN retrieve ANY book - no subject / grade check on return
   if(!confirm('Return '+CUR_BOOK.code+' ('+CUR_BOOK.title+')\nfrom '+CUR_LEARNER.name+'?')) return;
   $('returnBtn').disabled=true; $('returnBtn').textContent='Returning...';
   try{
     const login=getLogin();
-    let foundId=null; let found=null;
+    let foundId=null;
     const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'issues'));
-    snap.forEach(x=>{ const y=x.data(); if(y.bookCode===CUR_BOOK.code && y.status==='OUT'){ foundId=x.id; found=y; } });
+    snap.forEach(x=>{ const y=x.data(); if(y.bookCode===CUR_BOOK.code && y.status==='OUT'){ foundId=x.id; } });
     if(!foundId){
       $('issueMsg').innerHTML='<div class="warn">⚠️ This book is not marked OUT in system. It may already be AVAILABLE.</div>';
-      $('returnBtn').disabled=false; $('returnBtn').textContent='↩️ RETURN THIS BOOK';
+      $('returnBtn').disabled=false; $('returnBtn').textContent='↩️ RETURN THIS BOOK (Any Subject)';
       return;
     }
     await updateDoc(doc(db,'schools','EMIS_'+emis,'issues',foundId), { status:'RETURNED', returnedAt:serverTimestamp(), returnedBy:login?login.email:'', returnedByName:login?login.name:'' });
@@ -252,7 +350,7 @@ window.returnBook = async function(){
     await loadIssues(); await loadStats();
     clearScans();
   }catch(e){ $('issueMsg').innerHTML='<div class="warn">❌ Return failed: '+e.message+'</div>'; }
-  $('returnBtn').disabled=false; $('returnBtn').textContent='↩️ RETURN THIS BOOK';
+  $('returnBtn').disabled=false; $('returnBtn').textContent='↩️ RETURN THIS BOOK (Any Subject)';
 };
 window.setTab = function(t){
   TAB=t;
@@ -315,6 +413,7 @@ function renderIssues(){
 window.renderIssues = renderIssues;
 window.quickReturn = async function(id, bookCode, learnerName){
   const emis=getEmis();
+  // Quick Return = any teacher can do it, any subject - no check
   if(!confirm('Return '+bookCode+' from '+learnerName+'?')) return;
   try{
     const login=getLogin();
@@ -323,14 +422,26 @@ window.quickReturn = async function(id, bookCode, learnerName){
     await loadIssues(); await loadStats();
   }catch(e){ alert('Return failed: '+e.message); }
 };
-// Auto-lookup when scanner types fast + Enter is handled above. Also auto-lookup on blur for scanners that use Tab:
 $('learnerScan').addEventListener('change', ()=>{ if($('learnerScan').value.trim()) lookupLearner(); });
 $('bookScan').addEventListener('change', ()=>{ if($('bookScan').value.trim()) lookupBook(); });
 document.addEventListener('DOMContentLoaded', async ()=>{
   const emis=getEmis(); const school=getSchool(); const login=getLogin();
   const nm = login ? (login.name||login.fullName||'') : '';
-  if(login) $('whoLine').textContent='Logged in: '+nm+' • '+(login.role||'')+' • '+(login.email||'');
+  const role = getRole();
+  if(login) $('whoLine').textContent='Logged in: '+nm+' • '+role+' • '+(login.email||'');
   if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
+  // Show teacher subject
+  if(isTeacher()){
+    const subs=getTeacherSubjects();
+    $('teacherBox').innerHTML='Role: <b>TEACHER</b> • Your Subject: <b>'+(subs.length? subs.join(', ') : '⚠️ NO SUBJECT SET — Ask Admin to set your Subject in Admin')+'</b> • You can ISSUE only this subject, RETURN any book';
+    if(subs.length===0){
+      $('teacherBox').style.background='#fee2e2'; $('teacherBox').style.borderColor='#dc2626';
+    }
+  } else if(login){
+    $('teacherBox').innerHTML='Role: <b>'+role+'</b> • You can ISSUE any subject • You can RETURN any book';
+  } else {
+    $('teacherBox').innerHTML='Role: <b>NOT LOGGED IN</b> • Login in Admin first';
+  }
   $('cloudStatus').textContent='☁️ Cloud: Connected — '+(school||'Select School in Admin');
   await loadStats();
   await loadIssues();
