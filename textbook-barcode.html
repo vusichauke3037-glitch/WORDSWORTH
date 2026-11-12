@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v1.89</title>
+<title>Makhanani LTSM — Textbooks v1.90</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a1f4d">
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
 header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
@@ -22,7 +21,7 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 @media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
 .btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0}.btn-red{background:#dc2626;color:#fff}
-.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-small{width:auto;padding:7px 12px;font-size:12px;margin:2px;display:inline-block}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
 #cloudIdLabel{text-align:center;font-size:11px;color:#64748b;padding:4px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
@@ -34,84 +33,82 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
-.pill{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}
-.pill-AVAILABLE{background:#dcfce7;color:#166534}.pill-ISSUED{background:#fef3c7;color:#92400e}.pill-DAMAGED{background:#fee2e2;color:#991b1b}.pill-LOST{background:#fee2e2;color:#991b1b}
 
-/* ===== BARCODE LABEL - EXACT AS YOU ASKED ===== */
-.labelWrap{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
-.bookLabel{width:260px;background:#fff;border:2px solid #111;border-radius:8px;padding:10px 8px 8px;text-align:center;page-break-inside:avoid}
-.bookLabel .schoolName{font-size:15px;font-weight:900;letter-spacing:.3px;text-transform:uppercase;line-height:1.2;color:#000}
-.bookLabel .subTitle{font-size:13px;font-weight:900;letter-spacing:4px;color:#000;margin-top:2px}
-.bookLabel .bookTitle{font-size:11px;font-weight:700;margin-top:6px;color:#333;line-height:1.2;min-height:26px}
-.bookLabel svg{width:100%;height:58px;margin-top:4px}
-.bookLabel .bookCode{font-size:18px;font-weight:900;letter-spacing:2px;margin-top:2px;color:#000}
-.bookLabel .bookMeta{font-size:10px;color:#555;margin-top:2px}
-@media print{ body{background:#fff} header,.topnav,.noPrint{display:none!important} main{max-width:none;padding:0} .card{box-shadow:none;border:none;padding:0} .labelWrap{gap:8px} .bookLabel{border:1.5px solid #111} }
+/* ===== LABEL - MATCHES YOUR PHOTO EXACTLY ===== */
+/* White label on light yellow backing like the roll */
+.label-wrap{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;background:#fef9c3;padding:12px;border-radius:10px}
+.barcode-label{background:#fff;border-radius:12px;padding:12px 14px 10px;text-align:center;width:300px;box-shadow:0 1px 3px rgba(0,0,0,.1);page-break-inside:avoid}
+.barcode-label .school-name{font-family:Arial,sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;line-height:1.3;text-transform:uppercase;color:#4b5563;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barcode-label .label-type{font-family:Arial,sans-serif;font-size:15px;font-weight:500;letter-spacing:2px;color:#4b5563;margin:2px 0 8px;text-transform:uppercase}
+.barcode-label svg{width:100%;height:48px;display:block}
+.barcode-label .barcode-number{font-family:Arial,sans-serif;font-size:20px;font-weight:500;letter-spacing:1px;margin-top:4px;color:#4b5563}
+@media print{
+  body{background:#fff} header,.topnav,.no-print{display:none!important} main{max-width:none;padding:0} .card{box-shadow:none;border:none;padding:0}
+  .label-wrap{background:#fef9c3!important;padding:8px;gap:8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .barcode-label{border:1px solid #e5e7eb;box-shadow:none}
+}
 </style>
 </head>
 <body>
-<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Barcode + Auto Numbering<br>Firebase Live • v1.89</p></div><div><span class="badge">v1.89 TEXTBOOKS</span></div></header>
-<div id="cloudStatus">☁️ Cloud: Connecting...</div>
-<div id="cloudIdLabel">schools/...</div>
+<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Barcode — Same as Printed Roll<br>Firebase Live • v1.90</p></div><div><span class="badge">v1.90 TEXTBOOKS</span></div></header>
+<div id="cloudStatus" class="no-print">☁️ Cloud: Connecting...</div>
+<div id="cloudIdLabel" class="no-print">schools/...</div>
 <main>
-<div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
+<div class="topnav no-print"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
-<div class="card noPrint">
+<div class="card no-print">
 <h2>🏫 School — Select by EMIS</h2>
 <div class="grid2">
 <div><label>DBE Dropdown (Value = EMIS)</label><select id="schoolDropdown"><option value="">-- Loading schools... --</option></select><div class="small" id="schoolCount">Loading...</div></div>
-<div><label>Search EMIS / NAME / TOWN</label><input id="schoolSearch" placeholder="Type e.g. wordsworth, tivanani, 7003..."><div class="small">Type to filter LIVE. Click school in dropdown.</div></div>
+<div><label>Search EMIS / NAME / TOWN</label><input id="schoolSearch" placeholder="Type e.g. wordsworth, tivanani, 7003..."><div class="small">Type to filter LIVE.</div></div>
 </div>
 <div id="selectedSchoolBox" class="ok" style="display:none"></div>
 <div class="grid2"><div><label>Or Manual EMIS</label><input id="manualEmis" placeholder="e.g. 700310854"></div><div><label>Or Manual School Name</label><input id="manualName" placeholder="e.g. WORDSWORTH HIGH SCHOOL"></div></div>
 <button class="btn btn-gold" onclick="manualSelect()">✅ Use This School</button>
 </div>
 
-<div class="card noPrint">
+<div class="card no-print">
 <h2>📖 Add Textbook — Auto Numbering ON</h2>
-<div class="info" id="prefixBox">Prefix: — &nbsp; Next Number: —<br><span class="small">Prefix = First letter of each word in School Name. Example: WORDSWORTH HIGH SCHOOL → <b>WHS</b> • Tivanani Primary School → <b>TPS</b></span></div>
-
+<div class="info" id="prefixBox">Prefix: — • Next: —<br>Example: WORDSWORTH HIGH SCHOOL → <b>WHS000001</b> &nbsp;|&nbsp; TIVANANI PRIMARY SCHOOL → <b>TPS000001</b></div>
 <div class="grid2">
-<div><label>Textbook Title *</label><input id="tbTitle" placeholder="e.g. Mathematics Grade 10"></div>
+<div><label>Title * (saved in system, NOT printed on label)</label><input id="tbTitle" placeholder="e.g. Mathematics Grade 10"></div>
 <div><label>Subject</label><input id="tbSubject" placeholder="e.g. Mathematics"></div>
 </div>
 <div class="grid3">
-<div><label>Grade</label><select id="tbGrade"><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
-<div><label>Condition</label><select id="tbCondition"><option>NEW</option><option>GOOD</option><option>FAIR</option><option>DAMAGED</option></select></div>
-<div><label>How Many Copies? (Auto-numbers each)</label><input id="tbQty" type="number" value="1" min="1" max="100"></div>
+<div><label>Grade</label><select id="tbGrade"><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option selected>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+<div><label>Publisher (optional)</label><input id="tbPublisher" placeholder="e.g. Via Afrika"></div>
+<div><label>Condition</label><select id="tbCondition"><option>NEW</option><option>GOOD</option><option>FAIR</option><option>POOR</option></select></div>
 </div>
-
 <div class="grid2">
-<div><label>☑️ Auto Numbering</label><select id="autoNum"><option value="YES" selected>YES — Auto (WHS000001, WHS000002...)</option><option value="NO">NO — I will type my own number</option></select></div>
-<div><label>Textbook Number / Barcode Code</label><input id="tbCode" placeholder="Auto: WHS000001" readonly style="background:#f1f5f9;font-weight:900"></div>
+<div><label>Barcode Number — AUTO (do not type)</label><input id="tbBarcode" readonly style="background:#fef9c3;font-weight:900;font-size:18px;letter-spacing:2px" placeholder="WHS000001"><div class="small">Auto from School Name initials + next number. <a href="#" onclick="refreshNextNumber();return false;">↻ Refresh next number</a></div></div>
+<div><label>Copies — How many to create?</label><input id="tbCopies" type="number" value="1" min="1" max="100"><div class="small">If Copies = 5 → Creates WHS000001 to WHS000005 and shows 5 labels like your roll.</div></div>
 </div>
-<p class="small">If Auto = YES, this field is locked and will auto-fill to next free number. If you add 5 copies, it will create WHS000001 → WHS000005 automatically.</p>
-
-<button class="btn btn-green" onclick="saveTextbook()">✅ Save Textbook(s) + Generate Barcode</button>
-<button class="btn btn-blue" onclick="window.print()">🖨️ Print Labels</button>
+<button class="btn btn-green" onclick="addTextbook()">✅ Save + Generate Barcode Label(s)</button>
+<button class="btn btn-blue" onclick="refreshNextNumber()">🔄 Get Next Number</button>
 <div id="tbMsg"></div>
 </div>
 
-<div class="card">
-<h2>🏷️ Barcode Labels — Print This Page</h2>
-<p class="small noPrint">Each label shows: <b>School Name on top</b> → <b>TEXTBOOKS</b> right below it → Barcode → <b>Code at bottom (WHS000001)</b></p>
-<div class="labelWrap" id="labelWrap">
-<div class="small" style="width:100%">No labels yet. Add a textbook above, or click a textbook in the list below to preview its label.</div>
+<div class="card print-area">
+<h2 class="no-print">🏷️ Barcode Labels — Exactly Like Your Photo</h2>
+<p class="small no-print">Each label is ONLY:<br><b>WORDSWORTH HIGH SCHOOL</b> → <b>TEXTBOOKS</b> → Barcode → <b>WHS000005</b><br>No Title / Grade printed on label, just like your roll.</p>
+<div class="no-print" style="margin-top:8px"><button class="btn btn-gold" onclick="window.print()">🖨️ Print Labels</button></div>
+<div id="labelsArea" class="label-wrap">
+<div class="small">No label yet. Add a textbook above — label will appear here like your photo.</div>
 </div>
-<div class="noPrint"><button class="btn btn-grey" onclick="clearLabels()">Clear Labels</button></div>
 </div>
 
-<div class="card noPrint">
+<div class="card no-print">
 <h2>📚 All Textbooks for This School</h2>
-<div class="grid2"><div><label>Search Title / Code / Subject</label><input id="searchTb" placeholder="Type e.g. Maths, WHS000001..."></div><div><label>Filter Status</label><select id="filterStatus" onchange="loadTextbooks()"><option value="">All</option><option>AVAILABLE</option><option>ISSUED</option><option>DAMAGED</option><option>LOST</option></select></div></div>
-<button class="btn btn-blue" onclick="loadTextbooks()">🔄 Refresh List</button>
+<div class="grid2"><div><label>Search Title / Barcode / Subject</label><input id="searchTb" placeholder="Type e.g. Maths, WHS000..."></div><div><label>&nbsp;</label><button class="btn btn-blue" onclick="loadTextbooks()">🔄 Reload</button></div></div>
 <div id="tbList"></div>
 </div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, getDoc, doc, setDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
@@ -122,88 +119,105 @@ const firebaseConfig = {
   appId: "1:247180363183:web:760b5163fdf421bae01b5a",
   measurementId: "G-TDFSSF6NTB"
 };
-let app, db;
-try { app = initializeApp(firebaseConfig); db = getFirestore(app); } catch(e){ console.error(e); }
+let app, db, auth;
+try { app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); } catch(e){ console.error(e); }
 let ALL_SCHOOLS = [];
 let ALL_TB = [];
+let NEXT_NUM = 1;
 const $ = id => document.getElementById(id);
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || ''; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || ''; }
 function updateCloudStatus(msg, ok=true){ const el=$('cloudStatus'); if(el){ el.textContent=msg; el.style.background = ok ? '#059669' : '#dc2626'; } const lab=$('cloudIdLabel'); if(lab){ const e=getEmis(); lab.textContent = e ? 'schools/EMIS_'+e : 'schools/...'; } }
 
-// ===== PREFIX LOGIC - FIRST LETTER OF EACH WORD =====
-function makePrefix(schoolName){
-  if(!schoolName) return 'SCH';
-  // Remove common words that should not count, keep real name words
-  const skip = ['THE','OF','AND','FOR'];
-  const words = schoolName.toUpperCase().trim().split(/[\s\-]+/).filter(w => w.length>0 && !skip.includes(w));
-  let prefix = words.map(w => w[0]).join('');
-  // If school has 1 word like "Tivanani" -> take first 3 letters: TIV
-  if(words.length === 1) prefix = words[0].substring(0,3);
-  // Max 4 letters, min 2
-  prefix = prefix.substring(0,4);
-  return prefix;
+// ===== PREFIX - FIRST LETTER OF EACH WORD =====
+// WORDSWORTH HIGH SCHOOL -> WHS
+// TIVANANI PRIMARY SCHOOL -> TPS
+function getPrefix(schoolName){
+  const name = (schoolName||'').trim().toUpperCase().replace(/[^A-Z ]/g,' ').replace(/\s+/g,' ').trim();
+  if(!name) return 'SCH';
+  const words = name.split(' ').filter(w=>w.length>0);
+  const stop = ['OF','AND','THE','FOR'];
+  const filtered = words.filter(w=>!stop.includes(w));
+  const use = filtered.length >= 2 ? filtered : words;
+  if(use.length === 1) return use[0].substring(0,3);
+  return use.map(w=>w[0]).join('');
 }
-// WHS + 000001
-function formatCode(prefix, num){
-  return prefix + String(num).padStart(6,'0');
+function pad6(n){ return String(n).padStart(6,'0'); }
+function makeBarcode(prefix, num){ return prefix + pad6(num); }
+async function refreshNextNumber(){
+  const emis = getEmis(); const school = getSchool();
+  const prefix = getPrefix(school);
+  if(!emis){ $('prefixBox').innerHTML = 'Select school first.'; return; }
+  try{
+    const snap = await getDocs(collection(db,'schools','EMIS_'+emis,'textbooks'));
+    let max = 0;
+    snap.forEach(d=>{
+      const b = (d.data().barcode||'').toUpperCase();
+      if(b.startsWith(prefix)){
+        const numPart = b.replace(prefix,'').replace(/\D/g,'');
+        const n = parseInt(numPart||'0',10);
+        if(n > max) max = n;
+      }
+    });
+    NEXT_NUM = max + 1;
+    const next = makeBarcode(prefix, NEXT_NUM);
+    $('tbBarcode').value = next;
+    $('prefixBox').innerHTML = 'School: <b>'+school+'</b><br>Prefix: <b>'+prefix+'</b> • Next: <b>'+next+'</b> • Last used: '+(max===0?'None — this is first book':prefix+pad6(max))+'<br>Example: WORDSWORTH HIGH SCHOOL → <b>WHS000001</b> &nbsp;|&nbsp; TIVANANI PRIMARY SCHOOL → <b>TPS000001</b>';
+    return next;
+  }catch(e){ $('prefixBox').innerHTML = 'Failed to get next number: '+e.message; }
 }
-function getNextNumber(){
-  const prefix = makePrefix(getSchool());
-  let max = 0;
-  ALL_TB.forEach(t=>{
-    const code = (t.code||'').toUpperCase();
-    if(code.startsWith(prefix)){
-      const n = parseInt(code.replace(prefix,''), 10);
-      if(!isNaN(n) && n > max) max = n;
-    }
-  });
-  return max + 1;
-}
-function refreshPrefixBox(){
-  const school = getSchool();
-  const prefix = makePrefix(school);
-  const next = getNextNumber();
-  const nextCode = formatCode(prefix, next);
-  $('prefixBox').innerHTML = 'School: <b>'+(school||'—')+'</b> &nbsp; Prefix: <b>'+prefix+'</b> &nbsp; Next Number: <b>'+nextCode+'</b><br><span class="small">Prefix = First letter of each word. WORDSWORTH HIGH SCHOOL → <b>WHS</b> • Tivanani Primary School → <b>TPS</b></span>';
-  if($('autoNum').value === 'YES'){
-    $('tbCode').value = nextCode;
-    $('tbCode').readOnly = true;
-    $('tbCode').style.background = '#f1f5f9';
-  }
-  return nextCode;
-}
-$('autoNum').addEventListener('change', ()=>{
-  if($('autoNum').value === 'YES'){ refreshPrefixBox(); }
-  else { $('tbCode').readOnly = false; $('tbCode').style.background = '#fff'; $('tbCode').placeholder = 'Type your own e.g. WHS000099'; $('tbCode').value = ''; $('tbCode').focus(); }
-});
+window.refreshNextNumber = refreshNextNumber;
 
-// ===== LABEL - SCHOOL NAME ON TOP, TEXTBOOKS BELOW, CODE AT BOTTOM =====
-function makeLabel(tb){
-  const school = getSchool() || 'WORDSWORTH HIGH SCHOOL';
-  const id = 'bc-'+tb.code.replace(/[^A-Za-z0-9]/g,'')+'-'+Math.floor(Math.random()*10000);
+// ===== LABEL - EXACTLY LIKE YOUR PHOTO =====
+// Line 1: WORDSWORTH HIGH SCHOOL
+// Line 2: TEXTBOOKS
+// Line 3: Barcode
+// Line 4: WHS000005
+function renderLabel(schoolName, barcode){
   const div = document.createElement('div');
-  div.className = 'bookLabel';
+  div.className = 'barcode-label';
+  const safeSchool = (schoolName||'').toUpperCase();
   div.innerHTML = `
-    <div class="schoolName">${school}</div>
-    <div class="subTitle">TEXTBOOKS</div>
-    <div class="bookTitle">${tb.title||''} ${tb.grade ? '• '+tb.grade : ''} ${tb.subject ? '• '+tb.subject : ''}</div>
-    <svg id="${id}"></svg>
-    <div class="bookCode">${tb.code}</div>
-    <div class="bookMeta">${tb.condition||''} • ${tb.status||'AVAILABLE'}</div>
+    <p class="school-name">${safeSchool}</p>
+    <p class="label-type">TEXTBOOKS</p>
+    <svg class="bc"></svg>
+    <div class="barcode-number">${barcode}</div>
   `;
-  return { div, id, code: tb.code };
+  const svg = div.querySelector('.bc');
+  try{ JsBarcode(svg, barcode, {format:'CODE128', displayValue:false, height:48, width:1.8, margin:0}); }catch(e){ svg.outerHTML = '<div style="font-size:11px">Barcode: '+barcode+'</div>'; }
+  return div;
 }
-function renderLabel(tb){
-  const wrap = $('labelWrap');
-  if(wrap.querySelector('.small')) wrap.innerHTML = '';
-  const { div, id, code } = makeLabel(tb);
-  wrap.appendChild(div);
-  try{ JsBarcode('#'+id, code, { format:'CODE128', width:1.6, height:52, displayValue:false, margin:0 }); }catch(e){}
+function showLabels(list){
+  const area = $('labelsArea');
+  area.innerHTML = '';
+  list.forEach(item=>{
+    area.appendChild(renderLabel(getSchool(), item.barcode));
+  });
 }
-window.clearLabels = function(){ $('labelWrap').innerHTML = '<div class="small" style="width:100%">No labels yet.</div>'; };
-
-// ===== SCHOOL DROPDOWN =====
+window.addTextbook = async function(){
+  const emis = getEmis(); if(!emis){ $('tbMsg').innerHTML='<div class="warn">⚠️ Select school first.</div>'; return; }
+  const title = $('tbTitle').value.trim(); if(!title){ $('tbMsg').innerHTML='<div class="warn">⚠️ Type Title.</div>'; return; }
+  const subject = $('tbSubject').value.trim(); const grade = $('tbGrade').value; const publisher = $('tbPublisher').value.trim(); const condition = $('tbCondition').value;
+  let copies = parseInt($('tbCopies').value||'1',10); if(isNaN(copies)||copies<1) copies=1; if(copies>100) copies=100;
+  const prefix = getPrefix(getSchool());
+  $('tbMsg').innerHTML = '<div class="info">Saving '+copies+' book(s)...</div>';
+  try{
+    await refreshNextNumber();
+    let created = [];
+    for(let i=0;i<copies;i++){
+      const num = NEXT_NUM + i;
+      const barcode = makeBarcode(prefix, num);
+      await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',barcode), { barcode, title, subject, grade, publisher, condition, status:'AVAILABLE', school:getSchool(), emis:emis, createdAt: serverTimestamp() });
+      created.push({barcode, title, grade, subject});
+    }
+    NEXT_NUM += copies;
+    $('tbBarcode').value = makeBarcode(prefix, NEXT_NUM);
+    $('tbMsg').innerHTML = '<div class="ok">✅ Saved '+copies+' book(s): <b>'+created[0].barcode+'</b> to <b>'+created[created.length-1].barcode+'</b><br>Labels below match your photo — Click Print.</div>';
+    showLabels(created);
+    $('tbTitle').value=''; $('tbSubject').value='';
+    loadTextbooks();
+  }catch(e){ $('tbMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
+};
 async function loadDbeSchools(){
   const dd = $('schoolDropdown');
   try{
@@ -212,71 +226,52 @@ async function loadDbeSchools(){
     if(ALL_SCHOOLS.length===0){ const snap2 = await getDocs(collection(db,'schools')); snap2.forEach(d=>{ const s=d.data(); const emis=String(d.id).replace('EMIS_',''); ALL_SCHOOLS.push({emis:emis, name:s.name||'', town:s.town||'', province:s.province||''}); }); }
     ALL_SCHOOLS.sort((a,b)=>a.name.localeCompare(b.name));
     $('schoolCount').textContent = ALL_SCHOOLS.length + ' schools loaded from DBE';
-    renderDropdown(''); const emis=getEmis(); if(emis && ALL_SCHOOLS.some(s=>s.emis===emis)){ dd.value=emis; showSelected(); }
-  }catch(e){ dd.innerHTML='<option value="">-- Failed --</option>'; $('schoolCount').textContent='Failed: '+e.message; }
+    renderDropdown(''); const emis=getEmis(); if(emis && ALL_SCHOOLS.some(s=>s.emis===emis)){ dd.value=emis; showSelected(); refreshNextNumber(); loadTextbooks(); }
+  }catch(e){ dd.innerHTML='<option value="">-- Failed to load schools --</option>'; $('schoolCount').textContent='Failed: '+e.message; }
 }
 function renderDropdown(filter){ const dd=$('schoolDropdown'); const f=(filter||'').toLowerCase().trim(); const filtered=!f?ALL_SCHOOLS:ALL_SCHOOLS.filter(s=>(s.emis+' '+s.name+' '+s.town+' '+(s.province||'')).toLowerCase().includes(f)); if(filtered.length===0){ dd.innerHTML='<option value="">-- No school found --</option>'; return; } dd.innerHTML='<option value="">-- Select School by EMIS --</option>'+filtered.map(s=>`<option value="${s.emis}">${s.emis} — ${s.name} — ${s.town}</option>`).join(''); const emis=getEmis(); if(emis && filtered.some(s=>s.emis===emis)) dd.value=emis; }
-function showSelected(){ const emis=getEmis(); const name=getSchool(); const box=$('selectedSchoolBox'); if(emis&&name){ box.style.display='block'; box.innerHTML='✅ Selected: <b>'+name+'</b> • EMIS <b>'+emis+'</b> • Prefix <b>'+makePrefix(name)+'</b>'; } else box.style.display='none'; }
+function showSelected(){ const emis=getEmis(); const name=getSchool(); const box=$('selectedSchoolBox'); if(emis&&name){ box.style.display='block'; box.innerHTML='✅ Selected: <b>'+name+'</b> • EMIS <b>'+emis+'</b> • Prefix: <b>'+getPrefix(name)+'</b>'; } else box.style.display='none'; }
 $('schoolSearch').addEventListener('input', e=> renderDropdown(e.target.value));
-$('schoolDropdown').addEventListener('change', async e=>{ const emis=e.target.value; if(!emis) return; const s=ALL_SCHOOLS.find(x=>x.emis===emis); if(!s) return; localStorage.setItem('MAKHANANI_SELECTED_EMIS',emis); localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',s.name); localStorage.setItem('MAKHANANI_SCHOOL_EMIS',emis); localStorage.setItem('MAKHANANI_SCHOOL_NAME',s.name); showSelected(); updateCloudStatus('☁️ Cloud: Connected — '+s.name+' (EMIS '+emis+')'); await loadTextbooks(); refreshPrefixBox(); });
-window.manualSelect = async function(){ const emis=$('manualEmis').value.trim(); const name=$('manualName').value.trim()||'WORDSWORTH HIGH SCHOOL'; if(!emis){ alert('Type EMIS first'); return; } localStorage.setItem('MAKHANANI_SELECTED_EMIS',emis); localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',name); localStorage.setItem('MAKHANANI_SCHOOL_EMIS',emis); localStorage.setItem('MAKHANANI_SCHOOL_NAME',name); showSelected(); updateCloudStatus('☁️ Cloud: Connected — '+name+' (EMIS '+emis+')'); await loadTextbooks(); refreshPrefixBox(); alert('✅ School set: '+name+' • Prefix '+makePrefix(name)); };
-
-// ===== SAVE TEXTBOOK =====
-window.saveTextbook = async function(){
-  const emis=getEmis(); if(!emis){ alert('Select school first'); return; }
-  const title=$('tbTitle').value.trim(); const subject=$('tbSubject').value.trim(); const grade=$('tbGrade').value; const condition=$('tbCondition').value; const qty=Number($('tbQty').value||1);
-  if(!title){ $('tbMsg').innerHTML='<div class="warn">⚠️ Type Textbook Title first.</div>'; return; }
-  const prefix = makePrefix(getSchool());
-  let startNum = getNextNumber();
-  let firstCode = '';
-  $('tbMsg').innerHTML='<div class="info">Saving '+qty+' copy(ies)...</div>';
-  try{
-    for(let i=0;i<qty;i++){
-      let code;
-      if($('autoNum').value === 'YES'){ code = formatCode(prefix, startNum + i); }
-      else {
-        if(i===0){ code = $('tbCode').value.trim().toUpperCase(); if(!code){ $('tbMsg').innerHTML='<div class="warn">⚠️ Type a code or switch Auto to YES.</div>'; return; } }
-        else { code = $('tbCode').value.trim().toUpperCase() + '-' + (i+1); }
-      }
-      if(i===0) firstCode = code;
-      await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), { code, title, subject, grade, condition, status:'AVAILABLE', school:getSchool(), emis:emis, createdAt: serverTimestamp() }, {merge:true});
-      renderLabel({ code, title, subject, grade, condition, status:'AVAILABLE' });
-    }
-    $('tbMsg').innerHTML='<div class="ok">✅ Saved '+qty+' textbook(s).<br>First: <b>'+firstCode+'</b> • Last: <b>'+formatCode(prefix, startNum+qty-1)+'</b> (if Auto ON)<br>Labels generated below — Click Print.</div>';
-    $('tbTitle').value=''; $('tbSubject').value='';
-    await loadTextbooks(); refreshPrefixBox();
-  }catch(e){ $('tbMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
-};
-
-// ===== LIST =====
+$('schoolDropdown').addEventListener('change', e=>{ const emis=e.target.value; if(!emis) return; const s=ALL_SCHOOLS.find(x=>x.emis===emis); if(!s) return; localStorage.setItem('MAKHANANI_SELECTED_EMIS',emis); localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',s.name); localStorage.setItem('MAKHANANI_SCHOOL_EMIS',emis); localStorage.setItem('MAKHANANI_SCHOOL_NAME',s.name); showSelected(); updateCloudStatus('☁️ Cloud: Connected — '+s.name+' (EMIS '+emis+')'); refreshNextNumber(); loadTextbooks(); });
+window.manualSelect = function(){ const emis=$('manualEmis').value.trim(); const name=$('manualName').value.trim()||'WORDSWORTH HIGH SCHOOL'; if(!emis){ alert('Type EMIS first'); return; } localStorage.setItem('MAKHANANI_SELECTED_EMIS',emis); localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',name); localStorage.setItem('MAKHANANI_SCHOOL_EMIS',emis); localStorage.setItem('MAKHANANI_SCHOOL_NAME',name); showSelected(); updateCloudStatus('☁️ Cloud: Connected — '+name+' (EMIS '+emis+')'); refreshNextNumber(); loadTextbooks(); };
 window.loadTextbooks = async function(){
   const emis=getEmis(); if(!emis) return;
   try{
     const snap = await getDocs(collection(db,'schools','EMIS_'+emis,'textbooks'));
     ALL_TB = []; snap.forEach(d=>{ ALL_TB.push(d.data()); });
-    ALL_TB.sort((a,b)=>(a.code||'').localeCompare(b.code||''));
-    const q = ($('searchTb').value||'').toLowerCase().trim(); const fStatus = $('filterStatus').value;
-    let filtered = ALL_TB.filter(t => (!fStatus || t.status===fStatus) && (!q || (t.code+' '+t.title+' '+t.subject+' '+t.grade).toLowerCase().includes(q)));
-    let html = '<p class="small">'+filtered.length+' textbooks • Prefix: <b>'+makePrefix(getSchool())+'</b> • Next: <b>'+formatCode(makePrefix(getSchool()), getNextNumber())+'</b></p><table><tr><th>Code</th><th>Title</th><th>Grade / Subject</th><th>Status</th><th>Action</th></tr>';
-    filtered.forEach(t=>{ html += '<tr><td><b>'+t.code+'</b></td><td>'+(t.title||'')+'</td><td>'+(t.grade||'')+' • '+(t.subject||'')+'</td><td><span class="pill pill-'+(t.status||'AVAILABLE')+'">'+(t.status||'')+'</span></td><td><button class="btn btn-blue" style="width:auto;padding:6px 10px;font-size:12px;margin:0" onclick="previewLabel(\''+t.code+'\')">🏷️ Label</button></td></tr>'; });
-    html += '</table>'; $('tbList').innerHTML = html;
-    refreshPrefixBox();
+    ALL_TB.sort((a,b)=>(a.barcode||'').localeCompare(b.barcode||''));
+    renderTbList($('searchTb').value||'');
+    refreshNextNumber();
   }catch(e){ $('tbList').innerHTML='<div class="warn">'+e.message+'</div>'; }
 };
-window.previewLabel = function(code){
-  const t = ALL_TB.find(x=>x.code===code); if(!t) return;
-  renderLabel(t);
-  document.getElementById('labelWrap').scrollIntoView({behavior:'smooth'});
+function renderTbList(filter){
+  const f=(filter||'').toLowerCase().trim();
+  const list = !f ? ALL_TB : ALL_TB.filter(t=>((t.barcode||'')+' '+(t.title||'')+' '+(t.subject||'')+' '+(t.grade||'')).toLowerCase().includes(f));
+  if(list.length===0){ $('tbList').innerHTML='<p class="small">No textbooks yet for this school.</p>'; return; }
+  let html='<table><tr><th>Barcode</th><th>Title</th><th>Grade / Subject</th><th>Status</th><th>Action</th></tr>';
+  list.forEach(t=>{ html+='<tr><td><b>'+(t.barcode||'')+'</b></td><td>'+(t.title||'')+'</td><td>'+(t.grade||'')+' '+(t.subject||'')+'</td><td>'+(t.status||'')+'</td><td><button class="btn-small btn-blue" onclick="reprintLabel(\''+(t.barcode||'')+'\')">🏷️ Label</button> <button class="btn-small btn-red" onclick="deleteTb(\''+(t.barcode||'')+'\')">🗑️ Delete</button></td></tr>'; });
+  html+='</table><p class="small">'+list.length+' textbook(s) • Prefix: <b>'+getPrefix(getSchool())+'</b></p>';
+  $('tbList').innerHTML=html;
+}
+window.reprintLabel = function(barcode){
+  const t = ALL_TB.find(x=>x.barcode===barcode); if(!t) return;
+  showLabels([t]);
+  document.getElementById('labelsArea').scrollIntoView({behavior:'smooth'});
 };
-$('searchTb').addEventListener('input', ()=> loadTextbooks());
-
+window.deleteTb = async function(barcode){
+  if(!confirm('Delete '+barcode+'?')) return;
+  const emis=getEmis();
+  try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',barcode)); loadTextbooks(); }catch(e){ alert(e.message); }
+};
+$('searchTb').addEventListener('input', e=> renderTbList(e.target.value));
 document.addEventListener('DOMContentLoaded', ()=>{
   const emis=getEmis(); const school=getSchool();
   if(school) updateCloudStatus('☁️ Cloud: Connected — '+school+(emis?' (EMIS '+emis+')':''));
   else updateCloudStatus('☁️ Cloud: Connected to Firebase — Select School');
-  showSelected(); refreshPrefixBox();
+  showSelected();
+  if(emis) refreshNextNumber();
 });
-loadDbeSchools().then(()=> loadTextbooks());
+loadDbeSchools();
 </script>
 </body>
 </html>
