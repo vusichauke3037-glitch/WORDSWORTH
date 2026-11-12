@@ -1,392 +1,109 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.00</title>
-<meta name="theme-color" content="#0a1f4d">
-<style>
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
-header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:12px;opacity:.85}
-.badge{background:#d4af37;color:#0a1f4d;font-weight:900;padding:4px 10px;border-radius:20px;font-size:12px}
-main{max-width:1100px;margin:auto;padding:14px}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
-label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
-input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
-.btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
-#cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
-.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.small{font-size:12px;color:#64748b}
-.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
-th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
-th{background:#0a1f4d;color:#fff}
-.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
-.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}
-.dueBanner{background:#fffbeb;border:2px solid #d4af37;border-radius:12px;padding:14px;text-align:center;font-weight:900;font-size:16px;color:#92400e;margin-top:10px}
-.dueBanner b{color:#0a1f4d}
-.statRow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:10px}
-@media(max-width:700px){.statRow{grid-template-columns:1fr 1fr}}
-.stat{background:#f8fafc;border-radius:10px;padding:12px;text-align:center}
-.stat b{font-size:22px;display:block;color:#0a1f4d}
-.stat span{font-size:12px;color:#64748b}
-.barcodeBox{border:2px dashed #0a1f4d;border-radius:12px;padding:14px;text-align:center;background:#fff;margin:10px 0}
-.barcodeBox .code{font-family:'Courier New',monospace;font-size:28px;font-weight:900;letter-spacing:4px}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.tabs button{padding:10px 16px;border:none;border-radius:20px;font-weight:900;cursor:pointer;background:#e2e8f0}
-.tabs button.active{background:#0a1f4d;color:#fff}
-@page{ size:A4; margin:10mm; }
-@media print{
-  header,#cloudStatus,.topnav,.btn,.noPrint{display:none!important}
-  body{background:#fff} main{max-width:100%;padding:0} .card{box-shadow:none;border:none}
-  .printOnly{display:block!important}
-  .barcodePrint{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-  .barcodePrint .barcodeBox{break-inside:avoid}
-}
-.printOnly{display:none}
-</style>
-</head>
-<body>
-<header><div><h1>🎓 Learners — Makhanani LTSM</h1><p>Learner Barcodes • Due 30 Nov • v2.00<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.00 LEARNERS</span></div></header>
-<div id="cloudStatus">☁️ Cloud: Connecting...</div>
-<main>
-<div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
+// Makhanani LTSM — Service Worker v2.06
+// Caches all pages + logo.png so App works OFFLINE
+// Update CACHE_NAME every time you update any page
 
-<div class="card">
-<h2>🏫 School + Role</h2>
-<div class="info" id="schoolBox">School: —</div>
-<div class="info" id="roleBox">Role: —</div>
-<div class="dueBanner" id="dueBanner">📅 ALL BOOKS DUE: <b>30 November</b> — <span id="dueCountdown">—</span></div>
-<div class="statRow">
-<div class="stat"><b id="statTotal">0</b><span>🎓 Total Learners</span></div>
-<div class="stat"><b id="statWithBook">0</b><span>📚 With Book Out</span></div>
-<div class="stat"><b id="statNoBook">0</b><span>⚠️ No Book Out</span></div>
-<div class="stat"><b id="statOverdue">0</b><span>⚠️ Overdue (Past 30 Nov)</span></div>
-</div>
-</div>
+const CACHE_NAME = 'makhanani-ltsm-v2.06';
 
-<div class="card noPrint">
-<h2>➕ Add / Edit Learner</h2>
-<div class="small">Teacher can ADD learners, but CANNOT edit/delete. Admin / Librarian can Edit + Delete. Learner Barcode is auto: L000001, L000002...</div>
-<label>Full Name *</label>
-<input id="lName" placeholder="e.g. Lesedi Ngwenya">
-<div class="grid3">
-<div><label>Grade *</label><select id="lGrade"><option value="">— Select Grade —</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
-<div><label>Class *</label><input id="lClass" placeholder="e.g. 10A" style="text-transform:uppercase"></div>
-<div><label>Gender (optional)</label><select id="lGender"><option value="">—</option><option>Female</option><option>Male</option></select></div>
-</div>
-<div class="grid2">
-<div><label>Parent Phone (optional)</label><input id="lPhone" placeholder="e.g. 082 123 4567"></div>
-<div><label>Barcode (Auto — Leave Blank for New)</label><input id="lBarcode" placeholder="Auto: L000004" style="text-transform:uppercase"></div>
-</div>
-<button class="btn btn-green" id="saveLearnerBtn" onclick="saveLearner()">✅ Save Learner</button>
-<button class="btn btn-grey" onclick="clearLearnerForm()">🔄 Clear — New Learner</button>
-<div id="learnerMsg"></div>
-<div id="newBarcodeBox"></div>
-</div>
+const FILES = [
+  './',
+  'index.html',
+  'admin.html',
+  'issue.html',
+  'learner-barcode.html',
+  'textbook-barcode.html',
+  'librarian.html',
+  'principal.html',
+  'manifest.json',
+  'logo.png'
+];
 
-<div class="card noPrint">
-<h2>📥 Bulk Upload — Paste Learner List</h2>
-<div class="small">Paste from Excel: One learner per line, format: <b>Name, Grade, Class</b><br>Example:<br><code>Thato Masheke, Grade 8, 8C<br>Mbali Nonyane, Grade 10, 10A</code><br>Barcodes auto-assigned. Duplicates by Name + Grade are skipped.</div>
-<label>Paste List Here</label>
-<textarea id="bulkText" rows="5" style="width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:13px" placeholder="Thato Masheke, Grade 8, 8C&#10;Mbali Nonyane, Grade 10, 10A"></textarea>
-<button class="btn btn-purple" onclick="bulkUpload()">📥 Upload List</button>
-<div id="bulkMsg"></div>
-</div>
-
-<div class="card">
-<h2>🎓 All Learners (<span id="learnerCount">0</span>)</h2>
-<div class="tabs">
-<button id="tabAllL" class="active" onclick="setTab('ALL')">🌍 All</button>
-<button id="tabWith" onclick="setTab('WITH')">📚 With Book</button>
-<button id="tabNo" onclick="setTab('NO')">⚠️ No Book</button>
-<button id="tabOver" onclick="setTab('OVERDUE')">⚠️ Overdue</button>
-</div>
-<div class="grid2">
-<div><label>🔍 Search name / barcode / class</label><input id="learnerSearch" placeholder="Lesedi, L000003, 10A..." oninput="renderLearners()"></div>
-<div><label>Filter by Grade</label><select id="learnerGradeFilter" onchange="renderLearners()"><option value="">All Grades</option></select></div>
-</div>
-<div class="grid2">
-<div><label>Filter by Class</label><select id="learnerClassFilter" onchange="renderLearners()"><option value="">All Classes</option></select></div>
-<div><label>Sort</label><select id="learnerSort" onchange="renderLearners()"><option value="NAME">Name A-Z</option><option value="GRADE">Grade → Name</option><option value="BARCODE">Barcode</option></select></div>
-</div>
-<div class="small"><span id="learnerCountText">Loading...</span> • Click <b>🖨️ Barcode</b> to print one card, or <b>🖨️ Print All Barcodes</b> below for whole list.</div>
-<div id="learnerList"></div>
-<div class="grid2 noPrint">
-<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button>
-<button class="btn btn-gold" onclick="printAllBarcodes()">🖨️ Print All Barcodes (This Filter)</button>
-</div>
-</div>
-
-<div class="card printOnly" id="printBarcodesCard">
-<h2>🖨️ Learner Barcodes — <span id="printSchoolName"></span></h2>
-<div class="small">Cut along lines. Each learner keeps their card. Scan with Issue page.</div>
-<div class="barcodePrint" id="printBarcodesList"></div>
-</div>
-</main>
-
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
-  authDomain: "makhanani-ltsm.firebaseapp.com",
-  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
-  projectId: "makhanani-ltsm",
-  storageBucket: "makhanani-ltsm.firebasestorage.app",
-  messagingSenderId: "247180363183",
-  appId: "1:247180363183:web:760b5163fdf421bae01b5a",
-  measurementId: "G-TDFSSF6NTB"
-};
-let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
-const $ = id => document.getElementById(id);
-let ALL_LEARNERS=[], ALL_ISSUES=[], TAB='ALL', EDIT_ID=null;
-function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
-function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
-function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
-function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
-function canEditDelete(){ const r=getRole(); return r==='ADMIN' || r==='LIBRARIAN' || r==='PRINCIPAL' || r==='HOD'; }
-function canAdd(){ return !!getLogin(); }
-// Due 30 Nov
-function getDueDateForIssue(d){ const dt=d?new Date(d):new Date(); let y=dt.getFullYear(); if(dt.getMonth()===11) y++; return new Date(y,10,30); }
-function getDueDateForRecord(x){
-  if(x.dueDate){ try{ const d=x.dueDate.toDate?x.dueDate.toDate():new Date(x.dueDate); if(!isNaN(d.getTime())) return d; }catch(e){} }
-  if(x.issuedAt){ try{ const d=x.issuedAt.toDate?x.issuedAt.toDate():new Date(x.issuedAt); return getDueDateForIssue(d); }catch(e){} }
-  return getDueDateForIssue(new Date());
-}
-function fmtDue(d){ try{ return d.toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'}); }catch(e){ return '30 Nov'; } }
-function fmtDate(ts){ if(!ts) return '—'; try{ const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-ZA'); }catch(e){ return '—'; } }
-function daysUntilDue(x){ const due=getDueDateForRecord(x); const today=new Date(); today.setHours(0,0,0,0); const dueDay=new Date(due); dueDay.setHours(0,0,0,0); return Math.ceil((dueDay-today)/(1000*60*60*24)); }
-function isOverdue(x){ return x.status==='OUT' && daysUntilDue(x) < 0; }
-function updateDueBanner(){
-  const due=getDueDateForIssue(new Date());
-  const today=new Date(); today.setHours(0,0,0,0);
-  const days=Math.ceil((new Date(due).setHours(0,0,0,0)-today)/(1000*60*60*24));
-  let txt=''; if(days<0) txt='⚠️ OVERDUE — '+Math.abs(days)+' day(s) PAST due.'; else if(days===0) txt='⚠️ DUE TODAY!'; else if(days===1) txt='⏰ 1 day left — Due TOMORROW!'; else txt=days+' days left until due date';
-  $('dueBanner').innerHTML='📅 ALL BOOKS DUE: <b>'+fmtDue(due)+'</b> — '+txt;
-}
-function nextBarcode(){
-  let max=0;
-  ALL_LEARNERS.forEach(l=>{ const n=parseInt(String(l.barcode||'').replace(/\D/g,'')); if(!isNaN(n) && n>max) max=n; });
-  return 'L'+String(max+1).padStart(6,'0');
-}
-window.setTab = function(t){
-  TAB=t; ['tabAllL','tabWith','tabNo','tabOver'].forEach(id=>$(id).classList.remove('active'));
-  if(t==='ALL') $('tabAllL').classList.add('active');
-  if(t==='WITH') $('tabWith').classList.add('active');
-  if(t==='NO') $('tabNo').classList.add('active');
-  if(t==='OVERDUE') $('tabOver').classList.add('active');
-  renderLearners();
-};
-window.clearLearnerForm = function(){
-  EDIT_ID=null; $('lName').value=''; $('lGrade').value=''; $('lClass').value=''; $('lGender').value=''; $('lPhone').value=''; $('lBarcode').value='';
-  $('saveLearnerBtn').textContent='✅ Save Learner'; $('learnerMsg').innerHTML=''; $('newBarcodeBox').innerHTML='';
-  $('lBarcode').disabled=false;
-};
-window.saveLearner = async function(){
-  const emis=getEmis(); const school=getSchool();
-  if(!canAdd()){ $('learnerMsg').innerHTML='<div class="warn">⚠️ Login first.</div>'; return; }
-  const name=($('lName').value||'').trim();
-  const grade=$('lGrade').value;
-  const cls=($('lClass').value||'').trim().toUpperCase();
-  const gender=$('lGender').value;
-  const phone=($('lPhone').value||'').trim();
-  let barcode=($('lBarcode').value||'').trim().toUpperCase();
-  if(!name || !grade || !cls){ $('learnerMsg').innerHTML='<div class="warn">⚠️ Fill Name + Grade + Class.</div>'; return; }
-  if(!barcode){
-    barcode = EDIT_ID ? EDIT_ID : nextBarcode();
-  } else {
-    if(!barcode.startsWith('L')) barcode='L'+barcode.replace(/\D/g,'').padStart(6,'0');
-  }
-  // Teacher cannot edit existing - only add
-  if(EDIT_ID && !canEditDelete()){ $('learnerMsg').innerHTML='<div class="warn">🚫 Teacher CANNOT edit learners — only ADD. Ask Admin / Librarian to edit.</div>'; return; }
-  const id = EDIT_ID || barcode;
-  const data={ barcode:barcode, code:barcode, name:name, fullName:name, grade:grade, class:cls, gender:gender, phone:phone, emis:emis, school:school, updatedAt:serverTimestamp() };
-  if(!EDIT_ID) data.createdAt=serverTimestamp();
-  $('saveLearnerBtn').disabled=true; $('saveLearnerBtn').textContent='Saving...';
-  try{
-    await setDoc(doc(db,'schools','EMIS_'+emis,'learners',id), data, {merge:true});
-    $('learnerMsg').innerHTML='<div class="ok">✅ Learner Saved: <b>'+name+' • '+barcode+' • '+grade+' '+cls+'</b></div>';
-    $('newBarcodeBox').innerHTML='<div class="barcodeBox"><b>'+name+'</b><br><span class="small">'+grade+' '+cls+' • '+school+'</span><br><svg id="bcNew"></svg><div class="code">'+barcode+'</div><button class="btn btn-gold" style="width:auto" onclick="window.print()">🖨️ Print This Barcode</button></div>';
-    try{ JsBarcode('#bcNew', barcode, {format:'CODE128', width:2, height:50, displayValue:false}); }catch(e){}
-    await loadAll();
-    clearLearnerForm();
-    // Keep barcode box visible after clear
-    const box=$('newBarcodeBox').innerHTML;
-    // re-show - clearLearnerForm cleared it, so we re-set it after
-    $('newBarcodeBox').innerHTML=box;
-    try{ JsBarcode('#bcNew', barcode, {format:'CODE128', width:2, height:50, displayValue:false}); }catch(e){}
-  }catch(e){ $('learnerMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
-  $('saveLearnerBtn').disabled=false; $('saveLearnerBtn').textContent='✅ Save Learner';
-};
-window.editLearner = function(id){
-  if(!canEditDelete()){ alert('🚫 Teacher CANNOT edit learners — only ADD. Ask Admin / Librarian.'); return; }
-  const l=ALL_LEARNERS.find(x=>x.id===id); if(!l) return;
-  EDIT_ID=id;
-  $('lName').value=l.name||''; $('lGrade').value=l.grade||''; $('lClass').value=l.class||''; $('lGender').value=l.gender||''; $('lPhone').value=l.phone||''; $('lBarcode').value=l.barcode||'';
-  $('saveLearnerBtn').textContent='✏️ Update Learner — '+l.barcode;
-  $('learnerMsg').innerHTML='<div class="info">Editing: <b>'+l.name+' ('+l.barcode+')</b></div>';
-  window.scrollTo({top:0, behavior:'smooth'});
-};
-window.deleteLearner = async function(id, name, barcode){
-  if(!canEditDelete()){ alert('🚫 Teacher CANNOT delete learners. Ask Admin / Librarian.'); return; }
-  const emis=getEmis();
-  // Block if has book OUT
-  const hasOut = ALL_ISSUES.some(x=>x.learnerCode===barcode && x.status==='OUT');
-  if(hasOut){ alert('🚫 CANNOT DELETE: '+name+' still has a book OUT. Return the book first.'); return; }
-  if(!confirm('Delete learner '+name+' ('+barcode+')?')) return;
-  try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'learners',id)); await loadAll(); }catch(e){ alert('Delete failed: '+e.message); }
-};
-window.bulkUpload = async function(){
-  const emis=getEmis(); const school=getSchool();
-  if(!canAdd()){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Login first.</div>'; return; }
-  const text=($('bulkText').value||'').trim();
-  if(!text){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Paste list first.</div>'; return; }
-  const lines=text.split('\n').map(s=>s.trim()).filter(Boolean);
-  let added=0, skipped=0, errors=[];
-  let counter=0;
-  // Calculate next barcode once, increment
-  let max=0; ALL_LEARNERS.forEach(l=>{ const n=parseInt(String(l.barcode||'').replace(/\D/g,'')); if(!isNaN(n)&&n>max) max=n; });
-  for(const line of lines){
-    const parts=line.split(',').map(s=>s.trim());
-    if(parts.length<3){ errors.push('Skipped: '+line+' — need Name, Grade, Class'); skipped++; continue; }
-    let [name, grade, cls]=parts;
-    if(!grade.toLowerCase().startsWith('grade')) grade='Grade '+grade.replace(/\D/g,'');
-    cls=cls.toUpperCase();
-    const exists=ALL_LEARNERS.some(l=>l.name.toLowerCase()===name.toLowerCase() && l.grade===grade);
-    if(exists){ skipped++; continue; }
-    max++; const barcode='L'+String(max).padStart(6,'0');
-    try{
-      await setDoc(doc(db,'schools','EMIS_'+emis,'learners',barcode), {barcode:barcode, code:barcode, name:name, fullName:name, grade:grade, class:cls, emis:emis, school:school, createdAt:serverTimestamp(), updatedAt:serverTimestamp()});
-      added++; counter++;
-    }catch(e){ errors.push('Failed: '+name+' — '+e.message); }
-  }
-  $('bulkMsg').innerHTML='<div class="ok">✅ Bulk Upload Done: <b>'+added+' added</b>, '+skipped+' skipped (duplicate / bad line)<br>'+errors.join('<br>')+'</div>';
-  $('bulkText').value='';
-  await loadAll();
-};
-async function loadAll(){
-  const emis=getEmis();
-  try{
-    const [ls, is] = await Promise.all([
-      getDocs(collection(db,'schools','EMIS_'+emis,'learners')),
-      getDocs(query(collection(db,'schools','EMIS_'+emis,'issues'), orderBy('issuedAt','desc')))
-    ]);
-    ALL_LEARNERS=[]; ls.forEach(d=>{ const b=d.data(); ALL_LEARNERS.push({id:d.id, barcode:b.barcode||b.code||d.id, name:b.name||b.fullName||'', grade:b.grade||'', class:b.class||'', gender:b.gender||'', phone:b.phone||''}); });
-    ALL_ISSUES=[]; is.forEach(d=>{ const y=d.data(); ALL_ISSUES.push({id:d.id, ...y}); });
-    const outCodes=new Set(ALL_ISSUES.filter(x=>x.status==='OUT').map(x=>x.learnerCode));
-    const overdueLearners=new Set(ALL_ISSUES.filter(x=>isOverdue(x)).map(x=>x.learnerCode));
-    $('statTotal').textContent=ALL_LEARNERS.length;
-    $('statWithBook').textContent=ALL_LEARNERS.filter(l=>outCodes.has(l.barcode)).length;
-    $('statNoBook').textContent=ALL_LEARNERS.filter(l=>!outCodes.has(l.barcode)).length;
-    $('statOverdue').textContent=overdueLearners.size;
-    $('learnerCount').textContent=ALL_LEARNERS.length;
-    const grades=[...new Set(ALL_LEARNERS.map(l=>l.grade).filter(Boolean))].sort();
-    const classes=[...new Set(ALL_LEARNERS.map(l=>l.class).filter(Boolean))].sort();
-    const prevG=$('learnerGradeFilter').value, prevC=$('learnerClassFilter').value;
-    $('learnerGradeFilter').innerHTML='<option value="">All Grades</option>'+grades.map(g=>`<option ${g===prevG?'selected':''}>${g}</option>`).join('');
-    $('learnerClassFilter').innerHTML='<option value="">All Classes</option>'+classes.map(c=>`<option ${c===prevC?'selected':''}>${c}</option>`).join('');
-    updateDueBanner();
-    renderLearners();
-  }catch(e){ $('learnerList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
-}
-window.loadAll = loadAll;
-function getLearnerIssues(barcode){ return ALL_ISSUES.filter(x=>x.learnerCode===barcode); }
-function renderLearners(){
-  let list=[...ALL_LEARNERS];
-  const outCodes=new Set(ALL_ISSUES.filter(x=>x.status==='OUT').map(x=>x.learnerCode));
-  const overdueCodes=new Set(ALL_ISSUES.filter(x=>isOverdue(x)).map(x=>x.learnerCode));
-  if(TAB==='WITH') list=list.filter(l=>outCodes.has(l.barcode));
-  if(TAB==='NO') list=list.filter(l=>!outCodes.has(l.barcode));
-  if(TAB==='OVERDUE') list=list.filter(l=>overdueCodes.has(l.barcode));
-  const q=($('learnerSearch').value||'').toLowerCase().trim();
-  const gf=$('learnerGradeFilter').value, cf=$('learnerClassFilter').value;
-  if(gf) list=list.filter(l=>l.grade===gf);
-  if(cf) list=list.filter(l=>l.class===cf);
-  if(q) list=list.filter(l=> (l.name+' '+l.barcode+' '+(l.class||'')).toLowerCase().includes(q));
-  const sort=$('learnerSort').value;
-  if(sort==='NAME') list.sort((a,b)=>a.name.localeCompare(b.name));
-  if(sort==='GRADE') list.sort((a,b)=> (a.grade||'').localeCompare(b.grade||'') || a.name.localeCompare(b.name));
-  if(sort==='BARCODE') list.sort((a,b)=> (a.barcode||'').localeCompare(b.barcode||''));
-  $('learnerCountText').textContent=list.length+' shown • '+ALL_LEARNERS.length+' total';
-  if(list.length===0){ $('learnerList').innerHTML='<div class="info">No learners for this filter.</div>'; return; }
-  let html='<table><tr><th>Learner</th><th>Grade / Class</th><th>Books Out</th><th>Due Date</th><th>Status</th><th>Barcode / Action</th></tr>';
-  list.slice(0,200).forEach(l=>{
-    const outs=getLearnerIssues(l.barcode).filter(x=>x.status==='OUT');
-    const over=outs.some(x=>isOverdue(x));
-    const dueStr = outs.length ? fmtDue(getDueDateForRecord(outs[0])) : '—';
-    const daysTxt = outs.length ? (daysUntilDue(outs[0])<0 ? '<b style="color:#dc2626">'+Math.abs(daysUntilDue(outs[0]))+' days OVERDUE</b>' : daysUntilDue(outs[0])+' days left') : '—';
-    const status = over ? '<span class="pill pill-red">⚠️ OVERDUE</span>' : outs.length ? '<span class="pill pill-red">📚 '+outs.length+' OUT</span>' : '<span class="pill pill-green">✅ No Book</span>';
-    const booksTxt = outs.length ? outs.map(o=>o.bookCode+' — '+o.bookTitle).join('<br>') : '—';
-    const canED = canEditDelete();
-    const editBtn = canED ? `<button class="btn btn-blue btn-sm" onclick="editLearner('${l.id}')">✏️ Edit</button>` : `<button class="btn btn-grey btn-sm" disabled title="Teacher cannot edit">✏️ Edit</button>`;
-    const delBtn = canED ? `<button class="btn btn-red btn-sm" onclick="deleteLearner('${l.id}','${l.name.replace(/'/g,"")}','${l.barcode}')">🗑️ Delete</button>` : '';
-    html+='<tr><td><b>'+l.name+'</b><br><span class="small">'+l.barcode+'</span></td><td>'+l.grade+'<br>'+(l.class||'')+'</td><td class="small">'+booksTxt+'</td><td><b>'+dueStr+'</b><br><span class="small">'+daysTxt+'</span></td><td>'+status+'</td><td><svg id="bc_'+l.barcode+'"></svg><div class="small">'+l.barcode+'</div><button class="btn btn-gold btn-sm" onclick="printOneBarcode(\''+l.barcode+'\',\''+l.name.replace(/'/g,"")+'\',\''+l.grade+'\',\''+(l.class||'')+'\')">🖨️ Barcode</button>'+editBtn+delBtn+'</td></tr>';
-  });
-  html+='</table>';
-  $('learnerList').innerHTML=html;
-  // Render barcodes after DOM insert
-  list.slice(0,200).forEach(l=>{
-    try{ JsBarcode('#bc_'+l.barcode, l.barcode, {format:'CODE128', width:1.5, height:35, displayValue:false}); }catch(e){}
-  });
-}
-window.renderLearners = renderLearners;
-window.printOneBarcode = function(barcode, name, grade, cls){
-  $('printSchoolName').textContent=getSchool();
-  $('printBarcodesList').innerHTML='<div class="barcodeBox"><b>'+name+'</b><br><span class="small">'+grade+' '+cls+' • '+getSchool()+'</span><br><svg id="bcPrintOne"></svg><div class="code">'+barcode+'</div></div>';
-  try{ JsBarcode('#bcPrintOne', barcode, {format:'CODE128', width:2, height:60, displayValue:false}); }catch(e){}
-  // Show print card, hide others for print - use window.print, card has printOnly class
-  document.getElementById('printBarcodesCard').style.display='block';
-  window.print();
-};
-window.printAllBarcodes = function(){
-  // Use current filtered list
-  let list=[...ALL_LEARNERS];
-  const outCodes=new Set(ALL_ISSUES.filter(x=>x.status==='OUT').map(x=>x.learnerCode));
-  const overdueCodes=new Set(ALL_ISSUES.filter(x=>isOverdue(x)).map(x=>x.learnerCode));
-  if(TAB==='WITH') list=list.filter(l=>outCodes.has(l.barcode));
-  if(TAB==='NO') list=list.filter(l=>!outCodes.has(l.barcode));
-  if(TAB==='OVERDUE') list=list.filter(l=>overdueCodes.has(l.barcode));
-  const q=($('learnerSearch').value||'').toLowerCase().trim();
-  const gf=$('learnerGradeFilter').value, cf=$('learnerClassFilter').value;
-  if(gf) list=list.filter(l=>l.grade===gf);
-  if(cf) list=list.filter(l=>l.class===cf);
-  if(q) list=list.filter(l=> (l.name+' '+l.barcode).toLowerCase().includes(q));
-  if(list.length===0){ alert('No learners to print.'); return; }
-  $('printSchoolName').textContent=getSchool();
-  $('printBarcodesList').innerHTML=list.map(l=>'<div class="barcodeBox"><b>'+l.name+'</b><br><span class="small">'+l.grade+' '+(l.class||'')+' • '+getSchool()+'</span><br><svg id="pbc_'+l.barcode+'"></svg><div class="code">'+l.barcode+'</div></div>').join('');
-  list.forEach(l=>{ try{ JsBarcode('#pbc_'+l.barcode, l.barcode, {format:'CODE128', width:2, height:50, displayValue:false}); }catch(e){} });
-  document.getElementById('printBarcodesCard').style.display='block';
-  window.print();
-};
-document.addEventListener('DOMContentLoaded', async ()=>{
-  const emis=getEmis(); const school=getSchool(); const login=getLogin();
-  if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'')+(login.subject? ' • Subject: '+login.subject : '');
-  if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
-  if(login){
-    let roleTxt='Role: <b>'+getRole()+'</b>';
-    if(getRole()==='TEACHER') roleTxt+=' • Can ADD learners • CANNOT Edit / Delete learners';
-    else roleTxt+=' • Can Add / Edit / Delete learners';
-    $('roleBox').innerHTML=roleTxt;
-  } else {
-    $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b> • Login in Admin / Home first';
-  }
-  $('cloudStatus').textContent='☁️ Cloud: Connected — '+school;
-  updateDueBanner();
-  await loadAll();
+// Install — Download all files + logo.png for offline
+self.addEventListener('install', event => {
+  console.log('[Makhanani SW] Installing v2.06 — Caching pages + logo.png');
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('[Makhanani SW] Caching:', FILES);
+        return cache.addAll(FILES);
+      })
+      .then(() => {
+        console.log('[Makhanani SW] ✅ All files cached — App works offline');
+        return self.skipWaiting();
+      })
+      .catch(err => {
+        console.log('[Makhanani SW] ⚠️ Cache failed for some files (maybe logo.png missing?):', err);
+        // Still activate even if logo.png missing — don't block app
+        return self.skipWaiting();
+      })
+  );
 });
-</script>
-</body>
-</html>
+
+// Activate — Delete old caches (old versions)
+self.addEventListener('activate', event => {
+  console.log('[Makhanani SW] Activating v2.06 — Cleaning old caches');
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            console.log('[Makhanani SW] Deleting old cache:', key);
+            return caches.delete(key);
+          }
+        })
+      );
+    }).then(() => {
+      return self.clients.claim();
+    })
+  );
+});
+
+// Fetch — Serve from cache if offline, else from network
+self.addEventListener('fetch', event => {
+  // Only handle GET requests, same origin
+  if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  // Don't cache Firebase / Google APIs — always go to network
+  if (url.hostname.includes('firebase') || url.hostname.includes('googleapis') || url.hostname.includes('gstatic')) {
+    return;
+  }
+
+  event.respondWith(
+    // Try network first, fall back to cache
+    fetch(event.request)
+      .then(response => {
+        // If network works, update cache in background
+        if (response && response.status === 200 && url.origin === self.location.origin) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        // Network failed = OFFLINE — serve from cache
+        return caches.match(event.request).then(cached => {
+          if (cached) {
+            console.log('[Makhanani SW] 📴 OFFLINE — Serving from cache:', event.request.url);
+            return cached;
+          }
+          // If logo.png not cached and offline, return empty — page will show 📚 fallback
+          if (event.request.url.includes('logo.png')) {
+            console.log('[Makhanani SW] ⚠️ logo.png not in cache — check WORDSWORTH/logo.png exists');
+          }
+          // If navigating to a page and offline, serve index.html
+          if (event.request.mode === 'navigate') {
+            return caches.match('index.html');
+          }
+          throw new Error('Offline and not cached: ' + event.request.url);
+        });
+      })
+  );
+});
+
+// Listen for message from page — Skip waiting when new version found
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
