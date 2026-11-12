@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v1.96</title>
+<title>Makhanani LTSM — Learners v1.97</title>
 <meta name="theme-color" content="#0a1f4d">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
 header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
@@ -16,10 +17,11 @@ main{max-width:1100px;margin:auto;padding:14px}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select,textarea{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
+input[type=file]{padding:8px;background:#f8fafc}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
@@ -36,6 +38,7 @@ th{background:#0a1f4d;color:#fff}
 .schoolName{font-weight:900;font-size:16px;line-height:1.2}
 .learnerWord{font-weight:900;font-size:14px;letter-spacing:3px;margin-top:2px}
 .learnerName{font-size:12px;font-weight:700;margin-top:2px}
+.uploadBox{border:2px dashed #0a1f4d;border-radius:12px;padding:16px;background:#eff6ff;text-align:center}
 .deleteBar{position:sticky;top:0;z-index:5;background:#fff7ed;border:2px solid #ea580c;border-radius:10px;padding:10px;margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .deleteBar b{color:#9a3412}
 .chk{width:20px;height:20px;accent-color:#dc2626;cursor:pointer}
@@ -45,7 +48,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>🎓 Learners — Makhanani LTSM</h1><p>Learner Barcode Labels • v1.96<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.96 LEARNER UNDER SCHOOL</span></div></header>
+<header><div><h1>🎓 Learners — Makhanani LTSM</h1><p>Learner Barcode Labels • v1.97<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.97 UPLOAD</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -73,8 +76,30 @@ th{background:#0a1f4d;color:#fff}
 </div>
 
 <div class="card">
+<h2>📤 Upload Learners File — NEW</h2>
+<div class="uploadBox">
+<div style="font-size:32px">📤</div>
+<div style="font-weight:900">Upload Grade 8 List — CSV / Excel / TXT</div>
+<div class="small">Your file can be: Excel (.xlsx) from school, or CSV, or Notepad .txt<br>Columns: <b>Name, Grade, Class</b> — or just <b>Name</b> alone</div>
+<label style="text-align:left">Choose file</label>
+<input type="file" id="uploadFile" accept=".csv,.xlsx,.xls,.txt" onchange="handleUpload(event)">
+<div class="small" id="uploadFileName">No file chosen yet</div>
+</div>
+<div class="grid2">
+<div><label>If file has only Names — Use this Grade for all</label><select id="uploadDefaultGrade"><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option selected>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+<div><label>If file has only Names — Use this Class for all</label><input id="uploadDefaultClass" value="8A" placeholder="e.g. 8A"></div>
+</div>
+<div class="small">Example Excel file:<br>Row 1: <b>Thato Mashele | Grade 8 | 8A</b> &nbsp; OR &nbsp; Row 1: <b>Thato Mashele</b> (then it uses Grade 8 / 8A above)</div>
+<button class="btn btn-gold" onclick="downloadTemplate()">⬇️ Download Empty Template (CSV)</button>
+<div id="uploadPreview"></div>
+<div id="uploadMsg"></div>
+<button class="btn btn-green" id="saveUploadBtn" onclick="saveUploaded()" style="display:none">✅ Save Uploaded Learners + Generate Labels</button>
+<button class="btn btn-grey" onclick="clearUpload()" style="display:none" id="clearUploadBtn">Clear Upload</button>
+</div>
+
+<div class="card">
 <h2>📥 Bulk Add Learners — Paste List</h2>
-<div class="small">Paste: <b>Name, Grade, Class</b> — one learner per line.<br>Thato Mashele, Grade 8, 8A<br>Naledi Dube, Grade 8, 8A</div>
+<div class="small">Paste: <b>Name, Grade, Class</b> — one learner per line.<br>Thato Mashele, Grade 8, 8A</div>
 <label>Paste learners here</label>
 <textarea id="bulkInput" rows="5" placeholder="Thato Mashele, Grade 8, 8A&#10;Naledi Dube, Grade 8, 8A"></textarea>
 <button class="btn btn-green" onclick="saveBulk()">✅ Save Bulk Learners + Labels</button>
@@ -119,6 +144,7 @@ const $ = id => document.getElementById(id);
 let ALL_LEARNERS = [];
 let SELECTED = new Set();
 let NEXT_NUM = 1;
+let UPLOADED = [];
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
@@ -126,6 +152,14 @@ function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : 
 function canDelete(){ return ['ADMIN','PRINCIPAL','LIBRARIAN'].includes(getRole()); }
 function canWrite(){ return !!getLogin(); }
 function fmtBarcode(n){ return 'L' + String(n).padStart(6,'0'); }
+function normGrade(g, fallback){
+  if(!g) return fallback;
+  let s=String(g).trim();
+  if(!s) return fallback;
+  if(/^\d+$/.test(s)) return 'Grade '+s;
+  if(s.toLowerCase().startsWith('grade')) return 'Grade '+s.replace(/[^0-9]/g,'');
+  return s;
+}
 async function refreshNext(){
   const emis=getEmis();
   if(!emis){ $('prefixBox').textContent='Learner Prefix: L • Select school in Admin first'; return; }
@@ -139,16 +173,7 @@ async function refreshNext(){
   }catch(e){ $('prefixBox').textContent='Failed: '+e.message; }
 }
 window.refreshNext = refreshNext;
-
-// ===== v1.96 - LEARNER UNDER SCHOOL NAME =====
-// Layout:
-// WORDSWORTH HIGH SCHOOL  <- line 1
-// LEARNER                  <- line 2, under school name
-// [real barcode]
-// L000001
-// Thato Mashele
 function renderLabels(school, items){
-  // items = [{code, name}]
   let html='<h2>Learner Barcode Labels — Real Scannable Barcodes</h2><p class="small">Each label is:<br>'+school.toUpperCase()+'<br>LEARNER<br>Real Barcode — '+items[0].code+'</p>';
   items.forEach(it=>{
     html+='<div class="labelBox"><div class="schoolName">'+school.toUpperCase()+'</div><div class="learnerWord">LEARNER</div><svg id="bc-'+it.code+'"></svg><div style="font-weight:900;font-size:14px">'+it.code+'</div><div class="learnerName">'+(it.name||'')+'</div></div>';
@@ -180,6 +205,89 @@ async function saveLearner(){
   $('saveBtn').disabled=false; $('saveBtn').textContent='✅ Save + Generate Barcode Label';
 }
 window.saveLearner = saveLearner;
+
+// ===== UPLOAD - v1.97 =====
+window.downloadTemplate = function(){
+  const csv='Name,Grade,Class\nThato Mashele,Grade 8,8A\nNaledi Dube,Grade 8,8A\n';
+  const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='learners-template.csv'; a.click();
+};
+window.clearUpload = function(){ UPLOADED=[]; $('uploadFile').value=''; $('uploadPreview').innerHTML=''; $('uploadMsg').innerHTML=''; $('saveUploadBtn').style.display='none'; $('clearUploadBtn').style.display='none'; $('uploadFileName').textContent='No file chosen yet'; };
+function parseRowsToLearners(rows){
+  const defGrade=$('uploadDefaultGrade').value; const defClass=$('uploadDefaultClass').value.trim()||'8A';
+  let out=[];
+  rows.forEach(r=>{
+    if(!r || r.length===0) return;
+    const cells=r.map(c=>String(c||'').trim()).filter((c,i)=> !(i===0 && c===''));
+    if(cells.length===0) return;
+    const first=(cells[0]||'').toLowerCase();
+    if(first==='name' || first==='fullname' || first==='full name' || first==='learner' || first==='learner name') return; // header row
+    if(first.includes('name') && (cells[1]||'').toLowerCase().includes('grade')) return;
+    const name=cells[0];
+    if(!name || name.length<2) return;
+    // If first cell looks like a number / barcode, skip
+    if(/^L\d+$/.test(name)) return;
+    const grade=normGrade(cells[1], defGrade);
+    const cls=cells[2]||defClass;
+    out.push({name:name, grade:grade, class:cls});
+  });
+  return out;
+}
+window.handleUpload = async function(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  $('uploadFileName').textContent='File: '+file.name+' ('+Math.round(file.size/1024)+' KB) — Reading...';
+  $('uploadMsg').innerHTML='<div class="info">Reading file...</div>';
+  try{
+    let rows=[];
+    if(file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls')){
+      const buf=await file.arrayBuffer();
+      const wb=XLSX.read(buf,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      rows=XLSX.utils.sheet_to_json(ws,{header:1, raw:false});
+    } else {
+      const text=await file.text();
+      rows=text.split(/\r?\n/).map(line=>{
+        // Simple CSV split - handles "Name, Grade, Class" and "Name;Grade;Class"
+        const sep=line.includes(';') && !line.includes(',') ? ';' : ',';
+        return line.split(sep).map(s=>s.trim().replace(/^"|"$/g,''));
+      });
+    }
+    UPLOADED=parseRowsToLearners(rows);
+    if(UPLOADED.length===0){ $('uploadMsg').innerHTML='<div class="warn">⚠️ No learners found in file. Check file has Name in first column.</div>'; return; }
+    let html='<div class="ok">✅ Found <b>'+UPLOADED.length+'</b> learner(s) in file. Check below, then click Save.</div>';
+    html+='<table><tr><th>#</th><th>Name</th><th>Grade</th><th>Class</th></tr>';
+    UPLOADED.forEach((u,i)=>{ html+='<tr><td>'+(i+1)+'</td><td>'+u.name+'</td><td>'+u.grade+'</td><td>'+u.class+'</td></tr>'; });
+    html+='</table>';
+    $('uploadPreview').innerHTML=html;
+    $('uploadMsg').innerHTML='';
+    $('saveUploadBtn').style.display='block'; $('clearUploadBtn').style.display='block';
+    $('uploadFileName').textContent='File: '+file.name+' — '+UPLOADED.length+' learner(s) ready to save';
+  }catch(err){ $('uploadMsg').innerHTML='<div class="warn">❌ Could not read file: '+err.message+'</div>'; }
+};
+window.saveUploaded = async function(){
+  const emis=getEmis(); const school=getSchool();
+  if(UPLOADED.length===0){ $('uploadMsg').innerHTML='<div class="warn">⚠️ Upload a file first.</div>'; return; }
+  if(!canWrite()){ $('uploadMsg').innerHTML='<div class="warn">⚠️ Login in Admin first.</div>'; return; }
+  await refreshNext();
+  const start=NEXT_NUM; let items=[];
+  $('saveUploadBtn').disabled=true; $('saveUploadBtn').textContent='Saving...';
+  $('uploadMsg').innerHTML='<div class="info">Saving '+UPLOADED.length+' learner(s)...</div>';
+  try{
+    const login=getLogin();
+    for(const u of UPLOADED){
+      const code=fmtBarcode(NEXT_NUM);
+      await setDoc(doc(db,'schools','EMIS_'+emis,'learners',code), { barcode:code, code:code, name:u.name, fullName:u.name, grade:u.grade, class:u.class, status:'ACTIVE', createdAt:serverTimestamp(), createdBy:login?login.email:'', createdByName:login?login.name:'' }, {merge:true});
+      items.push({code:code, name:u.name}); NEXT_NUM++;
+    }
+    $('uploadMsg').innerHTML='<div class="ok">✅ Saved '+items.length+' learner(s): '+fmtBarcode(start)+' to '+fmtBarcode(NEXT_NUM-1)+'</div>';
+    renderLabels(school, items);
+    $('barcodePreview').value=fmtBarcode(NEXT_NUM);
+    $('prefixBox').textContent='Learner Prefix: L • Next: '+fmtBarcode(NEXT_NUM)+' • Last used: '+fmtBarcode(NEXT_NUM-1);
+    UPLOADED=[]; $('uploadPreview').innerHTML=''; $('saveUploadBtn').style.display='none';
+    await loadLearners();
+  }catch(err){ $('uploadMsg').innerHTML='<div class="warn">❌ Upload save failed: '+err.message+'</div>'; }
+  $('saveUploadBtn').disabled=false; $('saveUploadBtn').textContent='✅ Save Uploaded Learners + Generate Labels';
+};
 async function saveBulk(){
   const emis=getEmis(); const school=getSchool();
   const text=$('bulkInput').value.trim();
@@ -193,7 +301,7 @@ async function saveBulk(){
     const login=getLogin();
     for(const line of lines){
       const parts=line.split(',').map(p=>p.trim());
-      const name=parts[0]||''; const grade=parts[1]||'Grade 10'; const cls=parts[2]||'';
+      const name=parts[0]||''; const grade=normGrade(parts[1],'Grade 10'); const cls=parts[2]||'';
       if(!name) continue;
       const code=fmtBarcode(NEXT_NUM);
       await setDoc(doc(db,'schools','EMIS_'+emis,'learners',code), { barcode:code, code:code, name:name, fullName:name, grade:grade, class:cls, status:'ACTIVE', createdAt:serverTimestamp(), createdBy:login?login.email:'', createdByName:login?login.name:'' }, {merge:true});
