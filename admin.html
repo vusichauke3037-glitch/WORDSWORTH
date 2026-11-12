@@ -3,12 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Admin v2.02</title>
+<title>Makhanani LTSM — Admin v2.03</title>
 <meta name="theme-color" content="#0a1f4d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
 header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:12px;opacity:.85}
+.logoHeader{display:flex;align-items:center;gap:12px}
+.logoHeader img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:12px;padding:4px;flex-shrink:0}
+.logoHeader h1{margin:0;font-size:20px}
+.logoHeader p{margin:2px 0 0;font-size:12px;opacity:.85}
+@media(max-width:700px){.logoHeader img{width:44px;height:44px}}
 .badge{background:#d4af37;color:#0a1f4d;font-weight:900;padding:4px 10px;border-radius:20px;font-size:12px}
 main{max-width:1100px;margin:auto;padding:14px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -53,7 +63,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>⚙️ Admin — Makhanani LTSM</h1><p>Users • Teacher Subjects • School • Due 30 Nov • v2.02<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.02 ADMIN • PASSWORDS HIDDEN</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Admin — Makhanani LTSM</h1><p>Users • Teacher Subjects • School • Due 30 Nov • v2.03<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.03 ADMIN • PASSWORDS HIDDEN</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -299,7 +309,6 @@ window.saveUser = async function(){
   const subjects = role==='TEACHER' ? getSelectedSubjects() : [];
   if(!name || !email){ $('userMsg').innerHTML='<div class="warn">⚠️ Fill Name + Email.</div>'; return; }
   if(!email.includes('@')){ $('userMsg').innerHTML='<div class="warn">⚠️ Email must contain @.</div>'; return; }
-  // v2.02: Password blank on EDIT = keep old password. Password required on NEW user.
   if(!EDIT_ID && !pass){ $('userMsg').innerHTML='<div class="warn">⚠️ New user needs a Password. Type one, or use <b>Password123</b> as default.</div>'; return; }
   if(role==='TEACHER' && subjects.length===0){
     if(!confirm('⚠️ This TEACHER has NO Subject ticked.\n\nThey will NOT be able to Issue ANY book.\n\nContinue anyway?')) return;
@@ -307,7 +316,7 @@ window.saveUser = async function(){
   const id = EDIT_ID || email.replace(/[^a-z0-9]/g,'_');
   const subjectSingle = subjects.length ? subjects[0] : '';
   const data={ name:name, fullName:name, email:email, role:role, subject:subjectSingle, subjects:subjects, grades:grades, phone:phone, emis:emis, school:school, updatedAt:serverTimestamp() };
-  if(pass) data.password=pass; // Only overwrite if typed
+  if(pass) data.password=pass;
   if(!EDIT_ID) data.createdAt=serverTimestamp();
   $('saveUserBtn').disabled=true; $('saveUserBtn').textContent='Saving...';
   try{
@@ -326,7 +335,7 @@ window.editUser = function(id){
   EDIT_ID=id;
   $('uName').value=u.name||u.fullName||'';
   $('uEmail').value=u.email||''; $('uEmail').disabled=true;
-  $('uPass').value=''; // v2.02: Never show old password — blank = keep old
+  $('uPass').value='';
   $('uPass').placeholder='Leave blank to KEEP old password • Type new to change';
   $('uRole').value=u.role||'TEACHER';
   $('uGrades').value=u.grades||'';
@@ -351,7 +360,6 @@ window.deleteUser = async function(id, email){
     await loadAll();
   }catch(e){ alert('Delete failed: '+e.message); }
 };
-// v2.02: One-click reset — Admin cannot see password, only reset it
 window.resetPassword = async function(id, email, name){
   if(!canManageUsers()){ alert('🚫 Only ADMIN can reset passwords.'); return; }
   if(!confirm('🔑 Reset password for '+name+' ('+email+')?\n\nNew password will be: Password123\n\nTell them to login with Password123, then Change Password in Home.')) return;
@@ -406,7 +414,6 @@ function renderUsers(){
   if(sf) list=list.filter(u=> ((u.subjects||[]).includes(sf) || u.subject===sf));
   if(list.length===0){ $('userList').innerHTML='<div class="info">No users for this filter. Create one above.</div>'; return; }
   const canEdit = canManageUsers();
-  // v2.02: Password NEVER shown — only ••••••••
   let html='<table><tr><th>Name</th><th>Role</th><th>Subject(s)</th><th>Login</th><th>Action</th></tr>';
   list.forEach(u=>{
     const role=(u.role||'').toUpperCase();
