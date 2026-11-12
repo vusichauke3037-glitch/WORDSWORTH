@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.01</title>
+<title>Makhanani LTSM — Learners v2.00</title>
 <meta name="theme-color" content="#0a1f4d">
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
 header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
@@ -16,14 +14,14 @@ main{max-width:1100px;margin:auto;padding:14px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
-input,select,textarea{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
-input[type=file]{padding:8px;background:#f8fafc}
-input[type=radio]{width:20px;height:20px;accent-color:#7c3aed;cursor:pointer}
+input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-print{background:#7c3aed;color:#fff;font-size:16px;padding:16px}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}
 .btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
@@ -34,158 +32,114 @@ input[type=radio]{width:20px;height:20px;accent-color:#7c3aed;cursor:pointer}
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
-.labelBox{border:1.5px dashed #0a1f4d;padding:10px;margin:8px 0;text-align:center;background:#fff;page-break-inside:avoid}
-.labelBox svg{width:100%;max-width:280px;height:60px}
-.schoolName{font-weight:900;font-size:16px;line-height:1.2}
-.learnerWord{font-weight:900;font-size:14px;letter-spacing:3px;margin-top:2px}
-.learnerName{font-size:12px;font-weight:700;margin-top:2px}
-.uploadBox{border:2px dashed #0a1f4d;border-radius:12px;padding:16px;background:#eff6ff;text-align:center}
-.deleteBar{position:sticky;top:0;z-index:5;background:#fff7ed;border:2px solid #ea580c;border-radius:10px;padding:10px;margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.deleteBar b{color:#9a3412}
-.printBar{position:sticky;top:0;z-index:5;background:#ede9fe;border:2px solid #7c3aed;border-radius:10px;padding:10px;margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.printBar b{color:#5b21b6}
-.chk{width:20px;height:20px;accent-color:#dc2626;cursor:pointer}
-.searchRow{display:flex;gap:10px;flex-wrap:wrap}
-.searchRow input{flex:1;min-width:180px}
-.selOpt{display:flex;gap:10px;align-items:center;background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px;cursor:pointer;margin-bottom:8px}
-.selOpt.active{border-color:#7c3aed;background:#ede9fe}
-.selOpt b{font-size:14px}
-.selOpt span{font-size:12px;color:#64748b;display:block}
-.selOpt input{flex-shrink:0}
-.labelsGrid{display:block}
-@page{ size:A4; margin:8mm; }
-/* ===== v2.01 PRINT FIX - Hide EVERYTHING except labels ===== */
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
+.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}
+.dueBanner{background:#fffbeb;border:2px solid #d4af37;border-radius:12px;padding:14px;text-align:center;font-weight:900;font-size:16px;color:#92400e;margin-top:10px}
+.dueBanner b{color:#0a1f4d}
+.statRow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:10px}
+@media(max-width:700px){.statRow{grid-template-columns:1fr 1fr}}
+.stat{background:#f8fafc;border-radius:10px;padding:12px;text-align:center}
+.stat b{font-size:22px;display:block;color:#0a1f4d}
+.stat span{font-size:12px;color:#64748b}
+.barcodeBox{border:2px dashed #0a1f4d;border-radius:12px;padding:14px;text-align:center;background:#fff;margin:10px 0}
+.barcodeBox .code{font-family:'Courier New',monospace;font-size:28px;font-weight:900;letter-spacing:4px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{padding:10px 16px;border:none;border-radius:20px;font-weight:900;cursor:pointer;background:#e2e8f0}
+.tabs button.active{background:#0a1f4d;color:#fff}
+@page{ size:A4; margin:10mm; }
 @media print{
-  body{background:#fff !important;margin:0 !important}
-  header, #cloudStatus, .topnav, .btn, .noPrint, #printArea, #saveMsg, #printSelMsg {display:none !important}
-  main{max-width:100% !important;padding:0 !important;margin:0 !important}
-  /* Hide ALL cards by default */
-  main > .card{display:none !important}
-  /* Show ONLY the card that holds the labels */
-  main > .card:has(#labelsBox){display:block !important;box-shadow:none !important;border:none !important;padding:0 !important;margin:0 !important}
-  /* Inside that card, hide everything except labelsBox */
-  .card:has(#labelsBox) > *:not(#labelsBox){display:none !important}
-  #labelsBox{display:block !important;margin:0 !important;padding:0 !important}
-  #labelsBox h2, #labelsBox p{display:none !important}
-  .labelsGrid{display:grid !important;grid-template-columns:1fr 1fr 1fr !important;gap:4mm !important}
-  .labelBox{border:1.2px solid #000 !important;padding:3mm 2mm !important;margin:0 !important;text-align:center;background:#fff;display:flex !important;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;height:50mm !important;page-break-inside:avoid;break-inside:avoid}
-  .labelBox svg{width:100%;max-width:58mm;height:12mm}
-  .schoolName{font-size:10pt;line-height:1.1}
-  .learnerWord{font-size:9pt;letter-spacing:2px;margin-top:1mm}
-  .learnerName{font-size:8pt;margin-top:1mm}
-  .labelBox .codeLine{font-size:9pt}
-  .printPage{break-after:page;page-break-after:always}
-  .printPage:last-child{break-after:auto;page-break-after:auto}
+  header,#cloudStatus,.topnav,.btn,.noPrint{display:none!important}
+  body{background:#fff} main{max-width:100%;padding:0} .card{box-shadow:none;border:none}
+  .printOnly{display:block!important}
+  .barcodePrint{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .barcodePrint .barcodeBox{break-inside:avoid}
 }
+.printOnly{display:none}
 </style>
 </head>
 <body>
-<header><div><h1>🎓 Learners — Makhanani LTSM</h1><p>Learner Barcode Labels • v2.01<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.01 PRINT FIX</span></div></header>
+<header><div><h1>🎓 Learners — Makhanani LTSM</h1><p>Learner Barcodes • Due 30 Nov • v2.00<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.00 LEARNERS</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
 <div class="card">
-<h2>🏫 School</h2>
+<h2>🏫 School + Role</h2>
 <div class="info" id="schoolBox">School: —</div>
-<div class="small" id="prefixBox">Learner Prefix: L • Next: L000001 • Last used: —</div>
-<div class="small">Learners: L000001... &nbsp;|&nbsp; Print: 3 columns × 5 rows = 15 per page</div>
+<div class="info" id="roleBox">Role: —</div>
+<div class="dueBanner" id="dueBanner">📅 ALL BOOKS DUE: <b>30 November</b> — <span id="dueCountdown">—</span></div>
+<div class="statRow">
+<div class="stat"><b id="statTotal">0</b><span>🎓 Total Learners</span></div>
+<div class="stat"><b id="statWithBook">0</b><span>📚 With Book Out</span></div>
+<div class="stat"><b id="statNoBook">0</b><span>⚠️ No Book Out</span></div>
+<div class="stat"><b id="statOverdue">0</b><span>⚠️ Overdue (Past 30 Nov)</span></div>
+</div>
 </div>
 
-<div class="card">
-<h2>🎓 Add New Learner</h2>
+<div class="card noPrint">
+<h2>➕ Add / Edit Learner</h2>
+<div class="small">Teacher can ADD learners, but CANNOT edit/delete. Admin / Librarian can Edit + Delete. Learner Barcode is auto: L000001, L000002...</div>
 <label>Full Name *</label>
-<input id="nameInput" placeholder="e.g. Thato Mashele">
-<div class="grid2"><div><label>Grade</label><select id="gradeInput"><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Class</label><input id="classInput" placeholder="e.g. 10A"></div></div>
-<div class="grid2"><div><label>Gender (optional)</label><select id="genderInput"><option value="">—</option><option>Male</option><option>Female</option></select></div><div><label>Parent Phone (optional)</label><input id="phoneInput" placeholder="e.g. 082..."></div></div>
-<label>Learner Barcode — AUTO (do not type)</label>
-<input id="barcodePreview" readonly style="font-weight:900;font-size:20px;letter-spacing:1px" value="L000001">
-<div class="small">Auto — Next L number. <a href="#" onclick="refreshNext();return false;">🔄 Refresh next number</a></div>
-<button class="btn btn-green" id="saveBtn" onclick="saveLearner()">✅ Save + Generate Barcode Label</button>
-<button class="btn btn-blue" onclick="refreshNext()">🔢 Get Next Number</button>
-<div id="saveMsg"></div>
-<div id="printArea" style="display:none">
-<button class="btn btn-print" onclick="window.print()">🖨️ PRINT BARCODE LABELS — 3 × 5</button>
-<div class="small" style="text-align:center">Print: A4 • Margins: None / Minimum • Scale: 100% • Background graphics: ON</div>
-</div>
-<div id="labelsBox"></div>
-</div>
-
-<div class="card" style="border:2px solid #7c3aed">
-<h2>🖨️ Print Barcodes — Choose What To Print</h2>
-<div class="small">Step 1: Choose one option below, Step 2: Click the big purple PRINT button</div>
-<label class="selOpt" id="optLearnerBox" onclick="setPrintMode('learner')"><input type="radio" name="printMode" value="learner" checked><div><b>👤 Per Learner — Tick one or more learners</b><span>Use this when 1 learner lost their card</span></div></label>
-<label class="selOpt" id="optClassBox" onclick="setPrintMode('class')"><input type="radio" name="printMode" value="class"><div><b>🏫 Per Class — Print one whole class</b><span>Example: Print all of 8A only</span></div></label>
-<label class="selOpt" id="optGradeBox" onclick="setPrintMode('grade')"><input type="radio" name="printMode" value="grade"><div><b>🎓 Per Grade — Print one whole grade</b><span>Example: Print all Grade 8 (8A + 8B + 8C)</span></div></label>
-<label class="selOpt" id="optAllBox" onclick="setPrintMode('all')"><input type="radio" name="printMode" value="all"><div><b>🌍 All Learners — Print everyone</b><span>Prints every learner in the system</span></div></label>
-<div id="classPicker" style="display:none"><label>Choose Class to Print</label><select id="printClassSelect"><option value="">— Choose Class —</option></select><div class="small" id="classCountInfo"></div></div>
-<div id="gradePicker" style="display:none"><label>Choose Grade to Print</label><select id="printGradeSelect"><option value="">— Choose Grade —</option></select><div class="small" id="gradeCountInfo"></div></div>
-<div class="info" id="printSummary">📋 Selected: <b>Per Learner</b> — Tick learners below, then click PRINT</div>
-<button class="btn btn-print" onclick="printBySelection()">🖨️ PRINT BARCODE LABELS — By Selection</button>
-<div class="small" style="text-align:center">It will show labels first, then open Print dialog automatically</div>
-<div id="printSelMsg"></div>
-</div>
-
-<div class="card">
-<h2>📤 Upload Learners File</h2>
-<div class="uploadBox">
-<div style="font-size:32px">📤</div>
-<div style="font-weight:900">Upload Grade 8 List — CSV / Excel / TXT</div>
-<div class="small">Columns: <b>Name, Grade, Class</b> — or just <b>Name</b> alone</div>
-<label style="text-align:left">Choose file</label>
-<input type="file" id="uploadFile" accept=".csv,.xlsx,.xls,.txt" onchange="handleUpload(event)">
-<div class="small" id="uploadFileName">No file chosen yet</div>
+<input id="lName" placeholder="e.g. Lesedi Ngwenya">
+<div class="grid3">
+<div><label>Grade *</label><select id="lGrade"><option value="">— Select Grade —</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+<div><label>Class *</label><input id="lClass" placeholder="e.g. 10A" style="text-transform:uppercase"></div>
+<div><label>Gender (optional)</label><select id="lGender"><option value="">—</option><option>Female</option><option>Male</option></select></div>
 </div>
 <div class="grid2">
-<div><label>If file has only Names — Use this Grade for all</label><select id="uploadDefaultGrade"><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option selected>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
-<div><label>If file has only Names — Use this Class for all</label><input id="uploadDefaultClass" value="8A" placeholder="e.g. 8A"></div>
+<div><label>Parent Phone (optional)</label><input id="lPhone" placeholder="e.g. 082 123 4567"></div>
+<div><label>Barcode (Auto — Leave Blank for New)</label><input id="lBarcode" placeholder="Auto: L000004" style="text-transform:uppercase"></div>
 </div>
-<button class="btn btn-gold" onclick="downloadTemplate()">⬇️ Download Empty Template (CSV)</button>
-<div id="uploadPreview"></div>
-<div id="uploadMsg"></div>
-<button class="btn btn-green" id="saveUploadBtn" onclick="saveUploaded()" style="display:none">✅ Save Uploaded Learners + Generate Labels</button>
-<button class="btn btn-grey" onclick="clearUpload()" style="display:none" id="clearUploadBtn">Clear Upload</button>
+<button class="btn btn-green" id="saveLearnerBtn" onclick="saveLearner()">✅ Save Learner</button>
+<button class="btn btn-grey" onclick="clearLearnerForm()">🔄 Clear — New Learner</button>
+<div id="learnerMsg"></div>
+<div id="newBarcodeBox"></div>
 </div>
 
-<div class="card">
-<h2>📥 Bulk Add Learners — Paste List</h2>
-<div class="small">Paste: <b>Name, Grade, Class</b> — one learner per line.<br>Thato Mashele, Grade 8, 8A</div>
-<label>Paste learners here</label>
-<textarea id="bulkInput" rows="5" placeholder="Thato Mashele, Grade 8, 8A&#10;Naledi Dube, Grade 8, 8A"></textarea>
-<button class="btn btn-green" onclick="saveBulk()">✅ Save Bulk Learners + Labels</button>
+<div class="card noPrint">
+<h2>📥 Bulk Upload — Paste Learner List</h2>
+<div class="small">Paste from Excel: One learner per line, format: <b>Name, Grade, Class</b><br>Example:<br><code>Thato Masheke, Grade 8, 8C<br>Mbali Nonyane, Grade 10, 10A</code><br>Barcodes auto-assigned. Duplicates by Name + Grade are skipped.</div>
+<label>Paste List Here</label>
+<textarea id="bulkText" rows="5" style="width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:13px" placeholder="Thato Masheke, Grade 8, 8C&#10;Mbali Nonyane, Grade 10, 10A"></textarea>
+<button class="btn btn-purple" onclick="bulkUpload()">📥 Upload List</button>
 <div id="bulkMsg"></div>
 </div>
 
-<div class="card" id="deleteCard">
-<h2>🗑️ All Learners in System — Tick to Print / Delete</h2>
-<div id="roleDeleteMsg"></div>
-<div class="searchRow">
-<input id="learnerSearch" placeholder="🔍 Search by barcode, name, grade, class... e.g. L000001, Thato, Grade 8, 8A" oninput="renderLearnerList()">
-<select id="learnerFilter" onchange="renderLearnerList()" style="max-width:220px"><option value="">All Grades</option></select>
-<select id="classFilter" onchange="renderLearnerList()" style="max-width:220px"><option value="">All Classes</option></select>
+<div class="card">
+<h2>🎓 All Learners (<span id="learnerCount">0</span>)</h2>
+<div class="tabs">
+<button id="tabAllL" class="active" onclick="setTab('ALL')">🌍 All</button>
+<button id="tabWith" onclick="setTab('WITH')">📚 With Book</button>
+<button id="tabNo" onclick="setTab('NO')">⚠️ No Book</button>
+<button id="tabOver" onclick="setTab('OVERDUE')">⚠️ Overdue</button>
 </div>
-<div class="small"><span id="learnerCount">Loading learners...</span></div>
-<div id="printBar" class="printBar" style="display:none">
-<b>🖨️ <span id="printSelCount">0</span> ticked for Per Learner print</b>
-<button class="btn btn-print" onclick="printBySelection()" style="width:auto;margin:0;padding:12px 18px;font-size:14px">🖨️ Print Ticked Learners</button>
-<button class="btn btn-grey" onclick="clearSelection()" style="width:auto;margin:0;padding:10px 18px">Clear</button>
-<span class="small" id="printSelList" style="width:100%"></span>
+<div class="grid2">
+<div><label>🔍 Search name / barcode / class</label><input id="learnerSearch" placeholder="Lesedi, L000003, 10A..." oninput="renderLearners()"></div>
+<div><label>Filter by Grade</label><select id="learnerGradeFilter" onchange="renderLearners()"><option value="">All Grades</option></select></div>
 </div>
-<div id="deleteBar" class="deleteBar" style="display:none">
-<b>🗑️ <span id="selCount">0</span> selected</b>
-<button class="btn btn-red" id="deleteSelectedBtn" onclick="deleteSelected()" style="width:auto;margin:0;padding:10px 18px">🗑️ Delete Selected</button>
-<button class="btn btn-grey" onclick="clearSelection()" style="width:auto;margin:0;padding:10px 18px">Clear</button>
-<span class="small" id="selList" style="width:100%"></span>
+<div class="grid2">
+<div><label>Filter by Class</label><select id="learnerClassFilter" onchange="renderLearners()"><option value="">All Classes</option></select></div>
+<div><label>Sort</label><select id="learnerSort" onchange="renderLearners()"><option value="NAME">Name A-Z</option><option value="GRADE">Grade → Name</option><option value="BARCODE">Barcode</option></select></div>
 </div>
+<div class="small"><span id="learnerCountText">Loading...</span> • Click <b>🖨️ Barcode</b> to print one card, or <b>🖨️ Print All Barcodes</b> below for whole list.</div>
 <div id="learnerList"></div>
-<div id="deleteMsg"></div>
-<button class="btn btn-blue" onclick="loadLearners()">🔄 Refresh Learner List</button>
+<div class="grid2 noPrint">
+<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button>
+<button class="btn btn-gold" onclick="printAllBarcodes()">🖨️ Print All Barcodes (This Filter)</button>
+</div>
+</div>
+
+<div class="card printOnly" id="printBarcodesCard">
+<h2>🖨️ Learner Barcodes — <span id="printSchoolName"></span></h2>
+<div class="small">Cut along lines. Each learner keeps their card. Scan with Issue page.</div>
+<div class="barcodePrint" id="printBarcodesList"></div>
 </div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, addDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
@@ -198,337 +152,240 @@ const firebaseConfig = {
 };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
-let ALL_LEARNERS = [];
-let SELECTED = new Set();
-let NEXT_NUM = 1;
-let UPLOADED = [];
-let PRINT_MODE = 'learner';
+let ALL_LEARNERS=[], ALL_ISSUES=[], TAB='ALL', EDIT_ID=null;
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
-function canDelete(){ return ['ADMIN','PRINCIPAL','LIBRARIAN'].includes(getRole()); }
-function canWrite(){ return !!getLogin(); }
-function fmtBarcode(n){ return 'L' + String(n).padStart(6,'0'); }
-function normGrade(g, fallback){
-  if(!g) return fallback;
-  let s=String(g).trim();
-  if(!s) return fallback;
-  if(/^\d+$/.test(s)) return 'Grade '+s;
-  if(s.toLowerCase().startsWith('grade')) return 'Grade '+s.replace(/[^0-9]/g,'');
-  return s;
+function canEditDelete(){ const r=getRole(); return r==='ADMIN' || r==='LIBRARIAN' || r==='PRINCIPAL' || r==='HOD'; }
+function canAdd(){ return !!getLogin(); }
+// Due 30 Nov
+function getDueDateForIssue(d){ const dt=d?new Date(d):new Date(); let y=dt.getFullYear(); if(dt.getMonth()===11) y++; return new Date(y,10,30); }
+function getDueDateForRecord(x){
+  if(x.dueDate){ try{ const d=x.dueDate.toDate?x.dueDate.toDate():new Date(x.dueDate); if(!isNaN(d.getTime())) return d; }catch(e){} }
+  if(x.issuedAt){ try{ const d=x.issuedAt.toDate?x.issuedAt.toDate():new Date(x.issuedAt); return getDueDateForIssue(d); }catch(e){} }
+  return getDueDateForIssue(new Date());
 }
-async function refreshNext(){
+function fmtDue(d){ try{ return d.toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'}); }catch(e){ return '30 Nov'; } }
+function fmtDate(ts){ if(!ts) return '—'; try{ const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-ZA'); }catch(e){ return '—'; } }
+function daysUntilDue(x){ const due=getDueDateForRecord(x); const today=new Date(); today.setHours(0,0,0,0); const dueDay=new Date(due); dueDay.setHours(0,0,0,0); return Math.ceil((dueDay-today)/(1000*60*60*24)); }
+function isOverdue(x){ return x.status==='OUT' && daysUntilDue(x) < 0; }
+function updateDueBanner(){
+  const due=getDueDateForIssue(new Date());
+  const today=new Date(); today.setHours(0,0,0,0);
+  const days=Math.ceil((new Date(due).setHours(0,0,0,0)-today)/(1000*60*60*24));
+  let txt=''; if(days<0) txt='⚠️ OVERDUE — '+Math.abs(days)+' day(s) PAST due.'; else if(days===0) txt='⚠️ DUE TODAY!'; else if(days===1) txt='⏰ 1 day left — Due TOMORROW!'; else txt=days+' days left until due date';
+  $('dueBanner').innerHTML='📅 ALL BOOKS DUE: <b>'+fmtDue(due)+'</b> — '+txt;
+}
+function nextBarcode(){
+  let max=0;
+  ALL_LEARNERS.forEach(l=>{ const n=parseInt(String(l.barcode||'').replace(/\D/g,'')); if(!isNaN(n) && n>max) max=n; });
+  return 'L'+String(max+1).padStart(6,'0');
+}
+window.setTab = function(t){
+  TAB=t; ['tabAllL','tabWith','tabNo','tabOver'].forEach(id=>$(id).classList.remove('active'));
+  if(t==='ALL') $('tabAllL').classList.add('active');
+  if(t==='WITH') $('tabWith').classList.add('active');
+  if(t==='NO') $('tabNo').classList.add('active');
+  if(t==='OVERDUE') $('tabOver').classList.add('active');
+  renderLearners();
+};
+window.clearLearnerForm = function(){
+  EDIT_ID=null; $('lName').value=''; $('lGrade').value=''; $('lClass').value=''; $('lGender').value=''; $('lPhone').value=''; $('lBarcode').value='';
+  $('saveLearnerBtn').textContent='✅ Save Learner'; $('learnerMsg').innerHTML=''; $('newBarcodeBox').innerHTML='';
+  $('lBarcode').disabled=false;
+};
+window.saveLearner = async function(){
+  const emis=getEmis(); const school=getSchool();
+  if(!canAdd()){ $('learnerMsg').innerHTML='<div class="warn">⚠️ Login first.</div>'; return; }
+  const name=($('lName').value||'').trim();
+  const grade=$('lGrade').value;
+  const cls=($('lClass').value||'').trim().toUpperCase();
+  const gender=$('lGender').value;
+  const phone=($('lPhone').value||'').trim();
+  let barcode=($('lBarcode').value||'').trim().toUpperCase();
+  if(!name || !grade || !cls){ $('learnerMsg').innerHTML='<div class="warn">⚠️ Fill Name + Grade + Class.</div>'; return; }
+  if(!barcode){
+    barcode = EDIT_ID ? EDIT_ID : nextBarcode();
+  } else {
+    if(!barcode.startsWith('L')) barcode='L'+barcode.replace(/\D/g,'').padStart(6,'0');
+  }
+  // Teacher cannot edit existing - only add
+  if(EDIT_ID && !canEditDelete()){ $('learnerMsg').innerHTML='<div class="warn">🚫 Teacher CANNOT edit learners — only ADD. Ask Admin / Librarian to edit.</div>'; return; }
+  const id = EDIT_ID || barcode;
+  const data={ barcode:barcode, code:barcode, name:name, fullName:name, grade:grade, class:cls, gender:gender, phone:phone, emis:emis, school:school, updatedAt:serverTimestamp() };
+  if(!EDIT_ID) data.createdAt=serverTimestamp();
+  $('saveLearnerBtn').disabled=true; $('saveLearnerBtn').textContent='Saving...';
+  try{
+    await setDoc(doc(db,'schools','EMIS_'+emis,'learners',id), data, {merge:true});
+    $('learnerMsg').innerHTML='<div class="ok">✅ Learner Saved: <b>'+name+' • '+barcode+' • '+grade+' '+cls+'</b></div>';
+    $('newBarcodeBox').innerHTML='<div class="barcodeBox"><b>'+name+'</b><br><span class="small">'+grade+' '+cls+' • '+school+'</span><br><svg id="bcNew"></svg><div class="code">'+barcode+'</div><button class="btn btn-gold" style="width:auto" onclick="window.print()">🖨️ Print This Barcode</button></div>';
+    try{ JsBarcode('#bcNew', barcode, {format:'CODE128', width:2, height:50, displayValue:false}); }catch(e){}
+    await loadAll();
+    clearLearnerForm();
+    // Keep barcode box visible after clear
+    const box=$('newBarcodeBox').innerHTML;
+    // re-show - clearLearnerForm cleared it, so we re-set it after
+    $('newBarcodeBox').innerHTML=box;
+    try{ JsBarcode('#bcNew', barcode, {format:'CODE128', width:2, height:50, displayValue:false}); }catch(e){}
+  }catch(e){ $('learnerMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
+  $('saveLearnerBtn').disabled=false; $('saveLearnerBtn').textContent='✅ Save Learner';
+};
+window.editLearner = function(id){
+  if(!canEditDelete()){ alert('🚫 Teacher CANNOT edit learners — only ADD. Ask Admin / Librarian.'); return; }
+  const l=ALL_LEARNERS.find(x=>x.id===id); if(!l) return;
+  EDIT_ID=id;
+  $('lName').value=l.name||''; $('lGrade').value=l.grade||''; $('lClass').value=l.class||''; $('lGender').value=l.gender||''; $('lPhone').value=l.phone||''; $('lBarcode').value=l.barcode||'';
+  $('saveLearnerBtn').textContent='✏️ Update Learner — '+l.barcode;
+  $('learnerMsg').innerHTML='<div class="info">Editing: <b>'+l.name+' ('+l.barcode+')</b></div>';
+  window.scrollTo({top:0, behavior:'smooth'});
+};
+window.deleteLearner = async function(id, name, barcode){
+  if(!canEditDelete()){ alert('🚫 Teacher CANNOT delete learners. Ask Admin / Librarian.'); return; }
   const emis=getEmis();
-  if(!emis){ $('prefixBox').textContent='Learner Prefix: L • Select school in Admin first'; return; }
-  try{
-    const snap = await getDocs(collection(db,'schools','EMIS_'+emis,'learners'));
-    let max=0;
-    snap.forEach(d=>{ const b=d.data(); const code=(b.barcode||b.code||d.id||''); const m=String(code).match(/(\d+)$/); if(m) max=Math.max(max, parseInt(m[1])); });
-    NEXT_NUM = max+1;
-    $('barcodePreview').value = fmtBarcode(NEXT_NUM);
-    $('prefixBox').textContent = 'Learner Prefix: L • Next: '+fmtBarcode(NEXT_NUM)+' • Last used: '+(max?fmtBarcode(max):'—');
-  }catch(e){ $('prefixBox').textContent='Failed: '+e.message; }
-}
-window.refreshNext = refreshNext;
-function renderLabels(school, items){
-  let html='<div class="noPrint"><h2>Learner Barcode Labels — Real Scannable Barcodes</h2><p class="small">Print: <b>3 columns × 5 rows = 15 per A4 page</b><br>Total: '+items.length+' label(s) = '+Math.ceil(items.length/15)+' page(s)</p></div>';
-  for(let p=0; p<items.length; p+=15){
-    const pageItems=items.slice(p, p+15);
-    html+='<div class="printPage"><div class="labelsGrid">';
-    pageItems.forEach(it=>{
-      html+='<div class="labelBox"><div class="schoolName">'+school.toUpperCase()+'</div><div class="learnerWord">LEARNER</div><svg id="bc-'+it.code+'"></svg><div class="codeLine" style="font-weight:900;font-size:14px">'+it.code+'</div><div class="learnerName">'+(it.name||'')+'</div></div>';
-    });
-    html+='</div></div>';
-  }
-  $('labelsBox').innerHTML=html;
-  $('printArea').style.display='block';
-  setTimeout(()=>{ document.getElementById('printArea').scrollIntoView({behavior:'smooth', block:'center'}); }, 300);
-  items.forEach(it=>{ try{ JsBarcode('#bc-'+it.code, it.code, { format:'CODE128', lineWidth:2, height:60, displayValue:false, margin:0 }); }catch(e){} });
-}
-window.setPrintMode = function(mode){
-  PRINT_MODE=mode;
-  ['learner','class','grade','all'].forEach(m=>{
-    const el=$('opt'+m.charAt(0).toUpperCase()+m.slice(1)+'Box');
-    if(el) el.classList.toggle('active', m===mode);
-  });
-  document.querySelectorAll('input[name="printMode"]').forEach(r=>{ r.checked = (r.value===mode); });
-  $('classPicker').style.display = (mode==='class') ? 'block' : 'none';
-  $('gradePicker').style.display = (mode==='grade') ? 'block' : 'none';
-  updatePrintSummary();
+  // Block if has book OUT
+  const hasOut = ALL_ISSUES.some(x=>x.learnerCode===barcode && x.status==='OUT');
+  if(hasOut){ alert('🚫 CANNOT DELETE: '+name+' still has a book OUT. Return the book first.'); return; }
+  if(!confirm('Delete learner '+name+' ('+barcode+')?')) return;
+  try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'learners',id)); await loadAll(); }catch(e){ alert('Delete failed: '+e.message); }
 };
-function updatePrintSummary(){
-  let txt='';
-  if(PRINT_MODE==='learner'){ txt='📋 Selected: <b>Per Learner</b> — Tick learners below ('+SELECTED.size+' ticked), then click PRINT'; }
-  if(PRINT_MODE==='class'){
-    const c=$('printClassSelect').value;
-    const n=c? ALL_LEARNERS.filter(b=>b.class===c).length : 0;
-    txt='📋 Selected: <b>Per Class — '+(c||'— choose class —')+'</b> — Will print <b>'+n+'</b> learner(s) = '+Math.ceil(n/15)+' page(s)';
-    $('classCountInfo').textContent = c ? n+' learner(s) in '+c : '';
-  }
-  if(PRINT_MODE==='grade'){
-    const g=$('printGradeSelect').value;
-    const n=g? ALL_LEARNERS.filter(b=>b.grade===g).length : 0;
-    txt='📋 Selected: <b>Per Grade — '+(g||'— choose grade —')+'</b> — Will print <b>'+n+'</b> learner(s) = '+Math.ceil(n/15)+' page(s)';
-    $('gradeCountInfo').textContent = g ? n+' learner(s) in '+g : '';
-  }
-  if(PRINT_MODE==='all'){ txt='📋 Selected: <b>All Learners</b> — Will print <b>'+ALL_LEARNERS.length+'</b> learner(s) = '+Math.ceil(ALL_LEARNERS.length/15)+' page(s)'; }
-  $('printSummary').innerHTML=txt;
-}
-window.printBySelection = function(){
-  const school=getSchool();
-  let items=[];
-  let label='';
-  if(PRINT_MODE==='learner'){
-    if(SELECTED.size===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 learner below first.</div>'; return; }
-    items=ALL_LEARNERS.filter(b=>SELECTED.has(b.id)).map(b=>({code:b.barcode, name:b.name}));
-    label='Per Learner — '+items.length+' learner(s)';
-  }
-  if(PRINT_MODE==='class'){
-    const c=$('printClassSelect').value;
-    if(!c){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Choose a Class first.</div>'; return; }
-    items=ALL_LEARNERS.filter(b=>b.class===c).map(b=>({code:b.barcode, name:b.name}));
-    label='Class '+c+' — '+items.length+' learner(s)';
-    if(items.length===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ No learners in class '+c+'.</div>'; return; }
-  }
-  if(PRINT_MODE==='grade'){
-    const g=$('printGradeSelect').value;
-    if(!g){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Choose a Grade first.</div>'; return; }
-    items=ALL_LEARNERS.filter(b=>b.grade===g).map(b=>({code:b.barcode, name:b.name}));
-    label='Grade '+g+' — '+items.length+' learner(s)';
-    if(items.length===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ No learners in '+g+'.</div>'; return; }
-  }
-  if(PRINT_MODE==='all'){
-    if(ALL_LEARNERS.length===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ No learners in system.</div>'; return; }
-    items=ALL_LEARNERS.map(b=>({code:b.barcode, name:b.name}));
-    label='All Learners — '+items.length+' learner(s)';
-  }
-  items.sort((a,b)=>a.code.localeCompare(b.code));
-  $('printSelMsg').innerHTML='<div class="ok">✅ Ready to print: <b>'+label+'</b> — '+Math.ceil(items.length/15)+' page(s). Print dialog opening...</div>';
-  renderLabels(school, items);
-  setTimeout(()=>{ window.print(); }, 700);
-};
-window.printSelected = window.printBySelection;
-window.printAllFiltered = window.printBySelection;
-document.addEventListener('change', (e)=>{
-  if(e.target.id==='printClassSelect' || e.target.id==='printGradeSelect') updatePrintSummary();
-});
-async function saveLearner(){
+window.bulkUpload = async function(){
   const emis=getEmis(); const school=getSchool();
-  const name=$('nameInput').value.trim(); const grade=$('gradeInput').value; const cls=$('classInput').value.trim(); const gender=$('genderInput').value; const phone=$('phoneInput').value.trim();
-  const msg=$('saveMsg');
-  if(!emis){ msg.innerHTML='<div class="warn">⚠️ Select school in Admin first.</div>'; return; }
-  if(!canWrite()){ msg.innerHTML='<div class="warn">⚠️ Login in Admin first.</div>'; return; }
-  if(!name){ msg.innerHTML='<div class="warn">⚠️ Type Learner Full Name first.</div>'; return; }
-  await refreshNext();
-  const code=fmtBarcode(NEXT_NUM);
-  $('saveBtn').disabled=true; $('saveBtn').textContent='Saving...';
-  try{
-    const login=getLogin();
-    await setDoc(doc(db,'schools','EMIS_'+emis,'learners',code), { barcode:code, code:code, name:name, fullName:name, grade:grade, class:cls, gender:gender, parentPhone:phone, status:'ACTIVE', createdAt:serverTimestamp(), createdBy:login?login.email:'', createdByName:login?login.name:'' }, {merge:true});
-    msg.innerHTML='<div class="ok">✅ Saved learner: '+name+' — '+code+'</div>';
-    renderLabels(school, [{code:code, name:name}]);
-    NEXT_NUM++; $('barcodePreview').value=fmtBarcode(NEXT_NUM);
-    $('prefixBox').textContent='Learner Prefix: L • Next: '+fmtBarcode(NEXT_NUM)+' • Last used: '+code;
-    $('nameInput').value=''; $('classInput').value='';
-    await loadLearners();
-  }catch(e){ msg.innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
-  $('saveBtn').disabled=false; $('saveBtn').textContent='✅ Save + Generate Barcode Label';
-}
-window.saveLearner = saveLearner;
-window.downloadTemplate = function(){
-  const csv='Name,Grade,Class\nThato Mashele,Grade 8,8A\nNaledi Dube,Grade 8,8A\n';
-  const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='learners-template.csv'; a.click();
+  if(!canAdd()){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Login first.</div>'; return; }
+  const text=($('bulkText').value||'').trim();
+  if(!text){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Paste list first.</div>'; return; }
+  const lines=text.split('\n').map(s=>s.trim()).filter(Boolean);
+  let added=0, skipped=0, errors=[];
+  let counter=0;
+  // Calculate next barcode once, increment
+  let max=0; ALL_LEARNERS.forEach(l=>{ const n=parseInt(String(l.barcode||'').replace(/\D/g,'')); if(!isNaN(n)&&n>max) max=n; });
+  for(const line of lines){
+    const parts=line.split(',').map(s=>s.trim());
+    if(parts.length<3){ errors.push('Skipped: '+line+' — need Name, Grade, Class'); skipped++; continue; }
+    let [name, grade, cls]=parts;
+    if(!grade.toLowerCase().startsWith('grade')) grade='Grade '+grade.replace(/\D/g,'');
+    cls=cls.toUpperCase();
+    const exists=ALL_LEARNERS.some(l=>l.name.toLowerCase()===name.toLowerCase() && l.grade===grade);
+    if(exists){ skipped++; continue; }
+    max++; const barcode='L'+String(max).padStart(6,'0');
+    try{
+      await setDoc(doc(db,'schools','EMIS_'+emis,'learners',barcode), {barcode:barcode, code:barcode, name:name, fullName:name, grade:grade, class:cls, emis:emis, school:school, createdAt:serverTimestamp(), updatedAt:serverTimestamp()});
+      added++; counter++;
+    }catch(e){ errors.push('Failed: '+name+' — '+e.message); }
+  }
+  $('bulkMsg').innerHTML='<div class="ok">✅ Bulk Upload Done: <b>'+added+' added</b>, '+skipped+' skipped (duplicate / bad line)<br>'+errors.join('<br>')+'</div>';
+  $('bulkText').value='';
+  await loadAll();
 };
-window.clearUpload = function(){ UPLOADED=[]; $('uploadFile').value=''; $('uploadPreview').innerHTML=''; $('uploadMsg').innerHTML=''; $('saveUploadBtn').style.display='none'; $('clearUploadBtn').style.display='none'; $('uploadFileName').textContent='No file chosen yet'; };
-function parseRowsToLearners(rows){
-  const defGrade=$('uploadDefaultGrade').value; const defClass=$('uploadDefaultClass').value.trim()||'8A';
-  let out=[];
-  rows.forEach(r=>{
-    if(!r || r.length===0) return;
-    const cells=r.map(c=>String(c||'').trim()).filter((c,i)=> !(i===0 && c===''));
-    if(cells.length===0) return;
-    const first=(cells[0]||'').toLowerCase();
-    if(first==='name' || first==='fullname' || first==='full name' || first==='learner' || first==='learner name') return;
-    if(first.includes('name') && (cells[1]||'').toLowerCase().includes('grade')) return;
-    const name=cells[0];
-    if(!name || name.length<2) return;
-    if(/^L\d+$/.test(name)) return;
-    const grade=normGrade(cells[1], defGrade);
-    const cls=cells[2]||defClass;
-    out.push({name:name, grade:grade, class:cls});
-  });
-  return out;
-}
-window.handleUpload = async function(e){
-  const file=e.target.files[0];
-  if(!file) return;
-  $('uploadFileName').textContent='File: '+file.name+' ('+Math.round(file.size/1024)+' KB) — Reading...';
-  $('uploadMsg').innerHTML='<div class="info">Reading file...</div>';
-  try{
-    let rows=[];
-    if(file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls')){
-      const buf=await file.arrayBuffer();
-      const wb=XLSX.read(buf,{type:'array'});
-      const ws=wb.Sheets[wb.SheetNames[0]];
-      rows=XLSX.utils.sheet_to_json(ws,{header:1, raw:false});
-    } else {
-      const text=await file.text();
-      rows=text.split(/\r?\n/).map(line=>{
-        const sep=line.includes(';') && !line.includes(',') ? ';' : ',';
-        return line.split(sep).map(s=>s.trim().replace(/^"|"$/g,''));
-      });
-    }
-    UPLOADED=parseRowsToLearners(rows);
-    if(UPLOADED.length===0){ $('uploadMsg').innerHTML='<div class="warn">⚠️ No learners found in file.</div>'; return; }
-    let html='<div class="ok">✅ Found <b>'+UPLOADED.length+'</b> learner(s) in file.</div>';
-    html+='<table><tr><th>#</th><th>Name</th><th>Grade</th><th>Class</th></tr>';
-    UPLOADED.forEach((u,i)=>{ html+='<tr><td>'+(i+1)+'</td><td>'+u.name+'</td><td>'+u.grade+'</td><td>'+u.class+'</td></tr>'; });
-    html+='</table>';
-    $('uploadPreview').innerHTML=html;
-    $('uploadMsg').innerHTML='';
-    $('saveUploadBtn').style.display='block'; $('clearUploadBtn').style.display='block';
-    $('uploadFileName').textContent='File: '+file.name+' — '+UPLOADED.length+' learner(s) ready to save';
-  }catch(err){ $('uploadMsg').innerHTML='<div class="warn">❌ Could not read file: '+err.message+'</div>'; }
-};
-window.saveUploaded = async function(){
-  const emis=getEmis(); const school=getSchool();
-  if(UPLOADED.length===0){ $('uploadMsg').innerHTML='<div class="warn">⚠️ Upload a file first.</div>'; return; }
-  if(!canWrite()){ $('uploadMsg').innerHTML='<div class="warn">⚠️ Login in Admin first.</div>'; return; }
-  await refreshNext();
-  const start=NEXT_NUM; let items=[];
-  $('saveUploadBtn').disabled=true; $('saveUploadBtn').textContent='Saving...';
-  $('uploadMsg').innerHTML='<div class="info">Saving '+UPLOADED.length+' learner(s)...</div>';
-  try{
-    const login=getLogin();
-    for(const u of UPLOADED){
-      const code=fmtBarcode(NEXT_NUM);
-      await setDoc(doc(db,'schools','EMIS_'+emis,'learners',code), { barcode:code, code:code, name:u.name, fullName:u.name, grade:u.grade, class:u.class, status:'ACTIVE', createdAt:serverTimestamp(), createdBy:login?login.email:'', createdByName:login?login.name:'' }, {merge:true});
-      items.push({code:code, name:u.name}); NEXT_NUM++;
-    }
-    $('uploadMsg').innerHTML='<div class="ok">✅ Saved '+items.length+' learner(s): '+fmtBarcode(start)+' to '+fmtBarcode(NEXT_NUM-1)+' — '+Math.ceil(items.length/15)+' page(s) to print</div>';
-    renderLabels(school, items);
-    $('barcodePreview').value=fmtBarcode(NEXT_NUM);
-    $('prefixBox').textContent='Learner Prefix: L • Next: '+fmtBarcode(NEXT_NUM)+' • Last used: '+fmtBarcode(NEXT_NUM-1);
-    UPLOADED=[]; $('uploadPreview').innerHTML=''; $('saveUploadBtn').style.display='none';
-    await loadLearners();
-  }catch(err){ $('uploadMsg').innerHTML='<div class="warn">❌ Upload save failed: '+err.message+'</div>'; }
-  $('saveUploadBtn').disabled=false; $('saveUploadBtn').textContent='✅ Save Uploaded Learners + Generate Labels';
-};
-async function saveBulk(){
-  const emis=getEmis(); const school=getSchool();
-  const text=$('bulkInput').value.trim();
-  const msg=$('bulkMsg');
-  if(!text){ msg.innerHTML='<div class="warn">⚠️ Paste learners first.</div>'; return; }
-  if(!canWrite()){ msg.innerHTML='<div class="warn">⚠️ Login in Admin first.</div>'; return; }
-  await refreshNext();
-  const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
-  let items=[]; let start=NEXT_NUM;
-  try{
-    const login=getLogin();
-    for(const line of lines){
-      const parts=line.split(',').map(p=>p.trim());
-      const name=parts[0]||''; const grade=normGrade(parts[1],'Grade 10'); const cls=parts[2]||'';
-      if(!name) continue;
-      const code=fmtBarcode(NEXT_NUM);
-      await setDoc(doc(db,'schools','EMIS_'+emis,'learners',code), { barcode:code, code:code, name:name, fullName:name, grade:grade, class:cls, status:'ACTIVE', createdAt:serverTimestamp(), createdBy:login?login.email:'', createdByName:login?login.name:'' }, {merge:true});
-      items.push({code:code, name:name}); NEXT_NUM++;
-    }
-    msg.innerHTML='<div class="ok">✅ Saved '+items.length+' learner(s): '+fmtBarcode(start)+' to '+fmtBarcode(NEXT_NUM-1)+' — '+Math.ceil(items.length/15)+' page(s)</div>';
-    renderLabels(school, items);
-    $('barcodePreview').value=fmtBarcode(NEXT_NUM);
-    $('bulkInput').value='';
-    await loadLearners();
-  }catch(e){ msg.innerHTML='<div class="warn">❌ Bulk failed: '+e.message+'</div>'; }
-}
-window.saveBulk = saveBulk;
-async function loadLearners(){
+async function loadAll(){
   const emis=getEmis();
-  if(!emis){ $('learnerList').innerHTML='<div class="warn">Select school in Admin first.</div>'; return; }
-  $('learnerCount').textContent='Loading learners...';
   try{
-    const snap = await getDocs(query(collection(db,'schools','EMIS_'+emis,'learners'), orderBy('barcode')));
-    ALL_LEARNERS=[];
-    snap.forEach(d=>{ const b=d.data(); ALL_LEARNERS.push({ id:d.id, barcode:b.barcode||b.code||d.id, name:b.name||b.fullName||'', grade:b.grade||'', class:b.class||'', status:b.status||'ACTIVE' }); });
-    const grades=[...new Set(ALL_LEARNERS.map(b=>b.grade).filter(Boolean))].sort();
-    const classes=[...new Set(ALL_LEARNERS.map(b=>b.class).filter(Boolean))].sort();
-    $('learnerFilter').innerHTML='<option value="">All Grades</option>'+grades.map(t=>`<option>${t}</option>`).join('');
-    $('classFilter').innerHTML='<option value="">All Classes</option>'+classes.map(t=>`<option>${t}</option>`).join('');
-    const prevC=$('printClassSelect').value; const prevG=$('printGradeSelect').value;
-    $('printClassSelect').innerHTML='<option value="">— Choose Class —</option>'+classes.map(t=>`<option ${t===prevC?'selected':''}>${t}</option>`).join('');
-    $('printGradeSelect').innerHTML='<option value="">— Choose Grade —</option>'+grades.map(t=>`<option ${t===prevG?'selected':''}>${t}</option>`).join('');
-    SELECTED.clear();
-    renderLearnerList();
-    updatePrintSummary();
+    const [ls, is] = await Promise.all([
+      getDocs(collection(db,'schools','EMIS_'+emis,'learners')),
+      getDocs(query(collection(db,'schools','EMIS_'+emis,'issues'), orderBy('issuedAt','desc')))
+    ]);
+    ALL_LEARNERS=[]; ls.forEach(d=>{ const b=d.data(); ALL_LEARNERS.push({id:d.id, barcode:b.barcode||b.code||d.id, name:b.name||b.fullName||'', grade:b.grade||'', class:b.class||'', gender:b.gender||'', phone:b.phone||''}); });
+    ALL_ISSUES=[]; is.forEach(d=>{ const y=d.data(); ALL_ISSUES.push({id:d.id, ...y}); });
+    const outCodes=new Set(ALL_ISSUES.filter(x=>x.status==='OUT').map(x=>x.learnerCode));
+    const overdueLearners=new Set(ALL_ISSUES.filter(x=>isOverdue(x)).map(x=>x.learnerCode));
+    $('statTotal').textContent=ALL_LEARNERS.length;
+    $('statWithBook').textContent=ALL_LEARNERS.filter(l=>outCodes.has(l.barcode)).length;
+    $('statNoBook').textContent=ALL_LEARNERS.filter(l=>!outCodes.has(l.barcode)).length;
+    $('statOverdue').textContent=overdueLearners.size;
+    $('learnerCount').textContent=ALL_LEARNERS.length;
+    const grades=[...new Set(ALL_LEARNERS.map(l=>l.grade).filter(Boolean))].sort();
+    const classes=[...new Set(ALL_LEARNERS.map(l=>l.class).filter(Boolean))].sort();
+    const prevG=$('learnerGradeFilter').value, prevC=$('learnerClassFilter').value;
+    $('learnerGradeFilter').innerHTML='<option value="">All Grades</option>'+grades.map(g=>`<option ${g===prevG?'selected':''}>${g}</option>`).join('');
+    $('learnerClassFilter').innerHTML='<option value="">All Classes</option>'+classes.map(c=>`<option ${c===prevC?'selected':''}>${c}</option>`).join('');
+    updateDueBanner();
+    renderLearners();
   }catch(e){ $('learnerList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
 }
-window.loadLearners = loadLearners;
-function getFiltered(){
+window.loadAll = loadAll;
+function getLearnerIssues(barcode){ return ALL_ISSUES.filter(x=>x.learnerCode===barcode); }
+function renderLearners(){
+  let list=[...ALL_LEARNERS];
+  const outCodes=new Set(ALL_ISSUES.filter(x=>x.status==='OUT').map(x=>x.learnerCode));
+  const overdueCodes=new Set(ALL_ISSUES.filter(x=>isOverdue(x)).map(x=>x.learnerCode));
+  if(TAB==='WITH') list=list.filter(l=>outCodes.has(l.barcode));
+  if(TAB==='NO') list=list.filter(l=>!outCodes.has(l.barcode));
+  if(TAB==='OVERDUE') list=list.filter(l=>overdueCodes.has(l.barcode));
   const q=($('learnerSearch').value||'').toLowerCase().trim();
-  const tf=$('learnerFilter').value;
-  const cf=$('classFilter').value;
-  return ALL_LEARNERS.filter(b=>{ if(tf && b.grade!==tf) return false; if(cf && b.class!==cf) return false; if(!q) return true; return (b.barcode+' '+b.name+' '+b.grade+' '+(b.class||'')).toLowerCase().includes(q); });
-}
-function renderLearnerList(){
-  const filtered=getFiltered();
-  $('learnerCount').textContent = filtered.length + ' learner(s) shown • ' + ALL_LEARNERS.length + ' total • ' + SELECTED.size + ' ticked';
-  const role=getRole();
-  $('roleDeleteMsg').innerHTML = canDelete() ? '<div class="ok">✅ You are <b>'+role+'</b> — you CAN delete.</div>' : '<div class="warn">🔒 You are <b>'+(role||'NOT LOGGED IN')+'</b>. Only ADMIN / PRINCIPAL / LIBRARIAN can delete.</div>';
-  if(filtered.length===0){ $('learnerList').innerHTML='<div class="info">No learners found.</div>'; updateDeleteBar(); updatePrintBar(); return; }
-  let html='<table><tr><th style="width:40px"><input type="checkbox" class="chk" onchange="toggleAll(this.checked)"></th><th>Barcode</th><th>Name</th><th>Grade</th><th>Class</th><th>Status</th></tr>';
-  filtered.forEach(b=>{ const checked=SELECTED.has(b.id)?'checked':''; html+='<tr><td><input type="checkbox" class="chk" '+checked+' onchange="toggleOne(\''+b.id+'\',this.checked)"></td><td><b>'+b.barcode+'</b></td><td>'+b.name+'</td><td>'+b.grade+'</td><td>'+(b.class||'')+'</td><td>'+b.status+'</td></tr>'; });
+  const gf=$('learnerGradeFilter').value, cf=$('learnerClassFilter').value;
+  if(gf) list=list.filter(l=>l.grade===gf);
+  if(cf) list=list.filter(l=>l.class===cf);
+  if(q) list=list.filter(l=> (l.name+' '+l.barcode+' '+(l.class||'')).toLowerCase().includes(q));
+  const sort=$('learnerSort').value;
+  if(sort==='NAME') list.sort((a,b)=>a.name.localeCompare(b.name));
+  if(sort==='GRADE') list.sort((a,b)=> (a.grade||'').localeCompare(b.grade||'') || a.name.localeCompare(b.name));
+  if(sort==='BARCODE') list.sort((a,b)=> (a.barcode||'').localeCompare(b.barcode||''));
+  $('learnerCountText').textContent=list.length+' shown • '+ALL_LEARNERS.length+' total';
+  if(list.length===0){ $('learnerList').innerHTML='<div class="info">No learners for this filter.</div>'; return; }
+  let html='<table><tr><th>Learner</th><th>Grade / Class</th><th>Books Out</th><th>Due Date</th><th>Status</th><th>Barcode / Action</th></tr>';
+  list.slice(0,200).forEach(l=>{
+    const outs=getLearnerIssues(l.barcode).filter(x=>x.status==='OUT');
+    const over=outs.some(x=>isOverdue(x));
+    const dueStr = outs.length ? fmtDue(getDueDateForRecord(outs[0])) : '—';
+    const daysTxt = outs.length ? (daysUntilDue(outs[0])<0 ? '<b style="color:#dc2626">'+Math.abs(daysUntilDue(outs[0]))+' days OVERDUE</b>' : daysUntilDue(outs[0])+' days left') : '—';
+    const status = over ? '<span class="pill pill-red">⚠️ OVERDUE</span>' : outs.length ? '<span class="pill pill-red">📚 '+outs.length+' OUT</span>' : '<span class="pill pill-green">✅ No Book</span>';
+    const booksTxt = outs.length ? outs.map(o=>o.bookCode+' — '+o.bookTitle).join('<br>') : '—';
+    const canED = canEditDelete();
+    const editBtn = canED ? `<button class="btn btn-blue btn-sm" onclick="editLearner('${l.id}')">✏️ Edit</button>` : `<button class="btn btn-grey btn-sm" disabled title="Teacher cannot edit">✏️ Edit</button>`;
+    const delBtn = canED ? `<button class="btn btn-red btn-sm" onclick="deleteLearner('${l.id}','${l.name.replace(/'/g,"")}','${l.barcode}')">🗑️ Delete</button>` : '';
+    html+='<tr><td><b>'+l.name+'</b><br><span class="small">'+l.barcode+'</span></td><td>'+l.grade+'<br>'+(l.class||'')+'</td><td class="small">'+booksTxt+'</td><td><b>'+dueStr+'</b><br><span class="small">'+daysTxt+'</span></td><td>'+status+'</td><td><svg id="bc_'+l.barcode+'"></svg><div class="small">'+l.barcode+'</div><button class="btn btn-gold btn-sm" onclick="printOneBarcode(\''+l.barcode+'\',\''+l.name.replace(/'/g,"")+'\',\''+l.grade+'\',\''+(l.class||'')+'\')">🖨️ Barcode</button>'+editBtn+delBtn+'</td></tr>';
+  });
   html+='</table>';
   $('learnerList').innerHTML=html;
-  updateDeleteBar(); updatePrintBar();
+  // Render barcodes after DOM insert
+  list.slice(0,200).forEach(l=>{
+    try{ JsBarcode('#bc_'+l.barcode, l.barcode, {format:'CODE128', width:1.5, height:35, displayValue:false}); }catch(e){}
+  });
 }
-window.renderLearnerList = renderLearnerList;
-window.toggleOne = function(id, checked){ if(checked) SELECTED.add(id); else SELECTED.delete(id); renderLearnerList(); updatePrintSummary(); };
-window.toggleAll = function(checked){ const filtered=getFiltered(); filtered.forEach(b=>{ if(checked) SELECTED.add(b.id); else SELECTED.delete(b.id); }); renderLearnerList(); updatePrintSummary(); };
-window.clearSelection = function(){ SELECTED.clear(); renderLearnerList(); updatePrintSummary(); };
-function updateDeleteBar(){
-  const bar=$('deleteBar');
-  if(SELECTED.size===0){ bar.style.display='none'; return; }
-  bar.style.display='flex';
-  $('selCount').textContent=SELECTED.size;
-  const names=[...SELECTED].slice(0,10).join(', ') + (SELECTED.size>10 ? ' ... +'+(SELECTED.size-10)+' more' : '');
-  $('selList').textContent='Selected: '+names;
-  $('deleteSelectedBtn').disabled=!canDelete();
-  $('deleteSelectedBtn').textContent = canDelete() ? '🗑️ Delete Selected ('+SELECTED.size+')' : '🔒 Only ADMIN / PRINCIPAL / LIBRARIAN can delete';
-}
-function updatePrintBar(){
-  const bar=$('printBar');
-  if(SELECTED.size===0){ bar.style.display='none'; return; }
-  bar.style.display='flex';
-  $('printSelCount').textContent=SELECTED.size;
-  const names=ALL_LEARNERS.filter(b=>SELECTED.has(b.id)).slice(0,10).map(b=>b.barcode+' '+b.name).join(', ') + (SELECTED.size>10 ? ' ... +'+(SELECTED.size-10)+' more' : '');
-  $('printSelList').textContent='Will print: '+names;
-}
-window.deleteSelected = async function(){
-  const emis=getEmis();
-  if(!canDelete()){ $('deleteMsg').innerHTML='<div class="warn">🔒 Only ADMIN / PRINCIPAL / LIBRARIAN can delete.</div>'; return; }
-  if(SELECTED.size===0){ $('deleteMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 learner first.</div>'; return; }
-  const list=[...SELECTED];
-  if(!confirm('🗑️ DELETE '+list.length+' learner(s)?\n\n'+list.slice(0,10).join(', ')+'\n\nCannot be undone.')) return;
-  if(list.length>=10 && !confirm('⚠️ Deleting '+list.length+' learners. Confirm again?')) return;
-  $('deleteSelectedBtn').disabled=true; $('deleteSelectedBtn').textContent='Deleting...';
-  $('deleteMsg').innerHTML='<div class="info">Deleting '+list.length+'...</div>';
-  try{
-    const login=getLogin(); let deleted=0;
-    for(const id of list){ try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'learners',id)); try{ await addDoc(collection(db,'schools','EMIS_'+emis,'logs'), { action:'DELETE_LEARNER', detail:'Deleted learner '+id, whoEmail:login?login.email:'', whoName:login?login.name:'', whoRole:login?login.role:'', createdAt:serverTimestamp() }); }catch(e){} deleted++; }catch(e){} }
-    SELECTED.clear(); await loadLearners(); await refreshNext();
-    $('deleteMsg').innerHTML='<div class="ok">✅ Deleted '+deleted+' learner(s).</div>';
-  }catch(e){ $('deleteMsg').innerHTML='<div class="warn">❌ Delete failed: '+e.message+'</div>'; }
-  $('deleteSelectedBtn').disabled=false;
+window.renderLearners = renderLearners;
+window.printOneBarcode = function(barcode, name, grade, cls){
+  $('printSchoolName').textContent=getSchool();
+  $('printBarcodesList').innerHTML='<div class="barcodeBox"><b>'+name+'</b><br><span class="small">'+grade+' '+cls+' • '+getSchool()+'</span><br><svg id="bcPrintOne"></svg><div class="code">'+barcode+'</div></div>';
+  try{ JsBarcode('#bcPrintOne', barcode, {format:'CODE128', width:2, height:60, displayValue:false}); }catch(e){}
+  // Show print card, hide others for print - use window.print, card has printOnly class
+  document.getElementById('printBarcodesCard').style.display='block';
+  window.print();
+};
+window.printAllBarcodes = function(){
+  // Use current filtered list
+  let list=[...ALL_LEARNERS];
+  const outCodes=new Set(ALL_ISSUES.filter(x=>x.status==='OUT').map(x=>x.learnerCode));
+  const overdueCodes=new Set(ALL_ISSUES.filter(x=>isOverdue(x)).map(x=>x.learnerCode));
+  if(TAB==='WITH') list=list.filter(l=>outCodes.has(l.barcode));
+  if(TAB==='NO') list=list.filter(l=>!outCodes.has(l.barcode));
+  if(TAB==='OVERDUE') list=list.filter(l=>overdueCodes.has(l.barcode));
+  const q=($('learnerSearch').value||'').toLowerCase().trim();
+  const gf=$('learnerGradeFilter').value, cf=$('learnerClassFilter').value;
+  if(gf) list=list.filter(l=>l.grade===gf);
+  if(cf) list=list.filter(l=>l.class===cf);
+  if(q) list=list.filter(l=> (l.name+' '+l.barcode).toLowerCase().includes(q));
+  if(list.length===0){ alert('No learners to print.'); return; }
+  $('printSchoolName').textContent=getSchool();
+  $('printBarcodesList').innerHTML=list.map(l=>'<div class="barcodeBox"><b>'+l.name+'</b><br><span class="small">'+l.grade+' '+(l.class||'')+' • '+getSchool()+'</span><br><svg id="pbc_'+l.barcode+'"></svg><div class="code">'+l.barcode+'</div></div>').join('');
+  list.forEach(l=>{ try{ JsBarcode('#pbc_'+l.barcode, l.barcode, {format:'CODE128', width:2, height:50, displayValue:false}); }catch(e){} });
+  document.getElementById('printBarcodesCard').style.display='block';
+  window.print();
 };
 document.addEventListener('DOMContentLoaded', async ()=>{
   const emis=getEmis(); const school=getSchool(); const login=getLogin();
-  const nm = login ? (login.name||login.fullName||'Vusi Chauke') : '';
-  if(login) $('whoLine').textContent='Logged in: '+nm+' • '+(login.role||'')+' • '+(login.email||'');
+  if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'')+(login.subject? ' • Subject: '+login.subject : '');
   if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
-  $('cloudStatus').textContent='☁️ Cloud: Connected — '+(school||'Select School in Admin');
-  setPrintMode('learner');
-  await refreshNext();
-  await loadLearners();
+  if(login){
+    let roleTxt='Role: <b>'+getRole()+'</b>';
+    if(getRole()==='TEACHER') roleTxt+=' • Can ADD learners • CANNOT Edit / Delete learners';
+    else roleTxt+=' • Can Add / Edit / Delete learners';
+    $('roleBox').innerHTML=roleTxt;
+  } else {
+    $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b> • Login in Admin / Home first';
+  }
+  $('cloudStatus').textContent='☁️ Cloud: Connected — '+school;
+  updateDueBanner();
+  await loadAll();
 });
 </script>
 </body>
