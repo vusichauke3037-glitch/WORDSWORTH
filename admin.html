@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Admin v2.02</title>
+<title>Makhanani LTSM — Admin v2.00</title>
 <meta name="theme-color" content="#0a1f4d">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -13,6 +13,7 @@ header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:12px;opacity
 main{max-width:1100px;margin:auto;padding:14px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
+h3{margin:14px 0 6px;color:#0a1f4d;font-size:15px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -20,6 +21,7 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
 .btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}
 .btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
@@ -32,147 +34,119 @@ th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
 .pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}
-.teacherBox{border:2px solid #7c3aed;border-radius:12px;padding:14px;background:#ede9fe;display:none}
-.teacherBox.show{display:block}
-.subjTag{display:inline-flex;align-items:center;gap:8px;background:#7c3aed;color:#fff;font-weight:900;font-size:13px;padding:8px 10px;border-radius:20px;margin:4px 4px 0 0}
-.subjTag button{background:#fff;color:#7c3aed;border:none;border-radius:50%;width:22px;height:22px;font-weight:900;cursor:pointer;line-height:1}
-.subjList{min-height:44px;background:#fff;border:1.5px solid #cbd5e1;border-radius:8px;padding:8px}
-.subjList.empty{color:#94a3b8;font-weight:700;font-size:13px}
-.countBadge{background:#dc2626;color:#fff;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:900}
-.countBadge.okbg{background:#059669}
+.dueBanner{background:#fffbeb;border:2px solid #d4af37;border-radius:12px;padding:14px;text-align:center;font-weight:900;font-size:16px;color:#92400e;margin-top:10px}
+.dueBanner b{color:#0a1f4d}
+.checkGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+@media(max-width:700px){.checkGrid{grid-template-columns:1fr 1fr}}
+.checkItem{display:flex;align-items:center;gap:8px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer}
+.checkItem input{width:auto;margin:0}
+.checkItem.checked{background:#ecfdf5;border-color:#059669}
+.statRow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:10px}
+@media(max-width:700px){.statRow{grid-template-columns:1fr 1fr}}
+.stat{background:#f8fafc;border-radius:10px;padding:12px;text-align:center}
+.stat b{font-size:22px;display:block;color:#0a1f4d}
+.stat span{font-size:12px;color:#64748b}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{padding:10px 16px;border:none;border-radius:20px;font-weight:900;cursor:pointer;background:#e2e8f0}
+.tabs button.active{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>⚙️ Admin — Makhanani LTSM</h1><p>Users • School • Teacher Subjects • v2.02<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.02 SUBJECT DROPDOWN</span></div></header>
+<header><div><h1>⚙️ Admin — Makhanani LTSM</h1><p>Users • Teacher Subjects • School • Due 30 Nov • v2.00<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.00 ADMIN</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
 <div class="card">
-<h2>🏫 Select School</h2>
-<label>School</label>
-<select id="schoolSelect" onchange="selectSchool()">
+<h2>🏫 Current School</h2>
+<div class="info" id="schoolBox">School: —</div>
+<div class="dueBanner" id="dueBanner">📅 ALL BOOKS DUE: <b>30 November</b> — <span id="dueCountdown">—</span></div>
+<div class="statRow">
+<div class="stat"><b id="statUsers">0</b><span>👥 Users</span></div>
+<div class="stat"><b id="statTeachers">0</b><span>👩🏾‍🏫 Teachers</span></div>
+<div class="stat"><b id="statLearners">0</b><span>🎓 Learners</span></div>
+<div class="stat"><b id="statBooks">0</b><span>📖 Books</span></div>
+</div>
+<label>Switch School</label>
+<select id="schoolDropdown" onchange="onSchoolSwitch()">
 <option value="700310854|WORDSWORTH HIGH SCHOOL">WORDSWORTH HIGH SCHOOL — EMIS 700310854</option>
 <option value="900000001|TIVANANI PRIMARY SCHOOL">TIVANANI PRIMARY SCHOOL — EMIS 900000001</option>
 </select>
-<div class="info" id="schoolBox">School: —</div>
-<div class="small">This school is used for ALL pages — Learners, Textbooks, Issue. Change it here once.</div>
+<div class="small">Switching school here switches it for ALL pages on this device. Users are per-school.</div>
 </div>
 
 <div class="card">
-<h2>🔐 Login</h2>
-<div class="small">Login with Email + Password you created below. Login is saved on THIS phone only.</div>
-<label>Email</label>
-<input id="loginEmail" placeholder="e.g. naledi@wordsworth.co.za" autocomplete="email">
-<label>Password</label>
-<input id="loginPass" type="password" placeholder="Password">
-<button class="btn btn-blue" onclick="doLogin()">🔐 Login</button>
-<button class="btn btn-grey" onclick="doLogout()">🚪 Logout</button>
-<div id="loginMsg"></div>
-<div class="info" id="currentLoginBox">Not logged in</div>
+<h2>👤 Create / Edit User</h2>
+<div class="small">Admin creates all logins here. Teacher Subject controls what they can Issue in Issue page. <b>Teacher Issue = ONLY own Subject. Teacher Return = ANY book.</b> Librarian / Admin / Principal can Issue ANY subject.</div>
+<label>Full Name</label>
+<input id="uName" placeholder="e.g. Naledi Mokoena">
+<div class="grid2">
+<div><label>Email (Login)</label><input id="uEmail" placeholder="e.g. naledi@wordsworth.co.za" autocomplete="email"></div>
+<div><label>Password</label><input id="uPass" placeholder="e.g. Naledi123" autocomplete="new-password"></div>
+</div>
+<div class="grid2">
+<div><label>Role</label><select id="uRole" onchange="onRoleChange()"><option value="TEACHER">TEACHER</option><option value="LIBRARIAN">LIBRARIAN</option><option value="ADMIN">ADMIN</option><option value="PRINCIPAL">PRINCIPAL</option><option value="HOD">HOD</option></select></div>
+<div><label>Grades Taught (optional, e.g. Grade 10, Grade 11)</label><input id="uGrades" placeholder="e.g. Grade 10, Grade 11"></div>
 </div>
 
-<div class="card">
-<h2>👤 Create / Update User</h2>
-<div class="small">Admin / Principal can create users. Teacher MUST have at least 1 Subject from dropdown.</div>
-<label>Full Name *</label>
-<input id="uName" placeholder="e.g. Naledi Dube">
-<label>Email * (this is their login email)</label>
-<input id="uEmail" placeholder="e.g. naledi@wordsworth.co.za">
-<label>Password * (min 4 characters)</label>
-<input id="uPass" type="password" placeholder="e.g. Naledi123">
-<label>Role *</label>
-<select id="uRole" onchange="onRoleChange()">
-<option value="TEACHER">👩🏾‍🏫 TEACHER — Issue own subject only, Return any book, Add learners only</option>
-<option value="LIBRARIAN">📚 LIBRARIAN — Issue any subject, Return any, Delete books/learners</option>
-<option value="PRINCIPAL">👩🏾‍🏫 PRINCIPAL — All access</option>
-<option value="ADMIN">⚙️ ADMIN — All access + Create users</option>
-</select>
-<div class="small" id="roleHint"></div>
-
-<!-- ===== v2.02 TEACHER SUBJECT DROPDOWN ===== -->
-<div id="teacherSubjectBox" class="teacherBox show">
-<h2 style="border:none;padding:0;margin:0 0 6px">📐 Teacher Subject — REQUIRED (At least 1)</h2>
-<div class="small">Pick from dropdown — do NOT type. This stops spelling mistakes.<br>Teacher can ONLY Issue books for these subjects in Issue page.</div>
-
-<label>1️⃣ Choose Subject from Dropdown *</label>
-<select id="subjectDropdown">
-<option value="">— Select Subject —</option>
-<option>Mathematics</option>
-<option>Mathematical Literacy</option>
-<option>English</option>
-<option>English First Additional Language</option>
-<option>Afrikaans</option>
-<option>Sepedi</option>
-<option>Xitsonga</option>
-<option>Tshivenda</option>
-<option>isiZulu</option>
-<option>Physical Sciences</option>
-<option>Life Sciences</option>
-<option>Natural Sciences</option>
-<option>Social Sciences</option>
-<option>Geography</option>
-<option>History</option>
-<option>Accounting</option>
-<option>Business Studies</option>
-<option>Economics</option>
-<option>Life Orientation</option>
-<option>Technology</option>
-<option>Arts and Culture</option>
-<option>Creative Arts</option>
-<option>Computer Applications Technology</option>
-<option>Information Technology</option>
-<option>Tourism</option>
-<option>Agricultural Sciences</option>
-<option>Engineering Graphics and Design</option>
-</select>
-<button class="btn btn-purple" onclick="addSubjectFromDropdown()">➕ Add This Subject</button>
-
-<label>2️⃣ Selected Subjects for this Teacher <span id="subjectCount" class="countBadge">0 — NEED AT LEAST 1</span></label>
-<div id="selectedSubjects" class="subjList empty">No subject selected yet — pick from dropdown above and click ➕ Add This Subject</div>
-<!-- Hidden field that Save reads - kept in sync automatically -->
-<input type="hidden" id="uSubject" value="">
-
-<div class="small" id="subjectHelp">⚠️ <b>Save will be BLOCKED</b> until at least 1 subject is added. Example: Naledi — Mathematics only. Thabo — Mathematics + Physical Sciences.</div>
-
-<label>Grades this teacher teaches (optional — for info only)</label>
-<input id="uGrades" placeholder="e.g. Grade 8, Grade 9, Grade 10">
-<div class="small">Note: Grade does NOT block Issue — Learner Grade vs Book Grade blocks Issue. This is just for your record.</div>
+<div id="teacherSubjectBox">
+<label>📚 Teacher Subject(s) — Tick ONE or MORE — This Controls Issue</label>
+<div class="small">If Teacher has 1 subject, they can ONLY Issue that subject. If they teach 2 subjects, tick both.</div>
+<div class="checkGrid" id="subjectChecks"></div>
+<div class="small" id="subjectPreview">Selected: —</div>
 </div>
 
-<div id="nonTeacherNote" class="info" style="display:none">ℹ️ Admin / Principal / Librarian do NOT need a Subject — they can Issue ANY subject.</div>
+<div id="adminNote" style="display:none"><div class="info">ADMIN / LIBRARIAN / PRINCIPAL / HOD can Issue ANY subject — no Subject tick needed. Subject is ignored for these roles.</div></div>
+
+<label>Phone (optional)</label>
+<input id="uPhone" placeholder="e.g. 082 123 4567">
 <button class="btn btn-green" id="saveUserBtn" onclick="saveUser()">✅ Save User</button>
-<button class="btn btn-grey" onclick="clearUserForm()">Clear Form</button>
+<button class="btn btn-grey" onclick="clearUserForm()">🔄 Clear Form — New User</button>
 <div id="userMsg"></div>
+<div class="small">Editing: Click <b>Edit</b> on a user below → Form fills → Change Subject / Role / Password → Save. Email is the ID — to change Email, delete and re-create.</div>
 </div>
 
 <div class="card">
-<h2>👥 All Users</h2>
-<div class="small"><span id="userCount">Loading...</span> • Click <b>Edit</b> to change a Teacher's Subject. Click <b>Delete</b> to remove user.</div>
+<h2>👥 All Users — This School (<span id="userCount">0</span>)</h2>
+<div class="tabs">
+<button id="tabAllU" class="active" onclick="setUserTab('ALL')">🌍 All</button>
+<button id="tabTeach" onclick="setUserTab('TEACHER')">👩🏾‍🏫 Teachers</button>
+<button id="tabLib" onclick="setUserTab('LIBRARIAN')">📚 Librarians</button>
+<button id="tabAdmin" onclick="setUserTab('ADMIN')">⚙️ Admins</button>
+</div>
+<div class="grid2">
+<div><label>🔍 Search name / email / subject</label><input id="userSearch" placeholder="Search..." oninput="renderUsers()"></div>
+<div><label>Filter by Subject</label><select id="userSubjectFilter" onchange="renderUsers()"><option value="">All Subjects</option></select></div>
+</div>
 <div id="userList"></div>
-<button class="btn btn-blue" onclick="loadUsers()">🔄 Refresh Users</button>
+<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh Users</button>
 </div>
 
 <div class="card">
-<h2>📏 Permissions — Who can do what</h2>
+<h2>📏 System Rules — Locked In</h2>
 <table>
-<tr><th>Action</th><th>Teacher</th><th>Librarian</th><th>Principal / Admin</th></tr>
-<tr><td>Issue own subject</td><td>✅ Yes</td><td>✅ Yes (any)</td><td>✅ Yes (any)</td></tr>
-<tr><td>Issue other subject</td><td>❌ Blocked</td><td>✅ Yes</td><td>✅ Yes</td></tr>
-<tr><td>Return any book</td><td>✅ Yes</td><td>✅ Yes</td><td>✅ Yes</td></tr>
-<tr><td>Add learners</td><td>✅ Yes</td><td>✅ Yes</td><td>✅ Yes</td></tr>
-<tr><td>Edit / Delete learners</td><td>❌ No</td><td>✅ Yes</td><td>✅ Yes</td></tr>
-<tr><td>Add books</td><td>❌ No</td><td>✅ Yes</td><td>✅ Yes</td></tr>
-<tr><td>Edit / Delete books</td><td>❌ No</td><td>✅ Yes</td><td>✅ Yes</td></tr>
-<tr><td>Create users</td><td>❌ No</td><td>❌ No</td><td>✅ Yes</td></tr>
+<tr><th>Rule</th><th>What happens</th></tr>
+<tr><td>Teacher Issue</td><td>Teacher can Issue ONLY their own Subject(s) ticked above</td></tr>
+<tr><td>Teacher Return</td><td>Teacher can Return ANY book, any subject</td></tr>
+<tr><td>Librarian / Admin / Principal / HOD Issue</td><td>Can Issue ANY subject</td></tr>
+<tr><td>Learner Grade</td><td>Learner can ONLY receive books of THEIR grade</td></tr>
+<tr><td>Same Title Twice</td><td>Learner CANNOT get same Title twice while first copy is OUT</td></tr>
+<tr><td>Due Date</td><td><b>ALL books due 30 November every year.</b> Overdue = still OUT after 30 Nov. If issued in Dec, due 30 Nov next year.</td></tr>
+<tr><td>Teacher Edit</td><td>Teacher CANNOT edit/delete books or learners — can only ADD learners</td></tr>
 </table>
-<div class="small">Learner rules (in Issue page): Learner can only get books of THEIR grade. Learner cannot get same Title twice while first copy is OUT.</div>
+</div>
+
+<div class="card">
+<h2>📋 Recent Activity Log</h2>
+<div class="small">Last 50 actions — Issue / Return / User created.</div>
+<div id="logList"></div>
+<button class="btn btn-grey" onclick="loadLogs()">🔄 Refresh Logs</button>
 </div>
 </main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
@@ -185,209 +159,228 @@ const firebaseConfig = {
 };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
-let ALL_USERS = [];
-let EDIT_ID = null;
-let SELECTED_SUBJECTS = [];
+let ALL_USERS=[], USER_TAB='ALL', EDIT_ID=null;
+const SUBJECTS = ['Accounting','Afrikaans','Agricultural Sciences','Business Studies','CAT','Consumer Studies','Economics','English','Geography','History','Life Orientation','Life Sciences','Mathematical Literacy','Mathematics','Natural Sciences','Physical Sciences','Sepedi','Setswana','Social Sciences','Technology','Tourism','Visual Arts','isiZulu','isiXhosa'];
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
-function setLogin(obj){ localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify(obj)); }
-function isAdminLike(){ const l=getLogin(); if(!l) return false; return ['ADMIN','PRINCIPAL'].includes((l.role||'').toUpperCase()); }
-// ===== v2.02 SUBJECT DROPDOWN LOGIC =====
-function renderSelectedSubjects(){
-  const box=$('selectedSubjects');
-  const countEl=$('subjectCount');
-  $('uSubject').value = SELECTED_SUBJECTS.join(', ');
-  if(SELECTED_SUBJECTS.length===0){
-    box.className='subjList empty';
-    box.textContent='No subject selected yet — pick from dropdown above and click ➕ Add This Subject';
-    countEl.textContent='0 — NEED AT LEAST 1';
-    countEl.className='countBadge';
-    $('subjectHelp').innerHTML='⚠️ <b>Save will be BLOCKED</b> until at least 1 subject is added.';
-  } else {
-    box.className='subjList';
-    box.innerHTML = SELECTED_SUBJECTS.map(s=>`<span class="subjTag">${s} <button type="button" onclick="removeSubject('${s.replace(/'/g,"")}')">✖</button></span>`).join('');
-    countEl.textContent=SELECTED_SUBJECTS.length+' subject(s) ✅';
-    countEl.className='countBadge okbg';
-    $('subjectHelp').innerHTML='✅ <b>'+SELECTED_SUBJECTS.length+' subject(s) selected:</b> '+SELECTED_SUBJECTS.join(', ')+' — Ready to Save.';
-  }
-}
-window.addSubjectFromDropdown = function(){
-  const v=$('subjectDropdown').value;
-  if(!v){ alert('⚠️ Pick a Subject from the dropdown first.'); $('subjectDropdown').focus(); return; }
-  if(SELECTED_SUBJECTS.includes(v)){ alert('⚠️ '+v+' is already added.'); return; }
-  SELECTED_SUBJECTS.push(v);
-  renderSelectedSubjects();
-  $('subjectDropdown').value='';
-};
-window.removeSubject = function(subj){
-  SELECTED_SUBJECTS = SELECTED_SUBJECTS.filter(s=>s!==subj);
-  renderSelectedSubjects();
-};
-function setSelectedSubjects(list){
-  SELECTED_SUBJECTS = [...new Set((list||[]).map(s=>String(s).trim()).filter(Boolean))];
-  renderSelectedSubjects();
-}
-window.onRoleChange = function(){
-  const role=$('uRole').value;
-  const isT = role==='TEACHER';
-  $('teacherSubjectBox').classList.toggle('show', isT);
-  $('nonTeacherNote').style.display = isT ? 'none' : 'block';
-  $('roleHint').innerHTML = isT
-    ? '<div class="warn">👩🏾‍🏫 TEACHER: Must have AT LEAST 1 Subject from dropdown below. Can Issue ONLY that subject. Can Return ANY book. Can Add learners only.</div>'
-    : role==='LIBRARIAN'
-    ? '<div class="info">📚 LIBRARIAN: Can Issue ANY subject. Can Return ANY book. Can Add/Delete books and learners.</div>'
-    : '<div class="info">⚙️ '+role+': Full access. Can Issue ANY subject. Can create users.</div>';
-};
-function selectSchool(){
-  const v=$('schoolSelect').value; const [emis, name]=v.split('|');
+function saveSchool(emis, name){
   localStorage.setItem('MAKHANANI_SELECTED_EMIS', emis);
   localStorage.setItem('MAKHANANI_SCHOOL_EMIS', emis);
   localStorage.setItem('MAKHANANI_SELECTED_SCHOOL', name);
   localStorage.setItem('MAKHANANI_SCHOOL_NAME', name);
   $('schoolBox').textContent='School: '+name+' • EMIS '+emis;
-  loadUsers();
+  $('cloudStatus').textContent='☁️ Cloud: Connected — '+name;
 }
-window.selectSchool = selectSchool;
+function getDueDateForIssue(d){
+  const dt = d ? new Date(d) : new Date();
+  let year = dt.getFullYear();
+  if(dt.getMonth() === 11) year = year + 1;
+  return new Date(year, 10, 30);
+}
+function fmtDue(d){ try{ return d.toLocaleDateString('en-ZA', {day:'2-digit', month:'short', year:'numeric'}); }catch(e){ return '30 Nov'; } }
+function updateDueBanner(){
+  const due=getDueDateForIssue(new Date());
+  const today=new Date(); today.setHours(0,0,0,0);
+  const days=Math.ceil((new Date(due).setHours(0,0,0,0) - today)/(1000*60*60*24));
+  let txt='';
+  if(days < 0) txt='⚠️ OVERDUE — ' + Math.abs(days) + ' day(s) PAST due.';
+  else if(days===0) txt='⚠️ DUE TODAY!';
+  else if(days===1) txt='⏰ 1 day left — Due TOMORROW!';
+  else txt=days + ' days left until due date';
+  $('dueBanner').innerHTML='📅 ALL BOOKS DUE: <b>'+fmtDue(due)+'</b> — '+txt;
+}
+function renderSubjectChecks(selected){
+  selected = selected || [];
+  $('subjectChecks').innerHTML = SUBJECTS.map(s=>{
+    const isOn = selected.includes(s);
+    return `<label class="checkItem ${isOn?'checked':''}"><input type="checkbox" value="${s}" ${isOn?'checked':''} onchange="onSubjectTick()"> ${s}</label>`;
+  }).join('');
+  updateSubjectPreview();
+}
+window.onSubjectTick = function(){
+  document.querySelectorAll('#subjectChecks .checkItem').forEach(l=>{
+    const cb=l.querySelector('input');
+    l.classList.toggle('checked', cb.checked);
+  });
+  updateSubjectPreview();
+};
+function getSelectedSubjects(){
+  return [...document.querySelectorAll('#subjectChecks input:checked')].map(c=>c.value);
+}
+function updateSubjectPreview(){
+  const sel=getSelectedSubjects();
+  $('subjectPreview').textContent = sel.length ? 'Selected: '+sel.join(', ') : 'Selected: — (Teacher with NO subject CANNOT Issue anything)';
+}
+window.onRoleChange = function(){
+  const role=$('uRole').value;
+  const isTeacher = role==='TEACHER';
+  $('teacherSubjectBox').style.display = isTeacher ? 'block' : 'none';
+  $('adminNote').style.display = isTeacher ? 'none' : 'block';
+};
+window.onSchoolSwitch = function(){
+  const v=$('schoolDropdown').value; if(!v) return;
+  const [emis, name]=v.split('|');
+  saveSchool(emis, name);
+  EDIT_ID=null; clearUserForm();
+  loadAll();
+};
+window.setUserTab = function(t){
+  USER_TAB=t;
+  ['tabAllU','tabTeach','tabLib','tabAdmin'].forEach(id=>$(id).classList.remove('active'));
+  if(t==='ALL') $('tabAllU').classList.add('active');
+  if(t==='TEACHER') $('tabTeach').classList.add('active');
+  if(t==='LIBRARIAN') $('tabLib').classList.add('active');
+  if(t==='ADMIN') $('tabAdmin').classList.add('active');
+  renderUsers();
+};
 window.clearUserForm = function(){
-  EDIT_ID=null; $('uName').value=''; $('uEmail').value=''; $('uPass').value=''; $('uGrades').value=''; $('uRole').value='TEACHER';
-  $('subjectDropdown').value='';
-  setSelectedSubjects([]);
-  $('saveUserBtn').textContent='✅ Save User'; $('userMsg').innerHTML=''; onRoleChange();
+  EDIT_ID=null;
+  $('uName').value=''; $('uEmail').value=''; $('uPass').value=''; $('uGrades').value=''; $('uPhone').value='';
+  $('uRole').value='TEACHER'; onRoleChange();
+  renderSubjectChecks([]);
+  $('saveUserBtn').textContent='✅ Save User';
+  $('userMsg').innerHTML='';
+  $('uEmail').disabled=false;
 };
-window.doLogin = async function(){
-  const email=($('loginEmail').value||'').trim().toLowerCase();
-  const pass=$('loginPass').value||'';
-  if(!email || !pass){ $('loginMsg').innerHTML='<div class="warn">⚠️ Type Email + Password.</div>'; return; }
-  $('loginMsg').innerHTML='<div class="info">Logging in...</div>';
-  try{
-    const emis=getEmis();
-    let found=null;
-    const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'users'));
-    snap.forEach(d=>{ const u=d.data(); if(String(u.email||'').toLowerCase()===email) found={id:d.id, ...u}; });
-    if(!found){
-      try{ const g=await getDocs(collection(db,'users')); g.forEach(d=>{ const u=d.data(); if(String(u.email||'').toLowerCase()===email) found={id:d.id, ...u}; }); }catch(e){}
-    }
-    if(!found){ $('loginMsg').innerHTML='<div class="warn">❌ User not found for this school. Check Email or create user below.</div>'; return; }
-    if(String(found.password||'')!==pass){ $('loginMsg').innerHTML='<div class="warn">❌ Wrong password.</div>'; return; }
-    const loginObj={ email:found.email, name:found.name||found.fullName||'', role:(found.role||'TEACHER').toUpperCase(), subject:found.subject||'', subjects:found.subjects|| (found.subject? [found.subject] : []), grades:found.grades||'', emis:emis, school:getSchool() };
-    setLogin(loginObj);
-    $('loginMsg').innerHTML='<div class="ok">✅ Logged in as <b>'+loginObj.name+' • '+loginObj.role+'</b>'+(loginObj.subject? ' • Subject: '+loginObj.subject : '')+'</div>';
-    updateLoginBox();
-    loadUsers();
-  }catch(e){ $('loginMsg').innerHTML='<div class="warn">❌ Login failed: '+e.message+'</div>'; }
-};
-window.doLogout = function(){
-  localStorage.removeItem('MAKHANANI_LOGGED_IN');
-  $('loginMsg').innerHTML='<div class="info">Logged out.</div>'; updateLoginBox();
-};
-function updateLoginBox(){
-  const l=getLogin();
-  if(l){
-    $('whoLine').textContent='Logged in: '+(l.name||'')+' • '+l.role+' • '+(l.email||'')+(l.subject? ' • Subject: '+l.subject : '');
-    $('currentLoginBox').innerHTML='✅ Logged in: <b>'+l.name+'</b> • '+l.role+' • '+l.email+(l.subject? ' • Subject: <b>'+l.subject+'</b>' : '')+'<br><span class="small">If you just changed a Teacher Subject, that teacher must Logout + Login again.</span>';
-  } else {
-    $('whoLine').textContent='Not logged in';
-    $('currentLoginBox').textContent='Not logged in';
-  }
-}
 window.saveUser = async function(){
-  const emis=getEmis();
-  const name=$('uName').value.trim();
+  const emis=getEmis(); const school=getSchool();
+  const name=($('uName').value||'').trim();
   const email=($('uEmail').value||'').trim().toLowerCase();
   const pass=$('uPass').value||'';
   const role=$('uRole').value;
-  const subject=SELECTED_SUBJECTS.join(', ');
   const grades=($('uGrades').value||'').trim();
-  const msg=$('userMsg');
-  if(!name || !email || !pass){ msg.innerHTML='<div class="warn">⚠️ Fill Name, Email, Password.</div>'; return; }
-  if(pass.length<4){ msg.innerHTML='<div class="warn">⚠️ Password must be at least 4 characters.</div>'; return; }
-  // ===== v2.02 - Teacher MUST have AT LEAST 1 subject from dropdown =====
-  if(role==='TEACHER' && SELECTED_SUBJECTS.length===0){
-    msg.innerHTML='<div class="warn">🚫 BLOCKED: Teacher MUST have at least 1 Subject.<br><br>1️⃣ Pick a Subject from the dropdown above<br>2️⃣ Click <b>➕ Add This Subject</b><br>3️⃣ Then click Save again.</div>';
-    $('subjectDropdown').focus();
-    $('subjectDropdown').style.border='2px solid #dc2626';
-    setTimeout(()=>{ $('subjectDropdown').style.border=''; }, 2000);
-    return;
+  const phone=($('uPhone').value||'').trim();
+  const subjects = role==='TEACHER' ? getSelectedSubjects() : [];
+  if(!name || !email || !pass){ $('userMsg').innerHTML='<div class="warn">⚠️ Fill Name + Email + Password.</div>'; return; }
+  if(!email.includes('@')){ $('userMsg').innerHTML='<div class="warn">⚠️ Email must contain @.</div>'; return; }
+  if(role==='TEACHER' && subjects.length===0){
+    if(!confirm('⚠️ This TEACHER has NO Subject ticked.\n\nThey will NOT be able to Issue ANY book.\n\nContinue anyway?')) return;
   }
-  if(!isAdminLike() && ALL_USERS.length>0){
-    msg.innerHTML='<div class="warn">🔒 Only ADMIN / PRINCIPAL can create users. Login as Admin / Principal first.</div>'; return;
-  }
+  const id = EDIT_ID || email.replace(/[^a-z0-9]/g,'_');
+  const subjectSingle = subjects.length ? subjects[0] : '';
+  const data={ name:name, fullName:name, email:email, password:pass, role:role, subject:subjectSingle, subjects:subjects, grades:grades, phone:phone, emis:emis, school:school, updatedAt:serverTimestamp() };
+  if(!EDIT_ID) data.createdAt=serverTimestamp();
   $('saveUserBtn').disabled=true; $('saveUserBtn').textContent='Saving...';
   try{
-    const id = EDIT_ID || email.replace(/[^a-z0-9]/g,'_');
-    const subjects = role==='TEACHER' ? [...SELECTED_SUBJECTS] : [];
-    const data={ name:name, fullName:name, email:email, password:pass, role:role, subject:role==='TEACHER'? subject : '', subjects:subjects, grades:grades, emis:emis, school:getSchool(), updatedAt:serverTimestamp() };
-    if(!EDIT_ID) data.createdAt=serverTimestamp();
     await setDoc(doc(db,'schools','EMIS_'+emis,'users',id), data, {merge:true});
-    try{ await setDoc(doc(db,'users',id), data, {merge:true}); }catch(e){}
-    const cur=getLogin();
-    if(cur && cur.email===email){
-      setLogin({ ...cur, name:name, role:role, subject:data.subject, subjects:subjects, grades:grades });
-      updateLoginBox();
-    }
-    msg.innerHTML='<div class="ok">✅ Saved user: <b>'+name+' • '+role+'</b>'+(subject? ' • Subject: '+subject : '')+'<br><span class="small">Tell '+name+' to Logout + Login again to get new Subject / Role.</span></div>';
+    await setDoc(doc(db,'users',id), data, {merge:true});
+    await setDoc(doc(db,'schools','EMIS_'+emis,'logs', 'log_'+Date.now()), { action:'USER_SAVED', detail:'Saved user '+email+' Role '+role+' Subjects '+(subjects.join(', ')||'ANY'), whoEmail:(getLogin()||{}).email||'', whoName:(getLogin()||{}).name||'', whoRole:(getLogin()||{}).role||'', createdAt:serverTimestamp() });
+    $('userMsg').innerHTML='<div class="ok">✅ User Saved: <b>'+name+' • '+email+' • '+role+'</b>'+(role==='TEACHER' ? '<br>Subjects: <b>'+(subjects.join(', ')||'NONE — CANNOT ISSUE')+'</b>' : '<br>Can Issue ANY subject')+'<br>School: '+school+'</div>';
+    await loadAll();
     clearUserForm();
-    await loadUsers();
-  }catch(e){ msg.innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
+  }catch(e){ $('userMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'<br>Check Firestore Rules are Published.</div>'; }
   $('saveUserBtn').disabled=false; $('saveUserBtn').textContent='✅ Save User';
 };
 window.editUser = function(id){
   const u=ALL_USERS.find(x=>x.id===id); if(!u) return;
   EDIT_ID=id;
-  $('uName').value=u.name||''; $('uEmail').value=u.email||''; $('uPass').value=u.password||''; $('uRole').value=u.role||'TEACHER'; $('uGrades').value=u.grades||'';
-  // Load subjects from dropdown list - supports old string format too
-  let subs = u.subjects || [];
-  if(subs.length===0 && u.subject){ subs = String(u.subject).split(',').map(s=>s.trim()).filter(Boolean); }
-  setSelectedSubjects(subs);
-  $('saveUserBtn').textContent='✅ Update User — '+u.name;
+  $('uName').value=u.name||u.fullName||'';
+  $('uEmail').value=u.email||''; $('uEmail').disabled=true;
+  $('uPass').value=u.password||'';
+  $('uRole').value=u.role||'TEACHER';
+  $('uGrades').value=u.grades||'';
+  $('uPhone').value=u.phone||'';
   onRoleChange();
+  let subs = u.subjects && Array.isArray(u.subjects) && u.subjects.length ? u.subjects : (u.subject ? [u.subject] : []);
+  renderSubjectChecks(subs);
+  $('saveUserBtn').textContent='✏️ Update User — '+u.email;
+  $('userMsg').innerHTML='<div class="info">Editing: <b>'+u.email+'</b> — Change Subject / Role / Password then Save. Email cannot be changed.</div>';
   window.scrollTo({top:0, behavior:'smooth'});
-  $('userMsg').innerHTML='<div class="info">Editing: <b>'+u.name+'</b> — change Subject from dropdown then click Update.</div>';
+  document.querySelector('main').scrollIntoView();
 };
-window.deleteUser = async function(id, name){
-  if(!isAdminLike()){ alert('Only ADMIN / PRINCIPAL can delete users.'); return; }
-  if(!confirm('Delete user '+name+'?')) return;
+window.deleteUser = async function(id, email){
+  if(!confirm('Delete user '+email+'?\n\nThey will NOT be able to login anymore.')) return;
+  const emis=getEmis();
   try{
-    const emis=getEmis();
     await deleteDoc(doc(db,'schools','EMIS_'+emis,'users',id));
     try{ await deleteDoc(doc(db,'users',id)); }catch(e){}
-    await loadUsers();
+    $('userMsg').innerHTML='<div class="ok">✅ Deleted: '+email+'</div>';
+    await loadAll();
   }catch(e){ alert('Delete failed: '+e.message); }
 };
-async function loadUsers(){
+window.quickFixSubject = async function(id, email){
+  const sub=prompt('Type Subject for '+email+'\n\nE.g. Accounting, Mathematics, English', 'Accounting');
+  if(!sub) return;
   const emis=getEmis();
-  $('userCount').textContent='Loading...';
   try{
-    const snap=await getDocs(query(collection(db,'schools','EMIS_'+emis,'users'), orderBy('name')));
-    ALL_USERS=[];
-    snap.forEach(d=>{ const u=d.data(); ALL_USERS.push({id:d.id, ...u}); });
-    $('userCount').textContent=ALL_USERS.length+' user(s)';
-    if(ALL_USERS.length===0){ $('userList').innerHTML='<div class="info">No users yet. Create the first ADMIN user above.</div>'; return; }
-    let html='<table><tr><th>Name</th><th>Email</th><th>Role</th><th>Subject(s)</th><th>Grades</th><th>Action</th></tr>';
-    ALL_USERS.forEach(u=>{
-      const pill = u.role==='TEACHER' ? '<span class="pill pill-purple">👩🏾‍🏫 TEACHER</span>' : u.role==='LIBRARIAN' ? '<span class="pill pill-blue">📚 LIBRARIAN</span>' : u.role==='PRINCIPAL' ? '<span class="pill pill-gold">👩🏾‍🏫 PRINCIPAL</span>' : '<span class="pill pill-green">⚙️ ADMIN</span>';
-      let subjText='';
-      if(u.role==='TEACHER'){
-        const list = u.subjects && u.subjects.length ? u.subjects : (u.subject ? String(u.subject).split(',').map(s=>s.trim()) : []);
-        subjText = list.length ? '<b>'+list.join(', ')+'</b> <span class="small">('+list.length+')</span>' : '<span style="color:#dc2626;font-weight:900">⚠️ NO SUBJECT — Cannot Issue</span>';
-      } else { subjText='<span class="small">Any subject</span>'; }
-      html+='<tr><td><b>'+(u.name||'')+'</b></td><td>'+(u.email||'')+'</td><td>'+pill+'</td><td>'+subjText+'</td><td>'+(u.grades||'—')+'</td><td><button class="btn btn-blue" style="width:auto;margin:0;padding:8px 12px" onclick="editUser(\''+u.id+'\')">✏️ Edit</button> <button class="btn btn-red" style="width:auto;margin:0;padding:8px 12px" onclick="deleteUser(\''+u.id+'\',\''+(u.name||'').replace(/\'/g,'')+'\')">🗑️</button></td></tr>';
-    });
-    html+='</table>';
-    $('userList').innerHTML=html;
+    await setDoc(doc(db,'schools','EMIS_'+emis,'users',id), {subject:sub.trim(), subjects:[sub.trim()], updatedAt:serverTimestamp()}, {merge:true});
+    await setDoc(doc(db,'users',id), {subject:sub.trim(), subjects:[sub.trim()], updatedAt:serverTimestamp()}, {merge:true});
+    await loadAll();
+  }catch(e){ alert(e.message); }
+};
+async function loadAll(){
+  const emis=getEmis();
+  try{
+    const [us, ls, bs] = await Promise.all([
+      getDocs(collection(db,'schools','EMIS_'+emis,'users')),
+      getDocs(collection(db,'schools','EMIS_'+emis,'learners')),
+      getDocs(collection(db,'schools','EMIS_'+emis,'textbooks'))
+    ]);
+    ALL_USERS=[]; us.forEach(d=>{ const u=d.data(); ALL_USERS.push({id:d.id, ...u}); });
+    ALL_USERS.sort((a,b)=> (a.role||'').localeCompare(b.role||'') || (a.name||'').localeCompare(b.name||''));
+    $('statUsers').textContent=ALL_USERS.length;
+    $('statTeachers').textContent=ALL_USERS.filter(u=>(u.role||'').toUpperCase()==='TEACHER').length;
+    $('statLearners').textContent=ls.size;
+    $('statBooks').textContent=bs.size;
+    $('userCount').textContent=ALL_USERS.length;
+    const subjects=[...new Set(ALL_USERS.flatMap(u=> (u.subjects && Array.isArray(u.subjects) && u.subjects.length ? u.subjects : (u.subject ? [u.subject] : [])) ))].sort();
+    const prev=$('userSubjectFilter').value;
+    $('userSubjectFilter').innerHTML='<option value="">All Subjects</option>'+subjects.map(s=>`<option ${s===prev?'selected':''}>${s}</option>`).join('');
+    updateDueBanner();
+    renderUsers(); loadLogs();
   }catch(e){ $('userList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
 }
-window.loadUsers = loadUsers;
+window.loadAll = loadAll;
+function renderUsers(){
+  let list=ALL_USERS;
+  if(USER_TAB!=='ALL') list=list.filter(u=>(u.role||'').toUpperCase()===USER_TAB);
+  const q=($('userSearch').value||'').toLowerCase().trim();
+  const sf=$('userSubjectFilter').value;
+  if(q) list=list.filter(u=> ((u.name||'')+' '+(u.email||'')+' '+(u.role||'')+' '+((u.subjects||[]).join(' '))+' '+(u.subject||'')).toLowerCase().includes(q));
+  if(sf) list=list.filter(u=> ((u.subjects||[]).includes(sf) || u.subject===sf));
+  if(list.length===0){ $('userList').innerHTML='<div class="info">No users for this filter. Create one above.</div>'; return; }
+  let html='<table><tr><th>Name</th><th>Role</th><th>Subject(s) — Controls Issue</th><th>Login</th><th>Action</th></tr>';
+  list.forEach(u=>{
+    const role=(u.role||'').toUpperCase();
+    const subs = (u.subjects && Array.isArray(u.subjects) && u.subjects.length) ? u.subjects : (u.subject ? [u.subject] : []);
+    let subCell='';
+    if(role==='TEACHER'){
+      subCell = subs.length ? subs.map(s=>`<span class="pill pill-gold">${s}</span>`).join(' ') : '<span class="pill pill-red">⚠️ NO SUBJECT — CANNOT ISSUE</span>';
+    } else {
+      subCell='<span class="pill pill-green">✅ ANY Subject</span>';
+    }
+    const rolePill = role==='ADMIN' ? '<span class="pill pill-purple">ADMIN</span>' : role==='TEACHER' ? '<span class="pill pill-blue">TEACHER</span>' : role==='LIBRARIAN' ? '<span class="pill pill-gold">LIBRARIAN</span>' : role==='PRINCIPAL' ? '<span class="pill pill-green">PRINCIPAL</span>' : '<span class="pill pill-blue">'+role+'</span>';
+    html+='<tr><td><b>'+(u.name||u.fullName||'')+'</b><br><span class="small">'+(u.grades? 'Grades: '+u.grades : '')+'</span></td><td>'+rolePill+'</td><td>'+subCell+'</td><td><span class="small">'+(u.email||'')+'<br>Pass: '+(u.password||'')+'</span></td><td><button class="btn btn-blue btn-sm" onclick="editUser(\''+u.id+'\')">✏️ Edit</button><button class="btn btn-gold btn-sm" onclick="quickFixSubject(\''+u.id+'\',\''+(u.email||'')+'\')">📚 Set Subject</button><button class="btn btn-red btn-sm" onclick="deleteUser(\''+u.id+'\',\''+(u.email||'')+'\')">🗑️ Delete</button></td></tr>';
+  });
+  html+='</table>';
+  $('userList').innerHTML=html;
+}
+window.renderUsers = renderUsers;
+window.loadLogs = async function(){
+  const emis=getEmis();
+  try{
+    const snap=await getDocs(query(collection(db,'schools','EMIS_'+emis,'logs'), orderBy('createdAt','desc'), limit(50)));
+    if(snap.empty){ $('logList').innerHTML='<div class="info">No logs yet.</div>'; return; }
+    let html='<table><tr><th>When</th><th>Action</th><th>Detail</th><th>Who</th></tr>';
+    snap.forEach(d=>{
+      const l=d.data();
+      let when='—'; try{ when=l.createdAt ? l.createdAt.toDate().toLocaleString('en-ZA') : '—'; }catch(e){}
+      html+='<tr><td class="small">'+when+'</td><td><span class="pill pill-blue">'+(l.action||'')+'</span></td><td>'+(l.detail||'')+'</td><td class="small">'+(l.whoName||l.whoEmail||'')+'</td></tr>';
+    });
+    html+='</table>';
+    $('logList').innerHTML=html;
+  }catch(e){ $('logList').innerHTML='<div class="warn">❌ Logs failed: '+e.message+'</div>'; }
+};
 document.addEventListener('DOMContentLoaded', async ()=>{
-  const emis=getEmis(); const school=getSchool();
-  $('schoolSelect').value=emis+'|'+school;
-  $('schoolBox').textContent='School: '+school+' • EMIS '+emis;
-  $('cloudStatus').textContent='☁️ Cloud: Connected — '+school;
-  setSelectedSubjects([]);
+  const emis=getEmis(); const school=getSchool(); const login=getLogin();
+  if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'');
+  saveSchool(emis, school);
+  $('schoolDropdown').value=emis+'|'+school;
+  renderSubjectChecks([]);
   onRoleChange();
-  updateLoginBox();
-  await loadUsers();
+  updateDueBanner();
+  await loadAll();
 });
 </script>
 </body>
