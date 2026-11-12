@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v1.97</title>
+<title>Makhanani LTSM — Textbooks v1.98</title>
 <meta name="theme-color" content="#0a1f4d">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <style>
@@ -50,15 +50,21 @@ th{background:#0a1f4d;color:#fff}
 .selOpt input{flex-shrink:0}
 .labelsGrid{display:block}
 @page{ size:A4; margin:8mm; }
+/* ===== v1.98 PRINT FIX - Hide EVERYTHING except labels ===== */
 @media print{
-  header,#cloudStatus,.topnav,.card:first-child,.card:nth-child(2) .btn,.card:nth-child(2) button, #deleteCard, .btn, .noPrint{display:none!important}
-  body{background:#fff;margin:0}
-  main{max-width:100%;padding:0}
-  .card{box-shadow:none;border:none;padding:0;margin:0}
-  #labelsBox{margin:0;padding:0}
-  #labelsBox h2, #labelsBox p{display:none}
-  .labelsGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm}
-  .labelBox{border:1.2px solid #000;padding:3mm 2mm;margin:0;text-align:center;background:#fff;page-break-inside:avoid;break-inside:avoid;height:50mm;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden}
+  body{background:#fff !important;margin:0 !important}
+  header, #cloudStatus, .topnav, .btn, .noPrint, #printArea, #saveMsg, #printSelMsg {display:none !important}
+  main{max-width:100% !important;padding:0 !important;margin:0 !important}
+  /* Hide ALL cards by default */
+  main > .card{display:none !important}
+  /* Show ONLY the card that holds the labels */
+  main > .card:has(#labelsBox){display:block !important;box-shadow:none !important;border:none !important;padding:0 !important;margin:0 !important}
+  /* Inside that card, hide everything except labelsBox */
+  .card:has(#labelsBox) > *:not(#labelsBox){display:none !important}
+  #labelsBox{display:block !important;margin:0 !important;padding:0 !important}
+  #labelsBox h2, #labelsBox p{display:none !important}
+  .labelsGrid{display:grid !important;grid-template-columns:1fr 1fr 1fr !important;gap:4mm !important}
+  .labelBox{border:1.2px solid #000 !important;padding:3mm 2mm !important;margin:0 !important;text-align:center;background:#fff;display:flex !important;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;height:50mm !important;page-break-inside:avoid;break-inside:avoid}
   .labelBox svg{width:100%;max-width:58mm;height:12mm}
   .schoolName{font-size:10pt;line-height:1.1}
   .typeWord{font-size:9pt;letter-spacing:2px;margin-top:1mm}
@@ -69,7 +75,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Textbook Barcode Labels • v1.97<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.97 SELECT PRINT</span></div></header>
+<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Textbook Barcode Labels • v1.98<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.98 PRINT FIX</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -100,54 +106,17 @@ th{background:#0a1f4d;color:#fff}
 <div id="labelsBox"></div>
 </div>
 
-<!-- ===== v1.97 PRINT SELECTION ===== -->
 <div class="card" style="border:2px solid #7c3aed">
 <h2>🖨️ Print Barcodes — Choose What To Print</h2>
 <div class="small">Step 1: Choose one option below, Step 2: Click the big purple PRINT button</div>
-
-<label class="selOpt" id="optBookBox" onclick="setPrintMode('book')">
-<input type="radio" name="printMode" value="book" checked>
-<div><b>📖 Per Book — Tick one or more books</b><span>Use this when 1 book label is torn / lost, or you want to re-print 5 books only</span></div>
-</label>
-
-<label class="selOpt" id="optTitleBox" onclick="setPrintMode('title')">
-<input type="radio" name="printMode" value="title">
-<div><b>📚 Per Title — Print one whole title</b><span>Example: Print all copies of Mathematics Grade 10 only</span></div>
-</label>
-
-<label class="selOpt" id="optGradeBox" onclick="setPrintMode('grade')">
-<input type="radio" name="printMode" value="grade">
-<div><b>🎓 Per Grade — Print one whole grade</b><span>Example: Print all Grade 8 books (all subjects, all titles)</span></div>
-</label>
-
-<label class="selOpt" id="optSubjectBox" onclick="setPrintMode('subject')">
-<input type="radio" name="printMode" value="subject">
-<div><b>📐 Per Subject — Print one whole subject</b><span>Example: Print all Mathematics books (all grades, all titles)</span></div>
-</label>
-
-<label class="selOpt" id="optAllBox" onclick="setPrintMode('all')">
-<input type="radio" name="printMode" value="all">
-<div><b>🌍 All Books — Print everything</b><span>Prints every book in the system</span></div>
-</label>
-
-<div id="titlePicker" style="display:none">
-<label>Choose Title to Print</label>
-<select id="printTitleSelect"><option value="">— Choose Title —</option></select>
-<div class="small" id="titleCountInfo"></div>
-</div>
-
-<div id="gradePicker" style="display:none">
-<label>Choose Grade to Print</label>
-<select id="printGradeSelect"><option value="">— Choose Grade —</option></select>
-<div class="small" id="gradeCountInfo"></div>
-</div>
-
-<div id="subjectPicker" style="display:none">
-<label>Choose Subject to Print</label>
-<select id="printSubjectSelect"><option value="">— Choose Subject —</option></select>
-<div class="small" id="subjectCountInfo"></div>
-</div>
-
+<label class="selOpt" id="optBookBox" onclick="setPrintMode('book')"><input type="radio" name="printMode" value="book" checked><div><b>📖 Per Book — Tick one or more books</b><span>Use this when 1 book label is torn / lost</span></div></label>
+<label class="selOpt" id="optTitleBox" onclick="setPrintMode('title')"><input type="radio" name="printMode" value="title"><div><b>📚 Per Title — Print one whole title</b><span>Example: Print all copies of Mathematics Grade 10 only</span></div></label>
+<label class="selOpt" id="optGradeBox" onclick="setPrintMode('grade')"><input type="radio" name="printMode" value="grade"><div><b>🎓 Per Grade — Print one whole grade</b><span>Example: Print all Grade 8 books (all subjects)</span></div></label>
+<label class="selOpt" id="optSubjectBox" onclick="setPrintMode('subject')"><input type="radio" name="printMode" value="subject"><div><b>📐 Per Subject — Print one whole subject</b><span>Example: Print all Mathematics books (all grades)</span></div></label>
+<label class="selOpt" id="optAllBox" onclick="setPrintMode('all')"><input type="radio" name="printMode" value="all"><div><b>🌍 All Books — Print everything</b><span>Prints every book in the system</span></div></label>
+<div id="titlePicker" style="display:none"><label>Choose Title to Print</label><select id="printTitleSelect"><option value="">— Choose Title —</option></select><div class="small" id="titleCountInfo"></div></div>
+<div id="gradePicker" style="display:none"><label>Choose Grade to Print</label><select id="printGradeSelect"><option value="">— Choose Grade —</option></select><div class="small" id="gradeCountInfo"></div></div>
+<div id="subjectPicker" style="display:none"><label>Choose Subject to Print</label><select id="printSubjectSelect"><option value="">— Choose Subject —</option></select><div class="small" id="subjectCountInfo"></div></div>
 <div class="info" id="printSummary">📋 Selected: <b>Per Book</b> — Tick books below, then click PRINT</div>
 <button class="btn btn-print" onclick="printBySelection()">🖨️ PRINT BARCODE LABELS — By Selection</button>
 <div class="small" style="text-align:center">It will show labels first, then open Print dialog automatically</div>
@@ -253,7 +222,6 @@ function renderLabelsRange(school, start, end){
   let codes=[]; for(let n=start;n<=end;n++) codes.push(fmtBarcode(PREFIX,n));
   renderLabels(school, codes);
 }
-// ===== v1.97 SELECTION LOGIC =====
 window.setPrintMode = function(mode){
   PRINT_MODE=mode;
   ['book','title','grade','subject','all'].forEach(m=>{
@@ -294,7 +262,7 @@ window.printBySelection = function(){
   const school=getSchool();
   let codes=[]; let label='';
   if(PRINT_MODE==='book'){
-    if(SELECTED.size===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 book below first — tick the checkbox next to the barcode.</div>'; return; }
+    if(SELECTED.size===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 book below first.</div>'; return; }
     codes=ALL_BOOKS.filter(b=>SELECTED.has(b.id)).map(b=>b.barcode);
     label='Per Book — '+codes.length+' book(s)';
   }
