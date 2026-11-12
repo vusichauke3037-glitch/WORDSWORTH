@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Librarian v2.00</title>
+<title>Makhanani LTSM — Librarian v2.01</title>
 <meta name="theme-color" content="#0a1f4d">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -41,9 +41,13 @@ th{background:#0a1f4d;color:#fff}
 .stat{background:#f8fafc;border-radius:10px;padding:12px;text-align:center}
 .stat b{font-size:22px;display:block;color:#0a1f4d}
 .stat span{font-size:12px;color:#64748b}
+.stat.overdueStat{background:#fef2f2}
+.stat.overdueStat b{color:#dc2626}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .tabs button{padding:10px 16px;border:none;border-radius:20px;font-weight:900;cursor:pointer;background:#e2e8f0}
 .tabs button.active{background:#0a1f4d;color:#fff}
+.dueBanner{background:#fffbeb;border:2px solid #d4af37;border-radius:12px;padding:14px;text-align:center;font-weight:900;font-size:16px;color:#92400e;margin-top:10px}
+.dueBanner b{color:#0a1f4d}
 @page{ size:A4; margin:10mm; }
 @media print{
   header,#cloudStatus,.topnav,.btn,.noPrint{display:none!important}
@@ -52,7 +56,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>📚 Librarian — Makhanani LTSM</h1><p>Librarian Dashboard • v2.00<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.00 LIBRARIAN</span></div></header>
+<header><div><h1>📚 Librarian — Makhanani LTSM</h1><p>Due: 30 November Every Year • v2.01<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.01 DUE 30 NOV</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -61,6 +65,7 @@ th{background:#0a1f4d;color:#fff}
 <h2>🏫 School + Role</h2>
 <div class="info" id="schoolBox">School: —</div>
 <div class="info" id="roleBox">Role: —</div>
+<div class="dueBanner" id="dueBanner">📅 ALL BOOKS DUE: <b>30 November</b> — <span id="dueCountdown">—</span></div>
 <div class="statRow">
 <div class="stat"><b id="statIssued">0</b><span>📚 Out Now</span></div>
 <div class="stat"><b id="statReturned">0</b><span>✅ Returned Today</span></div>
@@ -69,15 +74,15 @@ th{background:#0a1f4d;color:#fff}
 </div>
 <div class="statRow">
 <div class="stat"><b id="statAvailable">0</b><span>✅ Books Available</span></div>
-<div class="stat"><b id="statOverdue">0</b><span>⚠️ Overdue (14+ days)</span></div>
-<div class="stat"><b id="statIssuedToday">0</b><span>📚 Issued Today</span></div>
+<div class="stat overdueStat"><b id="statOverdue">0</b><span>⚠️ Overdue (Past 30 Nov)</span></div>
+<div class="stat"><b id="statDueSoon">0</b><span>⏰ Due in 30 Days</span></div>
 <div class="stat"><b id="statNoBook">0</b><span>🎓 Learners With No Book</span></div>
 </div>
 </div>
 
 <div class="card">
 <h2>📷 Quick Issue / Return — Scan Here</h2>
-<div class="small">Librarian can Issue ANY subject, Return ANY book. Learner rules still apply: Grade must match + No same Title twice.</div>
+<div class="small">Librarian can Issue ANY subject, Return ANY book. Due date is always <b>30 November</b>. Learner rules still apply: Grade must match + No same Title twice.</div>
 <label>1️⃣ Learner Barcode — Scan L000xxx</label>
 <input id="learnerScan" class="scan" placeholder="Scan or type L000001 then Enter" autocomplete="off" onkeydown="if(event.key==='Enter'){lookupLearner();event.preventDefault();}">
 <div id="learnerBox" class="bigBox" style="margin-top:10px">👤 No learner scanned yet.</div>
@@ -86,7 +91,7 @@ th{background:#0a1f4d;color:#fff}
 <div id="bookBox" class="bigBox" style="margin-top:10px">📖 No book scanned yet.</div>
 <div id="ruleCheckBox"></div>
 <div class="grid2">
-<button class="btn btn-green" id="issueBtn" onclick="issueBook()" disabled>📚 ISSUE BOOK</button>
+<button class="btn btn-green" id="issueBtn" onclick="issueBook()" disabled>📚 ISSUE BOOK — Due 30 Nov</button>
 <button class="btn btn-blue" id="returnBtn" onclick="returnBook()" disabled>↩️ RETURN BOOK</button>
 </div>
 <button class="btn btn-grey" onclick="clearScans()">🔄 Clear Scans</button>
@@ -94,10 +99,11 @@ th{background:#0a1f4d;color:#fff}
 </div>
 
 <div class="card">
-<h2>📋 All Issues — Out Now / Returned / Overdue</h2>
+<h2>📋 All Issues — Out Now / Overdue / Returned</h2>
 <div class="tabs">
 <button id="tabOut" class="active" onclick="setTab('OUT')">📚 Out Now (<span id="cntOut">0</span>)</button>
 <button id="tabOver" onclick="setTab('OVERDUE')">⚠️ Overdue (<span id="cntOver">0</span>)</button>
+<button id="tabDueSoon" onclick="setTab('DUE_SOON')">⏰ Due in 30 Days (<span id="cntDueSoon">0</span>)</button>
 <button id="tabRet" onclick="setTab('RETURNED')">✅ Returned (<span id="cntRet">0</span>)</button>
 <button id="tabAll" onclick="setTab('ALL')">🌍 All (<span id="cntAll">0</span>)</button>
 </div>
@@ -109,7 +115,7 @@ th{background:#0a1f4d;color:#fff}
 <div><label>Filter by Subject</label><select id="issueSubjectFilter" onchange="renderIssues()"><option value="">All Subjects</option></select></div>
 <div><label>Filter by Class</label><select id="issueClassFilter" onchange="renderIssues()"><option value="">All Classes</option></select></div>
 </div>
-<div class="small"><span id="issueCount">Loading...</span> • Overdue = OUT for more than 14 days.</div>
+<div class="small"><span id="issueCount">Loading...</span> • Due Date = <b>30 November</b> every year. Overdue = still OUT after 30 Nov.</div>
 <div id="issueList"></div>
 <div class="grid2">
 <button class="btn btn-blue" onclick="loadAll()">🔄 Refresh All</button>
@@ -119,7 +125,7 @@ th{background:#0a1f4d;color:#fff}
 
 <div class="card">
 <h2>🎓 Learners With No Book Out</h2>
-<div class="small">Learners who have 0 books OUT right now. Use this to find who still needs books.</div>
+<div class="small">Learners who have 0 books OUT right now.</div>
 <div class="grid2">
 <div><label>Filter by Grade</label><select id="noBookGrade" onchange="renderNoBook()"><option value="">All Grades</option></select></div>
 <div><label>🔍 Search name / code</label><input id="noBookSearch" placeholder="Search..." oninput="renderNoBook()"></div>
@@ -151,15 +157,49 @@ function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGG
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
 function canWrite(){ return !!getLogin(); }
 function norm(s){ return String(s||'').trim().toLowerCase(); }
+// ===== v2.01 DUE DATE: 30 NOVEMBER EVERY YEAR =====
+function getDueDateForIssue(issuedDate){
+  // If issued Jan-Nov, due 30 Nov SAME year. If issued Dec, due 30 Nov NEXT year.
+  const d = issuedDate ? new Date(issuedDate) : new Date();
+  let year = d.getFullYear();
+  if(d.getMonth() === 11){ year = year + 1; } // December (month 11) -> next year
+  return new Date(year, 10, 30); // Month 10 = November, Day 30
+}
+function getDueDateForRecord(x){
+  // If record already has dueDate saved, use it. Else calculate from issuedAt.
+  if(x.dueDate){
+    try{ const d = x.dueDate.toDate ? x.dueDate.toDate() : new Date(x.dueDate); if(!isNaN(d.getTime())) return d; }catch(e){}
+  }
+  if(x.issuedAt){
+    try{ const d = x.issuedAt.toDate ? x.issuedAt.toDate() : new Date(x.issuedAt); return getDueDateForIssue(d); }catch(e){}
+  }
+  return getDueDateForIssue(new Date());
+}
+function fmtDue(d){ try{ return d.toLocaleDateString('en-ZA', {day:'2-digit', month:'short', year:'numeric'}); }catch(e){ return '30 Nov'; } }
 function fmtDate(ts){
   if(!ts) return '—';
   try{ const d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleDateString('en-ZA') + ' ' + d.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return '—'; }
 }
-function daysOut(ts){
-  if(!ts) return 0;
-  try{ const d = ts.toDate ? ts.toDate() : new Date(ts); return Math.floor((Date.now()-d.getTime())/(1000*60*60*24)); }catch(e){ return 0; }
+function daysUntilDue(x){
+  const due=getDueDateForRecord(x);
+  const today=new Date(); today.setHours(0,0,0,0);
+  const dueDay=new Date(due); dueDay.setHours(0,0,0,0);
+  return Math.ceil((dueDay - today)/(1000*60*60*24));
 }
-function isOverdue(x){ return x.status==='OUT' && daysOut(x.issuedAt) > 14; }
+function isOverdue(x){ return x.status==='OUT' && daysUntilDue(x) < 0; }
+function isDueSoon(x){ return x.status==='OUT' && daysUntilDue(x) >= 0 && daysUntilDue(x) <= 30; }
+function updateDueBanner(){
+  const due=getDueDateForIssue(new Date());
+  const today=new Date(); today.setHours(0,0,0,0);
+  const days=Math.ceil((new Date(due).setHours(0,0,0,0) - today)/(1000*60*60*24));
+  let txt='';
+  if(days < 0) txt='⚠️ OVERDUE — ' + Math.abs(days) + ' day(s) PAST due. All books should have been returned!';
+  else if(days===0) txt='⚠️ DUE TODAY — All books must be returned TODAY!';
+  else if(days===1) txt='⏰ 1 day left — Due TOMORROW!';
+  else txt=days + ' days left until due date';
+  $('dueCountdown').textContent=fmtDue(due)+' — '+txt;
+  $('dueBanner').innerHTML='📅 ALL BOOKS DUE: <b>'+fmtDue(due)+'</b> — '+txt;
+}
 window.clearScans = function(){
   CUR_LEARNER=null; CUR_BOOK=null;
   $('learnerScan').value=''; $('bookScan').value='';
@@ -224,8 +264,9 @@ async function updateRuleCheck(){
   if(!CUR_LEARNER || !CUR_BOOK){ box.innerHTML=''; $('issueBtn').disabled=true; $('returnBtn').disabled=true; return; }
   $('returnBtn').disabled=false;
   let checks=[], blocked=false;
-  // Librarian: NO subject block - can issue any subject
+  const due=getDueDateForIssue(new Date());
   checks.push('✅ Subject: Librarian / '+getRole()+' can issue ANY subject — Book: <b>'+CUR_BOOK.subject+'</b>');
+  checks.push('📅 Due Date: <b>'+fmtDue(due)+'</b> — All books due 30 November every year');
   if(norm(CUR_LEARNER.grade)===norm(CUR_BOOK.grade)){ checks.push('✅ Grade: Learner <b>'+CUR_LEARNER.grade+'</b> = Book <b>'+CUR_BOOK.grade+'</b>'); }
   else { checks.push('❌ Grade BLOCKED: Learner is <b>'+CUR_LEARNER.grade+'</b>, book is <b>'+CUR_BOOK.grade+'</b>.'); blocked=true; }
   if(CUR_BOOK.status==='ISSUED'){ checks.push('❌ Book BLOCKED: Already OUT. Return it first.'); blocked=true; }
@@ -244,17 +285,18 @@ window.issueBook = async function(){
   if(CUR_BOOK.status==='ISSUED'){ $('issueMsg').innerHTML='<div class="warn">⚠️ Book already OUT.</div>'; return; }
   const dup=await checkDuplicateTitle();
   if(dup){ $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED: Already has '+CUR_BOOK.title+' OUT ('+dup.bookCode+').</div>'; return; }
-  if(!confirm('Issue '+CUR_BOOK.code+' ('+CUR_BOOK.title+') to '+CUR_LEARNER.name+'?')) return;
+  const due=getDueDateForIssue(new Date());
+  if(!confirm('Issue '+CUR_BOOK.code+' ('+CUR_BOOK.title+') to '+CUR_LEARNER.name+'?\n\n📅 DUE DATE: '+fmtDue(due)+'\nAll books due 30 November every year.')) return;
   $('issueBtn').disabled=true; $('issueBtn').textContent='Issuing...';
   try{
     const login=getLogin();
-    await setDoc(doc(db,'schools','EMIS_'+emis,'issues',CUR_BOOK.code+'_'+Date.now()), { learnerCode:CUR_LEARNER.code, learnerName:CUR_LEARNER.name, learnerGrade:CUR_LEARNER.grade, learnerClass:CUR_LEARNER.class, bookCode:CUR_BOOK.code, bookTitle:CUR_BOOK.title, bookSubject:CUR_BOOK.subject, bookGrade:CUR_BOOK.grade, status:'OUT', issuedAt:serverTimestamp(), issuedBy:login?login.email:'', issuedByName:login?login.name:'', issuedByRole:login?login.role:'', returnedAt:null });
+    await setDoc(doc(db,'schools','EMIS_'+emis,'issues',CUR_BOOK.code+'_'+Date.now()), { learnerCode:CUR_LEARNER.code, learnerName:CUR_LEARNER.name, learnerGrade:CUR_LEARNER.grade, learnerClass:CUR_LEARNER.class, bookCode:CUR_BOOK.code, bookTitle:CUR_BOOK.title, bookSubject:CUR_BOOK.subject, bookGrade:CUR_BOOK.grade, status:'OUT', issuedAt:serverTimestamp(), dueDate:due, dueDateText:fmtDue(due), issuedBy:login?login.email:'', issuedByName:login?login.name:'', issuedByRole:login?login.role:'', returnedAt:null });
     await updateDoc(doc(db,'schools','EMIS_'+emis,'textbooks',CUR_BOOK.code), { status:'ISSUED', issuedTo:CUR_LEARNER.code, issuedToName:CUR_LEARNER.name });
-    await addDoc(collection(db,'schools','EMIS_'+emis,'logs'), { action:'ISSUE', detail:'Issued '+CUR_BOOK.code+' to '+CUR_LEARNER.code, whoEmail:login?login.email:'', whoName:login?login.name:'', whoRole:login?login.role:'', createdAt:serverTimestamp() });
-    $('issueMsg').innerHTML='<div class="ok">✅ ISSUED: '+CUR_BOOK.code+' → '+CUR_LEARNER.name+'</div>';
+    await addDoc(collection(db,'schools','EMIS_'+emis,'logs'), { action:'ISSUE', detail:'Issued '+CUR_BOOK.code+' to '+CUR_LEARNER.code+' Due '+fmtDue(due), whoEmail:login?login.email:'', whoName:login?login.name:'', whoRole:login?login.role:'', createdAt:serverTimestamp() });
+    $('issueMsg').innerHTML='<div class="ok">✅ ISSUED: '+CUR_BOOK.code+' → '+CUR_LEARNER.name+'<br>📅 Due: <b>'+fmtDue(due)+'</b></div>';
     await loadAll(); clearScans();
   }catch(e){ $('issueMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
-  $('issueBtn').disabled=false; $('issueBtn').textContent='📚 ISSUE BOOK';
+  $('issueBtn').disabled=false; $('issueBtn').textContent='📚 ISSUE BOOK — Due 30 Nov';
 };
 window.returnBook = async function(){
   const emis=getEmis();
@@ -276,9 +318,10 @@ window.returnBook = async function(){
   $('returnBtn').disabled=false; $('returnBtn').textContent='↩️ RETURN BOOK';
 };
 window.setTab = function(t){
-  TAB=t; ['tabOut','tabOver','tabRet','tabAll'].forEach(id=>$(id).classList.remove('active'));
+  TAB=t; ['tabOut','tabOver','tabDueSoon','tabRet','tabAll'].forEach(id=>$(id).classList.remove('active'));
   if(t==='OUT') $('tabOut').classList.add('active');
   if(t==='OVERDUE') $('tabOver').classList.add('active');
+  if(t==='DUE_SOON') $('tabDueSoon').classList.add('active');
   if(t==='RETURNED') $('tabRet').classList.add('active');
   if(t==='ALL') $('tabAll').classList.add('active');
   renderIssues();
@@ -295,19 +338,19 @@ async function loadAll(){
     ALL_BOOKS=[]; bs.forEach(d=>{ const b=d.data(); ALL_BOOKS.push({id:d.id, code:b.code||b.barcode||d.id, title:b.title||'', subject:b.subject||'', grade:b.grade||'', status:b.status||'AVAILABLE'}); });
     ALL_ISSUES=[]; is.forEach(d=>{ const y=d.data(); ALL_ISSUES.push({id:d.id, ...y}); });
     const today=new Date(); today.setHours(0,0,0,0);
-    let out=0, retToday=0, issuedToday=0;
+    let out=0, retToday=0;
     ALL_ISSUES.forEach(x=>{
       if(x.status==='OUT') out++;
       if(x.status==='RETURNED' && x.returnedAt){ try{ const d=x.returnedAt.toDate(); if(d>=today) retToday++; }catch(e){} }
-      if(x.issuedAt){ try{ const d=x.issuedAt.toDate(); if(d>=today) issuedToday++; }catch(e){} }
     });
     const avail=ALL_BOOKS.filter(b=>b.status!=='ISSUED').length;
     const overdue=ALL_ISSUES.filter(x=>isOverdue(x)).length;
+    const dueSoon=ALL_ISSUES.filter(x=>isDueSoon(x)).length;
     const outCodes=new Set(ALL_ISSUES.filter(x=>x.status==='OUT').map(x=>x.learnerCode));
     const noBook=ALL_LEARNERS.filter(l=>!outCodes.has(l.barcode)).length;
     $('statIssued').textContent=out; $('statReturned').textContent=retToday; $('statLearners').textContent=ALL_LEARNERS.length; $('statBooks').textContent=ALL_BOOKS.length;
-    $('statAvailable').textContent=avail; $('statOverdue').textContent=overdue; $('statIssuedToday').textContent=issuedToday; $('statNoBook').textContent=noBook;
-    $('cntOut').textContent=out; $('cntOver').textContent=overdue; $('cntRet').textContent=ALL_ISSUES.filter(x=>x.status==='RETURNED').length; $('cntAll').textContent=ALL_ISSUES.length;
+    $('statAvailable').textContent=avail; $('statOverdue').textContent=overdue; $('statDueSoon').textContent=dueSoon; $('statNoBook').textContent=noBook;
+    $('cntOut').textContent=out; $('cntOver').textContent=overdue; $('cntDueSoon').textContent=dueSoon; $('cntRet').textContent=ALL_ISSUES.filter(x=>x.status==='RETURNED').length; $('cntAll').textContent=ALL_ISSUES.length;
     const grades=[...new Set(ALL_ISSUES.map(x=>x.learnerGrade).filter(Boolean))].sort();
     const subjects=[...new Set(ALL_ISSUES.map(x=>x.bookSubject).filter(Boolean))].sort();
     const classes=[...new Set(ALL_ISSUES.map(x=>x.learnerClass).filter(Boolean))].sort();
@@ -317,6 +360,7 @@ async function loadAll(){
     $('issueSubjectFilter').innerHTML='<option value="">All Subjects</option>'+subjects.map(s=>`<option ${s===prevS?'selected':''}>${s}</option>`).join('');
     $('issueClassFilter').innerHTML='<option value="">All Classes</option>'+classes.map(c=>`<option ${c===prevC?'selected':''}>${c}</option>`).join('');
     $('noBookGrade').innerHTML='<option value="">All Grades</option>'+lgrades.map(g=>`<option ${g===prevNG?'selected':''}>${g}</option>`).join('');
+    updateDueBanner();
     renderIssues(); renderNoBook();
   }catch(e){ $('issueList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
 }
@@ -325,6 +369,7 @@ function renderIssues(){
   let filtered=ALL_ISSUES;
   if(TAB==='OUT') filtered=filtered.filter(x=>x.status==='OUT');
   if(TAB==='OVERDUE') filtered=filtered.filter(x=>isOverdue(x));
+  if(TAB==='DUE_SOON') filtered=filtered.filter(x=>isDueSoon(x));
   if(TAB==='RETURNED') filtered=filtered.filter(x=>x.status==='RETURNED');
   const q=($('issueSearch').value||'').toLowerCase().trim();
   const gf=$('issueGradeFilter').value, sf=$('issueSubjectFilter').value, cf=$('issueClassFilter').value;
@@ -334,12 +379,19 @@ function renderIssues(){
   if(q) filtered=filtered.filter(x=> (x.learnerName+' '+x.learnerCode+' '+x.bookCode+' '+x.bookTitle+' '+x.bookSubject).toLowerCase().includes(q));
   $('issueCount').textContent=filtered.length+' shown • '+ALL_ISSUES.length+' total';
   if(filtered.length===0){ $('issueList').innerHTML='<div class="info">No issues for this filter.</div>'; return; }
-  let html='<table><tr><th>Learner</th><th>Book</th><th>Status</th><th>Issued</th><th>Days</th><th>Returned</th><th>Action</th></tr>';
+  let html='<table><tr><th>Learner</th><th>Book</th><th>Status</th><th>Issued</th><th>Due Date</th><th>Days Left</th><th>Returned</th><th>Action</th></tr>';
   filtered.slice(0,200).forEach(x=>{
     const over=isOverdue(x);
+    const days=daysUntilDue(x);
+    const dueStr=fmtDue(getDueDateForRecord(x));
+    let daysTxt='';
+    if(x.status==='RETURNED') daysTxt='—';
+    else if(days < 0) daysTxt='<b style="color:#dc2626">'+Math.abs(days)+' days OVERDUE</b>';
+    else if(days===0) daysTxt='<b style="color:#dc2626">DUE TODAY</b>';
+    else daysTxt=days+' days left';
     const pill = x.status==='OUT' ? (over ? '<span class="pill pill-red">⚠️ OVERDUE</span>' : '<span class="pill pill-red">📚 OUT</span>') : '<span class="pill pill-green">✅ RETURNED</span>';
     const act = x.status==='OUT' ? `<button class="btn btn-blue" style="width:auto;margin:0;padding:8px 12px" onclick="quickReturn('${x.id}','${x.bookCode}','${x.learnerName}')">↩️ Return</button>` : '—';
-    html+='<tr><td><b>'+(x.learnerName||'')+'</b><br><span class="small">'+(x.learnerCode||'')+' • '+(x.learnerGrade||'')+' '+(x.learnerClass||'')+'</span></td><td><b>'+(x.bookCode||'')+'</b><br><span class="small">'+(x.bookTitle||'')+' • '+(x.bookSubject||'')+'</span></td><td>'+pill+'</td><td class="small">'+fmtDate(x.issuedAt)+'</td><td>'+(x.status==='OUT'? daysOut(x.issuedAt)+' days' : '—')+'</td><td class="small">'+fmtDate(x.returnedAt)+'</td><td>'+act+'</td></tr>';
+    html+='<tr><td><b>'+(x.learnerName||'')+'</b><br><span class="small">'+(x.learnerCode||'')+' • '+(x.learnerGrade||'')+' '+(x.learnerClass||'')+'</span></td><td><b>'+(x.bookCode||'')+'</b><br><span class="small">'+(x.bookTitle||'')+' • '+(x.bookSubject||'')+'</span></td><td>'+pill+'</td><td class="small">'+fmtDate(x.issuedAt)+'</td><td><b>'+dueStr+'</b></td><td>'+daysTxt+'</td><td class="small">'+fmtDate(x.returnedAt)+'</td><td>'+act+'</td></tr>';
   });
   html+='</table>';
   $('issueList').innerHTML=html;
@@ -375,8 +427,9 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   const emis=getEmis(); const school=getSchool(); const login=getLogin();
   if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'');
   if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
-  $('roleBox').innerHTML = login ? 'Role: <b>'+getRole()+'</b> • Librarian can Issue ANY subject, Return ANY book, Delete books/learners in Textbooks / Learners pages' : 'Role: <b>NOT LOGGED IN</b> • Login in Admin / Home first';
+  $('roleBox').innerHTML = login ? 'Role: <b>'+getRole()+'</b> • Librarian can Issue ANY subject, Return ANY book' : 'Role: <b>NOT LOGGED IN</b> • Login in Admin / Home first';
   $('cloudStatus').textContent='☁️ Cloud: Connected — '+school;
+  updateDueBanner();
   await loadAll();
   $('learnerScan').focus();
 });
