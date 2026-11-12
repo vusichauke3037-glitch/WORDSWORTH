@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.00</title>
+<title>Makhanani LTSM — Learners v2.01</title>
 <meta name="theme-color" content="#0a1f4d">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
@@ -47,7 +47,6 @@ th{background:#0a1f4d;color:#fff}
 .chk{width:20px;height:20px;accent-color:#dc2626;cursor:pointer}
 .searchRow{display:flex;gap:10px;flex-wrap:wrap}
 .searchRow input{flex:1;min-width:180px}
-/* ===== v2.00 SELECTION ===== */
 .selOpt{display:flex;gap:10px;align-items:center;background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px;cursor:pointer;margin-bottom:8px}
 .selOpt.active{border-color:#7c3aed;background:#ede9fe}
 .selOpt b{font-size:14px}
@@ -55,15 +54,21 @@ th{background:#0a1f4d;color:#fff}
 .selOpt input{flex-shrink:0}
 .labelsGrid{display:block}
 @page{ size:A4; margin:8mm; }
+/* ===== v2.01 PRINT FIX - Hide EVERYTHING except labels ===== */
 @media print{
-  header,#cloudStatus,.topnav,.card:first-child,.card:nth-child(2) .btn,.card:nth-child(2) button, #deleteCard, .btn, .noPrint{display:none!important}
-  body{background:#fff;margin:0}
-  main{max-width:100%;padding:0}
-  .card{box-shadow:none;border:none;padding:0;margin:0}
-  #labelsBox{margin:0;padding:0}
-  #labelsBox h2, #labelsBox p{display:none}
-  .labelsGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm}
-  .labelBox{border:1.2px solid #000;padding:3mm 2mm;margin:0;text-align:center;background:#fff;page-break-inside:avoid;break-inside:avoid;height:50mm;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden}
+  body{background:#fff !important;margin:0 !important}
+  header, #cloudStatus, .topnav, .btn, .noPrint, #printArea, #saveMsg, #printSelMsg {display:none !important}
+  main{max-width:100% !important;padding:0 !important;margin:0 !important}
+  /* Hide ALL cards by default */
+  main > .card{display:none !important}
+  /* Show ONLY the card that holds the labels */
+  main > .card:has(#labelsBox){display:block !important;box-shadow:none !important;border:none !important;padding:0 !important;margin:0 !important}
+  /* Inside that card, hide everything except labelsBox */
+  .card:has(#labelsBox) > *:not(#labelsBox){display:none !important}
+  #labelsBox{display:block !important;margin:0 !important;padding:0 !important}
+  #labelsBox h2, #labelsBox p{display:none !important}
+  .labelsGrid{display:grid !important;grid-template-columns:1fr 1fr 1fr !important;gap:4mm !important}
+  .labelBox{border:1.2px solid #000 !important;padding:3mm 2mm !important;margin:0 !important;text-align:center;background:#fff;display:flex !important;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;height:50mm !important;page-break-inside:avoid;break-inside:avoid}
   .labelBox svg{width:100%;max-width:58mm;height:12mm}
   .schoolName{font-size:10pt;line-height:1.1}
   .learnerWord{font-size:9pt;letter-spacing:2px;margin-top:1mm}
@@ -75,7 +80,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>🎓 Learners — Makhanani LTSM</h1><p>Learner Barcode Labels • v2.00<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.00 SELECT PRINT</span></div></header>
+<header><div><h1>🎓 Learners — Makhanani LTSM</h1><p>Learner Barcode Labels • v2.01<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.01 PRINT FIX</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -106,43 +111,15 @@ th{background:#0a1f4d;color:#fff}
 <div id="labelsBox"></div>
 </div>
 
-<!-- ===== v2.00 PRINT SELECTION CARD ===== -->
 <div class="card" style="border:2px solid #7c3aed">
 <h2>🖨️ Print Barcodes — Choose What To Print</h2>
 <div class="small">Step 1: Choose one option below, Step 2: Click the big purple PRINT button</div>
-
-<label class="selOpt" id="optLearnerBox" onclick="setPrintMode('learner')">
-<input type="radio" name="printMode" value="learner" checked>
-<div><b>👤 Per Learner — Tick one or more learners</b><span>Use this when 1 learner lost their card, or you want to re-print 5 learners only</span></div>
-</label>
-
-<label class="selOpt" id="optClassBox" onclick="setPrintMode('class')">
-<input type="radio" name="printMode" value="class">
-<div><b>🏫 Per Class — Print one whole class</b><span>Example: Print all of 8A only</span></div>
-</label>
-
-<label class="selOpt" id="optGradeBox" onclick="setPrintMode('grade')">
-<input type="radio" name="printMode" value="grade">
-<div><b>🎓 Per Grade — Print one whole grade</b><span>Example: Print all Grade 8 (8A + 8B + 8C together)</span></div>
-</label>
-
-<label class="selOpt" id="optAllBox" onclick="setPrintMode('all')">
-<input type="radio" name="printMode" value="all">
-<div><b>🌍 All Learners — Print everyone</b><span>Prints every learner in the system</span></div>
-</label>
-
-<div id="classPicker" style="display:none">
-<label>Choose Class to Print</label>
-<select id="printClassSelect"><option value="">— Choose Class —</option></select>
-<div class="small" id="classCountInfo"></div>
-</div>
-
-<div id="gradePicker" style="display:none">
-<label>Choose Grade to Print</label>
-<select id="printGradeSelect"><option value="">— Choose Grade —</option></select>
-<div class="small" id="gradeCountInfo"></div>
-</div>
-
+<label class="selOpt" id="optLearnerBox" onclick="setPrintMode('learner')"><input type="radio" name="printMode" value="learner" checked><div><b>👤 Per Learner — Tick one or more learners</b><span>Use this when 1 learner lost their card</span></div></label>
+<label class="selOpt" id="optClassBox" onclick="setPrintMode('class')"><input type="radio" name="printMode" value="class"><div><b>🏫 Per Class — Print one whole class</b><span>Example: Print all of 8A only</span></div></label>
+<label class="selOpt" id="optGradeBox" onclick="setPrintMode('grade')"><input type="radio" name="printMode" value="grade"><div><b>🎓 Per Grade — Print one whole grade</b><span>Example: Print all Grade 8 (8A + 8B + 8C)</span></div></label>
+<label class="selOpt" id="optAllBox" onclick="setPrintMode('all')"><input type="radio" name="printMode" value="all"><div><b>🌍 All Learners — Print everyone</b><span>Prints every learner in the system</span></div></label>
+<div id="classPicker" style="display:none"><label>Choose Class to Print</label><select id="printClassSelect"><option value="">— Choose Class —</option></select><div class="small" id="classCountInfo"></div></div>
+<div id="gradePicker" style="display:none"><label>Choose Grade to Print</label><select id="printGradeSelect"><option value="">— Choose Grade —</option></select><div class="small" id="gradeCountInfo"></div></div>
 <div class="info" id="printSummary">📋 Selected: <b>Per Learner</b> — Tick learners below, then click PRINT</div>
 <button class="btn btn-print" onclick="printBySelection()">🖨️ PRINT BARCODE LABELS — By Selection</button>
 <div class="small" style="text-align:center">It will show labels first, then open Print dialog automatically</div>
@@ -269,7 +246,6 @@ function renderLabels(school, items){
   setTimeout(()=>{ document.getElementById('printArea').scrollIntoView({behavior:'smooth', block:'center'}); }, 300);
   items.forEach(it=>{ try{ JsBarcode('#bc-'+it.code, it.code, { format:'CODE128', lineWidth:2, height:60, displayValue:false, margin:0 }); }catch(e){} });
 }
-// ===== v2.00 SELECTION LOGIC =====
 window.setPrintMode = function(mode){
   PRINT_MODE=mode;
   ['learner','class','grade','all'].forEach(m=>{
@@ -304,7 +280,7 @@ window.printBySelection = function(){
   let items=[];
   let label='';
   if(PRINT_MODE==='learner'){
-    if(SELECTED.size===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 learner below first — tick the checkbox next to the learner name.</div>'; return; }
+    if(SELECTED.size===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 learner below first.</div>'; return; }
     items=ALL_LEARNERS.filter(b=>SELECTED.has(b.id)).map(b=>({code:b.barcode, name:b.name}));
     label='Per Learner — '+items.length+' learner(s)';
   }
@@ -404,8 +380,8 @@ window.handleUpload = async function(e){
       });
     }
     UPLOADED=parseRowsToLearners(rows);
-    if(UPLOADED.length===0){ $('uploadMsg').innerHTML='<div class="warn">⚠️ No learners found in file. Check file has Name in first column.</div>'; return; }
-    let html='<div class="ok">✅ Found <b>'+UPLOADED.length+'</b> learner(s) in file. Check below, then click Save.</div>';
+    if(UPLOADED.length===0){ $('uploadMsg').innerHTML='<div class="warn">⚠️ No learners found in file.</div>'; return; }
+    let html='<div class="ok">✅ Found <b>'+UPLOADED.length+'</b> learner(s) in file.</div>';
     html+='<table><tr><th>#</th><th>Name</th><th>Grade</th><th>Class</th></tr>';
     UPLOADED.forEach((u,i)=>{ html+='<tr><td>'+(i+1)+'</td><td>'+u.name+'</td><td>'+u.grade+'</td><td>'+u.class+'</td></tr>'; });
     html+='</table>';
@@ -478,7 +454,6 @@ async function loadLearners(){
     const classes=[...new Set(ALL_LEARNERS.map(b=>b.class).filter(Boolean))].sort();
     $('learnerFilter').innerHTML='<option value="">All Grades</option>'+grades.map(t=>`<option>${t}</option>`).join('');
     $('classFilter').innerHTML='<option value="">All Classes</option>'+classes.map(t=>`<option>${t}</option>`).join('');
-    // Keep print pickers - preserve selection if possible
     const prevC=$('printClassSelect').value; const prevG=$('printGradeSelect').value;
     $('printClassSelect').innerHTML='<option value="">— Choose Class —</option>'+classes.map(t=>`<option ${t===prevC?'selected':''}>${t}</option>`).join('');
     $('printGradeSelect').innerHTML='<option value="">— Choose Grade —</option>'+grades.map(t=>`<option ${t===prevG?'selected':''}>${t}</option>`).join('');
