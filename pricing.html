@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makhanani LTSM — Choose Plan v1.87</title>
+<style>
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9}
+header{background:#0a1f4d;color:#fff;padding:14px;text-align:center}
+header h1{margin:0;font-size:20px}
+.wrap{max-width:1000px;margin:auto;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.wrap{grid-template-columns:1fr}}
+.card{background:#fff;border:2px solid #0a1f4d;border-radius:16px;padding:18px 14px;text-align:center;position:relative}
+.card.selected{border:3px solid #059669;box-shadow:0 0 0 3px #dcfce7}
+.card h2{margin:0;font-size:22px}
+.card p{margin:8px 0;font-size:16px}
+.setup{color:#059669;font-weight:900;font-size:26px;line-height:1.1;margin:12px 0}
+.btn{width:100%;padding:13px;border:none;border-radius:10px;background:#059669;color:#fff;font-weight:900;font-size:16px;cursor:pointer;margin-top:12px}
+.btn-gold{background:#d4af37;color:#0a1f4d}
+.badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#059669;color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
+.topnav{text-align:center;padding:10px}
+.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 14px;border-radius:20px;font-weight:900;font-size:13px;margin:2px;display:inline-block}
+.note{text-align:center;font-size:13px;color:#475569;padding:0 14px 14px}
+</style>
+</head>
+<body>
+<header><h1>💳 Choose Your Plan</h1><p style="margin:4px 0 0;font-size:13px;opacity:.9">Makhanani LTSM • v1.87</p></header>
+<div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a></div>
+
+<div class="wrap">
+  <!-- DEMO -->
+  <div class="card" id="card-DEMO">
+    <h2>DEMO</h2>
+    <p>7 days free trial</p>
+    <div class="setup">Setup:<br>FREE</div>
+    <p>Monthly: <b>FREE</b><br>Once-off: <b>FREE</b></p>
+    <button class="btn" onclick="selectPlan('DEMO','TRIAL',0,'FREE')">➡️ REQUEST DEMO</button>
+  </div>
+
+  <!-- STARTER -->
+  <div class="card" id="card-STARTER">
+    <h2>STARTER</h2>
+    <p>Starter — 1 school</p>
+    <div class="setup">Setup: R3<br>000</div>
+    <p>Monthly: <b>R350 / month</b><br>Once-off: <b>R4 500 once-off / year</b></p>
+    <button class="btn" onclick="selectPlan('STARTER','ACTIVE',4500,'ONCE_OFF')">➡️ REQUEST STARTER</button>
+  </div>
+
+  <!-- STANDARD -->
+  <div class="card" id="card-STANDARD">
+    <div class="badge">MOST POPULAR</div>
+    <h2>STANDARD</h2>
+    <p>Most popular</p>
+    <div class="setup">Setup: R4<br>500</div>
+    <p>Monthly: <b>R500 / month</b><br>Once-off: <b>R7 500 once-off / year</b></p>
+    <button class="btn" onclick="selectPlan('STANDARD','ACTIVE',7500,'ONCE_OFF')">➡️ REQUEST STANDARD</button>
+  </div>
+
+  <!-- PREMIUM - SELECTED -->
+  <div class="card selected" id="card-PREMIUM">
+    <div class="badge">✅ SELECTED FOR WORDSWORTH</div>
+    <h2>PREMIUM</h2>
+    <p>Premium</p>
+    <div class="setup">Setup: R5<br>500</div>
+    <p>Monthly: <b>R600 / month</b><br>Once-off: <b>R9 000 once-off / year</b></p>
+    <button class="btn btn-gold" onclick="selectPlan('PREMIUM','ACTIVE',9000,'ONCE_OFF')">➡️ REQUEST PREMIUM — R9 000 ONCE-OFF</button>
+    <p style="font-size:12px;color:#166534;font-weight:700;margin-top:8px">Wordsworth: Setup already paid / waived.<br>Pay only R9 000 once-off.</p>
+  </div>
+</div>
+
+<p class="note" id="msg">Wordsworth High School is currently on <b>PREMIUM Once-off R9 000</b> — Valid to 31 Dec 2027.</p>
+
+<script>
+function selectPlan(plan, status, amount, billing){
+  // Save selection so Admin can pick it up
+  localStorage.setItem('MAKHANANI_SELECTED_PLAN', plan);
+  localStorage.setItem('MAKHANANI_SELECTED_AMOUNT', amount);
+  localStorage.setItem('MAKHANANI_SELECTED_BILLING', billing);
+  localStorage.setItem('MAKHANANI_SELECTED_STATUS', status);
+  // Highlight card
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('card-'+plan).classList.add('selected');
+  document.getElementById('msg').innerHTML = '✅ You selected <b>'+plan+'</b> — R'+amount+' '+billing+'. Redirecting to Admin to save...';
+  setTimeout(()=>{
+    // If school already selected, go to Admin Subscription tab
+    window.location.href = 'admin.html';
+  }, 800);
+}
+</script>
+</body>
+</html>
