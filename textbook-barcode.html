@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v2.00</title>
+<title>Makhanani LTSM — Textbooks v2.01</title>
 <meta name="theme-color" content="#0a1f4d">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -15,6 +15,7 @@ main{max-width:1100px;margin:auto;padding:14px}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
+input:disabled,select:disabled{opacity:.5;background:#f1f5f9}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 @media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
@@ -46,6 +47,7 @@ th{background:#0a1f4d;color:#fff}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .tabs button{padding:10px 16px;border:none;border-radius:20px;font-weight:900;cursor:pointer;background:#e2e8f0}
 .tabs button.active{background:#0a1f4d;color:#fff}
+.locked{opacity:.6;pointer-events:none;filter:grayscale(0.3)}
 @page{ size:A4; margin:10mm; }
 @media print{
   header,#cloudStatus,.topnav,.btn,.noPrint{display:none!important}
@@ -58,7 +60,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Textbook Barcodes • Due 30 Nov • v2.00<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.00 TEXTBOOKS</span></div></header>
+<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Textbook Barcodes • Due 30 Nov • v2.01<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.01 TEXTBOOKS</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -76,9 +78,11 @@ th{background:#0a1f4d;color:#fff}
 </div>
 </div>
 
-<div class="card noPrint">
+<div class="card noPrint" id="addBookCard">
 <h2>➕ Add / Edit Textbook — One Book = One Barcode</h2>
-<div class="small">Each physical copy gets its OWN barcode: WHS000001, WHS000002... If you have 10 copies of same Title, add 10 times with Quantity = 10, or add 1 by 1. Teacher can ADD books, but CANNOT Edit / Delete. Admin / Librarian can Edit + Delete.</div>
+<div class="small">Each physical copy gets its OWN barcode: WHS000001, WHS000002... If you have 10 copies of same Title, add with Quantity = 10.<br><b>TEACHER CANNOT Add / Edit / Delete books — View Only. Only Librarian / Admin / Principal / HOD can manage books.</b></div>
+<div id="addLockedMsg"></div>
+<div id="addBookForm">
 <label>Title *</label>
 <input id="bTitle" placeholder="e.g. Study and Master Grade 10 Accounting">
 <div class="grid3">
@@ -92,16 +96,20 @@ th{background:#0a1f4d;color:#fff}
 </div>
 <button class="btn btn-green" id="saveBookBtn" onclick="saveBook()">✅ Save Textbook</button>
 <button class="btn btn-grey" onclick="clearBookForm()">🔄 Clear — New Textbook</button>
+</div>
 <div id="bookMsg"></div>
 <div id="newBarcodeBox"></div>
 </div>
 
-<div class="card noPrint">
+<div class="card noPrint" id="bulkCard">
 <h2>📥 Bulk Upload — Paste Book List</h2>
-<div class="small">One book per line: <b>Title, Subject, Grade, Quantity</b><br>Example:<br><code>Study and Master Grade 10 Accounting, Accounting, Grade 10, 5<br>Platinum Grade 10 Mathematics, Mathematics, Grade 10, 10</code><br>Each copy gets its own WHS barcode automatically.</div>
+<div class="small">One book per line: <b>Title, Subject, Grade, Quantity</b><br>Example:<br><code>Study and Master Grade 10 Accounting, Accounting, Grade 10, 5<br>Platinum Grade 10 Mathematics, Mathematics, Grade 10, 10</code><br>Each copy gets its own WHS barcode automatically. <b>Teacher CANNOT bulk upload.</b></div>
+<div id="bulkLockedMsg"></div>
+<div id="bulkForm">
 <label>Paste List Here</label>
 <textarea id="bulkText" rows="5" style="width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:13px" placeholder="Study and Master Grade 10 Accounting, Accounting, Grade 10, 5&#10;Platinum Grade 10 Mathematics, Mathematics, Grade 10, 10"></textarea>
 <button class="btn btn-purple" onclick="bulkUpload()">📥 Upload List</button>
+</div>
 <div id="bulkMsg"></div>
 </div>
 
@@ -121,7 +129,7 @@ th{background:#0a1f4d;color:#fff}
 <div><label>Filter by Subject</label><select id="bookSubjectFilter" onchange="renderBooks()"><option value="">All Subjects</option></select></div>
 <div><label>Sort</label><select id="bookSort" onchange="renderBooks()"><option value="TITLE">Title A-Z</option><option value="SUBJECT">Subject → Title</option><option value="GRADE">Grade → Title</option><option value="BARCODE">Barcode</option></select></div>
 </div>
-<div class="small"><span id="bookCountText">Loading...</span> • Click <b>🖨️ Barcode</b> for one label, or <b>🖨️ Print All Barcodes</b> for whole list.</div>
+<div class="small"><span id="bookCountText">Loading...</span> • Teacher can VIEW + PRINT barcodes, but CANNOT Add / Edit / Delete.</div>
 <div id="bookList"></div>
 <div class="grid2 noPrint">
 <button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button>
@@ -163,10 +171,43 @@ function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || lo
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
-function canEditDelete(){ const r=getRole(); return r==='ADMIN' || r==='LIBRARIAN' || r==='PRINCIPAL' || r==='HOD'; }
-function canAdd(){ return !!getLogin(); }
+// ===== v2.01 PERMISSIONS — TEACHER CANNOT ADD/EDIT BOOKS =====
+function canManageBooks(){
+  const r=getRole();
+  return r==='ADMIN' || r==='LIBRARIAN' || r==='PRINCIPAL' || r==='HOD';
+}
+function canAdd(){ return canManageBooks(); }
+function canEditDelete(){ return canManageBooks(); }
+function applyBookAccess(){
+  const login=getLogin(); const role=getRole();
+  const can=canManageBooks();
+  if(!login){
+    $('addLockedMsg').innerHTML='<div class="warn">⚠️ Login first to manage books.</div>';
+    $('addBookForm').classList.add('locked');
+    $('addBookForm').querySelectorAll('input,select,button').forEach(el=>el.disabled=true);
+    $('bulkForm').classList.add('locked');
+    $('bulkForm').querySelectorAll('textarea,button').forEach(el=>el.disabled=true);
+    $('bulkLockedMsg').innerHTML='<div class="warn">⚠️ Login first.</div>';
+    return;
+  }
+  if(!can){
+    // TEACHER
+    $('addLockedMsg').innerHTML='<div class="warn">🚫 <b>TEACHER CANNOT Add / Edit Books.</b><br>You can VIEW + PRINT barcodes below. Only Librarian / Admin / Principal / HOD can Add / Edit / Delete books. Ask Librarian to add books.</div>';
+    $('addBookForm').classList.add('locked');
+    $('addBookForm').querySelectorAll('input,select,button').forEach(el=>el.disabled=true);
+    $('bulkLockedMsg').innerHTML='<div class="warn">🚫 Teacher CANNOT bulk upload books.</div>';
+    $('bulkForm').classList.add('locked');
+    $('bulkForm').querySelectorAll('textarea,button').forEach(el=>el.disabled=true);
+  } else {
+    $('addLockedMsg').innerHTML='';
+    $('addBookForm').classList.remove('locked');
+    $('addBookForm').querySelectorAll('input,select,button').forEach(el=>el.disabled=false);
+    $('bulkLockedMsg').innerHTML='';
+    $('bulkForm').classList.remove('locked');
+    $('bulkForm').querySelectorAll('textarea,button').forEach(el=>el.disabled=false);
+  }
+}
 function getPrefix(){ const emis=getEmis(); if(emis==='700310854') return 'WHS'; return 'BKS'; }
-// Due 30 Nov
 function getDueDateForIssue(d){ const dt=d?new Date(d):new Date(); let y=dt.getFullYear(); if(dt.getMonth()===11) y++; return new Date(y,10,30); }
 function getDueDateForRecord(x){
   if(x.dueDate){ try{ const d=x.dueDate.toDate?x.dueDate.toDate():new Date(x.dueDate); if(!isNaN(d.getTime())) return d; }catch(e){} }
@@ -183,12 +224,6 @@ function updateDueBanner(){
   let txt=''; if(days<0) txt='⚠️ OVERDUE — '+Math.abs(days)+' day(s) PAST due.'; else if(days===0) txt='⚠️ DUE TODAY!'; else if(days===1) txt='⏰ 1 day left — Due TOMORROW!'; else txt=days+' days left until due date';
   $('dueBanner').innerHTML='📅 ALL BOOKS DUE: <b>'+fmtDue(due)+'</b> — '+txt;
 }
-function nextBarcode(){
-  const prefix=getPrefix();
-  let max=0;
-  ALL_BOOKS.forEach(b=>{ const n=parseInt(String(b.code||'').replace(/\D/g,'')); if(!isNaN(n)&&n>max) max=n; });
-  return prefix+String(max+1).padStart(6,'0');
-}
 window.setTab = function(t){
   TAB=t; ['tabAllB','tabAvail','tabOut','tabOver'].forEach(id=>$(id).classList.remove('active'));
   if(t==='ALL') $('tabAllB').classList.add('active');
@@ -201,10 +236,15 @@ window.clearBookForm = function(){
   EDIT_ID=null; $('bTitle').value=''; $('bSubject').value=''; $('bGrade').value=''; $('bQty').value='1'; $('bPublisher').value=''; $('bBarcode').value='';
   $('saveBookBtn').textContent='✅ Save Textbook'; $('bookMsg').innerHTML=''; $('newBarcodeBox').innerHTML='';
   $('bBarcode').disabled=false; $('bQty').disabled=false;
+  applyBookAccess();
 };
 window.saveBook = async function(){
+  if(!canManageBooks()){
+    alert('🚫 TEACHER CANNOT Add / Edit Books.\n\nOnly Librarian / Admin / Principal / HOD can add books.\nAsk Librarian to add the book.');
+    $('bookMsg').innerHTML='<div class="warn">🚫 <b>TEACHER CANNOT Add / Edit Books.</b> Ask Librarian / Admin.</div>';
+    return;
+  }
   const emis=getEmis(); const school=getSchool();
-  if(!canAdd()){ $('bookMsg').innerHTML='<div class="warn">⚠️ Login first.</div>'; return; }
   const title=($('bTitle').value||'').trim();
   const subject=$('bSubject').value;
   const grade=$('bGrade').value;
@@ -212,11 +252,8 @@ window.saveBook = async function(){
   let qty=parseInt($('bQty').value||'1'); if(isNaN(qty)||qty<1) qty=1; if(qty>100) qty=100;
   let barcode=($('bBarcode').value||'').trim().toUpperCase();
   if(!title || !subject || !grade){ $('bookMsg').innerHTML='<div class="warn">⚠️ Fill Title + Subject + Grade.</div>'; return; }
-  if(EDIT_ID && !canEditDelete()){ $('bookMsg').innerHTML='<div class="warn">🚫 Teacher CANNOT edit books — only ADD. Ask Admin / Librarian.</div>'; return; }
   if(EDIT_ID){
-    // Editing one book only
     if(!barcode) barcode=EDIT_ID;
-    if(!barcode.startsWith(getPrefix()) && !barcode.startsWith('WHS') && !barcode.startsWith('BKS')) barcode=barcode;
     try{
       await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',EDIT_ID), {code:barcode, barcode:barcode, title:title, subject:subject, grade:grade, publisher:publisher, updatedAt:serverTimestamp()}, {merge:true});
       $('bookMsg').innerHTML='<div class="ok">✅ Updated: <b>'+title+' • '+barcode+'</b></div>';
@@ -224,15 +261,11 @@ window.saveBook = async function(){
     }catch(e){ $('bookMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
     return;
   }
-  // New - create qty copies
   const prefix=getPrefix();
   let max=0; ALL_BOOKS.forEach(b=>{ const n=parseInt(String(b.code||'').replace(/\D/g,'')); if(!isNaN(n)&&n>max) max=n; });
   if(barcode && qty===1){
-    // Single with manual barcode - check duplicate
     if(ALL_BOOKS.some(b=>b.code===barcode)){ $('bookMsg').innerHTML='<div class="warn">⚠️ Barcode '+barcode+' already exists. Leave Barcode blank for auto.</div>'; return; }
-  } else {
-    barcode=''; // auto for qty >1
-  }
+  } else { barcode=''; }
   $('saveBookBtn').disabled=true; $('saveBookBtn').textContent='Saving...';
   try{
     let firstCode='', lastCode='';
@@ -247,7 +280,6 @@ window.saveBook = async function(){
     $('newBarcodeBox').innerHTML='<div class="barcodeBox"><b>'+title+'</b><br><span class="small">'+subject+' • '+grade+' • '+school+'</span><br><svg id="bcNew"></svg><div class="code">'+firstCode+(qty>1 ? ' → '+lastCode : '')+'</div><button class="btn btn-gold" style="width:auto" onclick="window.print()">🖨️ Print Barcodes</button></div>';
     try{ JsBarcode('#bcNew', firstCode, {format:'CODE128', width:2, height:50, displayValue:false}); }catch(e){}
     await loadAll();
-    // Keep barcode box, clear form fields except title/subject/grade for fast next entry
     const box=$('newBarcodeBox').innerHTML;
     $('bQty').value='1'; $('bBarcode').value='';
     $('newBarcodeBox').innerHTML=box;
@@ -256,7 +288,7 @@ window.saveBook = async function(){
   $('saveBookBtn').disabled=false; $('saveBookBtn').textContent='✅ Save Textbook';
 };
 window.editBook = function(id){
-  if(!canEditDelete()){ alert('🚫 Teacher CANNOT edit books — only ADD. Ask Admin / Librarian.'); return; }
+  if(!canEditDelete()){ alert('🚫 TEACHER CANNOT Edit Books.\n\nOnly Librarian / Admin / Principal / HOD can edit.'); return; }
   const b=ALL_BOOKS.find(x=>x.id===id); if(!b) return;
   EDIT_ID=id;
   $('bTitle').value=b.title||''; $('bSubject').value=b.subject||''; $('bGrade').value=b.grade||''; $('bPublisher').value=b.publisher||''; $('bBarcode').value=b.code||'';
@@ -266,7 +298,7 @@ window.editBook = function(id){
   window.scrollTo({top:0, behavior:'smooth'});
 };
 window.deleteBook = async function(id, title, code){
-  if(!canEditDelete()){ alert('🚫 Teacher CANNOT delete books. Ask Admin / Librarian.'); return; }
+  if(!canEditDelete()){ alert('🚫 TEACHER CANNOT Delete Books.'); return; }
   const emis=getEmis();
   const isOut = ALL_ISSUES.some(x=>x.bookCode===code && x.status==='OUT');
   if(isOut){ alert('🚫 CANNOT DELETE: '+code+' is OUT to a learner. Return it first.'); return; }
@@ -274,8 +306,8 @@ window.deleteBook = async function(id, title, code){
   try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',id)); await loadAll(); }catch(e){ alert('Delete failed: '+e.message); }
 };
 window.bulkUpload = async function(){
+  if(!canManageBooks()){ alert('🚫 TEACHER CANNOT bulk upload books. Ask Librarian / Admin.'); $('bulkMsg').innerHTML='<div class="warn">🚫 Teacher CANNOT bulk upload books.</div>'; return; }
   const emis=getEmis(); const school=getSchool();
-  if(!canAdd()){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Login first.</div>'; return; }
   const text=($('bulkText').value||'').trim();
   if(!text){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Paste list first.</div>'; return; }
   const lines=text.split('\n').map(s=>s.trim()).filter(Boolean);
@@ -354,7 +386,7 @@ function renderBooks(){
     const status = b.status==='ISSUED' ? (over ? '<span class="pill pill-red">⚠️ OVERDUE</span>' : '<span class="pill pill-red">📚 OUT</span>') : '<span class="pill pill-green">✅ AVAILABLE</span>';
     const outTo = issue ? '<b>'+(issue.learnerName||'')+'</b><br><span class="small">'+(issue.learnerCode||'')+' • '+(issue.learnerGrade||'')+' '+(issue.learnerClass||'')+'</span><br>Due: <b>'+fmtDue(getDueDateForRecord(issue))+'</b><br><span class="small">'+(daysUntilDue(issue)<0 ? '<b style="color:#dc2626">'+Math.abs(daysUntilDue(issue))+' days OVERDUE</b>' : daysUntilDue(issue)+' days left')+'</span>' : '—';
     const canED=canEditDelete();
-    const editBtn = canED ? `<button class="btn btn-blue btn-sm" onclick="editBook('${b.id}')">✏️ Edit</button>` : `<button class="btn btn-grey btn-sm" disabled title="Teacher cannot edit">✏️ Edit</button>`;
+    const editBtn = canED ? `<button class="btn btn-blue btn-sm" onclick="editBook('${b.id}')">✏️ Edit</button>` : `<button class="btn btn-grey btn-sm" disabled title="Teacher cannot edit books">🔒 Edit</button>`;
     const delBtn = canED ? `<button class="btn btn-red btn-sm" onclick="deleteBook('${b.id}','${b.title.replace(/'/g,"")}','${b.code}')">🗑️ Delete</button>` : '';
     html+='<tr><td><b>'+b.title+'</b><br><span class="small">'+b.code+(b.publisher ? ' • '+b.publisher : '')+'</span></td><td>'+b.subject+'<br>'+b.grade+'</td><td>'+status+'</td><td class="small">'+outTo+'</td><td><svg id="bc_'+b.code+'"></svg><div class="small">'+b.code+'</div><button class="btn btn-gold btn-sm" onclick="printOneBarcode(\''+b.code+'\',\''+b.title.replace(/'/g,"")+'\',\''+b.subject+'\',\''+b.grade+'\')">🖨️ Barcode</button>'+editBtn+delBtn+'</td></tr>';
   });
@@ -411,15 +443,17 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
   if(login){
     let roleTxt='Role: <b>'+getRole()+'</b>';
-    if(getRole()==='TEACHER') roleTxt+=' • Can ADD books • CANNOT Edit / Delete books';
-    else roleTxt+=' • Can Add / Edit / Delete books';
+    if(getRole()==='TEACHER') roleTxt+=' • 🚫 CANNOT Add / Edit / Delete books — VIEW + PRINT only • Can Issue own Subject / Return ANY';
+    else roleTxt+=' • ✅ Can Add / Edit / Delete books';
     $('roleBox').innerHTML=roleTxt;
   } else {
-    $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b> • Login in Admin / Home first';
+    $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b> • Login in Home first';
   }
   $('cloudStatus').textContent='☁️ Cloud: Connected — '+school;
+  applyBookAccess();
   updateDueBanner();
   await loadAll();
+  applyBookAccess();
 });
 </script>
 </body>
