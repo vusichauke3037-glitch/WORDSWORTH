@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v1.98</title>
+<title>Makhanani LTSM — Learners v2.00</title>
 <meta name="theme-color" content="#0a1f4d">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
@@ -18,10 +18,11 @@ h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select,textarea{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
 input[type=file]{padding:8px;background:#f8fafc}
+input[type=radio]{width:20px;height:20px;accent-color:#7c3aed;cursor:pointer}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-print{background:#7c3aed;color:#fff;font-size:16px;padding:16px}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
@@ -41,10 +42,17 @@ th{background:#0a1f4d;color:#fff}
 .uploadBox{border:2px dashed #0a1f4d;border-radius:12px;padding:16px;background:#eff6ff;text-align:center}
 .deleteBar{position:sticky;top:0;z-index:5;background:#fff7ed;border:2px solid #ea580c;border-radius:10px;padding:10px;margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .deleteBar b{color:#9a3412}
+.printBar{position:sticky;top:0;z-index:5;background:#ede9fe;border:2px solid #7c3aed;border-radius:10px;padding:10px;margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.printBar b{color:#5b21b6}
 .chk{width:20px;height:20px;accent-color:#dc2626;cursor:pointer}
 .searchRow{display:flex;gap:10px;flex-wrap:wrap}
 .searchRow input{flex:1;min-width:180px}
-/* ===== v1.98 PRINT: 3 columns x 5 rows ===== */
+/* ===== v2.00 SELECTION ===== */
+.selOpt{display:flex;gap:10px;align-items:center;background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px;cursor:pointer;margin-bottom:8px}
+.selOpt.active{border-color:#7c3aed;background:#ede9fe}
+.selOpt b{font-size:14px}
+.selOpt span{font-size:12px;color:#64748b;display:block}
+.selOpt input{flex-shrink:0}
 .labelsGrid{display:block}
 @page{ size:A4; margin:8mm; }
 @media print{
@@ -67,7 +75,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div><h1>🎓 Learners — Makhanani LTSM</h1><p>Learner Barcode Labels • v1.98<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.98 3×5 PRINT</span></div></header>
+<header><div><h1>🎓 Learners — Makhanani LTSM</h1><p>Learner Barcode Labels • v2.00<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.00 SELECT PRINT</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -76,7 +84,7 @@ th{background:#0a1f4d;color:#fff}
 <h2>🏫 School</h2>
 <div class="info" id="schoolBox">School: —</div>
 <div class="small" id="prefixBox">Learner Prefix: L • Next: L000001 • Last used: —</div>
-<div class="small">Learners: L000001... &nbsp;|&nbsp; Textbooks: WHS000001 &nbsp;|&nbsp; Print: 3 columns × 5 rows = 15 per page</div>
+<div class="small">Learners: L000001... &nbsp;|&nbsp; Print: 3 columns × 5 rows = 15 per page</div>
 </div>
 
 <div class="card">
@@ -91,7 +99,54 @@ th{background:#0a1f4d;color:#fff}
 <button class="btn btn-green" id="saveBtn" onclick="saveLearner()">✅ Save + Generate Barcode Label</button>
 <button class="btn btn-blue" onclick="refreshNext()">🔢 Get Next Number</button>
 <div id="saveMsg"></div>
+<div id="printArea" style="display:none">
+<button class="btn btn-print" onclick="window.print()">🖨️ PRINT BARCODE LABELS — 3 × 5</button>
+<div class="small" style="text-align:center">Print: A4 • Margins: None / Minimum • Scale: 100% • Background graphics: ON</div>
+</div>
 <div id="labelsBox"></div>
+</div>
+
+<!-- ===== v2.00 PRINT SELECTION CARD ===== -->
+<div class="card" style="border:2px solid #7c3aed">
+<h2>🖨️ Print Barcodes — Choose What To Print</h2>
+<div class="small">Step 1: Choose one option below, Step 2: Click the big purple PRINT button</div>
+
+<label class="selOpt" id="optLearnerBox" onclick="setPrintMode('learner')">
+<input type="radio" name="printMode" value="learner" checked>
+<div><b>👤 Per Learner — Tick one or more learners</b><span>Use this when 1 learner lost their card, or you want to re-print 5 learners only</span></div>
+</label>
+
+<label class="selOpt" id="optClassBox" onclick="setPrintMode('class')">
+<input type="radio" name="printMode" value="class">
+<div><b>🏫 Per Class — Print one whole class</b><span>Example: Print all of 8A only</span></div>
+</label>
+
+<label class="selOpt" id="optGradeBox" onclick="setPrintMode('grade')">
+<input type="radio" name="printMode" value="grade">
+<div><b>🎓 Per Grade — Print one whole grade</b><span>Example: Print all Grade 8 (8A + 8B + 8C together)</span></div>
+</label>
+
+<label class="selOpt" id="optAllBox" onclick="setPrintMode('all')">
+<input type="radio" name="printMode" value="all">
+<div><b>🌍 All Learners — Print everyone</b><span>Prints every learner in the system</span></div>
+</label>
+
+<div id="classPicker" style="display:none">
+<label>Choose Class to Print</label>
+<select id="printClassSelect"><option value="">— Choose Class —</option></select>
+<div class="small" id="classCountInfo"></div>
+</div>
+
+<div id="gradePicker" style="display:none">
+<label>Choose Grade to Print</label>
+<select id="printGradeSelect"><option value="">— Choose Grade —</option></select>
+<div class="small" id="gradeCountInfo"></div>
+</div>
+
+<div class="info" id="printSummary">📋 Selected: <b>Per Learner</b> — Tick learners below, then click PRINT</div>
+<button class="btn btn-print" onclick="printBySelection()">🖨️ PRINT BARCODE LABELS — By Selection</button>
+<div class="small" style="text-align:center">It will show labels first, then open Print dialog automatically</div>
+<div id="printSelMsg"></div>
 </div>
 
 <div class="card">
@@ -125,13 +180,20 @@ th{background:#0a1f4d;color:#fff}
 </div>
 
 <div class="card" id="deleteCard">
-<h2>🗑️ All Learners in System — Select to Delete</h2>
+<h2>🗑️ All Learners in System — Tick to Print / Delete</h2>
 <div id="roleDeleteMsg"></div>
 <div class="searchRow">
 <input id="learnerSearch" placeholder="🔍 Search by barcode, name, grade, class... e.g. L000001, Thato, Grade 8, 8A" oninput="renderLearnerList()">
 <select id="learnerFilter" onchange="renderLearnerList()" style="max-width:220px"><option value="">All Grades</option></select>
+<select id="classFilter" onchange="renderLearnerList()" style="max-width:220px"><option value="">All Classes</option></select>
 </div>
 <div class="small"><span id="learnerCount">Loading learners...</span></div>
+<div id="printBar" class="printBar" style="display:none">
+<b>🖨️ <span id="printSelCount">0</span> ticked for Per Learner print</b>
+<button class="btn btn-print" onclick="printBySelection()" style="width:auto;margin:0;padding:12px 18px;font-size:14px">🖨️ Print Ticked Learners</button>
+<button class="btn btn-grey" onclick="clearSelection()" style="width:auto;margin:0;padding:10px 18px">Clear</button>
+<span class="small" id="printSelList" style="width:100%"></span>
+</div>
 <div id="deleteBar" class="deleteBar" style="display:none">
 <b>🗑️ <span id="selCount">0</span> selected</b>
 <button class="btn btn-red" id="deleteSelectedBtn" onclick="deleteSelected()" style="width:auto;margin:0;padding:10px 18px">🗑️ Delete Selected</button>
@@ -163,6 +225,7 @@ let ALL_LEARNERS = [];
 let SELECTED = new Set();
 let NEXT_NUM = 1;
 let UPLOADED = [];
+let PRINT_MODE = 'learner';
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
@@ -191,11 +254,8 @@ async function refreshNext(){
   }catch(e){ $('prefixBox').textContent='Failed: '+e.message; }
 }
 window.refreshNext = refreshNext;
-
-// ===== v1.98 - 3 columns x 5 rows print =====
 function renderLabels(school, items){
-  // Split into pages of 15 (3 x 5)
-  let html='<div class="noPrint"><h2>Learner Barcode Labels — Real Scannable Barcodes</h2><p class="small">Print: <b>3 columns × 5 rows = 15 per A4 page</b><br>Each label:<br>'+school.toUpperCase()+'<br>LEARNER<br>Real Barcode — '+items[0].code+'<br>Total: '+items.length+' label(s) = '+Math.ceil(items.length/15)+' page(s)</p></div>';
+  let html='<div class="noPrint"><h2>Learner Barcode Labels — Real Scannable Barcodes</h2><p class="small">Print: <b>3 columns × 5 rows = 15 per A4 page</b><br>Total: '+items.length+' label(s) = '+Math.ceil(items.length/15)+' page(s)</p></div>';
   for(let p=0; p<items.length; p+=15){
     const pageItems=items.slice(p, p+15);
     html+='<div class="printPage"><div class="labelsGrid">';
@@ -204,10 +264,79 @@ function renderLabels(school, items){
     });
     html+='</div></div>';
   }
-  html+='<div class="noPrint"><button class="btn btn-blue" onclick="window.print()">🖨️ Print Labels — 3 × 5</button><div class="small">Print settings: A4 • Margins: None / Minimum • Scale: 100% • Background graphics: ON</div></div>';
   $('labelsBox').innerHTML=html;
+  $('printArea').style.display='block';
+  setTimeout(()=>{ document.getElementById('printArea').scrollIntoView({behavior:'smooth', block:'center'}); }, 300);
   items.forEach(it=>{ try{ JsBarcode('#bc-'+it.code, it.code, { format:'CODE128', lineWidth:2, height:60, displayValue:false, margin:0 }); }catch(e){} });
 }
+// ===== v2.00 SELECTION LOGIC =====
+window.setPrintMode = function(mode){
+  PRINT_MODE=mode;
+  ['learner','class','grade','all'].forEach(m=>{
+    const el=$('opt'+m.charAt(0).toUpperCase()+m.slice(1)+'Box');
+    if(el) el.classList.toggle('active', m===mode);
+  });
+  document.querySelectorAll('input[name="printMode"]').forEach(r=>{ r.checked = (r.value===mode); });
+  $('classPicker').style.display = (mode==='class') ? 'block' : 'none';
+  $('gradePicker').style.display = (mode==='grade') ? 'block' : 'none';
+  updatePrintSummary();
+};
+function updatePrintSummary(){
+  let txt='';
+  if(PRINT_MODE==='learner'){ txt='📋 Selected: <b>Per Learner</b> — Tick learners below ('+SELECTED.size+' ticked), then click PRINT'; }
+  if(PRINT_MODE==='class'){
+    const c=$('printClassSelect').value;
+    const n=c? ALL_LEARNERS.filter(b=>b.class===c).length : 0;
+    txt='📋 Selected: <b>Per Class — '+(c||'— choose class —')+'</b> — Will print <b>'+n+'</b> learner(s) = '+Math.ceil(n/15)+' page(s)';
+    $('classCountInfo').textContent = c ? n+' learner(s) in '+c : '';
+  }
+  if(PRINT_MODE==='grade'){
+    const g=$('printGradeSelect').value;
+    const n=g? ALL_LEARNERS.filter(b=>b.grade===g).length : 0;
+    txt='📋 Selected: <b>Per Grade — '+(g||'— choose grade —')+'</b> — Will print <b>'+n+'</b> learner(s) = '+Math.ceil(n/15)+' page(s)';
+    $('gradeCountInfo').textContent = g ? n+' learner(s) in '+g : '';
+  }
+  if(PRINT_MODE==='all'){ txt='📋 Selected: <b>All Learners</b> — Will print <b>'+ALL_LEARNERS.length+'</b> learner(s) = '+Math.ceil(ALL_LEARNERS.length/15)+' page(s)'; }
+  $('printSummary').innerHTML=txt;
+}
+window.printBySelection = function(){
+  const school=getSchool();
+  let items=[];
+  let label='';
+  if(PRINT_MODE==='learner'){
+    if(SELECTED.size===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 learner below first — tick the checkbox next to the learner name.</div>'; return; }
+    items=ALL_LEARNERS.filter(b=>SELECTED.has(b.id)).map(b=>({code:b.barcode, name:b.name}));
+    label='Per Learner — '+items.length+' learner(s)';
+  }
+  if(PRINT_MODE==='class'){
+    const c=$('printClassSelect').value;
+    if(!c){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Choose a Class first.</div>'; return; }
+    items=ALL_LEARNERS.filter(b=>b.class===c).map(b=>({code:b.barcode, name:b.name}));
+    label='Class '+c+' — '+items.length+' learner(s)';
+    if(items.length===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ No learners in class '+c+'.</div>'; return; }
+  }
+  if(PRINT_MODE==='grade'){
+    const g=$('printGradeSelect').value;
+    if(!g){ $('printSelMsg').innerHTML='<div class="warn">⚠️ Choose a Grade first.</div>'; return; }
+    items=ALL_LEARNERS.filter(b=>b.grade===g).map(b=>({code:b.barcode, name:b.name}));
+    label='Grade '+g+' — '+items.length+' learner(s)';
+    if(items.length===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ No learners in '+g+'.</div>'; return; }
+  }
+  if(PRINT_MODE==='all'){
+    if(ALL_LEARNERS.length===0){ $('printSelMsg').innerHTML='<div class="warn">⚠️ No learners in system.</div>'; return; }
+    items=ALL_LEARNERS.map(b=>({code:b.barcode, name:b.name}));
+    label='All Learners — '+items.length+' learner(s)';
+  }
+  items.sort((a,b)=>a.code.localeCompare(b.code));
+  $('printSelMsg').innerHTML='<div class="ok">✅ Ready to print: <b>'+label+'</b> — '+Math.ceil(items.length/15)+' page(s). Print dialog opening...</div>';
+  renderLabels(school, items);
+  setTimeout(()=>{ window.print(); }, 700);
+};
+window.printSelected = window.printBySelection;
+window.printAllFiltered = window.printBySelection;
+document.addEventListener('change', (e)=>{
+  if(e.target.id==='printClassSelect' || e.target.id==='printGradeSelect') updatePrintSummary();
+});
 async function saveLearner(){
   const emis=getEmis(); const school=getSchool();
   const name=$('nameInput').value.trim(); const grade=$('gradeInput').value; const cls=$('classInput').value.trim(); const gender=$('genderInput').value; const phone=$('phoneInput').value.trim();
@@ -346,33 +475,41 @@ async function loadLearners(){
     ALL_LEARNERS=[];
     snap.forEach(d=>{ const b=d.data(); ALL_LEARNERS.push({ id:d.id, barcode:b.barcode||b.code||d.id, name:b.name||b.fullName||'', grade:b.grade||'', class:b.class||'', status:b.status||'ACTIVE' }); });
     const grades=[...new Set(ALL_LEARNERS.map(b=>b.grade).filter(Boolean))].sort();
+    const classes=[...new Set(ALL_LEARNERS.map(b=>b.class).filter(Boolean))].sort();
     $('learnerFilter').innerHTML='<option value="">All Grades</option>'+grades.map(t=>`<option>${t}</option>`).join('');
+    $('classFilter').innerHTML='<option value="">All Classes</option>'+classes.map(t=>`<option>${t}</option>`).join('');
+    // Keep print pickers - preserve selection if possible
+    const prevC=$('printClassSelect').value; const prevG=$('printGradeSelect').value;
+    $('printClassSelect').innerHTML='<option value="">— Choose Class —</option>'+classes.map(t=>`<option ${t===prevC?'selected':''}>${t}</option>`).join('');
+    $('printGradeSelect').innerHTML='<option value="">— Choose Grade —</option>'+grades.map(t=>`<option ${t===prevG?'selected':''}>${t}</option>`).join('');
     SELECTED.clear();
     renderLearnerList();
+    updatePrintSummary();
   }catch(e){ $('learnerList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
 }
 window.loadLearners = loadLearners;
 function getFiltered(){
   const q=($('learnerSearch').value||'').toLowerCase().trim();
   const tf=$('learnerFilter').value;
-  return ALL_LEARNERS.filter(b=>{ if(tf && b.grade!==tf) return false; if(!q) return true; return (b.barcode+' '+b.name+' '+b.grade+' '+(b.class||'')).toLowerCase().includes(q); });
+  const cf=$('classFilter').value;
+  return ALL_LEARNERS.filter(b=>{ if(tf && b.grade!==tf) return false; if(cf && b.class!==cf) return false; if(!q) return true; return (b.barcode+' '+b.name+' '+b.grade+' '+(b.class||'')).toLowerCase().includes(q); });
 }
 function renderLearnerList(){
   const filtered=getFiltered();
-  $('learnerCount').textContent = filtered.length + ' learner(s) shown • ' + ALL_LEARNERS.length + ' total • ' + SELECTED.size + ' selected';
+  $('learnerCount').textContent = filtered.length + ' learner(s) shown • ' + ALL_LEARNERS.length + ' total • ' + SELECTED.size + ' ticked';
   const role=getRole();
   $('roleDeleteMsg').innerHTML = canDelete() ? '<div class="ok">✅ You are <b>'+role+'</b> — you CAN delete.</div>' : '<div class="warn">🔒 You are <b>'+(role||'NOT LOGGED IN')+'</b>. Only ADMIN / PRINCIPAL / LIBRARIAN can delete.</div>';
-  if(filtered.length===0){ $('learnerList').innerHTML='<div class="info">No learners found.</div>'; updateDeleteBar(); return; }
+  if(filtered.length===0){ $('learnerList').innerHTML='<div class="info">No learners found.</div>'; updateDeleteBar(); updatePrintBar(); return; }
   let html='<table><tr><th style="width:40px"><input type="checkbox" class="chk" onchange="toggleAll(this.checked)"></th><th>Barcode</th><th>Name</th><th>Grade</th><th>Class</th><th>Status</th></tr>';
   filtered.forEach(b=>{ const checked=SELECTED.has(b.id)?'checked':''; html+='<tr><td><input type="checkbox" class="chk" '+checked+' onchange="toggleOne(\''+b.id+'\',this.checked)"></td><td><b>'+b.barcode+'</b></td><td>'+b.name+'</td><td>'+b.grade+'</td><td>'+(b.class||'')+'</td><td>'+b.status+'</td></tr>'; });
   html+='</table>';
   $('learnerList').innerHTML=html;
-  updateDeleteBar();
+  updateDeleteBar(); updatePrintBar();
 }
 window.renderLearnerList = renderLearnerList;
-window.toggleOne = function(id, checked){ if(checked) SELECTED.add(id); else SELECTED.delete(id); renderLearnerList(); };
-window.toggleAll = function(checked){ const filtered=getFiltered(); filtered.forEach(b=>{ if(checked) SELECTED.add(b.id); else SELECTED.delete(b.id); }); renderLearnerList(); };
-window.clearSelection = function(){ SELECTED.clear(); renderLearnerList(); };
+window.toggleOne = function(id, checked){ if(checked) SELECTED.add(id); else SELECTED.delete(id); renderLearnerList(); updatePrintSummary(); };
+window.toggleAll = function(checked){ const filtered=getFiltered(); filtered.forEach(b=>{ if(checked) SELECTED.add(b.id); else SELECTED.delete(b.id); }); renderLearnerList(); updatePrintSummary(); };
+window.clearSelection = function(){ SELECTED.clear(); renderLearnerList(); updatePrintSummary(); };
 function updateDeleteBar(){
   const bar=$('deleteBar');
   if(SELECTED.size===0){ bar.style.display='none'; return; }
@@ -382,6 +519,14 @@ function updateDeleteBar(){
   $('selList').textContent='Selected: '+names;
   $('deleteSelectedBtn').disabled=!canDelete();
   $('deleteSelectedBtn').textContent = canDelete() ? '🗑️ Delete Selected ('+SELECTED.size+')' : '🔒 Only ADMIN / PRINCIPAL / LIBRARIAN can delete';
+}
+function updatePrintBar(){
+  const bar=$('printBar');
+  if(SELECTED.size===0){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  $('printSelCount').textContent=SELECTED.size;
+  const names=ALL_LEARNERS.filter(b=>SELECTED.has(b.id)).slice(0,10).map(b=>b.barcode+' '+b.name).join(', ') + (SELECTED.size>10 ? ' ... +'+(SELECTED.size-10)+' more' : '');
+  $('printSelList').textContent='Will print: '+names;
 }
 window.deleteSelected = async function(){
   const emis=getEmis();
@@ -406,6 +551,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if(login) $('whoLine').textContent='Logged in: '+nm+' • '+(login.role||'')+' • '+(login.email||'');
   if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
   $('cloudStatus').textContent='☁️ Cloud: Connected — '+(school||'Select School in Admin');
+  setPrintMode('learner');
   await refreshNext();
   await loadLearners();
 });
