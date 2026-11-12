@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v1.95</title>
+<title>Makhanani LTSM — Textbooks v1.96</title>
 <meta name="theme-color" content="#0a1f4d">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <style>
@@ -40,11 +40,29 @@ th{background:#0a1f4d;color:#fff}
 .chk{width:20px;height:20px;accent-color:#dc2626;cursor:pointer}
 .searchRow{display:flex;gap:10px;flex-wrap:wrap}
 .searchRow input{flex:1;min-width:180px}
-@media print{ header,#cloudStatus,.topnav,.card:first-child,.card:nth-child(2) .btn,.card:nth-child(2) button, #deleteCard, .btn{display:none!important} body{background:#fff} main{max-width:100%;padding:0} .card{box-shadow:none;border:none;padding:0} .labelBox{border:none;margin:0;padding:6px 0} }
+/* ===== v1.96 PRINT: 3 columns x 5 rows ===== */
+.labelsGrid{display:block}
+@page{ size:A4; margin:8mm; }
+@media print{
+  header,#cloudStatus,.topnav,.card:first-child,.card:nth-child(2) .btn,.card:nth-child(2) button, #deleteCard, .btn, .noPrint{display:none!important}
+  body{background:#fff;margin:0}
+  main{max-width:100%;padding:0}
+  .card{box-shadow:none;border:none;padding:0;margin:0}
+  #labelsBox{margin:0;padding:0}
+  #labelsBox h2, #labelsBox p{display:none}
+  .labelsGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm}
+  .labelBox{border:1.2px solid #000;padding:3mm 2mm;margin:0;text-align:center;background:#fff;page-break-inside:avoid;break-inside:avoid;height:50mm;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden}
+  .labelBox svg{width:100%;max-width:58mm;height:12mm}
+  .schoolName{font-size:10pt;line-height:1.1}
+  .typeWord{font-size:9pt;letter-spacing:2px;margin-top:1mm}
+  .labelBox .codeLine{font-size:9pt}
+  .printPage{break-after:page;page-break-after:always}
+  .printPage:last-child{break-after:auto;page-break-after:auto}
+}
 </style>
 </head>
 <body>
-<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Textbook Barcode Labels • v1.95<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.95 TEXTBOOKS UNDER SCHOOL</span></div></header>
+<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Textbook Barcode Labels • v1.96<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.96 3×5 PRINT</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -53,7 +71,7 @@ th{background:#0a1f4d;color:#fff}
 <h2>🏫 School</h2>
 <div class="info" id="schoolBox">School: —</div>
 <div class="small" id="prefixBox">Prefix: — • Next: — • Last used: —</div>
-<div class="small">WORDSWORTH HIGH SCHOOL → WHS000001 &nbsp;|&nbsp; TIVANANI PRIMARY SCHOOL → TPS000001</div>
+<div class="small">WORDSWORTH HIGH SCHOOL → WHS000001 &nbsp;|&nbsp; TIVANANI PRIMARY SCHOOL → TPS000001 &nbsp;|&nbsp; Print: 3 columns × 5 rows = 15 per page</div>
 </div>
 
 <div class="card">
@@ -142,19 +160,20 @@ async function refreshNext(){
 }
 window.refreshNext = refreshNext;
 
-// ===== v1.95 - TEXTBOOKS UNDER SCHOOL NAME =====
-// Layout:
-// WORDSWORTH HIGH SCHOOL  <- line 1
-// TEXTBOOKS                <- line 2, under school name
-// [real barcode]
-// WHS000xxx
+// ===== v1.96 - 3 columns x 5 rows print =====
 function renderLabels(school, start, end){
-  let html='<h2>Barcode Labels — Real Scannable Barcodes</h2><p class="small">Each label is:<br>'+school.toUpperCase()+'<br>TEXTBOOKS<br>Real Barcode — '+fmtBarcode(PREFIX,start)+'</p>';
-  for(let n=start; n<=end; n++){
-    const code=fmtBarcode(PREFIX,n);
-    html+='<div class="labelBox"><div class="schoolName">'+school.toUpperCase()+'</div><div class="typeWord">TEXTBOOKS</div><svg id="bc-'+code+'"></svg><div style="font-weight:900;font-size:14px">'+code+'</div></div>';
+  const total = end-start+1;
+  let html='<div class="noPrint"><h2>Barcode Labels — Real Scannable Barcodes</h2><p class="small">Print: <b>3 columns × 5 rows = 15 per A4 page</b><br>Each label:<br>'+school.toUpperCase()+'<br>TEXTBOOKS<br>Real Barcode — '+fmtBarcode(PREFIX,start)+'<br>Total: '+total+' label(s) = '+Math.ceil(total/15)+' page(s)</p></div>';
+  for(let p=start; p<=end; p+=15){
+    const pageEnd=Math.min(p+14, end);
+    html+='<div class="printPage"><div class="labelsGrid">';
+    for(let n=p; n<=pageEnd; n++){
+      const code=fmtBarcode(PREFIX,n);
+      html+='<div class="labelBox"><div class="schoolName">'+school.toUpperCase()+'</div><div class="typeWord">TEXTBOOKS</div><svg id="bc-'+code+'"></svg><div class="codeLine" style="font-weight:900;font-size:14px">'+code+'</div></div>';
+    }
+    html+='</div></div>';
   }
-  html+='<button class="btn btn-blue" onclick="window.print()">🖨️ Print Labels</button>';
+  html+='<div class="noPrint"><button class="btn btn-blue" onclick="window.print()">🖨️ Print Labels — 3 × 5</button><div class="small">Print settings: A4 • Margins: None / Minimum • Scale: 100% • Background graphics: ON</div></div>';
   $('labelsBox').innerHTML=html;
   for(let n=start; n<=end; n++){
     const code=fmtBarcode(PREFIX,n);
@@ -180,7 +199,7 @@ async function saveBooks(){
       const code=fmtBarcode(PREFIX,n);
       await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), { barcode:code, code:code, title:title, subject:subject, grade:grade, publisher:publisher, status:'AVAILABLE', createdAt:serverTimestamp(), createdBy:login?login.email:'', createdByName:login?login.name:'' }, {merge:true});
     }
-    msg.innerHTML='<div class="ok">✅ Saved '+copies+' book(s): '+fmtBarcode(PREFIX,start)+' to '+fmtBarcode(PREFIX,end)+'</div>';
+    msg.innerHTML='<div class="ok">✅ Saved '+copies+' book(s): '+fmtBarcode(PREFIX,start)+' to '+fmtBarcode(PREFIX,end)+' — '+Math.ceil(copies/15)+' page(s) to print</div>';
     renderLabels(school, start, end);
     NEXT_NUM=end+1;
     $('barcodePreview').value=fmtBarcode(PREFIX,NEXT_NUM);
