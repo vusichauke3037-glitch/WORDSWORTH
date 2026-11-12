@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Issue / Return v2.05</title>
+<title>Makhanani LTSM — Issue / Return v2.06</title>
 <meta name="theme-color" content="#0a1f4d">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -48,10 +48,16 @@ th{background:#0a1f4d;color:#fff}
 .ruleBox{background:#f8fafc;border:2px solid #0a1f4d;border-radius:12px;padding:12px;font-size:13px;line-height:1.6}
 .collectBox{border:2px solid #ea580c;border-radius:12px;padding:14px;background:#fff7ed;margin-top:14px}
 .collectBox h3{margin:0 0 8px;color:#9a3412;font-size:16px}
+.classBox{border:2px solid #7c3aed;border-radius:12px;padding:14px;background:#f5f3ff;margin-top:14px}
+.classBox h3{margin:0 0 8px;color:#5b21b6;font-size:16px}
+.progressBar{background:#e2e8f0;border-radius:20px;overflow:hidden;height:22px;margin:10px 0}
+.progressFill{background:#059669;height:100%;text-align:center;color:#fff;font-size:12px;font-weight:900;line-height:22px;transition:width .3s}
+.checkItem{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px;font-size:13px}
+.checkItem input{width:auto;margin:0}
 </style>
 </head>
 <body>
-<header><div><h1>📚 Issue / Return — Makhanani LTSM</h1><p>Scan Learner + Book • Lost / Damaged • Collect All • Due 30 Nov • v2.05<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.05 ISSUE</span></div></header>
+<header><div><h1>📚 Issue / Return — Makhanani LTSM</h1><p>Collect By Class • Lost / Damaged • Due 30 Nov • v2.06<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.06 ISSUE</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -65,9 +71,8 @@ th{background:#0a1f4d;color:#fff}
 <span id="ruleIssue">—</span><br>
 <span id="ruleReturn">—</span><br>
 <span id="ruleCollect">—</span><br>
-<span>• <b>Return Good:</b> Book goes back to shelf ✅</span><br>
-<span>• <b>Damaged:</b> Book goes to 🩹 DAMAGED — NOT on shelf, needs repair</span><br>
-<span>• <b>Lost:</b> Book goes to ❌ LOST — Learner must pay / replace, NOT on shelf</span><br>
+<span>• <b>Collect By Class:</b> Return ALL books from whole class (e.g. 10A) in ONE click</span><br>
+<span>• <b>Return Good:</b> Back to shelf ✅ • <b>Damaged:</b> 🩹 NOT shelf • <b>Lost:</b> ❌ Learner must pay</span><br>
 <span>• ALL books due <b>30 November</b></span>
 </div>
 <div class="dueBanner" id="dueBanner">📅 ALL BOOKS DUE: <b>30 November</b> — <span id="dueCountdown">—</span></div>
@@ -89,28 +94,52 @@ th{background:#0a1f4d;color:#fff}
 <label>📖 Book Barcode — Scan or Type (e.g. WHS000001)</label>
 <input id="bookCode" placeholder="Scan book barcode..." style="text-transform:uppercase" autocomplete="off">
 <div id="bookInfo"></div>
-<label>📝 Note for Damaged / Lost (optional) — e.g. Torn pages, No book, Water damage</label>
-<input id="returnNote" placeholder="e.g. Torn cover, pages missing, learner says lost at home">
+<label>📝 Note for Damaged / Lost (optional)</label>
+<input id="returnNote" placeholder="e.g. Torn cover, pages missing, learner says lost">
 </div>
 <div class="grid2">
 <button class="btn btn-green" id="issueBtn" onclick="doIssue()">📚 ISSUE Book to Learner</button>
 <button class="btn btn-gold" id="returnBtn" onclick="doReturn('GOOD')">↩️ RETURN Good — Back to Shelf</button>
 </div>
 <div class="grid2">
-<button class="btn btn-orange" onclick="doReturn('DAMAGED')">🩹 RETURN Damaged — Needs Repair</button>
-<button class="btn btn-red" onclick="doReturn('LOST')">❌ Mark LOST — Learner Must Pay / Replace</button>
+<button class="btn btn-orange" onclick="doReturn('DAMAGED')">🩹 RETURN Damaged</button>
+<button class="btn btn-red" onclick="doReturn('LOST')">❌ Mark LOST — Must Pay</button>
 </div>
-<div class="small">ISSUE = checks Teacher Subject. RETURN (Good / Damaged / Lost) = NO Subject check — ANY Teacher can return ANY book.</div>
+
+<!-- COLLECT ONE LEARNER -->
 <div class="collectBox">
-<h3>📦 Collect ALL Books From One Learner — One Click</h3>
-<div class="small">Scan Learner ONLY. All books returned as GOOD in one click. If one is Damaged / Lost, return that one separately with buttons above.</div>
-<label>🎓 Learner Barcode for Collect All</label>
-<input id="collectLearnerCode" placeholder="Scan learner barcode for Collect All..." style="text-transform:uppercase" autocomplete="off">
+<h3>📦 Collect ALL From ONE Learner</h3>
+<div class="small">Scan Learner ONLY. All their books returned as GOOD in one click.</div>
+<label>🎓 Learner Barcode</label>
+<input id="collectLearnerCode" placeholder="Scan learner..." style="text-transform:uppercase" autocomplete="off">
 <div id="collectLearnerInfo"></div>
 <div id="collectList"></div>
-<button class="btn btn-orange" id="collectAllBtn" onclick="doCollectAll()" style="display:none">📦 COLLECT ALL — Return All Books For This Learner</button>
+<button class="btn btn-orange" id="collectAllBtn" onclick="doCollectAll()" style="display:none">📦 COLLECT ALL</button>
 <div id="collectMsg"></div>
 </div>
+
+<!-- COLLECT BY CLASS — NEW -->
+<div class="classBox">
+<h3>🏫 Collect ALL From WHOLE CLASS — End of Term</h3>
+<div class="small">Example: End of term, 10A brings all books. Select <b>Grade + Class</b> → See who still has books → Tick who is returning today → Collect ALL in ONE click.<br><b>ANY Teacher can collect ANY Subject books.</b></div>
+<div class="grid2">
+<div><label>Grade</label><select id="classGrade" onchange="loadClassCollect()"><option value="">— Select Grade —</option></select></div>
+<div><label>Class</label><select id="className" onchange="loadClassCollect()"><option value="">— Select Class —</option></select></div>
+</div>
+<div class="grid2">
+<div><label>Filter</label><select id="classFilter" onchange="renderClassCollect()"><option value="WITH_BOOKS">Only learners WITH books OUT</option><option value="ALL">All learners in class</option><option value="NO_BOOKS">Only learners with 0 books (Done ✅)</option></select></div>
+<div><label>Search learner</label><input id="classSearch" placeholder="Search name..." oninput="renderClassCollect()"></div>
+</div>
+<div id="classSummary"></div>
+<div id="classProgress"></div>
+<div id="classList"></div>
+<div class="grid2">
+<button class="btn btn-purple" id="collectClassBtn" onclick="doCollectClass()" style="display:none">🏫 COLLECT ALL — Whole Class (Ticked Learners)</button>
+<button class="btn btn-grey" onclick="clearClassCollect()">🔄 Clear Class</button>
+</div>
+<div id="classMsg"></div>
+</div>
+
 <div id="issueMsg"></div>
 <button class="btn btn-grey" onclick="clearScan()">🔄 Clear Scan</button>
 </div>
@@ -133,7 +162,6 @@ th{background:#0a1f4d;color:#fff}
 
 <div class="card">
 <h2>🩹 Damaged / ❌ Lost Books</h2>
-<div class="small">Books NOT on shelf. Damaged can be repaired and put back. Lost needs learner to pay / replace. Librarian / Admin can mark Damaged book back to Available after repair in Textbooks page.</div>
 <div id="damagedLostList"></div>
 <button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button>
 </div>
@@ -159,7 +187,7 @@ const firebaseConfig = {
 };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
-let ALL_LEARNERS=[], ALL_BOOKS=[], ALL_ISSUES=[], TAB='ALL', COLLECT_LEARNER=null;
+let ALL_LEARNERS=[], ALL_BOOKS=[], ALL_ISSUES=[], TAB='ALL', COLLECT_LEARNER=null, CLASS_LEARNERS=[];
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
@@ -181,16 +209,16 @@ function canIssueSubject(bookSubject){
 }
 function updateRuleBox(){
   const login=getLogin();
-  if(!login){ $('ruleIssue').innerHTML='• ISSUE: Login first.'; $('ruleReturn').innerHTML='• RETURN: Login first.'; $('ruleCollect').innerHTML='• COLLECT ALL: Login first.'; return; }
+  if(!login){ $('ruleIssue').innerHTML='• ISSUE: Login first.'; $('ruleReturn').innerHTML='• RETURN: Login first.'; $('ruleCollect').innerHTML='• COLLECT: Login first.'; return; }
   if(isTeacher()){
     const subs=getTeacherSubjects();
     $('ruleIssue').innerHTML='• 📚 <b>ISSUE:</b> Teacher — ONLY <b>'+(subs.length ? subs.join(', ') : 'NO SUBJECT')+'</b>';
     $('ruleReturn').innerHTML='• ↩️ <b>RETURN:</b> Teacher — <b>ANY Book</b> — Good / Damaged / Lost, ANY Subject.';
-    $('ruleCollect').innerHTML='• 📦 <b>COLLECT ALL:</b> Teacher — <b>ANY learner, ANY Subject</b> in ONE click.';
+    $('ruleCollect').innerHTML='• 📦🏫 <b>COLLECT:</b> Teacher — <b>ONE Learner OR WHOLE CLASS</b> — ANY Subject, in ONE click.';
   } else {
     $('ruleIssue').innerHTML='• 📚 <b>ISSUE:</b> '+getRole()+' — ANY Subject.';
-    $('ruleReturn').innerHTML='• ↩️ <b>RETURN:</b> '+getRole()+' — ANY Book — Good / Damaged / Lost.';
-    $('ruleCollect').innerHTML='• 📦 <b>COLLECT ALL:</b> '+getRole()+' — ANY learner in ONE click.';
+    $('ruleReturn').innerHTML='• ↩️ <b>RETURN:</b> '+getRole()+' — ANY Book.';
+    $('ruleCollect').innerHTML='• 📦🏫 <b>COLLECT:</b> '+getRole()+' — ONE Learner OR WHOLE CLASS in ONE click.';
   }
 }
 function getDueDateForIssue(d){ const dt=d?new Date(d):new Date(); let y=dt.getFullYear(); if(dt.getMonth()===11) y++; return new Date(y,10,30); }
@@ -224,12 +252,17 @@ window.clearScan = function(){
   $('collectAllBtn').style.display='none'; COLLECT_LEARNER=null;
   $('learnerCode').focus();
 };
+window.clearClassCollect = function(){
+  $('classGrade').value=''; $('className').value=''; $('classFilter').value='WITH_BOOKS'; $('classSearch').value='';
+  CLASS_LEARNERS=[]; $('classSummary').innerHTML=''; $('classProgress').innerHTML=''; $('classList').innerHTML=''; $('classMsg').innerHTML=''; $('collectClassBtn').style.display='none';
+  buildClassDropdowns();
+};
 function lookupLearner(code){
   code=(code||'').trim().toUpperCase();
   const l=ALL_LEARNERS.find(x=>x.barcode===code || x.id===code);
   if(!l){ $('learnerInfo').innerHTML='<div class="warn">❌ Learner NOT FOUND: '+code+'</div>'; return null; }
   const outs=ALL_ISSUES.filter(x=>x.learnerCode===l.barcode && x.status==='OUT');
-  $('learnerInfo').innerHTML='<div class="info">🎓 <b>'+l.name+'</b> • '+l.grade+' '+(l.class||'')+' • '+l.barcode+'<br>Books OUT now: <b>'+outs.length+'</b> '+(outs.length ? '• '+outs.map(o=>o.bookCode).join(', ') : '')+(outs.length ? '<br><button class="btn btn-orange btn-sm" onclick="fillCollectFromMain(\''+l.barcode+'\')">📦 Collect ALL '+outs.length+' From '+l.name+'</button>' : '')+'</div>';
+  $('learnerInfo').innerHTML='<div class="info">🎓 <b>'+l.name+'</b> • '+l.grade+' '+(l.class||'')+' • '+l.barcode+'<br>Books OUT: <b>'+outs.length+'</b> '+(outs.length ? '• '+outs.map(o=>o.bookCode).join(', ') : '')+(outs.length ? '<br><button class="btn btn-orange btn-sm" onclick="fillCollectFromMain(\''+l.barcode+'\')">📦 Collect ALL '+outs.length+' From '+l.name+'</button>' : '')+'</div>';
   return l;
 }
 function lookupBook(code){
@@ -240,7 +273,7 @@ function lookupBook(code){
   let statusTxt='';
   if(b.status==='ISSUED') statusTxt='📚 OUT to '+(issue?issue.learnerName:'');
   else if(b.status==='DAMAGED') statusTxt='🩹 DAMAGED — NOT on shelf';
-  else if(b.status==='LOST') statusTxt='❌ LOST — Learner must pay / replace';
+  else if(b.status==='LOST') statusTxt='❌ LOST';
   else statusTxt='✅ AVAILABLE';
   $('bookInfo').innerHTML='<div class="info">📖 <b>'+b.title+'</b> • '+b.subject+' • '+b.grade+' • '+b.code+'<br>Status: <b>'+statusTxt+'</b></div>';
   return b;
@@ -260,7 +293,7 @@ function lookupCollectLearner(code){
   if(!l){ $('collectLearnerInfo').innerHTML='<div class="warn">❌ Learner NOT FOUND: '+code+'</div>'; $('collectList').innerHTML=''; $('collectAllBtn').style.display='none'; COLLECT_LEARNER=null; return null; }
   COLLECT_LEARNER=l;
   const outs=ALL_ISSUES.filter(x=>x.learnerCode===l.barcode && x.status==='OUT');
-  if(outs.length===0){ $('collectLearnerInfo').innerHTML='<div class="info">🎓 <b>'+l.name+'</b> • '+l.grade+' • ✅ <b>NO books OUT</b></div>'; $('collectList').innerHTML=''; $('collectAllBtn').style.display='none'; return l; }
+  if(outs.length===0){ $('collectLearnerInfo').innerHTML='<div class="info">🎓 <b>'+l.name+'</b> • ✅ <b>NO books OUT</b></div>'; $('collectList').innerHTML=''; $('collectAllBtn').style.display='none'; return l; }
   $('collectLearnerInfo').innerHTML='<div class="info">🎓 <b>'+l.name+'</b> • '+l.grade+' '+(l.class||'')+' • Books OUT: <b>'+outs.length+'</b></div>';
   let html='<table><tr><th>Book</th><th>Subject</th><th>Due</th></tr>';
   outs.forEach(o=>{ html+='<tr><td><b>'+(o.bookTitle||'')+'</b><br><span class="small">'+(o.bookCode||'')+'</span></td><td>'+(o.bookSubject||'')+'</td><td>'+fmtDue(getDueDateForRecord(o))+'</td></tr>'; });
@@ -280,7 +313,7 @@ window.doCollectAll = async function(){
   const outs=ALL_ISSUES.filter(x=>x.learnerCode===COLLECT_LEARNER.barcode && x.status==='OUT');
   if(outs.length===0){ $('collectMsg').innerHTML='<div class="info">✅ '+COLLECT_LEARNER.name+' has NO books OUT.</div>'; return; }
   const listTxt=outs.map(o=> '• '+o.bookCode+' — '+o.bookTitle).join('\n');
-  if(!confirm('📦 COLLECT ALL — Return ALL '+outs.length+' book(s) for '+COLLECT_LEARNER.name+'?\n\n'+listTxt+'\n\nAll returned as GOOD. If one is Damaged/Lost, return it separately after.')) return;
+  if(!confirm('📦 COLLECT ALL — Return ALL '+outs.length+' book(s) for '+COLLECT_LEARNER.name+'?\n\n'+listTxt)) return;
   $('collectAllBtn').disabled=true; $('collectAllBtn').textContent='Collecting...';
   let done=0;
   for(const issue of outs){
@@ -299,6 +332,128 @@ window.doCollectAll = async function(){
   $('collectMsg').innerHTML=msg;
 };
 window.collectAllForLearner = function(barcode){ fillCollectFromMain(barcode); };
+// ===== COLLECT BY CLASS — NEW v2.06 =====
+function buildClassDropdowns(){
+  const grades=[...new Set(ALL_LEARNERS.map(l=>l.grade).filter(Boolean))].sort((a,b)=> String(a).localeCompare(String(b), undefined, {numeric:true}));
+  const prevG=$('classGrade').value;
+  $('classGrade').innerHTML='<option value="">— Select Grade —</option>'+grades.map(g=>`<option ${g===prevG?'selected':''}>${g}</option>`).join('');
+  // Classes for selected grade
+  const g=$('classGrade').value;
+  let classes=[];
+  if(g) classes=[...new Set(ALL_LEARNERS.filter(l=>l.grade===g).map(l=>l.class).filter(Boolean))].sort();
+  else classes=[...new Set(ALL_LEARNERS.map(l=>l.class).filter(Boolean))].sort();
+  const prevC=$('className').value;
+  $('className').innerHTML='<option value="">— Select Class —</option>'+classes.map(c=>`<option ${c===prevC?'selected':''}>${c}</option>`).join('');
+}
+window.loadClassCollect = function(){
+  buildClassDropdowns();
+  const g=$('classGrade').value;
+  const c=$('className').value;
+  if(!g || !c){
+    CLASS_LEARNERS=[];
+    $('classSummary').innerHTML='<div class="small">Select Grade + Class to see who still has books.</div>';
+    $('classList').innerHTML=''; $('classProgress').innerHTML=''; $('collectClassBtn').style.display='none';
+    return;
+  }
+  CLASS_LEARNERS = ALL_LEARNERS.filter(l=> l.grade===g && (l.class||'')===c).sort((a,b)=> (a.name||'').localeCompare(b.name||''));
+  renderClassCollect();
+};
+function getLearnerOuts(barcode){
+  return ALL_ISSUES.filter(x=>x.learnerCode===barcode && x.status==='OUT');
+}
+window.renderClassCollect = function(){
+  const g=$('classGrade').value;
+  const c=$('className').value;
+  if(!g || !c) return;
+  let list=[...CLASS_LEARNERS];
+  const filter=$('classFilter').value;
+  const q=($('classSearch').value||'').toLowerCase().trim();
+  if(q) list=list.filter(l=> (l.name+' '+l.barcode).toLowerCase().includes(q));
+  // Stats for whole class
+  const totalLearners=CLASS_LEARNERS.length;
+  const totalBooksOut=CLASS_LEARNERS.reduce((sum,l)=> sum+getLearnerOuts(l.barcode).length, 0);
+  const learnersWithBooks=CLASS_LEARNERS.filter(l=> getLearnerOuts(l.barcode).length>0).length;
+  const learnersDone=totalLearners - learnersWithBooks;
+  const pct = totalLearners ? Math.round(learnersDone/totalLearners*100) : 0;
+  $('classSummary').innerHTML='<div class="info"><b>'+g+' '+c+'</b> • Learners: <b>'+totalLearners+'</b> • Still have books: <b style="color:#dc2626">'+learnersWithBooks+'</b> • Done (0 books): <b style="color:#059669">'+learnersDone+'</b> • Total books OUT: <b>'+totalBooksOut+'</b></div>';
+  $('classProgress').innerHTML='<div class="small">Class Collection Progress: '+learnersDone+' / '+totalLearners+' learners done</div><div class="progressBar"><div class="progressFill" style="width:'+pct+'%">'+pct+'% DONE</div></div>';
+  if(filter==='WITH_BOOKS') list=list.filter(l=> getLearnerOuts(l.barcode).length>0);
+  if(filter==='NO_BOOKS') list=list.filter(l=> getLearnerOuts(l.barcode).length===0);
+  if(list.length===0){
+    $('classList').innerHTML='<div class="ok">✅ No learners for this filter. '+(filter==='WITH_BOOKS' ? 'All learners in '+g+' '+c+' have returned ALL books! 🎉' : 'No learners found.')+'</div>';
+    $('collectClassBtn').style.display='none';
+    return;
+  }
+  let html='<table><tr><th><input type="checkbox" id="classSelectAll" onchange="toggleClassSelectAll(this.checked)"> Select</th><th>Learner</th><th>Books OUT</th><th>Book List</th><th>Action</th></tr>';
+  list.forEach(l=>{
+    const outs=getLearnerOuts(l.barcode);
+    const has=outs.length>0;
+    const booksTxt = has ? outs.map(o=> o.bookCode+' — '+o.bookTitle+' ('+o.bookSubject+')').join('<br>') : '<span style="color:#059669">✅ 0 — Done</span>';
+    const pill = has ? '<span class="pill pill-red">'+outs.length+' OUT</span>' : '<span class="pill pill-green">✅ DONE</span>';
+    html+='<tr><td><input type="checkbox" class="classTick" data-barcode="'+l.barcode+'" '+(has ? 'checked' : 'disabled')+' onchange="updateClassCollectBtn()"></td><td><b>'+l.name+'</b><br><span class="small">'+l.barcode+' • '+l.grade+' '+(l.class||'')+'</span></td><td>'+pill+'</td><td class="small">'+booksTxt+'</td><td>'+(has ? '<button class="btn btn-orange btn-sm" onclick="collectAllForLearner(\''+l.barcode+'\')">📦 Collect This Learner</button>' : '<span class="small">—</span>')+'</td></tr>';
+  });
+  html+='</table>';
+  html+='<div class="small">Tick = will be collected when you click COLLECT ALL below. Unticked learners are skipped. Learners with 0 books are already ticked OFF (disabled).</div>';
+  $('classList').innerHTML=html;
+  updateClassCollectBtn();
+};
+window.toggleClassSelectAll = function(checked){
+  document.querySelectorAll('.classTick:not(:disabled)').forEach(cb=> cb.checked=checked);
+  updateClassCollectBtn();
+};
+window.updateClassCollectBtn = function(){
+  const ticked=[...document.querySelectorAll('.classTick:checked')];
+  let totalBooks=0;
+  ticked.forEach(cb=>{
+    const bc=cb.getAttribute('data-barcode');
+    totalBooks+=getLearnerOuts(bc).length;
+  });
+  if(ticked.length===0){
+    $('collectClassBtn').style.display='none';
+    return;
+  }
+  $('collectClassBtn').style.display='block';
+  $('collectClassBtn').textContent='🏫 COLLECT ALL — '+ticked.length+' Learner(s) • '+totalBooks+' Book(s) — '+$('classGrade').value+' '+$('className').value;
+};
+window.doCollectClass = async function(){
+  const emis=getEmis(); const login=getLogin();
+  if(!login){ $('classMsg').innerHTML='<div class="warn">⚠️ Login first.</div>'; return; }
+  const ticked=[...document.querySelectorAll('.classTick:checked')].map(cb=> cb.getAttribute('data-barcode'));
+  if(ticked.length===0){ $('classMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 learner.</div>'; return; }
+  // Build full list of issues to return
+  let allIssues=[];
+  ticked.forEach(bc=>{
+    const l=ALL_LEARNERS.find(x=>x.barcode===bc);
+    const outs=getLearnerOuts(bc);
+    outs.forEach(o=> allIssues.push({learner:l, issue:o}));
+  });
+  if(allIssues.length===0){ $('classMsg').innerHTML='<div class="info">✅ Ticked learners have NO books OUT.</div>'; return; }
+  const g=$('classGrade').value; const c=$('className').value;
+  const preview = ticked.map(bc=>{
+    const l=ALL_LEARNERS.find(x=>x.barcode===bc);
+    const outs=getLearnerOuts(bc);
+    return '• '+(l?l.name:bc)+' — '+outs.length+' book(s): '+outs.map(o=>o.bookCode).join(', ');
+  }).join('\n');
+  if(!confirm('🏫 COLLECT ALL BY CLASS — '+g+' '+c+'\n\nLearners: '+ticked.length+'\nTotal books: '+allIssues.length+'\n\n'+preview+'\n\nAll books returned as GOOD. Continue?')) return;
+  $('collectClassBtn').disabled=true; $('collectClassBtn').textContent='Collecting '+allIssues.length+' books...';
+  let done=0, failed=[];
+  for(const item of allIssues){
+    const issue=item.issue;
+    try{
+      await setDoc(doc(db,'schools','EMIS_'+emis,'issues',issue.id), {status:'RETURNED', returnCondition:'GOOD', returnedAt:serverTimestamp(), returnedBy:login.email||'', returnedByName:login.name||'', returnedByRole:login.role||'', returnedByCollectAll:true, returnedByClass:g+' '+c}, {merge:true});
+      await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',issue.bookCode), {status:'AVAILABLE', issuedTo:'', issuedToName:'', condition:'GOOD', updatedAt:serverTimestamp()}, {merge:true});
+      done++;
+    }catch(e){ failed.push(issue.bookCode+' — '+e.message); }
+  }
+  try{
+    await setDoc(doc(db,'schools','EMIS_'+emis,'logs','log_'+Date.now()), {action:'COLLECT_CLASS', detail:'Collected CLASS '+g+' '+c+' — '+done+' book(s) from '+ticked.length+' learner(s) — '+ticked.join(', '), whoEmail:login.email||'', whoName:login.name||'', whoRole:login.role||'', createdAt:serverTimestamp()});
+  }catch(e){}
+  $('classMsg').innerHTML='<div class="ok">✅ <b>CLASS COLLECTED!</b><br>Returned <b>'+done+' book(s)</b> from <b>'+ticked.length+' learner(s)</b> in <b>'+g+' '+c+'</b><br>Collected by: '+login.name+' ('+login.role+')'+(failed.length ? '<br><span style="color:#dc2626">Failed: '+failed.join('<br>')+'</span>' : '')+'</div>';
+  await loadAll();
+  // Refresh class view — should now show those learners as DONE
+  loadClassCollect();
+  $('collectClassBtn').disabled=false;
+};
 window.doIssue = async function(){
   const emis=getEmis(); const login=getLogin();
   if(!login){ $('issueMsg').innerHTML='<div class="warn">⚠️ Login first.</div>'; return; }
@@ -313,8 +468,8 @@ window.doIssue = async function(){
   if(book.grade !== learner.grade){ $('issueMsg').innerHTML='<div class="warn">🚫 Grade Mismatch — Learner '+learner.grade+' • Book '+book.grade+'</div>'; return; }
   if(book.status!=='AVAILABLE'){
     if(book.status==='ISSUED') $('issueMsg').innerHTML='<div class="warn">🚫 Book ALREADY OUT</div>';
-    else if(book.status==='DAMAGED') $('issueMsg').innerHTML='<div class="warn">🚫 Book is DAMAGED — Cannot Issue. Repair it first in Textbooks page.</div>';
-    else if(book.status==='LOST') $('issueMsg').innerHTML='<div class="warn">🚫 Book is LOST — Cannot Issue. Learner must replace it.</div>';
+    else if(book.status==='DAMAGED') $('issueMsg').innerHTML='<div class="warn">🚫 Book is DAMAGED — Cannot Issue. Repair it first.</div>';
+    else if(book.status==='LOST') $('issueMsg').innerHTML='<div class="warn">🚫 Book is LOST — Cannot Issue.</div>';
     else $('issueMsg').innerHTML='<div class="warn">🚫 Book NOT Available: '+book.status+'</div>';
     return;
   }
@@ -336,7 +491,6 @@ window.doIssue = async function(){
     await loadAll(); clearScan();
   }catch(e){ $('issueMsg').innerHTML='<div class="warn">❌ Issue failed: '+e.message+'</div>'; }
 };
-// ===== v2.05 RETURN — GOOD / DAMAGED / LOST =====
 window.doReturn = async function(condition){
   condition = condition || 'GOOD';
   const emis=getEmis(); const login=getLogin();
@@ -345,23 +499,18 @@ window.doReturn = async function(condition){
   if(!bCode){ $('issueMsg').innerHTML='<div class="warn">⚠️ For RETURN, scan <b>Book Barcode ONLY</b>.</div>'; return; }
   const note=($('returnNote').value||'').trim();
   const issue=ALL_ISSUES.find(x=>x.bookCode===bCode && x.status==='OUT');
-  if(!issue){ $('issueMsg').innerHTML='<div class="warn">⚠️ Book '+bCode+' is NOT OUT. Already returned / Available.</div>'; return; }
-  // Confirm for LOST / DAMAGED — important, cannot undo easily
-  if(condition==='LOST'){
-    if(!confirm('❌ Mark LOST?\n\n'+bCode+' — '+(issue.bookTitle||'')+' from '+(issue.learnerName||'')+'\n\nLearner must PAY / REPLACE this book.\nBook will NOT go back to shelf.\n\nContinue?')) return;
-  }
-  if(condition==='DAMAGED'){
-    if(!confirm('🩹 Mark DAMAGED?\n\n'+bCode+' — '+(issue.bookTitle||'')+' from '+(issue.learnerName||'')+'\n\nBook will go to DAMAGED stock, NOT to shelf.\nLibrarian can repair it later.\n\nContinue?')) return;
-  }
-  const newBookStatus = condition==='GOOD' ? 'AVAILABLE' : condition; // DAMAGED or LOST
+  if(!issue){ $('issueMsg').innerHTML='<div class="warn">⚠️ Book '+bCode+' is NOT OUT.</div>'; return; }
+  if(condition==='LOST'){ if(!confirm('❌ Mark LOST?\n\n'+bCode+' from '+(issue.learnerName||'')+'\nLearner must PAY / REPLACE.')) return; }
+  if(condition==='DAMAGED'){ if(!confirm('🩹 Mark DAMAGED?\n\n'+bCode+' from '+(issue.learnerName||'')+'\nBook goes to DAMAGED stock.')) return; }
+  const newBookStatus = condition==='GOOD' ? 'AVAILABLE' : condition;
   const returnStatus = condition==='GOOD' ? 'RETURNED' : (condition==='DAMAGED' ? 'RETURNED_DAMAGED' : 'RETURNED_LOST');
   try{
     await setDoc(doc(db,'schools','EMIS_'+emis,'issues',issue.id), {status:returnStatus, returnCondition:condition, returnNote:note, returnedAt:serverTimestamp(), returnedBy:login.email||'', returnedByName:login.name||'', returnedByRole:login.role||''}, {merge:true});
     await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',bCode), {status:newBookStatus, condition:condition, conditionNote:note, issuedTo:'', issuedToName:'', updatedAt:serverTimestamp()}, {merge:true});
-    await setDoc(doc(db,'schools','EMIS_'+emis,'logs','log_'+Date.now()), {action:'RETURN_'+condition, detail:'Returned '+condition+' — '+bCode+' from '+(issue.learnerName||'')+(note ? ' — Note: '+note : ''), whoEmail:login.email||'', whoName:login.name||'', whoRole:login.role||'', createdAt:serverTimestamp()});
-    if(condition==='GOOD') $('issueMsg').innerHTML='<div class="ok">✅ <b>RETURNED GOOD!</b> '+bCode+' from <b>'+(issue.learnerName||'')+'</b> → Back to shelf ✅</div>';
-    if(condition==='DAMAGED') $('issueMsg').innerHTML='<div class="ok">🩹 <b>RETURNED DAMAGED!</b> '+bCode+' from <b>'+(issue.learnerName||'')+'</b><br>Book moved to DAMAGED stock — NOT on shelf. Note: '+(note||'—')+'</div>';
-    if(condition==='LOST') $('issueMsg').innerHTML='<div class="ok">❌ <b>MARKED LOST!</b> '+bCode+' from <b>'+(issue.learnerName||'')+'</b><br>Learner must PAY / REPLACE. Book removed from shelf. Note: '+(note||'—')+'</div>';
+    await setDoc(doc(db,'schools','EMIS_'+emis,'logs','log_'+Date.now()), {action:'RETURN_'+condition, detail:'Returned '+condition+' — '+bCode+' from '+(issue.learnerName||''), whoEmail:login.email||'', whoName:login.name||'', whoRole:login.role||'', createdAt:serverTimestamp()});
+    if(condition==='GOOD') $('issueMsg').innerHTML='<div class="ok">✅ <b>RETURNED GOOD!</b> '+bCode+' from <b>'+(issue.learnerName||'')+'</b> → Back to shelf</div>';
+    if(condition==='DAMAGED') $('issueMsg').innerHTML='<div class="ok">🩹 <b>DAMAGED!</b> '+bCode+' from <b>'+(issue.learnerName||'')+'</b></div>';
+    if(condition==='LOST') $('issueMsg').innerHTML='<div class="ok">❌ <b>LOST!</b> '+bCode+' from <b>'+(issue.learnerName||'')+'</b> — Must pay / replace</div>';
     await loadAll(); clearScan();
   }catch(e){ $('issueMsg').innerHTML='<div class="warn">❌ Return failed: '+e.message+'</div>'; }
 };
@@ -371,9 +520,9 @@ window.returnById = async function(issueId, bookCode, condition){
   if(!login){ alert('Login first.'); return; }
   const issue=ALL_ISSUES.find(x=>x.id===issueId);
   if(!issue) return;
-  const note=prompt('Note for '+(condition==='GOOD' ? 'Return' : condition)+' — '+bookCode+' from '+(issue.learnerName||'')+'\n(Optional — e.g. Torn pages, Lost at home)', '');
+  const note=prompt('Note for '+(condition==='GOOD' ? 'Return' : condition)+' — '+bookCode+' from '+(issue.learnerName||'')+'\n(Optional)', '');
   if(condition==='LOST' && !confirm('❌ Mark LOST? Learner must pay / replace.')) return;
-  if(condition==='DAMAGED' && !confirm('🩹 Mark DAMAGED? Book goes to DAMAGED stock.')) return;
+  if(condition==='DAMAGED' && !confirm('🩹 Mark DAMAGED?')) return;
   const newBookStatus = condition==='GOOD' ? 'AVAILABLE' : condition;
   const returnStatus = condition==='GOOD' ? 'RETURNED' : (condition==='DAMAGED' ? 'RETURNED_DAMAGED' : 'RETURNED_LOST');
   try{
@@ -383,25 +532,17 @@ window.returnById = async function(issueId, bookCode, condition){
     await loadAll();
   }catch(e){ alert('Return failed: '+e.message); }
 };
-// Librarian can repair a DAMAGED book back to AVAILABLE
 window.repairBook = async function(bookCode, title){
   const emis=getEmis(); const login=getLogin();
   if(!login){ alert('Login first.'); return; }
-  if(!confirm('🩹 Repair book '+bookCode+' — '+title+'?\n\nIt will go back to AVAILABLE shelf.')) return;
-  try{
-    await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',bookCode), {status:'AVAILABLE', condition:'GOOD', conditionNote:'Repaired', updatedAt:serverTimestamp()}, {merge:true});
-    await loadAll();
-  }catch(e){ alert(e.message); }
+  if(!confirm('🩹 Repair book '+bookCode+' — '+title+'?\nIt will go back to AVAILABLE shelf.')) return;
+  try{ await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',bookCode), {status:'AVAILABLE', condition:'GOOD', conditionNote:'Repaired', updatedAt:serverTimestamp()}, {merge:true}); await loadAll(); }catch(e){ alert(e.message); }
 };
-// Librarian can mark LOST book as REPLACED — back to AVAILABLE
 window.replaceLostBook = async function(bookCode, title){
   const emis=getEmis(); const login=getLogin();
   if(!login){ alert('Login first.'); return; }
-  if(!confirm('✅ Learner REPLACED / PAID for '+bookCode+' — '+title+'?\n\nBook goes back to AVAILABLE shelf.')) return;
-  try{
-    await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',bookCode), {status:'AVAILABLE', condition:'GOOD', conditionNote:'Replaced / Paid', updatedAt:serverTimestamp()}, {merge:true});
-    await loadAll();
-  }catch(e){ alert(e.message); }
+  if(!confirm('✅ Learner REPLACED / PAID for '+bookCode+' — '+title+'?\nBook goes back to AVAILABLE.')) return;
+  try{ await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',bookCode), {status:'AVAILABLE', condition:'GOOD', conditionNote:'Replaced / Paid', updatedAt:serverTimestamp()}, {merge:true}); await loadAll(); }catch(e){ alert(e.message); }
 };
 async function loadAll(){
   const emis=getEmis();
@@ -425,7 +566,10 @@ async function loadAll(){
     const prev=$('issueGradeFilter').value;
     $('issueGradeFilter').innerHTML='<option value="">All Grades</option>'+grades.map(g=>`<option ${g===prev?'selected':''}>${g}</option>`).join('');
     updateDueBanner(); updateRuleBox();
+    buildClassDropdowns();
     renderIssues(); renderDamagedLost(); renderReturned();
+    // Keep class view if already selected
+    if($('classGrade').value && $('className').value) renderClassCollect();
   }catch(e){ $('issueList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; }
 }
 window.loadAll = loadAll;
@@ -459,8 +603,7 @@ function renderIssues(){
 window.renderIssues = renderIssues;
 function renderDamagedLost(){
   const list=ALL_BOOKS.filter(b=>b.status==='DAMAGED' || b.status==='LOST');
-  if(list.length===0){ $('damagedLostList').innerHTML='<div class="info">No Damaged / Lost books. ✅ All books are good.</div>'; return; }
-  // Find last issue for learner name
+  if(list.length===0){ $('damagedLostList').innerHTML='<div class="info">No Damaged / Lost books. ✅</div>'; return; }
   let html='<table><tr><th>Book</th><th>Status</th><th>Note / Learner</th><th>Action</th></tr>';
   list.forEach(b=>{
     const lastIssue=[...ALL_ISSUES].reverse().find(x=>x.bookCode===b.code && (x.status==='RETURNED_DAMAGED' || x.status==='RETURNED_LOST'));
@@ -492,8 +635,8 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:'');
   if(login){
     let roleTxt='Role: <b>'+getRole()+'</b>';
-    if(isTeacher()) roleTxt+=' • <b>ISSUE:</b> ONLY '+(getTeacherSubjects().join(', ')||'NO SUBJECT')+' • <b>RETURN:</b> ANY Book — Good / Damaged / Lost';
-    else roleTxt+=' • <b>ISSUE:</b> ANY • <b>RETURN:</b> ANY — Good / Damaged / Lost';
+    if(isTeacher()) roleTxt+=' • <b>ISSUE:</b> ONLY '+(getTeacherSubjects().join(', ')||'NO SUBJECT')+' • <b>RETURN / COLLECT:</b> ANY Book';
+    else roleTxt+=' • <b>ISSUE:</b> ANY • <b>RETURN / COLLECT:</b> ANY';
     $('roleBox').innerHTML=roleTxt;
   } else { $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; }
   $('cloudStatus').textContent='☁️ Cloud: Connected — '+school;
