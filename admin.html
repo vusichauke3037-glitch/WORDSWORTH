@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Admin v1.88</title>
+<title>Makhanani LTSM — Admin v1.91</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a1f4d">
 <style>
@@ -23,7 +23,6 @@ textarea{min-height:70px}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
 .btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0}.btn-red{background:#dc2626;color:#fff}.btn-orange{background:#ea580c;color:#fff}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.btn-small{width:auto;padding:7px 12px;font-size:12px;margin:2px;display:inline-block}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
 #cloudIdLabel{text-align:center;font-size:11px;color:#64748b;padding:4px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
@@ -51,78 +50,72 @@ th{background:#0a1f4d;color:#fff}
 .pbtn{width:100%;padding:12px;border:none;border-radius:10px;background:#059669;color:#fff;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
 .pbtn-gold{background:#d4af37;color:#0a1f4d}
 .pbadge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#059669;color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
+.rolebox{border:2px solid #0a1f4d;border-radius:10px;padding:10px;font-size:13px;margin-top:10px;background:#f8fafc}
+.fixbox{border:2px dashed #ea580c;background:#fff7ed;border-radius:10px;padding:12px;margin-top:12px}
 </style>
 </head>
 <body>
-<header><div><h1>⚙️ Admin — Makhanani LTSM</h1><p>School Control Panel<br>Firebase Live • v1.88</p></div><div><span class="badge">v1.88 ADMIN</span></div></header>
+<header><div><h1>⚙️ Admin — Makhanani LTSM</h1><p>School Control Panel<br>Firebase Live • v1.91 SELF-FIX</p></div><div><span class="badge">v1.91 FIX</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <div id="cloudIdLabel">schools/...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
-<!-- SCHOOL SELECT -->
 <div class="card">
 <h2>🏫 School — Select by EMIS</h2>
 <div class="grid2">
 <div><label>DBE Dropdown (Value = EMIS)</label><select id="schoolDropdown"><option value="">-- Loading schools... --</option></select><div class="small" id="schoolCount">Loading...</div></div>
-<div><label>Search EMIS / NAME / TOWN</label><input id="schoolSearch" placeholder="Type e.g. wordsworth, benoni, 7003..."><div class="small">Type to filter LIVE. Click school in dropdown.</div></div>
+<div><label>Search EMIS / NAME / TOWN</label><input id="schoolSearch" placeholder="Type e.g. wordsworth, benoni, 7003..."><div class="small">Type to filter LIVE.</div></div>
 </div>
 <div id="selectedSchoolBox" class="ok" style="display:none"></div>
-<div class="grid2">
-<div><label>Or Manual EMIS</label><input id="manualEmis" placeholder="e.g. 700310854"></div>
-<div><label>Or Manual School Name</label><input id="manualName" placeholder="e.g. WORDSWORTH HIGH SCHOOL"></div>
-</div>
+<div class="grid2"><div><label>Or Manual EMIS</label><input id="manualEmis" placeholder="e.g. 700310854"></div><div><label>Or Manual School Name</label><input id="manualName" placeholder="e.g. WORDSWORTH HIGH SCHOOL"></div></div>
 <button class="btn btn-gold" onclick="manualSelect()">✅ Use This School</button>
-<div id="schoolMsg"></div>
 </div>
 
-<!-- LOGIN -->
 <div class="card" id="loginCard">
 <h2>🔐 Admin Login</h2>
-<p class="small">Login with your Admin email + password. Must be staff with <b>role: ADMIN</b> and <b>status: ACTIVE</b> for this school.</p>
-<div class="grid2">
-<div><label>Email</label><input id="emailInput" type="email" placeholder="e.g. vusi@makhanani.co.za"></div>
-<div><label>Password</label><input id="passwordInput" type="password" placeholder="Your password"></div>
-</div>
+<p class="small">ADMIN = Full control • PRINCIPAL / LIBRARIAN = Can add staff • TEACHER = View only</p>
+<div class="grid2"><div><label>Email</label><input id="emailInput" type="email" placeholder="e.g. vusi@makhanani.co.za" value="vusi@makhanani.co.za"></div><div><label>Password</label><input id="passwordInput" type="password" placeholder="Your password"></div></div>
 <button class="btn btn-green" id="loginBtn" onclick="doLogin()">✅ LOGIN</button>
 <button class="btn btn-grey" onclick="doForgot()">Forgot Password?</button>
 <div id="loginMsg"></div>
+
+<!-- SELF FIX - SHOWS ONLY WHEN NO STAFF DOC -->
+<div id="fixBox" class="fixbox" style="display:none">
+<h3 style="margin:0 0 6px;color:#ea580c">🛠️ Your Auth worked, but staff doc is missing</h3>
+<p class="small" id="fixText">Your UID is: —</p>
+<p class="small">Click below ONCE. It will create:<br><b>schools/EMIS_700310854/staff/YOUR-UID</b> with <b>role: ADMIN, status: ACTIVE</b> for this school.<br>Then click LOGIN again.</p>
+<label>Your Full Name for ADMIN doc</label>
+<input id="fixName" placeholder="e.g. Vusi Makhanani" value="Vusi Makhanani">
+<button class="btn btn-orange" id="fixBtn" onclick="fixMyAdmin()">🛠️ FIX MY LOGIN — Create My ADMIN Doc</button>
+<div id="fixMsg"></div>
+</div>
 </div>
 
-<!-- ADMIN PANEL -->
 <div id="adminPanel" style="display:none">
-<div class="card"><h2>👋 Welcome <span id="welcomeName"></span></h2><p><b id="welcomeSchool"></b> • EMIS <span id="welcomeEmis"></span> • <span id="welcomeRole"></span> • <span id="welcomeEmail"></span></p><p class="small" id="subLineTop">Subscription: —</p><div class="grid2"><button class="btn btn-blue" onclick="loadAll()">🔄 Refresh All</button><button class="btn btn-grey" onclick="doLogout()">🚪 Logout</button></div></div>
+<div class="card"><h2>👋 Welcome <span id="welcomeName"></span></h2><p><b id="welcomeSchool"></b> • EMIS <span id="welcomeEmis"></span> • <span id="welcomeRole"></span> • <span id="welcomeEmail"></span></p><p class="small" id="subLineTop">Subscription: —</p>
+<div class="rolebox" id="roleBox"></div>
+<div class="grid2"><button class="btn btn-blue" onclick="loadAll()">🔄 Refresh All</button><button class="btn btn-grey" onclick="doLogout()">🚪 Logout</button></div></div>
 
 <div class="tabs">
-<button class="active" data-tab="tab-sub" onclick="showTab('tab-sub',this)">💳 Subscription</button>
-<button data-tab="tab-staff" onclick="showTab('tab-staff',this)">👥 Staff</button>
-<button data-tab="tab-school" onclick="showTab('tab-school',this)">🏫 School Info</button>
-<button data-tab="tab-logs" onclick="showTab('tab-logs',this)">📋 Logs</button>
+<button id="tabBtn-sub" class="active" data-tab="tab-sub" onclick="showTab('tab-sub',this)">💳 Subscription</button>
+<button id="tabBtn-staff" data-tab="tab-staff" onclick="showTab('tab-staff',this)">👥 Staff</button>
+<button id="tabBtn-school" data-tab="tab-school" onclick="showTab('tab-school',this)">🏫 School Info</button>
+<button id="tabBtn-logs" data-tab="tab-logs" onclick="showTab('tab-logs',this)">📋 Logs</button>
 </div>
 
-<!-- SUBSCRIPTION -->
 <div class="tab active" id="tab-sub">
 <div class="card">
 <h2>💳 Subscription — Wordsworth PREMIUM</h2>
 <div class="info" id="currentSubBox">Current: —</div>
-<p class="small">Correct order: <b>Start = 12 / 11 / 2026</b> &nbsp; <b>End = 31 / 12 / 2027</b> &nbsp; Do NOT swap them.</p>
-<div class="grid2">
-<div><label>Plan</label><select id="subPlan"><option>DEMO</option><option>STARTER</option><option>STANDARD</option><option selected>PREMIUM</option></select></div>
-<div><label>Status</label><select id="subStatus"><option>TRIAL</option><option>PENDING</option><option selected>ACTIVE</option><option>SUSPENDED</option><option>EXPIRED</option></select></div>
-</div>
-<div class="grid2">
-<div><label>Start Date</label><input id="subStart" type="date" value="2026-11-12"></div>
-<div><label>End Date</label><input id="subEnd" type="date" value="2027-12-31"></div>
-</div>
-<div class="grid2">
-<div><label>Amount (R)</label><input id="subAmount" type="number" value="9000"></div>
-<div><label>Billing</label><select id="subBilling"><option value="FREE">FREE</option><option value="MONTHLY">MONTHLY</option><option value="ONCE_OFF" selected>ONCE_OFF — Once-off / year</option></select></div>
-</div>
+<div id="subBlocked" class="warn" style="display:none">🔒 Only ADMIN can change Subscription.</div>
+<div class="grid2"><div><label>Plan</label><select id="subPlan"><option>DEMO</option><option>STARTER</option><option>STANDARD</option><option selected>PREMIUM</option></select></div><div><label>Status</label><select id="subStatus"><option>TRIAL</option><option>PENDING</option><option selected>ACTIVE</option><option>SUSPENDED</option><option>EXPIRED</option></select></div></div>
+<div class="grid2"><div><label>Start Date</label><input id="subStart" type="date" value="2026-11-12"></div><div><label>End Date</label><input id="subEnd" type="date" value="2027-12-31"></div></div>
+<div class="grid2"><div><label>Amount (R)</label><input id="subAmount" type="number" value="9000"></div><div><label>Billing</label><select id="subBilling"><option value="FREE">FREE</option><option value="MONTHLY">MONTHLY</option><option value="ONCE_OFF" selected>ONCE_OFF — Once-off / year</option></select></div></div>
 <label>Notes (optional)</label><input id="subNotes" placeholder="e.g. Setup already paid / waived — R9000 once-off only">
-<button class="btn btn-green" onclick="saveSubscription()">✅ Save Subscription</button>
+<button class="btn btn-green" id="saveSubBtn" onclick="saveSubscription()">✅ Save Subscription</button>
 <div id="subMsg"></div>
 </div>
-
 <div class="card"><h2>💳 Choose Plan — Tap to Fill Form Above</h2>
 <div class="pricing">
 <div class="pcard" onclick="pickPlan('DEMO',0,'FREE')"><h3>DEMO</h3><p>7 days free trial</p><div class="psetup">Setup:<br>FREE</div><p>Monthly: <b>FREE</b><br>Once-off: <b>FREE</b></p><button class="pbtn">SELECT DEMO</button></div>
@@ -133,30 +126,28 @@ th{background:#0a1f4d;color:#fff}
 </div>
 </div>
 
-<!-- STAFF -->
 <div class="tab" id="tab-staff">
 <div class="card">
 <h2>👥 Staff — Create / Approve</h2>
-<p class="small">Create staff doc AFTER creating Auth user in Firebase Authentication. UID must match Auth UID. Email must match Auth email.</p>
-<div class="grid2"><div><label>Full Name</label><input id="staffName" placeholder="e.g. Vusi Makhanani"></div><div><label>Email (must match Auth)</label><input id="staffEmail" type="email" placeholder="e.g. vusi@makhanani.co.za"></div></div>
-<div class="grid2"><div><label>Auth UID</label><input id="staffUid" placeholder="Paste UID from Firebase Authentication"></div><div><label>Role</label><select id="staffRole"><option>ADMIN</option><option>PRINCIPAL</option><option>LIBRARIAN</option><option>TEACHER</option><option>LEARNER</option></select></div></div>
+<div id="staffBlocked" class="warn" style="display:none">🔒 TEACHERS cannot add staff members.</div>
+<div id="staffForm">
+<div class="grid2"><div><label>Full Name</label><input id="staffName" placeholder="e.g. Thandi Dube"></div><div><label>Email (must match Auth)</label><input id="staffEmail" type="email" placeholder="e.g. thandi@wordsworth.co.za"></div></div>
+<div class="grid2"><div><label>Auth UID</label><input id="staffUid" placeholder="Paste UID from Firebase Authentication"></div><div><label>Role — You can create</label><select id="staffRole"></select></div></div>
 <div class="grid2"><div><label>Status</label><select id="staffStatus"><option>ACTIVE</option><option>PENDING</option><option>SUSPENDED</option></select></div><div><label>Phone (optional)</label><input id="staffPhone" placeholder="e.g. 082..."></div></div>
-<button class="btn btn-green" onclick="saveStaff()">✅ Save Staff Member</button>
+<button class="btn btn-green" id="saveStaffBtn" onclick="saveStaff()">✅ Save Staff Member</button>
+</div>
 <div id="staffMsg"></div>
 <div id="staffList"></div>
 </div>
 </div>
 
-<!-- SCHOOL INFO -->
 <div class="tab" id="tab-school">
-<div class="card"><h2>🏫 School Info</h2><div class="grid2"><div><label>School Name</label><input id="schoolNameInput"></div><div><label>Town</label><input id="schoolTownInput"></div></div><div class="grid2"><div><label>Province</label><input id="schoolProvInput"></div><div><label>EMIS (read-only)</label><input id="schoolEmisInput" readonly></div></div><button class="btn btn-green" onclick="saveSchoolInfo()">✅ Save School Info</button><div id="schoolInfoMsg"></div></div>
+<div class="card"><h2>🏫 School Info</h2><div id="schoolBlocked" class="warn" style="display:none">🔒 Only ADMIN can edit School Info.</div><div class="grid2"><div><label>School Name</label><input id="schoolNameInput"></div><div><label>Town</label><input id="schoolTownInput"></div></div><div class="grid2"><div><label>Province</label><input id="schoolProvInput"></div><div><label>EMIS (read-only)</label><input id="schoolEmisInput" readonly></div></div><button class="btn btn-green" id="saveSchoolBtn" onclick="saveSchoolInfo()">✅ Save School Info</button><div id="schoolInfoMsg"></div></div>
 </div>
 
-<!-- LOGS -->
 <div class="tab" id="tab-logs">
 <div class="card"><h2>📋 Recent Logs</h2><button class="btn btn-blue" onclick="loadLogs()">🔄 Load Logs</button><div id="logsList"></div></div>
 </div>
-
 </div>
 </main>
 <script type="module">
@@ -174,20 +165,52 @@ const firebaseConfig = {
   measurementId: "G-TDFSSF6NTB"
 };
 let app, db, auth;
-try { app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); window.MAKHANANI = { db, auth, app, version: "v1.88" }; } catch(e){ console.error(e); }
+try { app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); window.MAKHANANI = { db, auth, app, version: "v1.91" }; } catch(e){ console.error(e); }
 let ALL_SCHOOLS = [];
+let CURRENT_ROLE = '';
+let PENDING_UID = '';
+let PENDING_EMAIL = '';
 const $ = id => document.getElementById(id);
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || ''; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || ''; }
 function updateCloudStatus(msg, ok=true){ const el=$('cloudStatus'); if(el){ el.textContent=msg; el.style.background = ok ? '#059669' : '#dc2626'; } const lab=$('cloudIdLabel'); if(lab){ const e=getEmis(); lab.textContent = e ? 'schools/EMIS_'+e : 'schools/...'; } }
+function canAddStaff(){ return ['ADMIN','PRINCIPAL','LIBRARIAN'].includes(CURRENT_ROLE); }
+function canManageSub(){ return CURRENT_ROLE === 'ADMIN'; }
+function canManageSchool(){ return CURRENT_ROLE === 'ADMIN'; }
+function allowedRolesToCreate(){
+  if(CURRENT_ROLE === 'ADMIN') return ['ADMIN','PRINCIPAL','LIBRARIAN','TEACHER','LEARNER'];
+  if(CURRENT_ROLE === 'PRINCIPAL') return ['LIBRARIAN','TEACHER','LEARNER'];
+  if(CURRENT_ROLE === 'LIBRARIAN') return ['TEACHER','LEARNER'];
+  return [];
+}
+function applyRoleUI(){
+  const role = CURRENT_ROLE;
+  const rb = $('roleBox');
+  if(role === 'ADMIN') rb.innerHTML = '<b>🔓 ADMIN — Full control:</b> You can change Subscription, School Info, and add ANY staff.';
+  else if(role === 'PRINCIPAL') rb.innerHTML = '<b>✅ PRINCIPAL — Can add staff:</b> You can add LIBRARIAN, TEACHER, LEARNER. You <b>cannot</b> change Subscription / School Info.';
+  else if(role === 'LIBRARIAN') rb.innerHTML = '<b>✅ LIBRARIAN — Can add staff:</b> You can add TEACHER, LEARNER.';
+  else rb.innerHTML = '<b>🔒 TEACHER — View only:</b> You <b>cannot</b> add staff members.';
+  $('saveSubBtn').disabled = !canManageSub();
+  $('subBlocked').style.display = canManageSub() ? 'none' : 'block';
+  ['subPlan','subStatus','subStart','subEnd','subAmount','subBilling','subNotes'].forEach(id=>{ $(id).disabled = !canManageSub(); });
+  $('saveSchoolBtn').disabled = !canManageSchool();
+  $('schoolBlocked').style.display = canManageSchool() ? 'none' : 'block';
+  ['schoolNameInput','schoolTownInput','schoolProvInput'].forEach(id=>{ $(id).disabled = !canManageSchool(); });
+  const canAdd = canAddStaff();
+  $('staffBlocked').style.display = canAdd ? 'none' : 'block';
+  $('staffForm').style.display = canAdd ? 'block' : 'none';
+  $('saveStaffBtn').disabled = !canAdd;
+  const sel = $('staffRole'); const allowed = allowedRolesToCreate();
+  sel.innerHTML = allowed.map(r=>`<option>${r}</option>`).join('') || '<option>TEACHER</option>';
+}
 window.showTab = function(id, btn){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); };
 window.pickPlan = function(plan, amount, billing){
+  if(!canManageSub()){ $('subMsg').innerHTML='<div class="warn">🔒 Only ADMIN can change Subscription.</div>'; return; }
   $('subPlan').value = plan; $('subAmount').value = amount; $('subBilling').value = billing; $('subStatus').value = plan==='DEMO' ? 'TRIAL' : 'ACTIVE';
   if(plan==='PREMIUM'){ $('subAmount').value = 9000; $('subBilling').value = 'ONCE_OFF'; $('subNotes').value = 'Setup already paid / waived — R9000 once-off only'; }
   document.querySelectorAll('.pcard').forEach(c=>c.classList.remove('selected'));
   var el = document.getElementById('pcard-'+plan); if(el) el.classList.add('selected');
-  $('subMsg').innerHTML = '<div class="ok">✅ Selected <b>'+plan+'</b> — R'+amount+' '+billing+'. Now check dates below and click Save Subscription.</div>';
-  window.scrollTo({top:0, behavior:'smooth'});
+  $('subMsg').innerHTML = '<div class="ok">✅ Selected <b>'+plan+'</b> — R'+amount+' '+billing+'.</div>';
 };
 async function loadDbeSchools(){
   const dd = $('schoolDropdown');
@@ -205,27 +228,57 @@ function showSelected(){ const emis=getEmis(); const name=getSchool(); const box
 $('schoolSearch').addEventListener('input', e=> renderDropdown(e.target.value));
 $('schoolDropdown').addEventListener('change', e=>{ const emis=e.target.value; if(!emis) return; const s=ALL_SCHOOLS.find(x=>x.emis===emis); if(!s) return; localStorage.setItem('MAKHANANI_SELECTED_EMIS',emis); localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',s.name); localStorage.setItem('MAKHANANI_SCHOOL_EMIS',emis); localStorage.setItem('MAKHANANI_SCHOOL_NAME',s.name); showSelected(); updateCloudStatus('☁️ Cloud: Connected — '+s.name+' (EMIS '+emis+')'); });
 window.manualSelect = function(){ const emis=$('manualEmis').value.trim(); const name=$('manualName').value.trim()||'WORDSWORTH HIGH SCHOOL'; if(!emis){ alert('Type EMIS first'); return; } localStorage.setItem('MAKHANANI_SELECTED_EMIS',emis); localStorage.setItem('MAKHANANI_SELECTED_SCHOOL',name); localStorage.setItem('MAKHANANI_SCHOOL_EMIS',emis); localStorage.setItem('MAKHANANI_SCHOOL_NAME',name); showSelected(); updateCloudStatus('☁️ Cloud: Connected — '+name+' (EMIS '+emis+')'); alert('✅ School set: '+name+' (EMIS '+emis+')'); };
+
+// ===== LOGIN + SELF FIX =====
 window.doLogin = async function(){
   const emis=getEmis(); const email=$('emailInput').value.trim(); const pass=$('passwordInput').value; const msg=$('loginMsg');
   if(!emis){ msg.innerHTML='<div class="warn">⚠️ Select school first!</div>'; return; }
   if(!email || !email.includes('@')){ msg.innerHTML='<div class="warn">⚠️ Email must be full email like <b>vusi@makhanani.co.za</b></div>'; return; }
   if(!pass){ msg.innerHTML='<div class="warn">⚠️ Enter password.</div>'; return; }
   $('loginBtn').disabled=true; $('loginBtn').textContent='Logging in...';
+  $('fixBox').style.display='none';
   try{
     const cred = await signInWithEmailAndPassword(auth, email.toLowerCase(), pass);
     const uid = cred.user.uid;
     const staffSnap = await getDoc(doc(db,'schools','EMIS_'+emis,'staff',uid));
-    if(!staffSnap.exists()){ await signOut(auth); msg.innerHTML='<div class="warn">❌ No staff doc in <b>schools/EMIS_'+emis+'/staff/'+uid+'</b>. Create it below after login as another admin, or in Firebase Console.</div>'; $('loginBtn').disabled=false; $('loginBtn').textContent='✅ LOGIN'; return; }
+    if(!staffSnap.exists()){
+      // DO NOT SIGN OUT - keep auth so FIX button can create the doc
+      PENDING_UID = uid; PENDING_EMAIL = email.toLowerCase();
+      msg.innerHTML='<div class="warn">❌ No staff doc in <b>schools/EMIS_'+emis+'/staff/'+uid+'</b><br>Your Auth worked — just click FIX below.</div>';
+      $('fixText').textContent = 'Your UID is: '+uid+' • Email: '+PENDING_EMAIL+' • School: '+getSchool()+' (EMIS '+emis+')';
+      $('fixBox').style.display='block';
+      $('fixBox').scrollIntoView({behavior:'smooth'});
+      $('loginBtn').disabled=false; $('loginBtn').textContent='✅ LOGIN';
+      return;
+    }
     const staff = staffSnap.data();
-    if((staff.status||'ACTIVE').toUpperCase()!=='ACTIVE'){ await signOut(auth); msg.innerHTML='<div class="warn">❌ Account is <b>'+staff.status+'</b>.</div>'; $('loginBtn').disabled=false; $('loginBtn').textContent='✅ LOGIN'; return; }
-    if(!['ADMIN','PRINCIPAL'].includes((staff.role||'').toUpperCase())){ await signOut(auth); msg.innerHTML='<div class="warn">❌ Role <b>'+staff.role+'</b> cannot access Admin. Need ADMIN or PRINCIPAL.</div>'; $('loginBtn').disabled=false; $('loginBtn').textContent='✅ LOGIN'; return; }
+    if((staff.status||'ACTIVE').toUpperCase()!=='ACTIVE'){ msg.innerHTML='<div class="warn">❌ Account is <b>'+staff.status+'</b>.</div>'; $('loginBtn').disabled=false; $('loginBtn').textContent='✅ LOGIN'; return; }
     localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify({uid, email:email.toLowerCase(), name:staff.name||'', role:staff.role||'', status:staff.status||'ACTIVE'}));
     showAdmin(staff, email);
-  }catch(e){ let m=e.message; if(e.code==='auth/invalid-credential') m='Wrong email or password.'; if(e.code==='auth/api-key-not-valid') m='API Key not valid — Check firebaseConfig apiKey (must be DPcF, not DPCf).'; msg.innerHTML='<div class="warn">❌ Login failed: '+m+'</div>'; $('loginBtn').disabled=false; $('loginBtn').textContent='✅ LOGIN'; }
+  }catch(e){ let m=e.message; if(e.code==='auth/invalid-credential') m='Wrong email or password.'; msg.innerHTML='<div class="warn">❌ Login failed: '+m+'</div>'; $('loginBtn').disabled=false; $('loginBtn').textContent='✅ LOGIN'; }
+};
+window.fixMyAdmin = async function(){
+  const emis=getEmis(); const name=$('fixName').value.trim() || 'Vusi Makhanani';
+  const msg=$('fixMsg');
+  if(!PENDING_UID){ msg.innerHTML='<div class="warn">⚠️ Click LOGIN first, so we know your UID.</div>'; return; }
+  if(!emis){ msg.innerHTML='<div class="warn">⚠️ Select school first.</div>'; return; }
+  $('fixBtn').disabled=true; $('fixBtn').textContent='Creating...';
+  msg.innerHTML='<div class="info">Creating staff doc for '+PENDING_UID+'...</div>';
+  try{
+    // Create school doc if missing, then staff doc
+    await setDoc(doc(db,'schools','EMIS_'+emis), { name: getSchool(), emis: emis, updatedAt: serverTimestamp() }, {merge:true});
+    await setDoc(doc(db,'schools','EMIS_'+emis,'staff',PENDING_UID), { name: name, email: PENDING_EMAIL, role: 'ADMIN', status: 'ACTIVE', createdAt: serverTimestamp() }, {merge:true});
+    msg.innerHTML='<div class="ok">✅ FIXED! Created ADMIN doc:<br><b>schools/EMIS_'+emis+'/staff/'+PENDING_UID+'</b><br>Name: '+name+' • Email: '+PENDING_EMAIL+' • Role: ADMIN • Status: ACTIVE<br><br>Now click <b>LOGIN</b> again above.</div>';
+    $('fixBtn').disabled=false; $('fixBtn').textContent='🛠️ FIX MY LOGIN — Create My ADMIN Doc';
+    $('loginMsg').innerHTML='<div class="ok">✅ Doc created! Click LOGIN again now.</div>';
+  }catch(e){
+    msg.innerHTML='<div class="warn">❌ Fix failed: '+e.message+'<br><br>This is usually Firestore Rules. Go to Firebase → Firestore → Rules → Publish: <b>allow read, write: if request.auth != null;</b> for /schools/{schoolId}/{document=**} then try again.</div>';
+    $('fixBtn').disabled=false; $('fixBtn').textContent='🛠️ FIX MY LOGIN — Create My ADMIN Doc';
+  }
 };
 window.doForgot = async function(){ const email=$('emailInput').value.trim(); if(!email||!email.includes('@')){ alert('Type your full email first'); return; } try{ await sendPasswordResetEmail(auth, email.toLowerCase()); alert('✅ Reset email sent to '+email); }catch(e){ alert('❌ '+e.message); } };
 window.doLogout = async function(){ try{ await signOut(auth); }catch(e){} localStorage.removeItem('MAKHANANI_LOGGED_IN'); location.reload(); };
-function showAdmin(staff, email){ $('loginCard').style.display='none'; $('adminPanel').style.display='block'; $('welcomeName').textContent=staff.name||email; $('welcomeSchool').textContent=getSchool(); $('welcomeRole').textContent=staff.role||''; $('welcomeEmail').textContent=email; $('welcomeEmis').textContent=getEmis(); loadAll(); }
+function showAdmin(staff, email){ CURRENT_ROLE = (staff.role||'').toUpperCase(); $('loginCard').style.display='none'; $('adminPanel').style.display='block'; $('welcomeName').textContent=staff.name||email; $('welcomeSchool').textContent=getSchool(); $('welcomeRole').textContent=staff.role||''; $('welcomeEmail').textContent=email; $('welcomeEmis').textContent=getEmis(); applyRoleUI(); loadAll(); }
 window.loadAll = async function(){ await loadSubscription(); await loadStaff(); await loadSchoolInfo(); await loadLogs(); };
 async function loadSubscription(){
   const emis=getEmis(); if(!emis) return;
@@ -239,46 +292,36 @@ async function loadSubscription(){
         if(sub.start) $('subStart').value = sub.start; if(sub.end) $('subEnd').value = sub.end;
         if(sub.notes) $('subNotes').value = sub.notes;
         $('subLineTop').textContent = 'Subscription: '+sub.plan+' • '+sub.status+' • End: '+(sub.end||'-')+' • R'+(sub.amount||0);
-      } else {
-        $('currentSubBox').innerHTML = 'Current: <b>NONE</b> — Set PREMIUM below and Save.';
-        // Auto-fill from Home pricing click if present
-        const selPlan = localStorage.getItem('MAKHANANI_SELECTED_PLAN');
-        if(selPlan){ $('subPlan').value = selPlan; $('subAmount').value = localStorage.getItem('MAKHANANI_SELECTED_AMOUNT') || 9000; $('subBilling').value = localStorage.getItem('MAKHANANI_SELECTED_BILLING') || 'ONCE_OFF'; }
-      }
+      } else { $('currentSubBox').innerHTML = 'Current: <b>NONE</b> — Set PREMIUM below and Save.'; }
     }
   }catch(e){ $('currentSubBox').innerHTML = 'Failed to load: '+e.message; }
 }
 window.saveSubscription = async function(){
+  if(!canManageSub()){ $('subMsg').innerHTML='<div class="warn">🔒 Only ADMIN can change Subscription.</div>'; return; }
   const emis=getEmis(); if(!emis){ alert('Select school first'); return; }
   const plan=$('subPlan').value; const status=$('subStatus').value; const start=$('subStart').value; const end=$('subEnd').value; const amount=Number($('subAmount').value||0); const billing=$('subBilling').value; const notes=$('subNotes').value.trim();
   if(!start || !end){ $('subMsg').innerHTML='<div class="warn">⚠️ Pick Start and End dates.</div>'; return; }
-  if(start > end){ $('subMsg').innerHTML='<div class="warn">⚠️ Start Date must be BEFORE End Date. You have Start='+start+' End='+end+' — Swap them! Start should be 2026-11-12, End should be 2027-12-31.</div>'; return; }
+  if(start > end){ $('subMsg').innerHTML='<div class="warn">⚠️ Start must be BEFORE End.</div>'; return; }
   $('subMsg').innerHTML='<div class="info">Saving...</div>';
-  try{
-    await updateDoc(doc(db,'schools','EMIS_'+emis), { subscription: { plan, status, start, end, amount, billing, notes, updatedAt: serverTimestamp() } });
-    $('subMsg').innerHTML='<div class="ok">✅ Subscription saved.<br>Plan: <b>'+plan+'</b> • Status: <b>'+status+'</b> • '+start+' to '+end+' • R'+amount+' • '+billing+'</div>';
-    $('currentSubBox').innerHTML='Current: <b>'+plan+' / '+status+'</b> • '+start+' to '+end+' • R'+amount+' • '+billing;
-    $('subLineTop').textContent='Subscription: '+plan+' • '+status+' • End: '+end+' • R'+amount;
-    localStorage.removeItem('MAKHANANI_SELECTED_PLAN');
-  }catch(e){
-    // If doc does not exist yet, try setDoc
-    try{ await setDoc(doc(db,'schools','EMIS_'+emis), { name: getSchool(), emis: emis, subscription: { plan, status, start, end, amount, billing, notes, updatedAt: serverTimestamp() } }, { merge:true }); $('subMsg').innerHTML='<div class="ok">✅ Subscription saved (created school doc).</div>'; $('currentSubBox').innerHTML='Current: <b>'+plan+' / '+status+'</b> • '+start+' to '+end+' • R'+amount+' • '+billing; }catch(e2){ $('subMsg').innerHTML='<div class="warn">❌ Save failed: '+e2.message+'<br>If it says Missing permissions, Publish Firestore Rules then Logout/Login again.</div>'; }
-  }
+  try{ await updateDoc(doc(db,'schools','EMIS_'+emis), { subscription: { plan, status, start, end, amount, billing, notes, updatedAt: serverTimestamp() } }); $('subMsg').innerHTML='<div class="ok">✅ Subscription saved: '+plan+' • '+status+' • '+start+' to '+end+' • R'+amount+'</div>'; $('currentSubBox').innerHTML='Current: <b>'+plan+' / '+status+'</b> • '+start+' to '+end+' • R'+amount+' • '+billing; }catch(e){ try{ await setDoc(doc(db,'schools','EMIS_'+emis), { name: getSchool(), emis: emis, subscription: { plan, status, start, end, amount, billing, notes, updatedAt: serverTimestamp() } }, { merge:true }); $('subMsg').innerHTML='<div class="ok">✅ Subscription saved (created school doc).</div>'; }catch(e2){ $('subMsg').innerHTML='<div class="warn">❌ Save failed: '+e2.message+'</div>'; } }
 };
 async function loadStaff(){
   const emis=getEmis(); if(!emis) return;
   try{ const snap = await getDocs(collection(db,'schools','EMIS_'+emis,'staff')); let html='<table><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>UID</th></tr>'; snap.forEach(d=>{ const s=d.data(); html+='<tr><td>'+(s.name||'')+'</td><td>'+(s.email||'')+'</td><td>'+(s.role||'')+'</td><td><span class="pill pill-'+(s.status||'ACTIVE')+'">'+(s.status||'')+'</span></td><td style="font-size:11px">'+d.id+'</td></tr>'; }); html+='</table>'; $('staffList').innerHTML=html; }catch(e){ $('staffList').innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
 window.saveStaff = async function(){
+  if(!canAddStaff()){ $('staffMsg').innerHTML='<div class="warn">🔒 TEACHERS cannot add staff.</div>'; return; }
   const emis=getEmis(); const name=$('staffName').value.trim(); const email=$('staffEmail').value.trim().toLowerCase(); const uid=$('staffUid').value.trim(); const role=$('staffRole').value; const status=$('staffStatus').value; const phone=$('staffPhone').value.trim();
   if(!emis||!name||!email||!uid){ $('staffMsg').innerHTML='<div class="warn">⚠️ Fill Name, Email, UID.</div>'; return; }
-  try{ await setDoc(doc(db,'schools','EMIS_'+emis,'staff',uid), { name, email, role, status, phone, createdAt: serverTimestamp() }, {merge:true}); $('staffMsg').innerHTML='<div class="ok">✅ Staff saved: '+name+' ('+role+' / '+status+')</div>'; loadStaff(); }catch(e){ $('staffMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
+  if(!allowedRolesToCreate().includes(role)){ $('staffMsg').innerHTML='<div class="warn">🔒 Your role ('+CURRENT_ROLE+') cannot create '+role+'.</div>'; return; }
+  try{ await setDoc(doc(db,'schools','EMIS_'+emis,'staff',uid), { name, email, role, status, phone, createdAt: serverTimestamp() }, {merge:true}); $('staffMsg').innerHTML='<div class="ok">✅ Staff saved: '+name+' ('+role+')</div>'; loadStaff(); }catch(e){ $('staffMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
 };
 async function loadSchoolInfo(){
   const emis=getEmis(); if(!emis) return;
   try{ const snap = await getDoc(doc(db,'schools','EMIS_'+emis)); if(snap.exists()){ const d=snap.data(); $('schoolNameInput').value=d.name||getSchool(); $('schoolTownInput').value=d.town||''; $('schoolProvInput').value=d.province||''; $('schoolEmisInput').value=emis; } else { $('schoolNameInput').value=getSchool(); $('schoolEmisInput').value=emis; } }catch(e){}
 }
 window.saveSchoolInfo = async function(){
+  if(!canManageSchool()){ $('schoolInfoMsg').innerHTML='<div class="warn">🔒 Only ADMIN can edit School Info.</div>'; return; }
   const emis=getEmis(); if(!emis) return;
   try{ await setDoc(doc(db,'schools','EMIS_'+emis), { name:$('schoolNameInput').value.trim(), town:$('schoolTownInput').value.trim(), province:$('schoolProvInput').value.trim(), emis:emis, updatedAt:serverTimestamp() }, {merge:true}); $('schoolInfoMsg').innerHTML='<div class="ok">✅ School info saved.</div>'; }catch(e){ $('schoolInfoMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
 };
@@ -292,10 +335,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if(school) updateCloudStatus('☁️ Cloud: Connected — '+school+(emis?' (EMIS '+emis+')':''));
   else updateCloudStatus('☁️ Cloud: Connected to Firebase — Select School');
   showSelected();
-  // Auto-fill from Home pricing click
-  const selPlan = localStorage.getItem('MAKHANANI_SELECTED_PLAN');
-  if(selPlan){ $('subPlan').value = selPlan; $('subAmount').value = localStorage.getItem('MAKHANANI_SELECTED_AMOUNT') || 9000; $('subBilling').value = localStorage.getItem('MAKHANANI_SELECTED_BILLING') || 'ONCE_OFF'; if(selPlan==='PREMIUM'){ $('subNotes').value='Setup already paid / waived — R9000 once-off only'; } }
-  try{ const login = JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); if(login && emis) showAdmin(login, login.email); }catch(e){}
+  try{ const login = JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); if(login && emis){ CURRENT_ROLE=(login.role||'').toUpperCase(); showAdmin(login, login.email); } }catch(e){}
 });
 loadDbeSchools();
 </script>
