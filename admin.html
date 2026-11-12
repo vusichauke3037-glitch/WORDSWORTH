@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Admin v2.00</title>
+<title>Makhanani LTSM — Admin v2.01</title>
 <meta name="theme-color" content="#0a1f4d">
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -13,9 +13,9 @@ header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:12px;opacity
 main{max-width:1100px;margin:auto;padding:14px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
-h3{margin:14px 0 6px;color:#0a1f4d;font-size:15px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
+input:disabled,select:disabled{opacity:.5;background:#f1f5f9}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
@@ -49,13 +49,20 @@ th{background:#0a1f4d;color:#fff}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .tabs button{padding:10px 16px;border:none;border-radius:20px;font-weight:900;cursor:pointer;background:#e2e8f0}
 .tabs button.active{background:#0a1f4d;color:#fff}
+.locked{opacity:.6;pointer-events:none;filter:grayscale(0.3)}
 </style>
 </head>
 <body>
-<header><div><h1>⚙️ Admin — Makhanani LTSM</h1><p>Users • Teacher Subjects • School • Due 30 Nov • v2.00<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.00 ADMIN</span></div></header>
+<header><div><h1>⚙️ Admin — Makhanani LTSM</h1><p>Users • Teacher Subjects • School • Due 30 Nov • v2.01<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v2.01 ADMIN</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
+
+<div class="card" id="accessCard">
+<h2>🔒 Access</h2>
+<div class="info" id="accessBox">Checking access...</div>
+<div class="small" id="accessDetail"></div>
+</div>
 
 <div class="card">
 <h2>🏫 Current School</h2>
@@ -72,12 +79,14 @@ th{background:#0a1f4d;color:#fff}
 <option value="700310854|WORDSWORTH HIGH SCHOOL">WORDSWORTH HIGH SCHOOL — EMIS 700310854</option>
 <option value="900000001|TIVANANI PRIMARY SCHOOL">TIVANANI PRIMARY SCHOOL — EMIS 900000001</option>
 </select>
-<div class="small">Switching school here switches it for ALL pages on this device. Users are per-school.</div>
+<div class="small">Switching school here switches it for ALL pages on this device. Users are per-school. <b>Only ADMIN can switch school + manage users.</b></div>
 </div>
 
-<div class="card">
+<div class="card" id="createUserCard">
 <h2>👤 Create / Edit User</h2>
 <div class="small">Admin creates all logins here. Teacher Subject controls what they can Issue in Issue page. <b>Teacher Issue = ONLY own Subject. Teacher Return = ANY book.</b> Librarian / Admin / Principal can Issue ANY subject.</div>
+<div id="createLockedMsg"></div>
+<div id="createForm">
 <label>Full Name</label>
 <input id="uName" placeholder="e.g. Naledi Mokoena">
 <div class="grid2">
@@ -88,20 +97,18 @@ th{background:#0a1f4d;color:#fff}
 <div><label>Role</label><select id="uRole" onchange="onRoleChange()"><option value="TEACHER">TEACHER</option><option value="LIBRARIAN">LIBRARIAN</option><option value="ADMIN">ADMIN</option><option value="PRINCIPAL">PRINCIPAL</option><option value="HOD">HOD</option></select></div>
 <div><label>Grades Taught (optional, e.g. Grade 10, Grade 11)</label><input id="uGrades" placeholder="e.g. Grade 10, Grade 11"></div>
 </div>
-
 <div id="teacherSubjectBox">
 <label>📚 Teacher Subject(s) — Tick ONE or MORE — This Controls Issue</label>
 <div class="small">If Teacher has 1 subject, they can ONLY Issue that subject. If they teach 2 subjects, tick both.</div>
 <div class="checkGrid" id="subjectChecks"></div>
 <div class="small" id="subjectPreview">Selected: —</div>
 </div>
-
 <div id="adminNote" style="display:none"><div class="info">ADMIN / LIBRARIAN / PRINCIPAL / HOD can Issue ANY subject — no Subject tick needed. Subject is ignored for these roles.</div></div>
-
 <label>Phone (optional)</label>
 <input id="uPhone" placeholder="e.g. 082 123 4567">
 <button class="btn btn-green" id="saveUserBtn" onclick="saveUser()">✅ Save User</button>
 <button class="btn btn-grey" onclick="clearUserForm()">🔄 Clear Form — New User</button>
+</div>
 <div id="userMsg"></div>
 <div class="small">Editing: Click <b>Edit</b> on a user below → Form fills → Change Subject / Role / Password → Save. Email is the ID — to change Email, delete and re-create.</div>
 </div>
@@ -126,13 +133,14 @@ th{background:#0a1f4d;color:#fff}
 <h2>📏 System Rules — Locked In</h2>
 <table>
 <tr><th>Rule</th><th>What happens</th></tr>
+<tr><td>Who can Create Users?</td><td><b>ONLY ADMIN</b> — Teacher / Librarian / HOD / Principal CANNOT create, edit or delete users</td></tr>
 <tr><td>Teacher Issue</td><td>Teacher can Issue ONLY their own Subject(s) ticked above</td></tr>
 <tr><td>Teacher Return</td><td>Teacher can Return ANY book, any subject</td></tr>
 <tr><td>Librarian / Admin / Principal / HOD Issue</td><td>Can Issue ANY subject</td></tr>
 <tr><td>Learner Grade</td><td>Learner can ONLY receive books of THEIR grade</td></tr>
 <tr><td>Same Title Twice</td><td>Learner CANNOT get same Title twice while first copy is OUT</td></tr>
 <tr><td>Due Date</td><td><b>ALL books due 30 November every year.</b> Overdue = still OUT after 30 Nov. If issued in Dec, due 30 Nov next year.</td></tr>
-<tr><td>Teacher Edit</td><td>Teacher CANNOT edit/delete books or learners — can only ADD learners</td></tr>
+<tr><td>Teacher Edit Learners / Books</td><td>Teacher CANNOT edit/delete books or learners — can only ADD learners / books</td></tr>
 </table>
 </div>
 
@@ -160,11 +168,55 @@ const firebaseConfig = {
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
 let ALL_USERS=[], USER_TAB='ALL', EDIT_ID=null;
-const SUBJECTS = ['Accounting','Afrikaans','Agricultural Sciences','Business Studies','CAT','Consumer Studies','Economics','English','Geography','History','Life Orientation','Life Sciences','Mathematical Literacy','Mathematics','Natural Sciences','Physical Sciences','Sepedi','Setswana','Social Sciences','Technology','Tourism','Visual Arts','isiZulu','isiXhosa'];
+const SUBJECTS = ['Accounting','Afrikaans','Agricultural Sciences','Business Studies','CAT','Consumer Sciences','Consumer Studies','Economics','English','Geography','History','Life Orientation','Life Sciences','Mathematical Literacy','Mathematics','Natural Sciences','Physical Sciences','Sepedi','Setswana','Social Sciences','Technology','Tourism','Visual Arts','isiZulu','isiXhosa'];
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
+function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
+// ===== v2.01 ACCESS RULES =====
+function isAdmin(){ return getRole()==='ADMIN'; }
+function canManageUsers(){ return getRole()==='ADMIN'; } // ONLY ADMIN
+function canViewUsers(){ const r=getRole(); return r==='ADMIN' || r==='PRINCIPAL'; }
+function applyAccess(){
+  const role=getRole(); const login=getLogin();
+  const box=$('accessBox'); const detail=$('accessDetail');
+  if(!login){
+    box.innerHTML='⚠️ <b>NOT LOGGED IN</b> — Login in Home first. Admin page is locked.';
+    detail.textContent='No user management allowed without login.';
+    lockCreateForm('Not logged in');
+    $('schoolDropdown').disabled=true;
+    return;
+  }
+  if(isAdmin()){
+    box.innerHTML='✅ <b>ADMIN Access — '+login.name+'</b> — You can Create / Edit / Delete users.';
+    detail.textContent='You are ADMIN. Full control.';
+    unlockCreateForm();
+    $('schoolDropdown').disabled=false;
+  } else if(role==='PRINCIPAL'){
+    box.innerHTML='👩🏾‍🏫 <b>PRINCIPAL — View Only</b> — You can SEE users, but CANNOT Create / Edit / Delete them. Only ADMIN can.';
+    detail.textContent='Principal view-only in Admin. Use Principal page for reports.';
+    lockCreateForm('PRINCIPAL is view-only. Only ADMIN can create users.');
+    $('schoolDropdown').disabled=true;
+  } else {
+    // TEACHER, LIBRARIAN, HOD
+    box.innerHTML='🚫 <b>ACCESS DENIED — '+role+'</b> — '+login.name+', you CANNOT create other teachers or manage users. Only ADMIN can do that.';
+    detail.textContent='Teacher / Librarian / HOD cannot add users. Ask your ADMIN (Vusi) to create accounts.';
+    lockCreateForm('🚫 '+role+' CANNOT create users. Only ADMIN can. Ask ADMIN to create the account.');
+    $('schoolDropdown').disabled=true;
+  }
+}
+function lockCreateForm(msg){
+  $('createForm').classList.add('locked');
+  $('createForm').querySelectorAll('input,select,button').forEach(el=>el.disabled=true);
+  $('createLockedMsg').innerHTML='<div class="warn"><b>'+msg+'</b></div>';
+}
+function unlockCreateForm(){
+  $('createForm').classList.remove('locked');
+  $('createForm').querySelectorAll('input,select,button').forEach(el=>el.disabled=false);
+  $('createLockedMsg').innerHTML='';
+}
 function saveSchool(emis, name){
+  if(!isAdmin()){ alert('🚫 Only ADMIN can switch school.'); return; }
   localStorage.setItem('MAKHANANI_SELECTED_EMIS', emis);
   localStorage.setItem('MAKHANANI_SCHOOL_EMIS', emis);
   localStorage.setItem('MAKHANANI_SELECTED_SCHOOL', name);
@@ -219,6 +271,7 @@ window.onRoleChange = function(){
   $('adminNote').style.display = isTeacher ? 'none' : 'block';
 };
 window.onSchoolSwitch = function(){
+  if(!isAdmin()){ alert('🚫 Only ADMIN can switch school.'); $('schoolDropdown').value=getEmis()+'|'+getSchool(); return; }
   const v=$('schoolDropdown').value; if(!v) return;
   const [emis, name]=v.split('|');
   saveSchool(emis, name);
@@ -242,8 +295,15 @@ window.clearUserForm = function(){
   $('saveUserBtn').textContent='✅ Save User';
   $('userMsg').innerHTML='';
   $('uEmail').disabled=false;
+  applyAccess(); // re-apply lock if not admin
 };
 window.saveUser = async function(){
+  // ===== HARD BLOCK — ONLY ADMIN =====
+  if(!canManageUsers()){
+    alert('🚫 ACCESS DENIED: Only ADMIN can create / edit users.\n\nYou are logged in as: '+getRole()+'\nAsk your ADMIN to create the account.');
+    $('userMsg').innerHTML='<div class="warn">🚫 <b>ACCESS DENIED:</b> Only ADMIN can create users. You are <b>'+getRole()+'</b>. Ask ADMIN to create the account.</div>';
+    return;
+  }
   const emis=getEmis(); const school=getSchool();
   const name=($('uName').value||'').trim();
   const email=($('uEmail').value||'').trim().toLowerCase();
@@ -273,6 +333,7 @@ window.saveUser = async function(){
   $('saveUserBtn').disabled=false; $('saveUserBtn').textContent='✅ Save User';
 };
 window.editUser = function(id){
+  if(!canManageUsers()){ alert('🚫 Only ADMIN can edit users. You are '+getRole()+'.'); return; }
   const u=ALL_USERS.find(x=>x.id===id); if(!u) return;
   EDIT_ID=id;
   $('uName').value=u.name||u.fullName||'';
@@ -287,9 +348,11 @@ window.editUser = function(id){
   $('saveUserBtn').textContent='✏️ Update User — '+u.email;
   $('userMsg').innerHTML='<div class="info">Editing: <b>'+u.email+'</b> — Change Subject / Role / Password then Save. Email cannot be changed.</div>';
   window.scrollTo({top:0, behavior:'smooth'});
-  document.querySelector('main').scrollIntoView();
 };
 window.deleteUser = async function(id, email){
+  if(!canManageUsers()){ alert('🚫 Only ADMIN can delete users. You are '+getRole()+'.'); return; }
+  const login=getLogin();
+  if(login && login.email && login.email.toLowerCase()===email.toLowerCase()){ alert('🚫 You cannot delete yourself.'); return; }
   if(!confirm('Delete user '+email+'?\n\nThey will NOT be able to login anymore.')) return;
   const emis=getEmis();
   try{
@@ -300,6 +363,7 @@ window.deleteUser = async function(id, email){
   }catch(e){ alert('Delete failed: '+e.message); }
 };
 window.quickFixSubject = async function(id, email){
+  if(!canManageUsers()){ alert('🚫 Only ADMIN can change subjects.'); return; }
   const sub=prompt('Type Subject for '+email+'\n\nE.g. Accounting, Mathematics, English', 'Accounting');
   if(!sub) return;
   const emis=getEmis();
@@ -340,6 +404,7 @@ function renderUsers(){
   if(q) list=list.filter(u=> ((u.name||'')+' '+(u.email||'')+' '+(u.role||'')+' '+((u.subjects||[]).join(' '))+' '+(u.subject||'')).toLowerCase().includes(q));
   if(sf) list=list.filter(u=> ((u.subjects||[]).includes(sf) || u.subject===sf));
   if(list.length===0){ $('userList').innerHTML='<div class="info">No users for this filter. Create one above.</div>'; return; }
+  const canEdit = canManageUsers();
   let html='<table><tr><th>Name</th><th>Role</th><th>Subject(s) — Controls Issue</th><th>Login</th><th>Action</th></tr>';
   list.forEach(u=>{
     const role=(u.role||'').toUpperCase();
@@ -351,7 +416,8 @@ function renderUsers(){
       subCell='<span class="pill pill-green">✅ ANY Subject</span>';
     }
     const rolePill = role==='ADMIN' ? '<span class="pill pill-purple">ADMIN</span>' : role==='TEACHER' ? '<span class="pill pill-blue">TEACHER</span>' : role==='LIBRARIAN' ? '<span class="pill pill-gold">LIBRARIAN</span>' : role==='PRINCIPAL' ? '<span class="pill pill-green">PRINCIPAL</span>' : '<span class="pill pill-blue">'+role+'</span>';
-    html+='<tr><td><b>'+(u.name||u.fullName||'')+'</b><br><span class="small">'+(u.grades? 'Grades: '+u.grades : '')+'</span></td><td>'+rolePill+'</td><td>'+subCell+'</td><td><span class="small">'+(u.email||'')+'<br>Pass: '+(u.password||'')+'</span></td><td><button class="btn btn-blue btn-sm" onclick="editUser(\''+u.id+'\')">✏️ Edit</button><button class="btn btn-gold btn-sm" onclick="quickFixSubject(\''+u.id+'\',\''+(u.email||'')+'\')">📚 Set Subject</button><button class="btn btn-red btn-sm" onclick="deleteUser(\''+u.id+'\',\''+(u.email||'')+'\')">🗑️ Delete</button></td></tr>';
+    const action = canEdit ? `<button class="btn btn-blue btn-sm" onclick="editUser('${u.id}')">✏️ Edit</button><button class="btn btn-gold btn-sm" onclick="quickFixSubject('${u.id}','${(u.email||'')}')">📚 Set Subject</button><button class="btn btn-red btn-sm" onclick="deleteUser('${u.id}','${(u.email||'')}')">🗑️ Delete</button>` : `<button class="btn btn-grey btn-sm" disabled>🔒 View Only — ADMIN Only</button>`;
+    html+='<tr><td><b>'+(u.name||u.fullName||'')+'</b><br><span class="small">'+(u.grades? 'Grades: '+u.grades : '')+'</span></td><td>'+rolePill+'</td><td>'+subCell+'</td><td><span class="small">'+(u.email||'')+'<br>Pass: '+(u.password||'')+'</span></td><td>'+action+'</td></tr>';
   });
   html+='</table>';
   $('userList').innerHTML=html;
@@ -375,12 +441,16 @@ window.loadLogs = async function(){
 document.addEventListener('DOMContentLoaded', async ()=>{
   const emis=getEmis(); const school=getSchool(); const login=getLogin();
   if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'');
-  saveSchool(emis, school);
+  // Don't auto-save school if not admin — just display
+  $('schoolBox').textContent='School: '+school+' • EMIS '+emis;
+  $('cloudStatus').textContent='☁️ Cloud: Connected — '+school;
   $('schoolDropdown').value=emis+'|'+school;
   renderSubjectChecks([]);
   onRoleChange();
+  applyAccess();
   updateDueBanner();
   await loadAll();
+  applyAccess(); // re-apply after load
 });
 </script>
 </body>
