@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v1.93</title>
+<title>Makhanani LTSM — Textbooks v1.94</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a1f4d">
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
 header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
@@ -19,7 +20,7 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
@@ -31,16 +32,18 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
-.labelBox{border:1.5px dashed #0a1f4d;padding:10px;margin:8px 0;text-align:center;background:#fff}
+.labelBox{border:1.5px dashed #0a1f4d;padding:10px;margin:8px 0;text-align:center;background:#fff;page-break-inside:avoid}
+.labelBox svg{width:100%;max-width:280px;height:60px}
 .deleteBar{position:sticky;top:0;z-index:5;background:#fff7ed;border:2px solid #ea580c;border-radius:10px;padding:10px;margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .deleteBar b{color:#9a3412}
 .chk{width:20px;height:20px;accent-color:#dc2626;cursor:pointer}
 .searchRow{display:flex;gap:10px;flex-wrap:wrap}
 .searchRow input{flex:1;min-width:180px}
+@media print{ header,#cloudStatus,.topnav,.card:first-child,.card:nth-child(2) .btn,.card:nth-child(2) button, #deleteCard, .btn{display:none!important} body{background:#fff} main{max-width:100%;padding:0} .card{box-shadow:none;border:none;padding:0} .labelBox{border:none;margin:0;padding:6px 0} }
 </style>
 </head>
 <body>
-<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Barcode Labels • v1.93 FIXED PREFIX<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.93 WHS FIX</span></div></header>
+<header><div><h1>📖 Textbooks — Makhanani LTSM</h1><p>Real Barcode • v1.94<br><span id="whoLine">Not logged in</span></p></div><div><span class="badge">v1.94 REAL BARCODE</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -59,7 +62,7 @@ th{background:#0a1f4d;color:#fff}
 <div class="grid2"><div><label>Subject</label><input id="subjectInput" placeholder="e.g. Mathematics"></div><div><label>Grade</label><select id="gradeInput"><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div></div>
 <div class="grid2"><div><label>Publisher (optional)</label><input id="publisherInput" placeholder="e.g. Via Afrika"></div><div><label>Copies — How many to create</label><input id="copiesInput" type="number" value="60" min="1" max="500"></div></div>
 <label>Barcode Number — AUTO (do not type)</label>
-<input id="barcodePreview" readonly style="font-weight:900;font-size:20px;letter-spacing:1px" value="WHS000132">
+<input id="barcodePreview" readonly style="font-weight:900;font-size:20px;letter-spacing:1px" value="WHS000214">
 <div class="small">Auto from School Name initials + next number. <a href="#" onclick="refreshNext();return false;">🔄 Refresh next number</a></div>
 <button class="btn btn-green" id="saveBtn" onclick="saveBooks()">✅ Save + Generate Barcode Label(s)</button>
 <button class="btn btn-blue" onclick="refreshNext()">🔢 Get Next Number</button>
@@ -74,7 +77,7 @@ th{background:#0a1f4d;color:#fff}
 <input id="bookSearch" placeholder="🔍 Search by barcode, title, subject, grade... e.g. WHS000001, Accounting, Grade 10" oninput="renderBookList()">
 <select id="bookFilter" onchange="renderBookList()" style="max-width:220px"><option value="">All Titles</option></select>
 </div>
-<div class="small"><span id="bookCount">Loading books...</span> • Tick checkbox → Delete. Deleted books cannot be undone.</div>
+<div class="small"><span id="bookCount">Loading books...</span></div>
 <div id="deleteBar" class="deleteBar" style="display:none">
 <b>🗑️ <span id="selCount">0</span> selected</b>
 <button class="btn btn-red" id="deleteSelectedBtn" onclick="deleteSelected()" style="width:auto;margin:0;padding:10px 18px">🗑️ Delete Selected</button>
@@ -114,11 +117,6 @@ function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGG
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
 function canDelete(){ return ['ADMIN','PRINCIPAL','LIBRARIAN'].includes(getRole()); }
 function canWrite(){ return !!getLogin(); }
-
-// ===== FIXED PREFIX - v1.93 =====
-// DO NOT strip HIGH / PRIMARY / SCHOOL - they are part of prefix!
-// WORDSWORTH HIGH SCHOOL -> WHS
-// TIVANANI PRIMARY SCHOOL -> TPS
 function makePrefix(name){
   if(!name) return 'WHS';
   const up = name.toUpperCase().trim();
@@ -126,11 +124,7 @@ function makePrefix(name){
   if(up.includes('TIVANANI')) return 'TPS';
   const words = up.replace(/[^A-Z\s]/g,'').split(/\s+/).filter(w=>w.length>0);
   if(words.length===0) return 'WHS';
-  if(words.length===1){
-    // Single word school: use first 3 letters, e.g. MAKHANANI -> MAK
-    return words[0].slice(0,3);
-  }
-  // Multi-word: first letter of EACH word, max 4 letters
+  if(words.length===1) return words[0].slice(0,3);
   return words.map(w=>w[0]).join('').slice(0,4);
 }
 function fmtBarcode(prefix, n){ return prefix + String(n).padStart(6,'0'); }
@@ -148,17 +142,33 @@ async function refreshNext(){
   }catch(e){ $('prefixBox').textContent='Failed: '+e.message; }
 }
 window.refreshNext = refreshNext;
+
+// Render REAL barcodes with JsBarcode
+function renderLabels(school, start, end){
+  let html='<h2>Barcode Labels — Real Scannable Barcodes</h2><p class="small">Each label is:<br>'+school.toUpperCase()+' — TEXTBOOKS — Real Barcode — '+fmtBarcode(PREFIX,start)+'<br>Print this page — scanner will read it.</p>';
+  for(let n=start; n<=end; n++){
+    const code=fmtBarcode(PREFIX,n);
+    html+='<div class="labelBox"><div style="font-weight:900">'+school.toUpperCase()+' — TEXTBOOKS</div><svg id="bc-'+code+'"></svg><div style="font-weight:900;font-size:14px">'+code+'</div></div>';
+  }
+  html+='<button class="btn btn-blue" onclick="window.print()">🖨️ Print Labels</button>';
+  $('labelsBox').innerHTML=html;
+  // Draw barcodes after DOM insert
+  for(let n=start; n<=end; n++){
+    const code=fmtBarcode(PREFIX,n);
+    try{ JsBarcode('#bc-'+code, code, { format:'CODE128', lineWidth:2, height:60, displayValue:false, margin:0 }); }catch(e){ console.error(e); }
+  }
+}
+
 async function saveBooks(){
   const emis=getEmis(); const school=getSchool();
   const title=$('titleInput').value.trim(); const subject=$('subjectInput').value.trim(); const grade=$('gradeInput').value; const publisher=$('publisherInput').value.trim(); const copies=parseInt($('copiesInput').value||'0');
   const msg=$('saveMsg');
   if(!emis){ msg.innerHTML='<div class="warn">⚠️ Select school in Admin first.</div>'; return; }
-  if(!canWrite()){ msg.innerHTML='<div class="warn">⚠️ Login in Admin first as ADMIN / PRINCIPAL / LIBRARIAN.</div>'; return; }
+  if(!canWrite()){ msg.innerHTML='<div class="warn">⚠️ Login in Admin first.</div>'; return; }
   if(!title){ msg.innerHTML='<div class="warn">⚠️ Type Title first.</div>'; return; }
   if(!copies||copies<1){ msg.innerHTML='<div class="warn">⚠️ Copies must be 1 or more.</div>'; return; }
   await refreshNext();
-  // Safety: never allow W000xxx - if prefix looks wrong, stop
-  if(PREFIX.length<2){ msg.innerHTML='<div class="warn">❌ Prefix error: '+PREFIX+' — Refresh page and try again. Did NOT save.</div>'; return; }
+  if(PREFIX.length<2){ msg.innerHTML='<div class="warn">❌ Prefix error — Did NOT save.</div>'; return; }
   const start=NEXT_NUM; const end=NEXT_NUM+copies-1;
   $('saveBtn').disabled=true; $('saveBtn').textContent='Saving...';
   msg.innerHTML='<div class="info">Saving '+copies+' book(s)...</div>';
@@ -168,11 +178,8 @@ async function saveBooks(){
       const code=fmtBarcode(PREFIX,n);
       await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), { barcode:code, code:code, title:title, subject:subject, grade:grade, publisher:publisher, status:'AVAILABLE', createdAt:serverTimestamp(), createdBy:login?login.email:'', createdByName:login?login.name:'' }, {merge:true});
     }
-    msg.innerHTML='<div class="ok">✅ Saved '+copies+' book(s): '+fmtBarcode(PREFIX,start)+' to '+fmtBarcode(PREFIX,end)+'<br>Labels below match your photo — Click Print.</div>';
-    let labels='<h2>Barcode Labels — Exactly Like Your Photo</h2><p class="small">Each label is ONLY<br>'+school.toUpperCase()+' — TEXTBOOKS — Barcode — '+fmtBarcode(PREFIX,start)+'</p>';
-    for(let n=start; n<=end; n++){ const code=fmtBarcode(PREFIX,n); labels+='<div class="labelBox"><div style="font-weight:900">'+school.toUpperCase()+' — TEXTBOOKS</div><div style="font-size:28px;font-weight:900;letter-spacing:2px">|||| '+code+' ||||</div><div>Barcode — '+code+'</div></div>'; }
-    labels+='<button class="btn btn-blue" onclick="window.print()">🖨️ Print Labels</button>';
-    $('labelsBox').innerHTML=labels;
+    msg.innerHTML='<div class="ok">✅ Saved '+copies+' book(s): '+fmtBarcode(PREFIX,start)+' to '+fmtBarcode(PREFIX,end)+'</div>';
+    renderLabels(school, start, end);
     NEXT_NUM=end+1;
     $('barcodePreview').value=fmtBarcode(PREFIX,NEXT_NUM);
     $('prefixBox').textContent='Prefix: '+PREFIX+' • Next: '+fmtBarcode(PREFIX,NEXT_NUM)+' • Last used: '+fmtBarcode(PREFIX,end);
@@ -203,10 +210,9 @@ function getFiltered(){
 }
 function renderBookList(){
   const filtered=getFiltered();
-  $('bookCount').textContent = filtered.length + ' book(s) shown • ' + ALL_BOOKS.length + ' total in system • ' + SELECTED.size + ' selected';
+  $('bookCount').textContent = filtered.length + ' book(s) shown • ' + ALL_BOOKS.length + ' total • ' + SELECTED.size + ' selected';
   const role=getRole();
-  if(!canDelete()){ $('roleDeleteMsg').innerHTML = '<div class="warn">🔒 You are <b>'+(role||'NOT LOGGED IN')+'</b>. Only <b>ADMIN / PRINCIPAL / LIBRARIAN</b> can delete books.</div>'; }
-  else { $('roleDeleteMsg').innerHTML = '<div class="ok">✅ You are <b>'+role+'</b> — you CAN delete selected books.</div>'; }
+  $('roleDeleteMsg').innerHTML = canDelete() ? '<div class="ok">✅ You are <b>'+role+'</b> — you CAN delete.</div>' : '<div class="warn">🔒 You are <b>'+(role||'NOT LOGGED IN')+'</b>. Only ADMIN / PRINCIPAL / LIBRARIAN can delete.</div>';
   if(filtered.length===0){ $('bookList').innerHTML='<div class="info">No books found.</div>'; updateDeleteBar(); return; }
   let html='<table><tr><th style="width:40px"><input type="checkbox" class="chk" onchange="toggleAll(this.checked)"></th><th>Barcode</th><th>Title</th><th>Subject</th><th>Grade</th><th>Status</th></tr>';
   filtered.forEach(b=>{ const checked=SELECTED.has(b.id)?'checked':''; html+='<tr><td><input type="checkbox" class="chk" '+checked+' onchange="toggleOne(\''+b.id+'\',this.checked)"></td><td><b>'+b.barcode+'</b></td><td>'+b.title+'</td><td>'+b.subject+'</td><td>'+b.grade+'</td><td>'+b.status+'</td></tr>'; });
@@ -230,22 +236,18 @@ function updateDeleteBar(){
 }
 window.deleteSelected = async function(){
   const emis=getEmis();
-  if(!canDelete()){ $('deleteMsg').innerHTML='<div class="warn">🔒 Only ADMIN / PRINCIPAL / LIBRARIAN can delete books.</div>'; return; }
+  if(!canDelete()){ $('deleteMsg').innerHTML='<div class="warn">🔒 Only ADMIN / PRINCIPAL / LIBRARIAN can delete.</div>'; return; }
   if(SELECTED.size===0){ $('deleteMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 book first.</div>'; return; }
   const list=[...SELECTED];
-  const preview=list.slice(0,10).join(', ') + (list.length>10 ? ' ... +'+(list.length-10)+' more' : '');
-  if(!confirm('🗑️ DELETE '+list.length+' book(s)?\n\n'+preview+'\n\nThis cannot be undone. Are you sure?')) return;
-  if(list.length>=10 && !confirm('⚠️ You are deleting '+list.length+' books. Confirm again to DELETE FOREVER?')) return;
+  if(!confirm('🗑️ DELETE '+list.length+' book(s)?\n\n'+list.slice(0,10).join(', ')+'\n\nCannot be undone.')) return;
+  if(list.length>=10 && !confirm('⚠️ Deleting '+list.length+' books. Confirm again?')) return;
   $('deleteSelectedBtn').disabled=true; $('deleteSelectedBtn').textContent='Deleting...';
-  $('deleteMsg').innerHTML='<div class="info">Deleting '+list.length+' book(s)...</div>';
+  $('deleteMsg').innerHTML='<div class="info">Deleting '+list.length+'...</div>';
   try{
     const login=getLogin(); let deleted=0; let failed=[];
-    for(const id of list){
-      try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',id)); try{ await addDoc(collection(db,'schools','EMIS_'+emis,'logs'), { action:'DELETE_BOOK', detail:'Deleted book '+id, whoEmail:login?login.email:'', whoName:login?login.name:'', whoRole:login?login.role:'', createdAt:serverTimestamp() }); }catch(e){} deleted++; }catch(e){ failed.push(id+': '+e.message); }
-    }
+    for(const id of list){ try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'textbooks',id)); try{ await addDoc(collection(db,'schools','EMIS_'+emis,'logs'), { action:'DELETE_BOOK', detail:'Deleted book '+id, whoEmail:login?login.email:'', whoName:login?login.name:'', whoRole:login?login.role:'', createdAt:serverTimestamp() }); }catch(e){} deleted++; }catch(e){ failed.push(id); } }
     SELECTED.clear(); await loadBooks(); await refreshNext();
-    if(failed.length===0) $('deleteMsg').innerHTML='<div class="ok">✅ Deleted '+deleted+' book(s).</div>';
-    else $('deleteMsg').innerHTML='<div class="warn">✅ Deleted '+deleted+' • ❌ Failed '+failed.length+'<br>'+failed.join('<br>')+'</div>';
+    $('deleteMsg').innerHTML='<div class="ok">✅ Deleted '+deleted+' book(s).</div>';
   }catch(e){ $('deleteMsg').innerHTML='<div class="warn">❌ Delete failed: '+e.message+'</div>'; }
   $('deleteSelectedBtn').disabled=false;
 };
