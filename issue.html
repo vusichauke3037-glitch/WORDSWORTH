@@ -78,7 +78,6 @@ th{background:#0a1f4d;color:#fff}
 <div class="lockNote" id="permissionNote"></div>
 <div class="info"><b>🚫 RULES — ISSUE:</b><br>1. <b>Grade must match</b> — Grade 10 book → Grade 10 learner ONLY.<br>2. <b>Teacher = Own Subject ONLY</b> — Maths teacher can issue Maths ONLY.<br><b>✅ RETURN:</b> Anyone can return ANY book, ANY subject, ANY grade — no block.</div>
 
-<!-- TEACHER SUBJECT SELECTOR — Only shows for TEACHERS -->
 <div id="teacherBox" class="teacherBox">
 <b>👩🏾‍🏫 Teacher — Select Your Subject(s)</b><br>
 <span class="small">You can ONLY issue books for your subject(s). You can return ANY book.<br>If you teach 2 subjects, tick both. This is saved on this phone / laptop.</span>
@@ -119,7 +118,6 @@ th{background:#0a1f4d;color:#fff}
 <div id="bookFound" class="foundBox"></div>
 <div class="small">Or pick: <select id="bookPick" onchange="pickBook()"><option value="">— Pick Book —</option></select></div>
 
-<!-- LIVE BLOCK WARNING — Shows BEFORE you tap Issue -->
 <div id="blockWarning" class="blockBox"></div>
 <div id="okWarning" class="foundBox" style="display:none"></div>
 
@@ -176,14 +174,12 @@ const $ = id => document.getElementById(id);
 let ALL_LEARNERS=[], ALL_BOOKS=[], ALL_ISSUES=[];
 let html5QrCode=null, SCAN_TARGET=null, SCANNING=false;
 const SUBJECTS=["Accounting","Afrikaans","Agricultural Sciences","Business Studies","CAT","Consumer Studies","Economics","English","Geography","History","Life Orientation","Life Sciences","Mathematical Literacy","Mathematics","Natural Sciences","Physical Sciences","Sepedi","Setswana","Social Sciences","Technology","Tourism","Visual Arts","isiZulu","isiXhosa"];
-
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
 function canIssue(){ return ['TEACHER','LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
 function cleanCode(v){ return String(v||'').trim().toUpperCase().replace(/\s+/g,''); }
-// Normalise grade: "Grade 10", "10", "grade10" -> "10"
 function normGrade(g){ return String(g||'').replace(/[^0-9]/g,''); }
 function beep(){
   try{
@@ -195,16 +191,11 @@ function beep(){
   }catch(e){}
 }
 function vibrate(){ try{ if(navigator.vibrate) navigator.vibrate(120); }catch(e){} }
-
-// ===== TEACHER SUBJECTS =====
-// Teacher subjects can come from: 1) Login object (subject / subjects), 2) Saved selection in this browser
 function getTeacherSubjects(){
   const login=getLogin()||{};
-  // 1) From login — if Admin set it in login
   if(login.subject) return [login.subject];
   if(login.subjects && Array.isArray(login.subjects) && login.subjects.length) return login.subjects;
   if(login.subjects && typeof login.subjects==='string') return login.subjects.split(',').map(s=>s.trim()).filter(Boolean);
-  // 2) From saved selection on this device
   try{
     const saved=localStorage.getItem('MAKHANANI_TEACHER_SUBJECTS');
     if(saved) return JSON.parse(saved);
@@ -215,7 +206,6 @@ function getTeacherSubjects(){
 }
 function saveTeacherSubjects(list){
   localStorage.setItem('MAKHANANI_TEACHER_SUBJECTS', JSON.stringify(list));
-  // Also try to save into login for other pages
   try{
     const login=getLogin();
     if(login){ login.subjects=list; login.subject=list[0]||''; localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify(login)); }
@@ -259,15 +249,12 @@ window.updateMode = function(){
   else { $('issueBtn').style.opacity='1'; $('returnBtn').style.opacity='0.5'; }
   checkBlocks();
 };
-// ===== BLOCK CHECKS — Live warning before tapping Issue =====
 function getBlockReason(learner, book, forReturn){
-  if(forReturn) return null; // RETURN: NO BLOCK EVER
+  if(forReturn) return null;
   if(!learner || !book) return null;
-  // 1) GRADE MISMATCH — Applies to EVERYONE, even Admin
   if(normGrade(learner.grade) !== normGrade(book.grade)){
     return '🚫 GRADE MISMATCH — BLOCKED<br>Learner: <b>'+learner.name+' — '+learner.grade+'</b><br>Book: <b>'+book.title+' — '+book.grade+'</b><br>Grade 10 book CANNOT go to Grade '+normGrade(learner.grade)+' learner. Ask Librarian for correct Grade book.';
   }
-  // 2) TEACHER SUBJECT — Only for TEACHERS
   if(getRole()==='TEACHER'){
     const mySubjects=getTeacherSubjects();
     if(mySubjects.length===0){
@@ -304,7 +291,6 @@ window.checkBlocks = function(){
     okBox.innerHTML='✅ OK to Issue: Learner <b>'+learner.grade+'</b> + Book <b>'+book.grade+'</b> — Grade matches'+(getRole()==='TEACHER' ? ' • Subject <b>'+book.subject+'</b> is yours ✅' : '');
   }
 };
-// ===== SCANNING =====
 window.startScan = async function(target){
   SCAN_TARGET=target;
   if(!window.Html5Qrcode){ alert('Scanner library failed to load. Check internet / reload. You can still type code manually.'); return; }
@@ -484,12 +470,10 @@ window.doIssue = async function(){
   if(!learner){ $('issueMsg').innerHTML='<div class="warn">❌ Learner <b>'+lc+'</b> not found. Add learner first.</div>'; return; }
   const book=ALL_BOOKS.find(x=> x.code===bc || x.id===bc);
   if(!book){ $('issueMsg').innerHTML='<div class="warn">❌ Book <b>'+bc+'</b> not found. Add book first.</div>'; return; }
-  // ✅ BLOCK 1: GRADE MISMATCH — Everyone
   if(normGrade(learner.grade) !== normGrade(book.grade)){
     $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED — GRADE MISMATCH<br>Learner: <b>'+learner.name+' — '+learner.grade+'</b><br>Book: <b>'+book.title+' — '+book.grade+'</b><br>Grade must match. Cannot issue Grade '+normGrade(book.grade)+' book to Grade '+normGrade(learner.grade)+' learner.</div>';
     return;
   }
-  // ✅ BLOCK 2: TEACHER SUBJECT — Teachers only
   if(getRole()==='TEACHER'){
     const mySubjects=getTeacherSubjects();
     if(mySubjects.length===0){
@@ -523,7 +507,6 @@ window.doReturn = async function(){
   const lc=cleanCode($('learnerCode').value);
   const bc=cleanCode($('bookCode').value);
   if(!bc){ $('issueMsg').innerHTML='<div class="warn">⚠️ Scan / Type Book Code first to Return.</div>'; return; }
-  // ✅ RETURN: NO GRADE CHECK, NO SUBJECT CHECK — Anyone can return ANY book
   let rec=ALL_ISSUES.find(x=> x.bookCode===bc && x.status==='OUT');
   if(!rec && lc) rec=ALL_ISSUES.find(x=> x.bookCode===bc && x.learnerCode===lc && x.status==='OUT');
   if(!rec){ $('issueMsg').innerHTML='<div class="warn">❌ Book <b>'+bc+'</b> is NOT OUT. It may already be returned or never issued.</div>'; return; }
