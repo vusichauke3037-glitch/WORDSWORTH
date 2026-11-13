@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Librarian v2.12</title>
+<title>Makhanani LTSM — Librarian v2.13</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -39,6 +39,8 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px;word-break:break-word}
+#subBlockBanner{display:none;background:#dc2626;color:#fff;text-align:center;padding:14px;font-weight:900;font-size:15px;margin:14px;border-radius:12px;line-height:1.5}
+#subOkBanner{display:none;background:#059669;color:#fff;text-align:center;padding:8px;font-weight:700;font-size:12px;margin:14px;border-radius:12px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word}
 .info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word;overflow-wrap:break-word}
@@ -74,17 +76,20 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Librarian — Makhanani LTSM</h1><p>Dashboard • Scan • Grade + Subject + Same Title Block • Due 30 Nov • v2.12<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.12 LIBRARIAN</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Librarian — Makhanani LTSM</h1><p>Dashboard • Scan • Grade + Subject + Same Title + Subscription Block • Due 30 Nov • v2.13<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.13 LIBRARIAN</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
+<div id="subBlockBanner"></div>
+<div id="subOkBanner"></div>
 <main>
-<div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
+<div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="add-school.html">🏫 Add School</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 My Profile</a></div>
 
 <div class="card">
 <h2>📊 Librarian Dashboard</h2>
 <div class="info" id="schoolBox">School: —</div>
 <div class="info" id="roleBox">Role: —</div>
+<div class="info" id="subInfoBox">Subscription: Checking...</div>
 <div class="lockNote" id="permissionNote"></div>
-<div class="info"><b>🚫 SAME RULES AS ISSUE PAGE:</b><br>1. <b>Grade must match</b> — Grade 10 book → Grade 10 learner ONLY. Blocks Librarian too.<br>2. <b>Same Title Block</b> — Learner CANNOT have same Title OUT twice, even if different copy / different WHS code. Must return first copy first.<br>3. <b>Teacher = Own Subject ONLY</b> — If a Teacher opens this page, they can ONLY issue their own subject. Librarian / Admin can issue ANY subject (Grade + Title must still match).<br><b>✅ RETURN:</b> Anyone can return ANY book — no block.</div>
+<div class="info"><b>🚫 SAME RULES AS ISSUE PAGE:</b><br>1. <b>Subscription must be ACTIVE</b> — Suspended / Expired = Cannot Issue. Return still allowed.<br>2. <b>Grade must match</b> — Grade 10 book → Grade 10 learner ONLY. Blocks Librarian too.<br>3. <b>Same Title Block</b> — Learner CANNOT have same Title OUT twice, even if different copy / different WHS code. Must return first copy first.<br>4. <b>Teacher = Own Subject ONLY</b> — If a Teacher opens this page, they can ONLY issue their own subject. Librarian / Admin can issue ANY subject (Grade + Title must still match).<br><b>✅ RETURN:</b> Anyone can return ANY book — no block, even if subscription expired.</div>
 <div class="grid4" style="margin-top:12px">
 <div class="stat"><b id="statLearners">0</b><span>🎓 Learners</span></div>
 <div class="stat gold"><b id="statBooks">0</b><span>📖 Total Books</span></div>
@@ -178,7 +183,7 @@ th{background:#0a1f4d;color:#fff}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
@@ -204,6 +209,64 @@ function normGrade(g){ return String(g||'').replace(/[^0-9]/g,''); }
 function normTitle(t){ return String(t||'').trim().toLowerCase().replace(/\s+/g,' '); }
 function beep(){ try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(); const g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value=880; o.type='sine'; g.gain.setValueAtTime(0.2, ctx.currentTime); o.start(); o.stop(ctx.currentTime+0.15); }catch(e){} }
 function vibrate(){ try{ if(navigator.vibrate) navigator.vibrate(120); }catch(e){} }
+// ===== SUBSCRIPTION BLOCK v2.13 — Xintimani Group =====
+let SUB_BLOCKED=false, SUB_REASON="", SUB_INFO=null;
+async function checkSubscription(){
+  const emis=getEmis();
+  const banner=$('subBlockBanner');
+  const okBanner=$('subOkBanner');
+  const infoBox=$('subInfoBox');
+  try{
+    const snap=await getDoc(doc(db,'schools','EMIS_'+emis));
+    if(!snap.exists()){
+      SUB_BLOCKED=false; SUB_INFO=null;
+      if(banner) banner.style.display='none';
+      if(okBanner) okBanner.style.display='none';
+      if(infoBox) infoBox.innerHTML='Subscription: <b>No school doc yet</b> — Old school, allowed. Add this school in Add School page to enable subscription control.';
+      return false;
+    }
+    const s=snap.data(); SUB_INFO=s;
+    const today=new Date().toISOString().slice(0,10);
+    const end=s.subscriptionEnd||"";
+    const status=(s.subscription||s.status||"ACTIVE").toUpperCase();
+    const daysLeft = end ? Math.ceil((new Date(end)-new Date(today))/(1000*60*60*24)) : 9999;
+    if(infoBox){
+      if(status==='SUSPENDED') infoBox.innerHTML='Subscription: <b style="color:#dc2626">🚫 SUSPENDED</b> • Plan: '+(s.plan||'')+' • End: '+(end||'—')+' • Contact Xintimani Group';
+      else if(end && end < today) infoBox.innerHTML='Subscription: <b style="color:#dc2626">⌛ EXPIRED on '+end+'</b> • Plan: '+(s.plan||'')+' • Contact Xintimani Group to renew';
+      else if(daysLeft<=30) infoBox.innerHTML='Subscription: <b style="color:#92400e">✅ ACTIVE — ⚠️ '+daysLeft+' days left</b> • Plan: '+(s.plan||'')+' • End: '+end+' • Renew soon';
+      else infoBox.innerHTML='Subscription: <b style="color:#166534">✅ ACTIVE</b> • Plan: '+(s.plan||'')+' • End: '+end+' • '+daysLeft+' days left';
+    }
+    if(status==='SUSPENDED'){
+      SUB_BLOCKED=true;
+      SUB_REASON='🚫 SUBSCRIPTION SUSPENDED — Contact Xintimani Group to reactivate.\nSchool: '+(s.name||'')+' • EMIS '+emis;
+    } else if(end && end < today){
+      SUB_BLOCKED=true;
+      SUB_REASON='⌛ SUBSCRIPTION EXPIRED on '+end+' — Contact Xintimani Group to renew.\nSchool: '+(s.name||'')+' • EMIS '+emis;
+    } else {
+      SUB_BLOCKED=false; SUB_REASON="";
+    }
+    if(SUB_BLOCKED){
+      if(banner){ banner.style.display='block'; banner.innerHTML=SUB_REASON.replace(/\n/g,'<br>')+'<br><span style="font-size:12px;font-weight:400">You can still RETURN books. Issuing is blocked until subscription is active.</span>'; }
+      if(okBanner) okBanner.style.display='none';
+      const ib=$('issueBtn');
+      if(ib){ ib.disabled=true; ib.textContent='🚫 BLOCKED — Subscription Expired / Suspended'; }
+    } else {
+      if(banner) banner.style.display='none';
+      if(okBanner && s.subscriptionEnd){
+        okBanner.style.display='block';
+        okBanner.textContent='✅ Subscription ACTIVE — '+ (s.plan||'') +' • Ends '+s.subscriptionEnd+' • '+daysLeft+' days left';
+      }
+      const ib=$('issueBtn');
+      if(ib && $('scanMode').value==='ISSUE'){ ib.disabled=false; ib.textContent='📚 ISSUE Book to Learner'; }
+    }
+    return SUB_BLOCKED;
+  }catch(e){
+    console.log('Sub check failed, allowing:', e.message);
+    SUB_BLOCKED=false;
+    if(infoBox) infoBox.innerHTML='Subscription: Could not check (offline) — Allowed for now.';
+    return false;
+  }
+}
 function getTeacherSubjects(){
   const login=getLogin()||{};
   if(login.subject) return [login.subject];
@@ -238,6 +301,7 @@ function applyRole(){
 window.updateMode = function(){ const m=$('scanMode').value; if(m==='RETURN'){ $('issueBtn').style.opacity='0.5'; $('returnBtn').style.opacity='1'; } else { $('issueBtn').style.opacity='1'; $('returnBtn').style.opacity='0.5'; } checkBlocks(); };
 function getBlockReason(learner, book, forReturn){
   if(forReturn) return null;
+  if(SUB_BLOCKED) return '🚫 SUBSCRIPTION BLOCKED<br>'+SUB_REASON.replace(/\n/g,'<br>')+'<br>You can still RETURN books.';
   if(!learner || !book) return null;
   if(normGrade(learner.grade) !== normGrade(book.grade)){
     return '🚫 GRADE MISMATCH — BLOCKED (Librarian too)<br>Learner: <b>'+learner.name+' — '+learner.grade+'</b><br>Book: <b>'+book.title+' — '+book.grade+'</b><br>Grade must match. Cannot issue Grade '+normGrade(book.grade)+' book to Grade '+normGrade(learner.grade)+' learner.';
@@ -258,7 +322,8 @@ window.checkBlocks = function(){
   const lc=cleanCode($('learnerCode').value); const bc=cleanCode($('bookCode').value);
   const blockBox=$('blockWarning'); const okBox=$('okWarning');
   blockBox.style.display='none'; okBox.style.display='none';
-  if(mode==='RETURN'){ if(bc){ okBox.style.display='block'; okBox.innerHTML='✅ RETURN Mode — No Grade / Subject / Title block. Anyone can return ANY book.'; } return; }
+  if(mode==='RETURN'){ if(bc){ okBox.style.display='block'; okBox.innerHTML='✅ RETURN Mode — No Grade / Subject / Title / Subscription block. Anyone can return ANY book.'; } return; }
+  if(SUB_BLOCKED){ blockBox.style.display='block'; blockBox.innerHTML='🚫 SUBSCRIPTION BLOCKED<br>'+SUB_REASON.replace(/\n/g,'<br>')+'<br>You can still RETURN books.'; $('issueBtn').disabled=true; $('issueBtn').textContent='🚫 BLOCKED — Subscription Expired / Suspended'; return; }
   if(!lc || !bc) return;
   const learner=ALL_LEARNERS.find(x=> x.barcode===lc || x.id===lc);
   const book=ALL_BOOKS.find(x=> x.code===bc || x.id===bc);
@@ -334,7 +399,7 @@ window.lookupBook = function(){
 };
 window.pickLearner = function(){ const id=$('learnerPick').value; if(!id) return; const l=ALL_LEARNERS.find(x=>x.id===id); if(!l) return; $('learnerCode').value=l.barcode; lookupLearner(); };
 window.pickBook = function(){ const id=$('bookPick').value; if(!id) return; const b=ALL_BOOKS.find(x=>x.id===id); if(!b) return; $('bookCode').value=b.code; lookupBook(); };
-window.clearScanForm = function(){ $('learnerCode').value=''; $('bookCode').value=''; $('learnerFound').style.display='none'; $('bookFound').style.display='none'; $('learnerPick').value=''; $('bookPick').value=''; $('issueMsg').innerHTML=''; $('blockWarning').style.display='none'; $('okWarning').style.display='none'; $('issueBtn').disabled=false; $('issueBtn').textContent='📚 ISSUE Book to Learner'; $('learnerCode').focus(); };
+window.clearScanForm = function(){ $('learnerCode').value=''; $('bookCode').value=''; $('learnerFound').style.display='none'; $('bookFound').style.display='none'; $('learnerPick').value=''; $('bookPick').value=''; $('issueMsg').innerHTML=''; $('blockWarning').style.display='none'; $('okWarning').style.display='none'; if(!SUB_BLOCKED){ $('issueBtn').disabled=false; $('issueBtn').textContent='📚 ISSUE Book to Learner'; } $('learnerCode').focus(); };
 async function loadAll(){
   const emis=getEmis();
   try{
@@ -387,6 +452,7 @@ function renderLearnerOut(){
 }
 window.quickReturn = async function(issueId){ const rec=ALL_ISSUES.find(x=>x.id===issueId); if(!rec) return; $('learnerCode').value=rec.learnerCode||''; $('bookCode').value=rec.bookCode||''; lookupLearner(); lookupBook(); $('scanMode').value='RETURN'; updateMode(); await doReturn(); };
 window.doIssue = async function(){
+  if(SUB_BLOCKED){ $('issueMsg').innerHTML='<div class="warn">🚫 SUBSCRIPTION BLOCKED<br>'+SUB_REASON.replace(/\n/g,'<br>')+'<br>Contact Xintimani Group to renew. You can still RETURN books.</div>'; return; }
   if(!canIssue()){ alert('Login first.'); return; }
   const emis=getEmis(); const lc=cleanCode($('learnerCode').value); const bc=cleanCode($('bookCode').value);
   if(!lc || !bc){ $('issueMsg').innerHTML='<div class="warn">⚠️ Scan / Type Learner Code + Book Code first.</div>'; return; }
@@ -398,7 +464,7 @@ window.doIssue = async function(){
   if(getRole()==='TEACHER'){ const mySubjects=getTeacherSubjects(); if(mySubjects.length===0){ $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED — Select your subject(s) above first.</div>'; return; } if(!mySubjects.includes(book.subject)){ $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED — NOT YOUR SUBJECT<br>Your subject(s): <b>'+mySubjects.join(', ')+'</b><br>Book: <b>'+book.subject+' — '+book.title+'</b></div>'; return; } }
   const alreadyOut=ALL_ISSUES.find(x=> x.bookCode===book.code && x.status==='OUT'); if(alreadyOut){ $('issueMsg').innerHTML='<div class="warn">❌ Book <b>'+book.code+'</b> is already OUT to <b>'+alreadyOut.learnerName+' ('+alreadyOut.learnerCode+')</b>.</div>'; return; }
   const learnerOutCount=ALL_ISSUES.filter(x=> x.learnerCode===learner.barcode && x.status==='OUT').length;
-  if(!confirm('ISSUE:\nBook: '+book.title+' ('+book.code+') '+book.grade+' '+book.subject+'\nTo: '+learner.name+' ('+learner.barcode+') '+learner.grade+' '+learner.class+'\n✅ Grade matches • ✅ No duplicate title • ✅ Subject OK\nLearner already has '+learnerOutCount+' book(s) OUT.\nConfirm?')) return;
+  if(!confirm('ISSUE:\nBook: '+book.title+' ('+book.code+') '+book.grade+' '+book.subject+'\nTo: '+learner.name+' ('+learner.barcode+') '+learner.grade+' '+learner.class+'\n✅ Grade matches • ✅ No duplicate title • ✅ Subject OK • ✅ Subscription ACTIVE\nLearner already has '+learnerOutCount+' book(s) OUT.\nConfirm?')) return;
   const id='ISS_'+Date.now()+'_'+book.code;
   try{
     await setDoc(doc(db,'schools','EMIS_'+emis,'issues',id), {learnerCode:learner.barcode, learnerName:learner.name, learnerGrade:learner.grade, learnerClass:learner.class, bookCode:book.code, bookTitle:book.title, bookSubject:book.subject, bookGrade:book.grade, status:'OUT', date:new Date().toISOString().slice(0,10), issuedBy:(getLogin()||{}).name||'', whoName:(getLogin()||{}).name||'', whoEmail:(getLogin()||{}).email||'', createdAt:serverTimestamp()});
@@ -413,7 +479,7 @@ window.doReturn = async function(){
   if(!bc){ $('issueMsg').innerHTML='<div class="warn">⚠️ Scan / Type Book Code first to Return.</div>'; return; }
   let rec=ALL_ISSUES.find(x=> x.bookCode===bc && x.status==='OUT'); if(!rec && lc) rec=ALL_ISSUES.find(x=> x.bookCode===bc && x.learnerCode===lc && x.status==='OUT');
   if(!rec){ $('issueMsg').innerHTML='<div class="warn">❌ Book <b>'+bc+'</b> is NOT OUT.</div>'; return; }
-  if(!confirm('RETURN (No Block):\nBook: '+rec.bookTitle+' ('+rec.bookCode+')\nFrom: '+rec.learnerName+' ('+rec.learnerCode+')\nConfirm Return?')) return;
+  if(!confirm('RETURN (No Block — even if subscription expired):\nBook: '+rec.bookTitle+' ('+rec.bookCode+')\nFrom: '+rec.learnerName+' ('+rec.learnerCode+')\nConfirm Return?')) return;
   try{
     await updateDoc(doc(db,'schools','EMIS_'+emis,'issues',rec.id), {status:'RETURNED', returnedAt:serverTimestamp(), returnedBy:(getLogin()||{}).name||'', updatedAt:serverTimestamp()});
     const book=ALL_BOOKS.find(x=> x.code===bc); if(book) await updateDoc(doc(db,'schools','EMIS_'+emis,'textbooks',book.id), {status:'AVAILABLE', updatedAt:serverTimestamp()}).catch(()=>{});
@@ -429,7 +495,7 @@ window.exportOutCSV = function(){
   const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_OUT_'+getEmis()+'_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url);
 };
 document.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && (e.target.id==='learnerCode' || e.target.id==='bookCode' || e.target.id==='whoBookCode')){ e.preventDefault(); if(e.target.id==='whoBookCode') lookupWhoHas(); else if($('scanMode').value==='RETURN') doReturn(); else doIssue(); } });
-document.addEventListener('DOMContentLoaded', async ()=>{ const emis=getEmis(); const school=getSchool(); const login=getLogin(); if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||''); if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:''); applyRole(); updateMode(); await loadAll(); });
+document.addEventListener('DOMContentLoaded', async ()=>{ const emis=getEmis(); const school=getSchool(); const login=getLogin(); if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||''); if(school) $('schoolBox').textContent='School: '+school+(emis?' • EMIS '+emis:''); applyRole(); updateMode(); await checkSubscription(); await loadAll(); });
 </script>
 </body>
 </html>
