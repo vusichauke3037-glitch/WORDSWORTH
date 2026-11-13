@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v2.04</title>
+<title>Makhanani LTSM — Textbooks v2.07</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <style>
 *{box-sizing:border-box}
 html,body{overflow-x:hidden}
@@ -54,6 +55,7 @@ th{background:#0a1f4d;color:#fff}
 .barcodeBox .bcode{font-family:'Courier New',monospace;font-weight:900;font-size:18px;letter-spacing:2px}
 .barcodeBox .bname{font-weight:900;font-size:14px}
 .barcodeBox .bmeta{font-size:11px;color:#555}
+.barcodeBox svg{width:100%;max-width:220px;height:52px}
 .printOnly{display:none}
 @page{ size:A4; margin:8mm; }
 @media print{
@@ -67,7 +69,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Textbooks — Makhanani LTSM</h1><p>Add Books • Print Barcodes • Due 30 Nov • v2.04<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.04 TEXTBOOKS</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Textbooks — Makhanani LTSM</h1><p>Add Books • Real Barcode • School Initials + Number • Due 30 Nov • v2.07<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.07 TEXTBOOKS</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -77,7 +79,8 @@ th{background:#0a1f4d;color:#fff}
 <div class="info" id="schoolBox">School: —</div>
 <div class="info" id="roleBox">Role: —</div>
 <div class="lockNote" id="permissionNote"></div>
-<div class="small">Teacher CANNOT Add / Edit Books — View + Print only. Librarian / Admin can Add + Edit + Delete.<br>Book Code is auto-generated if blank — e.g. <b>WHS-ACC10-001</b>. Or type your own sticker number.</div>
+<div class="info" id="numberingInfo"><b>📖 Numbering:</b> First letter of each word in school name + sequence number.<br>Example: <b>WORDSWORTH HIGH SCHOOL</b> → <b>W</b> + <b>H</b> + <b>S</b> = <b>WHS000001, WHS000002...</b></div>
+<div class="small">Teacher CANNOT Add / Edit Books — View + Print only. Librarian / Admin can Add + Edit + Delete.<br>Book Code is auto-generated if blank.</div>
 <label>Book Title</label>
 <input id="bTitle" placeholder="e.g. Accounting Grade 10 Learner Book">
 <div class="grid2">
@@ -85,7 +88,7 @@ th{background:#0a1f4d;color:#fff}
 <div><label>Grade</label><select id="bGrade"><option value="">— Grade —</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option></select></div>
 </div>
 <div class="grid2">
-<div><label>Book Code / Barcode (auto if blank)</label><input id="bCode" placeholder="e.g. WHS-ACC10-001" style="text-transform:uppercase"></div>
+<div><label>Book Code / Barcode (auto if blank) — e.g. WHS000001</label><input id="bCode" placeholder="e.g. WHS000001 — Leave blank to auto-generate" style="text-transform:uppercase"></div>
 <div><label>Quantity — How many copies? (Add Multiple at once)</label><input id="bQty" type="number" min="1" max="100" value="1"></div>
 </div>
 <div class="grid2">
@@ -95,12 +98,13 @@ th{background:#0a1f4d;color:#fff}
 <button class="btn btn-green" id="saveBookBtn" onclick="saveBook()">✅ Save Book</button>
 <button class="btn btn-grey" onclick="clearBookForm()">🔄 Clear Form — New Book</button>
 <div id="bookMsg"></div>
+<div id="singleBarcodePreview" style="display:none;text-align:center;margin-top:12px"></div>
 </div>
 
 <div class="card noPrint">
 <h2>📖 All Books (<span id="bookCount">0</span>)</h2>
 <div class="grid2">
-<div><label>🔍 Search title / code / subject</label><input id="bookSearch" placeholder="Search..." oninput="renderBooks()"></div>
+<div><label>🔍 Search title / code / subject</label><input id="bookSearch" placeholder="Search WHS000001 or title..." oninput="renderBooks()"></div>
 <div><label>Filter by Subject</label><select id="bookSubjectFilter" onchange="renderBooks()"><option value="">All Subjects</option></select></div>
 </div>
 <div class="grid2">
@@ -109,7 +113,7 @@ th{background:#0a1f4d;color:#fff}
 </div>
 <div class="grid2">
 <div><label>Print Filter</label><select id="printFilter"><option value="FILTERED">🖨️ Print FILTERED list (what you see)</option><option value="ALL">🖨️ Print ALL books</option><option value="AVAILABLE">🖨️ Print only AVAILABLE</option></select></div>
-<div><label>—</label><button class="btn btn-blue" onclick="printBarcodes()" style="margin-top:0">🖨️ Print Barcodes</button></div>
+<div><label>—</label><button class="btn btn-blue" onclick="printBarcodes()" style="margin-top:0">🖨️ Print REAL Barcodes</button></div>
 </div>
 <button class="btn btn-gold" onclick="exportBooksCSV()">📥 Export Books (CSV)</button>
 <div id="bookList"></div>
@@ -125,7 +129,7 @@ th{background:#0a1f4d;color:#fff}
 </div>
 <div style="font-size:12px;margin:8px 0" id="printSummary"></div>
 <div class="printGrid" id="printList"></div>
-<div style="margin-top:10px;font-size:11px;text-align:center">Makhanani LTSM • WORDSWORTH HIGH SCHOOL • EMIS 700310854 • ALL BOOKS DUE 30 NOVEMBER • Stick barcode inside front cover</div>
+<div style="margin-top:10px;font-size:11px;text-align:center">Makhanani LTSM • WORDSWORTH HIGH SCHOOL • EMIS 700310854 • ALL BOOKS DUE 30 NOVEMBER • Stick barcode inside front cover • Scan with Issue page</div>
 </div>
 </main>
 
@@ -150,6 +154,33 @@ function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') |
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
 function canManage(){ return ['LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
+// REAL BARCODE
+function cleanBarcode(code){ return String(code||'').toUpperCase().replace(/[^A-Z0-9\-\.\_]/g,'').trim() || 'UNKNOWN'; }
+function drawBarcode(svgEl, code){
+  try{
+    if(window.JsBarcode && svgEl){ JsBarcode(svgEl, cleanBarcode(code), {format:'CODE128', lineColor:'#000', background:'#fff', width:2, height:52, displayValue:true, fontSize:14, margin:4}); }
+  }catch(e){ if(svgEl) svgEl.outerHTML='<div style="font-family:monospace;font-weight:900;font-size:16px">'+cleanBarcode(code)+'</div>'; }
+}
+// ✅ NUMBERING: First letter of EACH WORD in school name + sequence
+// WORDSWORTH HIGH SCHOOL -> WHS | MAKHANANI PRIMARY -> MP | THUTO-LESEDI SECONDARY -> TLS (hyphen splits too)
+function getSchoolPrefix(){
+  const school = (getSchool() || 'WORDSWORTH HIGH SCHOOL').trim();
+  // Split by space AND hyphen, ignore empty, ignore common words? Keep all words for true initials.
+  // But skip very short filler? No — keep simple: every word counts.
+  const words = school.split(/[\s\-]+/).filter(w=> w.length>0);
+  // If school is "MAKHANANI LTSM" style, still gives ML — correct.
+  let prefix = words.map(w=> w.charAt(0).toUpperCase()).join('');
+  // Safety: if prefix too long (e.g. 6 words), keep first 4 letters
+  if(prefix.length > 4) prefix = prefix.substring(0,4);
+  // Safety: if no words, fallback WHS
+  if(!prefix) prefix='WHS';
+  return prefix;
+}
+function getSchoolPrefixExample(){
+  const prefix=getSchoolPrefix();
+  const school=getSchool();
+  return school+' → '+prefix+'000001';
+}
 function applyRole(){
   const login=getLogin();
   if(!login){ $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; $('permissionNote').innerHTML='⚠️ Login in Home first.'; return; }
@@ -163,19 +194,34 @@ window.clearBookForm = function(){
   $('bTitle').value=''; $('bSubject').value=''; $('bGrade').value=''; $('bCode').value=''; $('bQty').value='1'; $('bPublisher').value=''; $('bCondition').value='GOOD';
   $('saveBookBtn').textContent='✅ Save Book';
   if(getRole()==='TEACHER'){ $('saveBookBtn').disabled=true; $('saveBookBtn').textContent='🔒 TEACHER — Cannot Add Books'; } else { $('saveBookBtn').disabled=false; }
-  $('bookMsg').innerHTML='';
+  $('bookMsg').innerHTML=''; $('singleBarcodePreview').style.display='none';
+  const nxt=getNextBookCode();
+  $('bCode').placeholder='e.g. '+nxt+' — Leave blank to auto-generate';
 };
-function makeBookCode(subject, grade){
-  const subj = String(subject||'').replace(/[^A-Za-z]/g,'').substring(0,3).toUpperCase() || 'GEN';
-  const gNum = String(grade||'').replace(/[^0-9]/g,'') || '10';
+// NUMBERING: PREFIX + 6-digit sequence, one sequence per school prefix
+function getMaxBookNumber(){
+  const prefix=getSchoolPrefix();
   let maxNum=0;
-  ALL_BOOKS.filter(b=> (b.subject||'')===subject && (b.grade||'')===grade).forEach(b=>{
-    const m=String(b.code||'').match(/(\d+)$/);
-    if(m) maxNum=Math.max(maxNum, parseInt(m[1]));
+  ALL_BOOKS.forEach(b=>{
+    const code=String(b.code||'').toUpperCase();
+    // Match current prefix: WHS000001
+    const re=new RegExp('^'+prefix+'0*(\\d+)$');
+    const m=code.match(re);
+    if(m){ maxNum=Math.max(maxNum, parseInt(m[1])); return; }
+    // Fallback: if code is WHS000001 style but school changed, still count WHS numbers for backward compat when prefix is WHS
+    if(prefix==='WHS'){
+      const m2=code.match(/^WHS0*(\d+)$/);
+      if(m2) maxNum=Math.max(maxNum, parseInt(m2[1]));
+    }
   });
-  const next=maxNum+1;
-  return 'WHS-'+subj+gNum+'-'+String(next).padStart(3,'0');
+  return maxNum;
 }
+function getNextBookCode(){
+  const prefix=getSchoolPrefix();
+  return prefix + String(getMaxBookNumber()+1).padStart(6,'0');
+}
+function makeBookCode(){ return getNextBookCode(); }
+function isCodeTaken(code, excludeId){ return ALL_BOOKS.some(b=> b.code===code && b.id!==excludeId); }
 window.saveBook = async function(){
   if(!canManage()){ alert('🚫 TEACHER cannot Add / Edit Books. View + Print only.'); return; }
   const emis=getEmis();
@@ -189,30 +235,41 @@ window.saveBook = async function(){
   if(!title || !subject || !grade){ $('bookMsg').innerHTML='<div class="warn">⚠️ Fill Title + Subject + Grade.</div>'; return; }
   if(EDIT_ID){
     if(!code){ $('bookMsg').innerHTML='<div class="warn">⚠️ Code required when Editing.</div>'; return; }
+    if(isCodeTaken(code, EDIT_ID)){ $('bookMsg').innerHTML='<div class="warn">❌ Code <b>'+code+'</b> already exists.</div>'; return; }
     try{
       await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), {title:title, subject:subject, grade:grade, code:code, publisher:publisher, condition:condition, status:condition==='GOOD'?'AVAILABLE':condition, emis:emis, school:getSchool(), updatedAt:serverTimestamp()}, {merge:true});
       $('bookMsg').innerHTML='<div class="ok">✅ Book Updated: <b>'+title+' • '+code+'</b></div>';
-      await loadAll(); clearBookForm();
+      $('singleBarcodePreview').style.display='block';
+      $('singleBarcodePreview').innerHTML='<div class="barcodeBox" style="max-width:280px;margin:auto"><div style="font-size:10px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+title+'</div><div class="bmeta">'+subject+' • '+grade+' • Code: '+code+'</div><svg id="singleSvg"></svg><div class="bmeta">Stick inside front cover</div></div>';
+      drawBarcode(document.getElementById('singleSvg'), code);
+      await loadAll();
     }catch(e){ $('bookMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
     return;
   }
   if(!code && qty>1){
     let created=[];
     for(let i=0;i<qty;i++){
-      const newCode=makeBookCode(subject, grade);
-      ALL_BOOKS.push({code:newCode, subject:subject, grade:grade});
+      const prefix=getSchoolPrefix();
+      let n=getMaxBookNumber()+1+created.length;
+      while(ALL_BOOKS.some(b=>b.code===prefix+String(n).padStart(6,'0'))){ n++; }
+      const newCode=prefix+String(n).padStart(6,'0');
+      ALL_BOOKS.push({id:newCode, code:newCode, subject:subject, grade:grade, title:title});
       try{ await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',newCode), {title:title, subject:subject, grade:grade, code:newCode, publisher:publisher, condition:'GOOD', status:'AVAILABLE', emis:emis, school:getSchool(), createdAt:serverTimestamp(), updatedAt:serverTimestamp()}, {merge:true}); created.push(newCode); }catch(e){}
     }
     $('bookMsg').innerHTML='<div class="ok">✅ Added <b>'+created.length+' copies</b> of <b>'+title+'</b><br>Codes: '+created.join(', ')+'</div>';
     await loadAll(); clearBookForm();
     return;
   }
-  if(!code) code=makeBookCode(subject, grade);
-  if(ALL_BOOKS.some(b=>b.code===code)){ $('bookMsg').innerHTML='<div class="warn">❌ Code <b>'+code+'</b> already exists.</div>'; return; }
+  if(!code) code=makeBookCode();
+  if(isCodeTaken(code, null)){ $('bookMsg').innerHTML='<div class="warn">❌ Code <b>'+code+'</b> already exists.</div>'; return; }
   try{
     await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), {title:title, subject:subject, grade:grade, code:code, publisher:publisher, condition:condition, status:condition==='GOOD'?'AVAILABLE':condition, emis:emis, school:getSchool(), createdAt:serverTimestamp(), updatedAt:serverTimestamp()}, {merge:true});
-    $('bookMsg').innerHTML='<div class="ok">✅ Book Saved: <b>'+title+' • '+code+'</b></div>';
-    await loadAll(); clearBookForm();
+    $('bookMsg').innerHTML='<div class="ok">✅ Book Saved: <b>'+title+' • '+code+'</b><br><span class="small">Real barcode below — scan to test in Issue page.</span></div>';
+    $('singleBarcodePreview').style.display='block';
+    $('singleBarcodePreview').innerHTML='<div class="barcodeBox" style="max-width:280px;margin:auto"><div style="font-size:10px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+title+'</div><div class="bmeta">'+subject+' • '+grade+' • Code: '+code+'</div><svg id="singleSvg"></svg><div class="bmeta">Stick inside front cover</div></div>';
+    drawBarcode(document.getElementById('singleSvg'), code);
+    await loadAll();
+    $('bTitle').value=''; $('bCode').value='';
   }catch(e){ $('bookMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
 };
 window.editBook = function(id){
@@ -236,14 +293,23 @@ async function loadAll(){
   try{
     const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'textbooks'));
     ALL_BOOKS=[]; snap.forEach(d=>{ const b=d.data(); ALL_BOOKS.push({id:d.id, code:b.code||b.barcode||d.id, title:b.title||'', subject:b.subject||'', grade:b.grade||'', publisher:b.publisher||'', status:b.status||'AVAILABLE', condition:b.condition||'GOOD'}); });
-    ALL_BOOKS.sort((a,b)=> (a.subject||'').localeCompare(b.subject||'') || (a.grade||'').localeCompare(b.grade||'') || (a.code||'').localeCompare(b.code||''));
+    ALL_BOOKS.sort((a,b)=> {
+      const na=parseInt(String(a.code||'').replace(/\D/g,''))||0;
+      const nb=parseInt(String(b.code||'').replace(/\D/g,''))||0;
+      if(na!==nb) return na-nb;
+      return (a.code||'').localeCompare(b.code||'');
+    });
     $('bookCount').textContent=ALL_BOOKS.length;
     const subjects=[...new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean))].sort();
     const grades=[...new Set(ALL_BOOKS.map(b=>b.grade).filter(Boolean))].sort();
     const fill=(id, arr, label)=>{ const el=$(id); const cur=el.value; el.innerHTML='<option value="">All '+label+'</option>'+arr.map(v=>`<option ${v===cur?'selected':''}>${v}</option>`).join(''); };
     fill('bookSubjectFilter', subjects, 'Subjects'); fill('bookGradeFilter', grades, 'Grades');
     renderBooks();
-    $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool();
+    // Show live numbering info
+    const prefix=getSchoolPrefix();
+    $('numberingInfo').innerHTML='<b>📖 Numbering:</b> First letter of each word in school name + sequence.<br>School: <b>'+getSchool()+'</b> → Prefix: <b>'+prefix+'</b> → Next Code: <b>'+getNextBookCode()+'</b><br>Example: '+getSchoolPrefixExample();
+    $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool()+' • Prefix: '+prefix+' • Next Code: '+getNextBookCode();
+    if(!EDIT_ID) $('bCode').placeholder='e.g. '+getNextBookCode()+' — Leave blank to auto-generate';
   }catch(e){ $('bookList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; $('cloudStatus').textContent='🔴 Cloud: Offline / Error — '+e.message; }
 }
 window.loadAll = loadAll;
@@ -281,10 +347,11 @@ window.printBarcodes = function(singleList){
   if(list.length===0){ alert('No books to print.'); return; }
   $('printTitle').textContent=getSchool()+' — EMIS '+getEmis();
   $('printMeta').textContent='Printed: '+new Date().toLocaleString('en-ZA')+' • Books: '+list.length+' • By: '+(getLogin()?getLogin().name:'');
-  $('printSummary').innerHTML='<b>Books:</b> '+list.length;
-  $('printList').innerHTML=list.map(b=> '<div class="barcodeBox"><div style="font-size:10px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+b.title+'</div><div class="bmeta">'+b.subject+' • '+b.grade+'</div><div style="font-size:28px;letter-spacing:4px;font-family:monospace">|||| |||| |||| ||||</div><div class="bcode">'+b.code+'</div><div class="bmeta">Stick inside front cover • Due 30 Nov</div></div>').join('');
+  $('printSummary').innerHTML='<b>Books:</b> '+list.length+' • Real CODE128 barcodes — Prefix: '+getSchoolPrefix()+' • Scan with Issue page';
+  $('printList').innerHTML=list.map(b=> '<div class="barcodeBox"><div style="font-size:10px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+b.title+'</div><div class="bmeta">'+b.subject+' • '+b.grade+' • Code: '+b.code+'</div><svg class="realBarcode" data-code="'+b.code+'"></svg><div class="bmeta">Stick inside front cover • Due 30 Nov</div></div>').join('');
   document.getElementById('printCard').style.display='block';
-  setTimeout(()=>{ window.print(); }, 300);
+  document.querySelectorAll('.realBarcode').forEach(svg=> drawBarcode(svg, svg.getAttribute('data-code')));
+  setTimeout(()=>{ window.print(); }, 500);
 };
 window.exportBooksCSV = function(){
   const list=getFiltered();
