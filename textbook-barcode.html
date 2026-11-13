@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v2.15</title>
+<title>Makhanani LTSM — Textbooks v2.16</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -46,19 +46,29 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 .topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
 .tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%}
-.tableWrap table{min-width:620px}
+.tableWrap table{min-width:660px}
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top;word-break:break-word}
 th{background:#0a1f4d;color:#fff}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
 .pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}
 .lockNote{background:#fef3c7;border:1.5px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;text-align:center;font-weight:700;word-break:break-word}
-.barcodeBox{background:#fff;border:2px solid #0a1f4d;border-radius:8px;padding:10px;text-align:center;margin-top:8px}
+/* v2.16 - Label Preview - Same as Printed Label */
+.barcodeBox{background:#fff;border:2px solid #0a1f4d;border-radius:8px;padding:8px 6px 6px;text-align:center;margin-top:8px;min-width:150px}
+.barcodeBox .bcSchool{font-size:8px;font-weight:900;color:#0a1f4d;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1}
+.barcodeBox .bcBrand{font-size:7px;font-weight:900;color:#92400e;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.barcodeBox .bcBrand span{background:#fef3c7;padding:1px 6px;border-radius:10px;display:inline-block}
+.barcodeBox .bcName{font-size:11px;font-weight:900;color:#111;line-height:1.1;margin:4px 0 1px;word-break:break-word}
+.barcodeBox .bcMeta{font-size:8px;color:#475569;font-weight:700}
+.barcodeBox svg{width:100%;max-width:150px;height:32px;margin-top:4px}
+.barcodeBox .bcBottom{border-top:1.5px solid #0a1f4d;padding-top:4px;margin-top:4px}
+.barcodeBox .bcCode{font-size:12px;font-weight:900;letter-spacing:1px;color:#0a1f4d;line-height:1}
+.barcodeBox .bcCodeLabel{font-size:6.5px;font-weight:700;letter-spacing:1px;color:#94a3b8;text-transform:uppercase;margin-top:1px}
 .returnOnlyBox{background:#ffedd5;border:2px solid #ea580c;border-radius:12px;padding:14px;margin-top:10px;text-align:center;font-weight:900;color:#9a3412;display:none}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Textbooks — Makhanani LTSM</h1><p>CSV Bulk Upload • Print WHS Barcodes 3x5 A4 • Return Only • v2.15<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.15 TEXTBOOKS</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Textbooks — Makhanani LTSM</h1><p>CSV Bulk Upload • Print WHS Barcodes 3x5 A4 • Return Only • v2.16<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.16 TEXTBOOKS</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <div id="subBlockBanner"></div>
 <div id="subOkBanner"></div>
@@ -71,7 +81,7 @@ th{background:#0a1f4d;color:#fff}
 <div class="info" id="subInfoBox">Subscription: Checking...</div>
 <div class="lockNote" id="permissionNote"></div>
 <div id="returnOnlyBox" class="returnOnlyBox">🟠 RETURN ONLY MODE — Subscription Suspended / Expired<br>You can VIEW + PRINT barcodes, but CANNOT Add / Edit / Delete books.<br>Contact Xintimani Group to reactivate.</div>
-<div class="info"><b>🟠 RETURN ONLY RULE:</b> If school is <b>SUSPENDED</b> or <b>EXPIRED</b>, you can VIEW books + PRINT barcodes, but you <b>CANNOT ADD / EDIT / DELETE</b> books. Return of books still works in Issue / Librarian pages.</div>
+<div class="info"><b>Label layout v2.16:</b> TOP = School Name + <b>MAKHANANI LTSM • TEXTBOOK</b> + Textbook Title + Subject • Grade &nbsp;|&nbsp; BOTTOM = <b>Book Number</b> (e.g. WHS000001) — Same as printed A4 label.</div>
 <div class="grid2">
 <button class="btn btn-blue" onclick="loadBooks()">🔄 Refresh Books</button>
 <button class="btn btn-gold" onclick="exportBooksCSV()">📥 Export Books (CSV)</button>
@@ -174,14 +184,15 @@ async function loadBooks(){
 }
 window.loadBooks=loadBooks;
 function renderBooks(){
-  const q=($('searchBox').value||'').toLowerCase().trim(); const sf=$('subjectFilter').value; const gf=$('gradeFilter').value; const stf=$('statusFilter').value;
+  const q=($('searchBox').value||'').toLowerCase().trim(); const sf=$('subjectFilter').value; const gf=$('gradeFilter').value; const stf=$('statusFilter').value; const schoolName=getSchool().toUpperCase();
   let list=[...ALL_BOOKS]; if(sf) list=list.filter(b=> (b.subject||'')===sf); if(gf) list=list.filter(b=> (b.grade||'')===gf); if(q) list=list.filter(b=> ((b.title||'')+' '+(b.code||'')+' '+(b.subject||'')).toLowerCase().includes(q));
   if(stf){ list=list.filter(b=>{ const issued=ALL_ISSUES.find(x=> x.bookCode===b.code && x.status==='OUT'); const st=issued?'ISSUED':'AVAILABLE'; return st===stf; }); }
   if(list.length===0){ $('booksList').innerHTML='<div class="info">No books found. Add books above or upload CSV.</div>'; return; }
-  let html='<div class="tableWrap"><table><tr><th>Barcode</th><th>Title</th><th>Subject / Grade</th><th>Status</th><th>Actions</th></tr>';
-  list.slice(0,300).forEach(b=>{ const code=b.code||b.id; const issued=ALL_ISSUES.find(x=> x.bookCode===code && x.status==='OUT'); html+='<tr><td><b>'+code+'</b><br><div class="barcodeBox"><svg id="bc_'+b.id.replace(/[^a-zA-Z0-9]/g,'_')+'"></svg></div></td><td><b>'+(b.title||'')+'</b><br><span class="small">'+(b.condition||'')+'</span></td><td>'+(b.subject||'')+' • '+(b.grade||'')+'</td><td>'+(issued ? '<span class="pill pill-blue">📚 ISSUED to '+issued.learnerName+'</span>' : '<span class="pill pill-green">✅ AVAILABLE</span>')+'</td><td>'+(canEdit() && !SUB_BLOCKED ? '<button class="btn btn-red btn-sm" onclick="deleteBook(\''+b.id+'\')">🗑️ Delete</button>' : '<span class="small">View Only</span>')+'<br><button class="btn btn-purple btn-sm" onclick="printOneBook(\''+code+'\')">🖨️ Print This One</button></td></tr>'; });
+  let html='<div class="tableWrap"><table><tr><th>Barcode Label</th><th>Title</th><th>Subject / Grade</th><th>Status</th><th>Actions</th></tr>';
+  list.slice(0,300).forEach(b=>{ const code=b.code||b.id; const issued=ALL_ISSUES.find(x=> x.bookCode===code && x.status==='OUT'); const safeId=b.id.replace(/[^a-zA-Z0-9]/g,'_');
+    html+='<tr><td><div class="barcodeBox"><div class="bcSchool">'+schoolName+'</div><div class="bcBrand"><span>MAKHANANI LTSM • TEXTBOOK</span></div><div class="bcName">'+(b.title||'')+'</div><div class="bcMeta">'+(b.subject||'')+' • '+(b.grade||'')+'</div><svg id="bc_'+safeId+'"></svg><div class="bcBottom"><div class="bcCode">'+code+'</div><div class="bcCodeLabel">BOOK NUMBER</div></div></div></td><td><b>'+(b.title||'')+'</b><br><span class="small">'+(b.condition||'')+'</span></td><td>'+(b.subject||'')+' • '+(b.grade||'')+'</td><td>'+(issued ? '<span class="pill pill-blue">📚 ISSUED to '+issued.learnerName+'</span>' : '<span class="pill pill-green">✅ AVAILABLE</span>')+'</td><td>'+(canEdit() && !SUB_BLOCKED ? '<button class="btn btn-red btn-sm" onclick="deleteBook(\''+b.id+'\')">🗑️ Delete</button>' : '<span class="small">View Only</span>')+'<br><button class="btn btn-purple btn-sm" onclick="printOneBook(\''+code+'\')">🖨️ Print This One</button></td></tr>'; });
   html+='</table></div>'; $('booksList').innerHTML=html;
-  list.slice(0,300).forEach(b=>{ try{ JsBarcode('#bc_'+b.id.replace(/[^a-zA-Z0-9]/g,'_'), String(b.code||b.id), {format:'CODE128', width:1.5, height:35, displayValue:true, fontSize:11}); }catch(e){} });
+  list.slice(0,300).forEach(b=>{ try{ JsBarcode('#bc_'+b.id.replace(/[^a-zA-Z0-9]/g,'_'), String(b.code||b.id), {format:'CODE128', width:1.5, height:32, displayValue:false, margin:0}); }catch(e){} });
 }
 window.renderBooks=renderBooks;
 window.printOneBook = function(code){ localStorage.setItem('MAKHANANI_PRINT_SINGLE', JSON.stringify({type:'BOOK', code:code})); location.href='barcode-print.html?single='+encodeURIComponent(code); };
