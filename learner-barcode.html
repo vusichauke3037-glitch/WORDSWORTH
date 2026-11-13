@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.16</title>
+<title>Makhanani LTSM — Learners v2.17</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -28,6 +28,7 @@ main{max-width:1100px;margin:auto;padding:14px;width:100%}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px;max-width:100%}
+input[readonly]{background:#f1f5f9;color:#0a1f4d;font-weight:900;letter-spacing:1px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
@@ -53,7 +54,6 @@ th{background:#0a1f4d;color:#fff}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
 .pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}
 .lockNote{background:#fef3c7;border:1.5px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;text-align:center;font-weight:700;word-break:break-word}
-/* v2.16 - Label Preview - Same as Printed Label */
 .barcodeBox{background:#fff;border:2px solid #0a1f4d;border-radius:8px;padding:8px 6px 6px;text-align:center;margin-top:8px;min-width:150px}
 .barcodeBox .bcSchool{font-size:8px;font-weight:900;color:#0a1f4d;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1}
 .barcodeBox .bcBrand{font-size:7px;font-weight:900;color:#92400e;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
@@ -65,10 +65,11 @@ th{background:#0a1f4d;color:#fff}
 .barcodeBox .bcCode{font-size:12px;font-weight:900;letter-spacing:1px;color:#0a1f4d;line-height:1}
 .barcodeBox .bcCodeLabel{font-size:6.5px;font-weight:700;letter-spacing:1px;color:#94a3b8;text-transform:uppercase;margin-top:1px}
 .returnOnlyBox{background:#ffedd5;border:2px solid #ea580c;border-radius:12px;padding:14px;margin-top:10px;text-align:center;font-weight:900;color:#9a3412;display:none}
+.autoBox{background:#ede9fe;border:1.5px solid #7c3aed;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Learners — Makhanani LTSM</h1><p>CSV Bulk Upload • Print Barcodes 3x5 A4 • Return Only • v2.16<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.16 LEARNERS</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Learners — Makhanani LTSM</h1><p>Auto Learner ID • CSV Bulk Upload • Print Barcodes 3x5 A4 • Return Only • v2.17<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.17 LEARNERS</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <div id="subBlockBanner"></div>
 <div id="subOkBanner"></div>
@@ -90,22 +91,24 @@ th{background:#0a1f4d;color:#fff}
 <div class="small">Tap Print → Pick 🎓 Learners → Tick learners → Preview → Print A4 → Cut on dotted lines → Stick on learner cards.</div>
 </div>
 <div class="card" id="addCard">
-<h2>➕ Add One Learner</h2>
+<h2>➕ Add One Learner — Auto Learner ID</h2>
+<div class="autoBox"><b>🤖 Auto Learner ID:</b> Pick Grade + Class → ID auto-generates.<br>Format: <b>Grade + Class + 3-digit sequence</b> — Example: Grade 10, Class 10A → <b>10A001, 10A002, 10A003</b> • Grade 11, Class 11B → <b>11B001</b><br>You can still type your own ID if school already has IDs — just untick Auto.</div>
 <div class="grid2">
 <div><label>Full Name *</label><input id="newName" placeholder="e.g. Thabo Mokoena" style="text-transform:uppercase"></div>
-<div><label>Learner Code / ID * — e.g. 10A001</label><input id="newCode" placeholder="e.g. 10A001" style="text-transform:uppercase"></div>
-</div>
-<div class="grid3">
-<div><label>Grade *</label><select id="newGrade"><option value="">— Pick —</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
-<div><label>Class *</label><input id="newClass" placeholder="e.g. 10A" style="text-transform:uppercase"></div>
 <div><label>Gender</label><select id="newGender"><option value="">—</option><option>Male</option><option>Female</option></select></div>
 </div>
+<div class="grid3">
+<div><label>Grade *</label><select id="newGrade" onchange="autoGenerateLearnerId()"><option value="">— Pick —</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+<div><label>Class * — e.g. 10A or A</label><input id="newClass" placeholder="e.g. 10A" style="text-transform:uppercase" oninput="autoGenerateLearnerId()"></div>
+<div><label><input type="checkbox" id="autoIdCheck" checked style="width:18px;height:18px;vertical-align:middle" onchange="autoGenerateLearnerId()"> 🤖 Auto-generate ID</label><input id="newCode" placeholder="Auto: 10A001" style="text-transform:uppercase" readonly></div>
+</div>
+<button class="btn btn-purple" onclick="autoGenerateLearnerId(true)">🔄 Generate Next ID for This Class</button>
 <button class="btn btn-green" id="addLearnerBtn" onclick="addLearner()">➕ ADD Learner</button>
 <div id="addMsg"></div>
 </div>
 <div class="card" id="bulkCard">
 <h2>📥 Bulk Upload Learners — CSV</h2>
-<div class="info"><b>CSV Format:</b> <code>Name,Code,Grade,Class,Gender</code><br>Example: <code>Thabo Mokoena,10A001,Grade 10,10A,Male</code><br>First row = header, will be skipped if it says Name.</div>
+<div class="info"><b>CSV Format:</b> <code>Name,Code,Grade,Class,Gender</code><br>Example: <code>Thabo Mokoena,10A001,Grade 10,10A,Male</code><br><b>NEW:</b> If Code is blank, ID auto-generates: <code>Thabo Mokoena,,Grade 10,10A,Male</code> → <b>10A001</b> (next free).<br>First row = header, will be skipped if it says Name.</div>
 <label>Choose CSV File</label>
 <input id="csvFile" type="file" accept=".csv">
 <button class="btn btn-purple" id="bulkBtn" onclick="bulkUpload()">📥 Upload CSV — Add All Learners</button>
@@ -134,6 +137,43 @@ function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : 
 function isReturnOnly(){ if(localStorage.getItem('MAKHANANI_RETURN_ONLY')==='true') return true; const login=getLogin(); if(login && login.returnOnly===true) return true; return false; }
 function canEdit(){ if(isReturnOnly()) return false; return ['LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
 let SUB_BLOCKED=false, SUB_REASON="";
+// v2.17 - Auto Learner ID: Grade + Class + 3-digit sequence
+function learnerPrefixFor(grade, cls){
+  const gradeNum = String(grade||'').replace(/\D/g,''); // 10
+  let c = String(cls||'').trim().toUpperCase().replace(/\s/g,''); // 10A or A or 10-A
+  if(!c) return gradeNum;
+  // If class already starts with grade number, use class as-is: 10A -> 10A
+  if(gradeNum && c.startsWith(gradeNum)) return c;
+  // If class is just a letter: A -> 10A
+  return gradeNum + c;
+}
+function nextLearnerId(grade, cls, extraTaken){
+  const prefix = learnerPrefixFor(grade, cls);
+  const taken = new Set(ALL_LEARNERS.map(l=> (l.barcode||l.code||'').toUpperCase()));
+  if(extraTaken) extraTaken.forEach(x=> taken.add(String(x).toUpperCase()));
+  // Find highest sequence for this prefix, then find next free (skip taken)
+  let maxSeq = 0;
+  taken.forEach(code=>{
+    if(code.startsWith(prefix)){
+      const suffix = code.slice(prefix.length);
+      if(/^\d+$/.test(suffix)){ const n=parseInt(suffix,10); if(n>maxSeq) maxSeq=n; }
+    }
+  });
+  let n = maxSeq + 1;
+  while(taken.has(prefix + String(n).padStart(3,'0'))){ n++; }
+  return prefix + String(n).padStart(3,'0');
+}
+window.autoGenerateLearnerId = function(force){
+  const auto = $('autoIdCheck').checked;
+  const codeInput = $('newCode');
+  if(!auto){ codeInput.readOnly=false; codeInput.placeholder='Type your own ID, e.g. 10A001'; if(force) codeInput.focus(); return; }
+  codeInput.readOnly=true;
+  const grade=$('newGrade').value; const cls=($('newClass').value||'').trim().toUpperCase();
+  if(!grade || !cls){ codeInput.value=''; codeInput.placeholder='Pick Grade + Class first'; return ''; }
+  const id = nextLearnerId(grade, cls);
+  codeInput.value=id;
+  return id;
+};
 async function checkSubscription(){
   const emis=getEmis(); const banner=$('subBlockBanner'); const okBanner=$('subOkBanner'); const infoBox=$('subInfoBox'); const roBox=$('returnOnlyBox');
   if(isReturnOnly()){
@@ -194,10 +234,13 @@ window.printOneLearner = function(code){ localStorage.setItem('MAKHANANI_PRINT_S
 window.addLearner = async function(){
   if(isReturnOnly() || SUB_BLOCKED){ $('addMsg').innerHTML='<div class="warn">🟠 RETURN ONLY MODE — Cannot Add Learner<br>'+SUB_REASON.replace(/\n/g,'<br>')+'<br>Contact Xintimani Group to reactivate.</div>'; return; }
   if(!canEdit()){ alert('Only Librarian / Admin / Principal can add learners.'); return; }
-  const emis=getEmis(); const name=($('newName').value||'').trim().toUpperCase(); const code=($('newCode').value||'').trim().toUpperCase(); const grade=$('newGrade').value; const cls=($('newClass').value||'').trim().toUpperCase(); const gender=$('newGender').value;
-  if(!name || !code || !grade || !cls){ $('addMsg').innerHTML='<div class="warn">⚠️ Fill Name + Code + Grade + Class.</div>'; return; }
-  if(ALL_LEARNERS.find(x=> (x.barcode||x.code||'').toUpperCase()===code)){ $('addMsg').innerHTML='<div class="warn">❌ Learner Code <b>'+code+'</b> already exists.</div>'; return; }
-  try{ await setDoc(doc(db,'schools','EMIS_'+emis,'learners',code), {name:name, barcode:code, code:code, grade:grade, class:cls, gender:gender, createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); $('addMsg').innerHTML='<div class="ok">✅ Learner Added: <b>'+name+' ('+code+')</b> • '+grade+' '+cls+'</div>'; $('newName').value=''; $('newCode').value=''; $('newGrade').value=''; $('newClass').value=''; $('newGender').value=''; await loadLearners(); }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+e.message+'</div>'; }
+  const emis=getEmis(); const name=($('newName').value||'').trim().toUpperCase(); const grade=$('newGrade').value; const cls=($('newClass').value||'').trim().toUpperCase(); const gender=$('newGender').value;
+  let code='';
+  if($('autoIdCheck').checked){ code = autoGenerateLearnerId(); } else { code = ($('newCode').value||'').trim().toUpperCase(); }
+  if(!name || !grade || !cls){ $('addMsg').innerHTML='<div class="warn">⚠️ Fill Name + Grade + Class. ID auto-generates.</div>'; return; }
+  if(!code){ $('addMsg').innerHTML='<div class="warn">⚠️ Could not generate ID — Check Grade + Class.</div>'; return; }
+  if(ALL_LEARNERS.find(x=> (x.barcode||x.code||'').toUpperCase()===code)){ $('addMsg').innerHTML='<div class="warn">❌ Learner ID <b>'+code+'</b> already exists. Tap <b>🔄 Generate Next ID</b> to get next free one.</div>'; return; }
+  try{ await setDoc(doc(db,'schools','EMIS_'+emis,'learners',code), {name:name, barcode:code, code:code, grade:grade, class:cls, gender:gender, createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); $('addMsg').innerHTML='<div class="ok">✅ Learner Added: <b>'+name+' ('+code+')</b> • '+grade+' '+cls+'<br>Next ID for '+cls+' will be <b>'+nextLearnerId(grade, cls, [code])+'</b></div>'; $('newName').value=''; $('newCode').value=''; $('newGender').value=''; await loadLearners(); autoGenerateLearnerId(); }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+e.message+'</div>'; }
 };
 window.deleteLearner = async function(id){
   if(isReturnOnly() || SUB_BLOCKED){ alert('🟠 RETURN ONLY MODE\n'+SUB_REASON); return; }
@@ -210,9 +253,9 @@ window.bulkUpload = async function(){
   if(!canEdit()){ alert('Only Librarian / Admin / Principal can upload.'); return; }
   const file=$('csvFile').files[0]; if(!file){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Choose CSV file first.</div>'; return; }
   const text=await file.text(); const lines=text.split(/\r?\n/).filter(l=>l.trim()); if(lines.length<2){ $('bulkMsg').innerHTML='<div class="warn">⚠️ CSV is empty or only header.</div>'; return; }
-  let start=0; if(lines[0].toLowerCase().includes('name')) start=1; let added=0, skipped=0, errors=[];
+  let start=0; if(lines[0].toLowerCase().includes('name')) start=1; let added=0, skipped=0, errors=[]; const usedInBatch=new Set(ALL_LEARNERS.map(l=> (l.barcode||l.code||'').toUpperCase()));
   $('bulkMsg').innerHTML='<div class="info">⏳ Uploading '+(lines.length-start)+' learners...</div>';
-  for(let i=start;i<lines.length;i++){ const cols=lines[i].split(',').map(c=>c.trim().replace(/^"|"$/g,'')); if(cols.length<4){ skipped++; continue; } const [name, code, grade, cls, gender]=cols; if(!name || !code || !grade || !cls){ skipped++; continue; } const codeU=code.toUpperCase(); if(ALL_LEARNERS.find(x=> (x.barcode||x.code||'').toUpperCase()===codeU)){ skipped++; continue; } try{ await setDoc(doc(db,'schools','EMIS_'+getEmis(),'learners',codeU), {name:name.toUpperCase(), barcode:codeU, code:codeU, grade:grade, class:cls.toUpperCase(), gender:gender||'', createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); added++; }catch(e){ errors.push(codeU+': '+e.message); } }
+  for(let i=start;i<lines.length;i++){ const cols=lines[i].split(',').map(c=>c.trim().replace(/^"|"$/g,'')); if(cols.length<4){ skipped++; continue; } const [name, codeRaw, grade, clsRaw, gender]=cols; if(!name || !grade || !clsRaw){ skipped++; continue; } const cls=clsRaw.toUpperCase(); let codeU=(codeRaw||'').toUpperCase(); if(!codeU){ codeU = nextLearnerId(grade, cls, [...usedInBatch]); } if(usedInBatch.has(codeU)){ skipped++; continue; } usedInBatch.add(codeU); try{ await setDoc(doc(db,'schools','EMIS_'+getEmis(),'learners',codeU), {name:name.toUpperCase(), barcode:codeU, code:codeU, grade:grade, class:cls, gender:gender||'', createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); added++; }catch(e){ errors.push(codeU+': '+e.message); } }
   $('bulkMsg').innerHTML='<div class="ok">✅ Bulk Upload Done: <b>'+added+' added</b> • '+skipped+' skipped • '+errors.length+' errors<br>'+(errors.length? errors.join('<br>'):'')+'</div>'; await loadLearners();
 };
 window.exportLearnersCSV = function(){
