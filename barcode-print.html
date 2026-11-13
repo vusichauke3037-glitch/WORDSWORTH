@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makhanani LTSM — Barcode Print 3x5 A4 v2.14</title>
+<meta name="theme-color" content="#0a1f4d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
+header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:12px;opacity:.85}
+.logoHeader{display:flex;align-items:center;gap:12px}
+.logoHeader img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:12px;padding:4px}
+.badge{background:#d4af37;color:#0a1f4d;font-weight:900;padding:4px 10px;border-radius:20px;font-size:12px}
+main{max-width:1100px;margin:auto;padding:14px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
+label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
+input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}.btn-orange{background:#ea580c;color:#fff}
+.btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+#cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
+.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.small{font-size:12px;color:#64748b}
+.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
+.pill-green{background:#dcfce7;color:#166534}.pill-blue{background:#dbeafe;color:#1e40af}.pill-orange{background:#ffedd5;color:#9a3412}
+/* Picker list */
+.pickRow{display:flex;gap:8px;align-items:center;padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px}
+.pickRow input{width:20px;height:20px;flex-shrink:0;margin:0}
+.pickRow b{flex:1}
+/* PRINT AREA - Screen preview */
+#printArea{display:none}
+.printSheet{width:210mm;min-height:297mm;margin:14px auto;background:#fff;padding:10mm 10mm 8mm 10mm;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.sheetHeader{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#64748b;border-bottom:1px solid #e2e8f0;padding-bottom:4px;margin-bottom:4px}
+.sheetHeader b{color:#0a1f4d;font-size:12px}
+/* 3 x 5 GRID = 15 per A4 */
+.labelGrid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:repeat(5, 1fr);gap:3mm;height:255mm}
+.label{border:1px dashed #94a3b8;border-radius:4px;padding:3mm 2mm 2mm 2mm;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;page-break-inside:avoid}
+.label .school{font-size:8px;font-weight:900;color:#0a1f4d;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.label .name{font-size:11px;font-weight:900;color:#111;line-height:1.1;margin:1mm 0 0;word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-height:26px}
+.label .meta{font-size:8px;color:#475569;font-weight:700;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.label svg{width:100%;max-width:55mm;height:13mm;margin-top:1mm}
+.label .code{font-size:11px;font-weight:900;letter-spacing:1px;margin-top:0}
+.label .footer{font-size:7px;color:#94a3b8;margin-top:1px}
+/* PRINT RULES - Real A4 */
+@page{size:A4 portrait;margin:0}
+@media print{
+  body{background:#fff;margin:0}
+  header, .noPrint{display:none!important}
+  main{max-width:none;margin:0;padding:0}
+  #printArea{display:block!important}
+  .printSheet{width:210mm;height:297mm;min-height:297mm;margin:0;padding:10mm 10mm 8mm 10mm;box-shadow:none;page-break-after:always}
+  .printSheet:last-child{page-break-after:auto}
+  .label{border:1px dashed #cbd5e1}
+}
+</style>
+</head>
+<body>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Barcode Print — 3 x 5 on A4</h1><p>Makhanani LTSM • Real Barcodes • CODE128 • Scan with phone / scanner • v2.14<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.14 BARCODE PRINT</span></div></header>
+<div id="cloudStatus">☁️ Cloud: Connecting...</div>
+<main>
+<div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="add-school.html">🏫 Add School</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="checklist.html">✅ Checklist</a></div>
+
+<div class="card noPrint">
+<h2>🖨️ Barcode Print — 3 x 5 on A4 (15 per page)</h2>
+<div class="info" id="schoolBox">School: —</div>
+<div class="info"><b>How to print:</b><br>1. Pick <b>🎓 Learners</b> or <b>📖 Textbooks</b> below → Filter by Grade / Subject → Tick the ones you want<br>2. Tap <b>👁️ Preview 3x5 A4</b> → Check labels look right<br>3. Tap <b>🖨️ Print A4</b> → In print dialog: Paper = <b>A4</b>, Margins = <b>None</b>, Scale = <b>100%</b>, Background graphics = <b>ON</b><br>4. Print on plain A4 → Cut on dotted lines → Stick on books / learner cards<br><br><b>Paper:</b> Plain A4 works. For books, use sticker paper / clear tape over barcode so it doesn’t peel.</div>
+<div class="grid3">
+<div><label>1. What to Print?</label><select id="printSource" onchange="onSourceChange()"><option value="LEARNERS">🎓 Learners — Learner Cards</option><option value="BOOKS">📖 Textbooks — Book Stickers</option></select></div>
+<div><label>2. Filter Grade</label><select id="gradeFilter" onchange="renderPicker()"><option value="">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+<div id="subjectFilterWrap"><label>Filter Subject (Books only)</label><select id="subjectFilter" onchange="renderPicker()"><option value="">All Subjects</option></select></div>
+</div>
+<div class="grid2">
+<div><label>🔍 Search</label><input id="searchBox" placeholder="Search name / title / code..." oninput="renderPicker()"></div>
+<div><label>Filter Class (Learners) / Status (Books)</label><select id="extraFilter" onchange="renderPicker()"><option value="">All</option></select></div>
+</div>
+<div class="grid3">
+<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh List</button>
+<button class="btn btn-gold" onclick="selectAllVisible()">✅ Tick All Visible</button>
+<button class="btn btn-grey" onclick="clearSelection()">❌ Untick All</button>
+</div>
+<div id="pickerMsg"></div>
+</div>
+
+<div class="card noPrint">
+<h2>✅ Tick What To Print — <span id="selectedCount">0</span> selected • <span id="pageCount">0</span> page(s) A4</h2>
+<div class="small">Tick boxes below. 15 labels = 1 A4 page. 30 labels = 2 pages, etc. Untick ones you already printed.</div>
+<div id="pickerList"></div>
+<div class="grid2">
+<button class="btn btn-green" onclick="previewPrint()">👁️ Preview 3x5 A4 Below</button>
+<button class="btn btn-orange" onclick="doPrint()">🖨️ Print A4 — 3 x 5</button>
+</div>
+<div id="previewMsg"></div>
+</div>
+
+<div id="printArea"></div>
+<div class="card noPrint" id="afterPrintCard" style="display:none">
+<h2>✅ Printed?</h2>
+<div class="info">If barcodes scanned OK in <b>issue.html / librarian.html</b>, you’re done. If a barcode won’t scan, reprint that one — check printer ink / paper not glossy / barcode not cut off.</div>
+<button class="btn btn-blue" onclick="location.href='issue.html'">📚 Go Test Scan in Issue / Return</button>
+</div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
+let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
+const $ = id => document.getElementById(id);
+let ALL_LEARNERS=[], ALL_BOOKS=[], ALL_ISSUES=[];
+let SELECTED = new Set(); // codes
+function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
+function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
+function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
+function getSource(){ return $('printSource').value; }
+function getFiltered(){
+  const q=($('searchBox').value||'').toLowerCase().trim(); const gf=$('gradeFilter').value; const sf=$('subjectFilter').value; const ef=$('extraFilter').value;
+  if(getSource()==='LEARNERS'){
+    let list=[...ALL_LEARNERS];
+    if(gf) list=list.filter(l=> (l.grade||'')===gf);
+    if(ef) list=list.filter(l=> (l.class||'')===ef);
+    if(q) list=list.filter(l=> ((l.name||'')+' '+(l.barcode||'')+' '+(l.class||'')).toLowerCase().includes(q));
+    return list.map(l=>({type:'LEARNER', code:l.barcode||l.code||l.id, title:l.name||'', line1:(l.grade||'')+' '+(l.class||''), line2:'Learner • '+getSchool()}));
+  } else {
+    let list=[...ALL_BOOKS];
+    if(gf) list=list.filter(b=> (b.grade||'')===gf);
+    if(sf) list=list.filter(b=> (b.subject||'')===sf);
+    if(ef==='AVAILABLE') list=list.filter(b=> !ALL_ISSUES.find(x=> x.bookCode===b.code && x.status==='OUT'));
+    if(ef==='ISSUED') list=list.filter(b=> ALL_ISSUES.find(x=> x.bookCode===b.code && x.status==='OUT'));
+    if(q) list=list.filter(b=> ((b.title||'')+' '+(b.code||'')+' '+(b.subject||'')).toLowerCase().includes(q));
+    return list.map(b=>({type:'BOOK', code:b.code||b.id, title:b.title||'', line1:(b.subject||'')+' • '+(b.grade||''), line2:'Textbook • '+getSchool()}));
+  }
+}
+window.onSourceChange = function(){
+  SELECTED.clear();
+  const isBook = getSource()==='BOOKS';
+  $('subjectFilterWrap').style.display = isBook ? 'block' : 'none';
+  if(isBook){
+    const subjects=[...new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean))].sort();
+    $('subjectFilter').innerHTML='<option value="">All Subjects</option>'+subjects.map(s=>`<option>${s}</option>`).join('');
+    $('extraFilter').innerHTML='<option value="">All Status</option><option value="AVAILABLE">✅ Available Only</option><option value="ISSUED">📚 Issued Only</option>';
+  } else {
+    const classes=[...new Set(ALL_LEARNERS.map(l=>l.class).filter(Boolean))].sort();
+    $('extraFilter').innerHTML='<option value="">All Classes</option>'+classes.map(c=>`<option>${c}</option>`).join('');
+  }
+  renderPicker();
+};
+function updateCounts(){
+  $('selectedCount').textContent=SELECTED.size;
+  $('pageCount').textContent=Math.ceil(SELECTED.size/15) || 0;
+}
+window.renderPicker = function(){
+  const list=getFiltered();
+  updateCounts();
+  if(list.length===0){ $('pickerList').innerHTML='<div class="info">No items found. Try clear filters or Refresh List.</div>'; return; }
+  let html='<div style="max-height:420px;overflow:auto;border:1px solid #e2e8f0;border-radius:8px">';
+  list.slice(0,500).forEach(item=>{
+    const checked = SELECTED.has(item.code) ? 'checked' : '';
+    html+='<label class="pickRow"><input type="checkbox" '+checked+' onchange="toggleSelect(\''+item.code.replace(/'/g,"")+'\', this.checked)"> <b>'+item.title+'</b> <span class="pill pill-blue">'+item.code+'</span> <span class="small">'+item.line1+'</span></label>';
+  });
+  html+='</div><div class="small" style="margin-top:6px">Showing '+Math.min(list.length,500)+' of '+list.length+' • Tick up to 150 at a time for best print.</div>';
+  $('pickerList').innerHTML=html;
+};
+window.toggleSelect = function(code, on){
+  if(on) SELECTED.add(code); else SELECTED.delete(code);
+  updateCounts();
+};
+window.selectAllVisible = function(){
+  getFiltered().forEach(i=> SELECTED.add(i.code));
+  updateCounts(); renderPicker();
+  $('pickerMsg').innerHTML='<div class="ok">✅ Ticked '+SELECTED.size+' items — '+Math.ceil(SELECTED.size/15)+' A4 page(s).</div>';
+};
+window.clearSelection = function(){
+  SELECTED.clear(); updateCounts(); renderPicker();
+  $('pickerMsg').innerHTML='<div class="info">Cleared selection.</div>';
+};
+async function loadAll(){
+  const emis=getEmis();
+  try{
+    const [ls, bs, is] = await Promise.all([ getDocs(collection(db,'schools','EMIS_'+emis,'learners')), getDocs(collection(db,'schools','EMIS_'+emis,'textbooks')), getDocs(collection(db,'schools','EMIS_'+emis,'issues')) ]);
+    ALL_LEARNERS=[]; ls.forEach(d=>{ const b=d.data(); ALL_LEARNERS.push({id:d.id, barcode:b.barcode||b.code||d.id, name:b.name||b.fullName||'', grade:b.grade||'', class:b.class||''}); });
+    ALL_BOOKS=[]; bs.forEach(d=>{ const b=d.data(); ALL_BOOKS.push({id:d.id, code:b.code||b.barcode||d.id, title:b.title||'', subject:b.subject||'', grade:b.grade||'', status:b.status||'AVAILABLE'}); });
+    ALL_ISSUES=[]; is.forEach(d=>{ ALL_ISSUES.push({id:d.id, ...d.data()}); });
+    ALL_LEARNERS.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
+    ALL_BOOKS.sort((a,b)=> (a.code||'').localeCompare(b.code||''));
+    $('schoolBox').textContent='School: '+getSchool()+' • EMIS '+emis+' • Learners: '+ALL_LEARNERS.length+' • Books: '+ALL_BOOKS.length;
+    $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool()+' • Learners: '+ALL_LEARNERS.length+' • Books: '+ALL_BOOKS.length;
+    onSourceChange();
+  }catch(e){ $('pickerMsg').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; $('cloudStatus').textContent='🔴 Cloud: Offline — '+e.message; }
+}
+window.loadAll=loadAll;
+function buildPrintArea(){
+  if(SELECTED.size===0) return false;
+  // Keep order as in filtered list, then any selected not in filtered
+  const allItems = [...getFiltered(), ...ALL_LEARNERS.map(l=>({type:'LEARNER', code:l.barcode||l.code||l.id, title:l.name||'', line1:(l.grade||'')+' '+(l.class||''), line2:'Learner • '+getSchool()})), ...ALL_BOOKS.map(b=>({type:'BOOK', code:b.code||b.id, title:b.title||'', line1:(b.subject||'')+' • '+(b.grade||''), line2:'Textbook • '+getSchool()}))];
+  const seen=new Set(); const items=[];
+  allItems.forEach(it=>{ if(SELECTED.has(it.code) && !seen.has(it.code)){ seen.add(it.code); items.push(it); } });
+  const pages=Math.ceil(items.length/15);
+  let html='';
+  for(let p=0;p<pages;p++){
+    const chunk=items.slice(p*15,(p+1)*15);
+    html+='<div class="printSheet"><div class="sheetHeader"><b>'+getSchool()+' — Makhanani LTSM</b><span>'+(getSource()==='LEARNERS'?'🎓 Learners':'📖 Textbooks')+' • Page '+(p+1)+' of '+pages+' • '+chunk.length+' labels</span></div><div class="labelGrid">';
+    chunk.forEach((it, idx)=>{
+      const uid='bc_'+p+'_'+idx+'_'+String(it.code).replace(/[^A-Za-z0-9]/g,'_');
+      html+='<div class="label"><div class="school">Makhanani LTSM • '+getSchool()+'</div><div class="name">'+it.title+'</div><div class="meta">'+it.line1+'</div><svg id="'+uid+'"></svg><div class="code">'+it.code+'</div><div class="footer">'+it.line2+' • Due 30 Nov</div></div>';
+    });
+    // Fill empty slots so grid stays 3x5 even on last page
+    for(let f=chunk.length; f<15; f++){ html+='<div class="label" style="border-style:dotted;opacity:.35"><div class="school">— Empty —</div><div class="name" style="color:#94a3b8">No label</div></div>'; }
+    html+='</div></div>';
+  }
+  $('printArea').innerHTML=html;
+  // Draw barcodes
+  items.forEach((it, globalIdx)=>{
+    const p=Math.floor(globalIdx/15); const idx=globalIdx%15;
+    const uid='bc_'+p+'_'+idx+'_'+String(it.code).replace(/[^A-Za-z0-9]/g,'_');
+    try{ JsBarcode('#'+uid, String(it.code), {format:'CODE128', width:1.6, height:38, displayValue:false, margin:0}); }catch(e){ console.log('Barcode fail', it.code, e); }
+  });
+  return true;
+}
+window.previewPrint = function(){
+  if(SELECTED.size===0){ $('previewMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 item first.</div>'; return; }
+  if(!window.JsBarcode){ alert('Barcode library failed to load. Check internet / reload.'); return; }
+  if(buildPrintArea()){
+    $('printArea').style.display='block';
+    $('afterPrintCard').style.display='block';
+    $('previewMsg').innerHTML='<div class="ok">✅ Preview ready below — '+SELECTED.size+' labels • '+Math.ceil(SELECTED.size/15)+' A4 page(s) • Scroll down to check. Tap <b>🖨️ Print A4</b> when ready.</div>';
+    document.getElementById('printArea').scrollIntoView({behavior:'smooth'});
+  }
+};
+window.doPrint = function(){
+  if(SELECTED.size===0){ alert('Tick at least 1 item first.'); return; }
+  if(!window.JsBarcode){ alert('Barcode library failed to load. Check internet / reload.'); return; }
+  buildPrintArea();
+  $('printArea').style.display='block';
+  $('afterPrintCard').style.display='block';
+  setTimeout(()=>{ window.print(); }, 400);
+};
+document.addEventListener('DOMContentLoaded', async ()=>{
+  const login=getLogin();
+  if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'');
+  $('schoolBox').textContent='School: '+getSchool()+' • EMIS '+getEmis();
+  await loadAll();
+});
+</script>
+</body>
+</html>
