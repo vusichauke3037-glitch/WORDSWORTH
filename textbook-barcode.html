@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v2.16</title>
+<title>Makhanani LTSM — Textbooks v2.17</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -28,6 +28,7 @@ main{max-width:1100px;margin:auto;padding:14px;width:100%}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px;max-width:100%}
+input[readonly]{background:#f1f5f9;color:#0a1f4d;font-weight:900;letter-spacing:1px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
@@ -53,7 +54,6 @@ th{background:#0a1f4d;color:#fff}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
 .pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}
 .lockNote{background:#fef3c7;border:1.5px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;text-align:center;font-weight:700;word-break:break-word}
-/* v2.16 - Label Preview - Same as Printed Label */
 .barcodeBox{background:#fff;border:2px solid #0a1f4d;border-radius:8px;padding:8px 6px 6px;text-align:center;margin-top:8px;min-width:150px}
 .barcodeBox .bcSchool{font-size:8px;font-weight:900;color:#0a1f4d;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1}
 .barcodeBox .bcBrand{font-size:7px;font-weight:900;color:#92400e;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
@@ -65,10 +65,11 @@ th{background:#0a1f4d;color:#fff}
 .barcodeBox .bcCode{font-size:12px;font-weight:900;letter-spacing:1px;color:#0a1f4d;line-height:1}
 .barcodeBox .bcCodeLabel{font-size:6.5px;font-weight:700;letter-spacing:1px;color:#94a3b8;text-transform:uppercase;margin-top:1px}
 .returnOnlyBox{background:#ffedd5;border:2px solid #ea580c;border-radius:12px;padding:14px;margin-top:10px;text-align:center;font-weight:900;color:#9a3412;display:none}
+.autoBox{background:#ede9fe;border:1.5px solid #7c3aed;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Textbooks — Makhanani LTSM</h1><p>CSV Bulk Upload • Print WHS Barcodes 3x5 A4 • Return Only • v2.16<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.16 TEXTBOOKS</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Textbooks — Makhanani LTSM</h1><p>Auto Book Number • CSV Bulk Upload • Print WHS Barcodes 3x5 A4 • Return Only • v2.17<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.17 TEXTBOOKS</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <div id="subBlockBanner"></div>
 <div id="subOkBanner"></div>
@@ -90,22 +91,24 @@ th{background:#0a1f4d;color:#fff}
 <div class="small">Tap Print → Pick 📖 Textbooks → Tick books → Preview → Print A4 → Cut on dotted lines → Stick on book cover (use clear tape over barcode).</div>
 </div>
 <div class="card" id="addCard">
-<h2>➕ Add One Book</h2>
+<h2>➕ Add One Book — Auto Book Number</h2>
+<div class="autoBox"><b>🤖 Auto Book Number:</b> Format: <b>School Initials + 6-digit sequence</b><br>Example for this school: <b><span id="schoolPrefixExample">WHS</span>000001, <span id="schoolPrefixExample2">WHS</span>000002...</b> — Prefix = first letter of each word in school name.<br>Next Book Number for this school: <b id="nextBookNo">—</b><br>You can still type your own number if school already has numbers — just untick Auto.</div>
 <div class="grid2">
 <div><label>Title *</label><input id="newTitle" placeholder="e.g. Platinum Mathematics Grade 10" style="text-transform:uppercase"></div>
-<div><label>Book Code * — WHS Code, e.g. WHS000001</label><input id="newCode" placeholder="e.g. WHS000001" style="text-transform:uppercase"></div>
+<div><label><input type="checkbox" id="autoBookCheck" checked style="width:18px;height:18px;vertical-align:middle" onchange="autoGenerateBookNo()"> 🤖 Auto-generate Book Number</label><input id="newCode" placeholder="Auto: WHS000001" style="text-transform:uppercase" readonly></div>
 </div>
 <div class="grid3">
 <div><label>Subject *</label><select id="newSubject"><option value="">— Pick —</option><option>Accounting</option><option>Afrikaans</option><option>Agricultural Sciences</option><option>Business Studies</option><option>CAT</option><option>Consumer Studies</option><option>Economics</option><option>English</option><option>Geography</option><option>History</option><option>Life Orientation</option><option>Life Sciences</option><option>Mathematical Literacy</option><option>Mathematics</option><option>Natural Sciences</option><option>Physical Sciences</option><option>Sepedi</option><option>Setswana</option><option>Social Sciences</option><option>Technology</option><option>Tourism</option><option>Visual Arts</option><option>isiZulu</option><option>isiXhosa</option></select></div>
 <div><label>Grade *</label><select id="newGrade"><option value="">— Pick —</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
 <div><label>Condition</label><select id="newCondition"><option>Good</option><option>New</option><option>Fair</option><option>Damaged</option></select></div>
 </div>
+<button class="btn btn-purple" onclick="autoGenerateBookNo(true)">🔄 Generate Next Book Number</button>
 <button class="btn btn-green" id="addBookBtn" onclick="addBook()">➕ ADD Book</button>
 <div id="addMsg"></div>
 </div>
 <div class="card" id="bulkCard">
 <h2>📥 Bulk Upload Books — CSV</h2>
-<div class="info"><b>CSV Format:</b> <code>Title,Code,Subject,Grade,Condition</code><br>Example: <code>Platinum Mathematics Grade 10,WHS000001,Mathematics,Grade 10,Good</code><br>First row = header, will be skipped if it says Title.</div>
+<div class="info"><b>CSV Format:</b> <code>Title,Code,Subject,Grade,Condition</code><br>Example: <code>Platinum Mathematics Grade 10,WHS000001,Mathematics,Grade 10,Good</code><br><b>NEW:</b> If Code is blank, Book Number auto-generates: <code>Platinum Mathematics Grade 10,,Mathematics,Grade 10,Good</code> → <b>WHS000001</b> (next free).<br>First row = header, will be skipped if it says Title.</div>
 <label>Choose CSV File</label>
 <input id="csvFile" type="file" accept=".csv">
 <button class="btn btn-purple" id="bulkBtn" onclick="bulkUpload()">📥 Upload CSV — Add All Books</button>
@@ -138,6 +141,45 @@ function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : 
 function isReturnOnly(){ if(localStorage.getItem('MAKHANANI_RETURN_ONLY')==='true') return true; const login=getLogin(); if(login && login.returnOnly===true) return true; return false; }
 function canEdit(){ if(isReturnOnly()) return false; return ['LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
 let SUB_BLOCKED=false, SUB_REASON="";
+// v2.17 - Auto Book Number: School Initials + 6-digit sequence
+function schoolPrefix(){
+  const name = String(getSchool()||'').trim().toUpperCase();
+  if(!name) return 'SCH';
+  // Split on space / hyphen, take first letter of each word, ignore words like OF / AND / THE? Keep all for predictability, but skip empty
+  const words = name.split(/[\s\-]+/).filter(w=> w.length>0 && /[A-Z]/.test(w));
+  let prefix = words.map(w=> w[0]).join('');
+  // Limit to 4 letters max to keep label short, e.g. WORDSWORTH HIGH SCHOOL -> WHS (3)
+  if(prefix.length>4) prefix = prefix.slice(0,4);
+  return prefix || 'SCH';
+}
+function nextBookNo(extraTaken){
+  const prefix = schoolPrefix();
+  const taken = new Set(ALL_BOOKS.map(b=> (b.code||'').toUpperCase()));
+  if(extraTaken) extraTaken.forEach(x=> taken.add(String(x).toUpperCase()));
+  let maxSeq = 0;
+  taken.forEach(code=>{
+    if(code.startsWith(prefix)){
+      const suffix = code.slice(prefix.length);
+      if(/^\d+$/.test(suffix)){ const n=parseInt(suffix,10); if(n>maxSeq) maxSeq=n; }
+    }
+  });
+  let n = maxSeq + 1;
+  while(taken.has(prefix + String(n).padStart(6,'0'))){ n++; }
+  return prefix + String(n).padStart(6,'0');
+}
+window.autoGenerateBookNo = function(force){
+  const auto = $('autoBookCheck').checked;
+  const codeInput = $('newCode');
+  const prefix = schoolPrefix();
+  const ex1=$('schoolPrefixExample'); if(ex1) ex1.textContent=prefix;
+  const ex2=$('schoolPrefixExample2'); if(ex2) ex2.textContent=prefix;
+  if(!auto){ codeInput.readOnly=false; codeInput.placeholder='Type your own, e.g. '+prefix+'000001'; if(force) codeInput.focus(); return ''; }
+  codeInput.readOnly=true;
+  const no = nextBookNo();
+  codeInput.value=no;
+  const nb=$('nextBookNo'); if(nb) nb.textContent=no;
+  return no;
+};
 async function checkSubscription(){
   const emis=getEmis(); const banner=$('subBlockBanner'); const okBanner=$('subOkBanner'); const infoBox=$('subInfoBox'); const roBox=$('returnOnlyBox');
   if(isReturnOnly()){
@@ -179,6 +221,7 @@ async function loadBooks(){
     ALL_BOOKS.sort((a,b)=> (a.code||'').localeCompare(b.code||'')); $('bookCount').textContent=ALL_BOOKS.length; $('schoolNameTop').textContent=getSchool();
     const subjects=[...new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean))].sort(); $('subjectFilter').innerHTML='<option value="">All Subjects</option>'+subjects.map(s=>`<option>${s}</option>`).join('');
     $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool()+' • Books: '+ALL_BOOKS.length+(isReturnOnly()?' • 🟠 RETURN ONLY':'');
+    autoGenerateBookNo();
     renderBooks();
   }catch(e){ $('booksList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; $('cloudStatus').textContent='🔴 Cloud: Offline — '+e.message; }
 }
@@ -199,10 +242,13 @@ window.printOneBook = function(code){ localStorage.setItem('MAKHANANI_PRINT_SING
 window.addBook = async function(){
   if(isReturnOnly() || SUB_BLOCKED){ $('addMsg').innerHTML='<div class="warn">🟠 RETURN ONLY MODE — Cannot Add Book<br>'+SUB_REASON.replace(/\n/g,'<br>')+'<br>Contact Xintimani Group to reactivate.</div>'; return; }
   if(!canEdit()){ alert('Only Librarian / Admin / Principal can add books.'); return; }
-  const emis=getEmis(); const title=($('newTitle').value||'').trim().toUpperCase(); const code=($('newCode').value||'').trim().toUpperCase(); const subject=$('newSubject').value; const grade=$('newGrade').value; const condition=$('newCondition').value;
-  if(!title || !code || !subject || !grade){ $('addMsg').innerHTML='<div class="warn">⚠️ Fill Title + Code + Subject + Grade.</div>'; return; }
-  if(ALL_BOOKS.find(x=> (x.code||'').toUpperCase()===code)){ $('addMsg').innerHTML='<div class="warn">❌ Book Code <b>'+code+'</b> already exists.</div>'; return; }
-  try{ await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), {title:title, code:code, subject:subject, grade:grade, condition:condition, status:'AVAILABLE', createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); $('addMsg').innerHTML='<div class="ok">✅ Book Added: <b>'+title+' ('+code+')</b> • '+subject+' '+grade+'</div>'; $('newTitle').value=''; $('newCode').value=''; $('newSubject').value=''; $('newGrade').value=''; await loadBooks(); }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+e.message+'</div>'; }
+  const emis=getEmis(); const title=($('newTitle').value||'').trim().toUpperCase(); const subject=$('newSubject').value; const grade=$('newGrade').value; const condition=$('newCondition').value;
+  let code='';
+  if($('autoBookCheck').checked){ code = autoGenerateBookNo(); } else { code = ($('newCode').value||'').trim().toUpperCase(); }
+  if(!title || !subject || !grade){ $('addMsg').innerHTML='<div class="warn">⚠️ Fill Title + Subject + Grade. Book Number auto-generates.</div>'; return; }
+  if(!code){ $('addMsg').innerHTML='<div class="warn">⚠️ Could not generate Book Number.</div>'; return; }
+  if(ALL_BOOKS.find(x=> (x.code||'').toUpperCase()===code)){ $('addMsg').innerHTML='<div class="warn">❌ Book Number <b>'+code+'</b> already exists. Tap <b>🔄 Generate Next Book Number</b> to get next free one.</div>'; return; }
+  try{ await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), {title:title, code:code, subject:subject, grade:grade, condition:condition, status:'AVAILABLE', createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); $('addMsg').innerHTML='<div class="ok">✅ Book Added: <b>'+title+' ('+code+')</b> • '+subject+' '+grade+'<br>Next Book Number will be <b>'+nextBookNo([code])+'</b></div>'; $('newTitle').value=''; $('newSubject').value=''; $('newGrade').value=''; await loadBooks(); }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+e.message+'</div>'; }
 };
 window.deleteBook = async function(id){
   if(isReturnOnly() || SUB_BLOCKED){ alert('🟠 RETURN ONLY MODE\n'+SUB_REASON); return; }
@@ -215,9 +261,9 @@ window.bulkUpload = async function(){
   if(!canEdit()){ alert('Only Librarian / Admin / Principal can upload.'); return; }
   const file=$('csvFile').files[0]; if(!file){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Choose CSV file first.</div>'; return; }
   const text=await file.text(); const lines=text.split(/\r?\n/).filter(l=>l.trim()); if(lines.length<2){ $('bulkMsg').innerHTML='<div class="warn">⚠️ CSV is empty or only header.</div>'; return; }
-  let start=0; if(lines[0].toLowerCase().includes('title')) start=1; let added=0, skipped=0, errors=[];
+  let start=0; if(lines[0].toLowerCase().includes('title')) start=1; let added=0, skipped=0, errors=[]; const usedInBatch=new Set(ALL_BOOKS.map(b=> (b.code||'').toUpperCase()));
   $('bulkMsg').innerHTML='<div class="info">⏳ Uploading '+(lines.length-start)+' books...</div>';
-  for(let i=start;i<lines.length;i++){ const cols=lines[i].split(',').map(c=>c.trim().replace(/^"|"$/g,'')); if(cols.length<4){ skipped++; continue; } const [title, code, subject, grade, condition]=cols; if(!title || !code || !subject || !grade){ skipped++; continue; } const codeU=code.toUpperCase(); if(ALL_BOOKS.find(x=> (x.code||'').toUpperCase()===codeU)){ skipped++; continue; } try{ await setDoc(doc(db,'schools','EMIS_'+getEmis(),'textbooks',codeU), {title:title.toUpperCase(), code:codeU, subject:subject, grade:grade, condition:condition||'Good', status:'AVAILABLE', createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); added++; }catch(e){ errors.push(codeU+': '+e.message); } }
+  for(let i=start;i<lines.length;i++){ const cols=lines[i].split(',').map(c=>c.trim().replace(/^"|"$/g,'')); if(cols.length<4){ skipped++; continue; } const [title, codeRaw, subject, grade, condition]=cols; if(!title || !subject || !grade){ skipped++; continue; } let codeU=(codeRaw||'').toUpperCase(); if(!codeU){ codeU = nextBookNo([...usedInBatch]); } if(usedInBatch.has(codeU)){ skipped++; continue; } usedInBatch.add(codeU); try{ await setDoc(doc(db,'schools','EMIS_'+getEmis(),'textbooks',codeU), {title:title.toUpperCase(), code:codeU, subject:subject, grade:grade, condition:condition||'Good', status:'AVAILABLE', createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); added++; }catch(e){ errors.push(codeU+': '+e.message); } }
   $('bulkMsg').innerHTML='<div class="ok">✅ Bulk Upload Done: <b>'+added+' added</b> • '+skipped+' skipped • '+errors.length+' errors<br>'+(errors.length? errors.join('<br>'):'')+'</div>'; await loadBooks();
 };
 window.exportBooksCSV = function(){
