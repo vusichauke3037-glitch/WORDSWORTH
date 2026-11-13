@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.14</title>
+<title>Makhanani LTSM — Learners v2.15</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -58,12 +58,12 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Learners — Makhanani LTSM</h1><p>CSV Bulk Upload • Print Barcodes • Return Only • v2.14<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.14 LEARNERS</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Learners — Makhanani LTSM</h1><p>CSV Bulk Upload • Print Barcodes 3x5 A4 • Return Only • v2.15<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.15 LEARNERS</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <div id="subBlockBanner"></div>
 <div id="subOkBanner"></div>
 <main>
-<div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="add-school.html">🏫 Add School</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 My Profile</a></div>
+<div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="add-school.html">🏫 Add School</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="barcode-print.html">🖨️ Print Barcodes 3x5 A4</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 My Profile</a></div>
 <div class="card">
 <h2>🎓 Learners — <span id="schoolNameTop">—</span> (<span id="learnerCount">0</span>)</h2>
 <div class="info" id="schoolBox">School: —</div>
@@ -76,6 +76,8 @@ th{background:#0a1f4d;color:#fff}
 <button class="btn btn-blue" onclick="loadLearners()">🔄 Refresh Learners</button>
 <button class="btn btn-gold" onclick="exportLearnersCSV()">📥 Export Learners (CSV)</button>
 </div>
+<button class="btn btn-purple" onclick="location.href='barcode-print.html'">🖨️ Print Barcodes — 3x5 A4 (15 per page) — Learners</button>
+<div class="small">Tap Print → Pick 🎓 Learners → Tick learners → Preview → Print A4 → Cut on dotted lines → Stick on learner cards.</div>
 </div>
 <div class="card" id="addCard">
 <h2>➕ Add One Learner</h2>
@@ -172,11 +174,12 @@ function renderLearners(){
   let list=[...ALL_LEARNERS]; if(gf) list=list.filter(l=> (l.grade||'')===gf); if(q) list=list.filter(l=> ((l.name||'')+' '+(l.barcode||'')+' '+(l.class||'')+' '+(l.grade||'')).toLowerCase().includes(q));
   if(list.length===0){ $('learnersList').innerHTML='<div class="info">No learners found. Add learners above or upload CSV.</div>'; return; }
   let html='<div class="tableWrap"><table><tr><th>Barcode</th><th>Name</th><th>Grade / Class</th><th>Actions</th></tr>';
-  list.slice(0,300).forEach(l=>{ const code=l.barcode||l.code||l.id; html+='<tr><td><b>'+code+'</b><br><div class="barcodeBox"><svg id="bc_'+l.id.replace(/[^a-zA-Z0-9]/g,'_')+'"></svg></div></td><td><b>'+(l.name||'')+'</b><br><span class="small">'+(l.gender||'')+'</span></td><td>'+(l.grade||'')+' '+(l.class||'')+'</td><td>'+(canEdit() && !SUB_BLOCKED ? '<button class="btn btn-red btn-sm" onclick="deleteLearner(\''+l.id+'\')">🗑️ Delete</button>' : '<span class="small">View Only</span>')+'</td></tr>'; });
+  list.slice(0,300).forEach(l=>{ const code=l.barcode||l.code||l.id; html+='<tr><td><b>'+code+'</b><br><div class="barcodeBox"><svg id="bc_'+l.id.replace(/[^a-zA-Z0-9]/g,'_')+'"></svg></div></td><td><b>'+(l.name||'')+'</b><br><span class="small">'+(l.gender||'')+'</span></td><td>'+(l.grade||'')+' '+(l.class||'')+'</td><td>'+(canEdit() && !SUB_BLOCKED ? '<button class="btn btn-red btn-sm" onclick="deleteLearner(\''+l.id+'\')">🗑️ Delete</button>' : '<span class="small">View Only</span>')+'<br><button class="btn btn-purple btn-sm" onclick="printOneLearner(\''+code+'\')">🖨️ Print This One</button></td></tr>'; });
   html+='</table></div>'; $('learnersList').innerHTML=html;
   list.slice(0,300).forEach(l=>{ try{ JsBarcode('#bc_'+l.id.replace(/[^a-zA-Z0-9]/g,'_'), String(l.barcode||l.code||l.id), {format:'CODE128', width:1.5, height:35, displayValue:true, fontSize:11}); }catch(e){} });
 }
 window.renderLearners=renderLearners;
+window.printOneLearner = function(code){ localStorage.setItem('MAKHANANI_PRINT_SINGLE', JSON.stringify({type:'LEARNER', code:code})); location.href='barcode-print.html?single='+encodeURIComponent(code); };
 window.addLearner = async function(){
   if(isReturnOnly() || SUB_BLOCKED){ $('addMsg').innerHTML='<div class="warn">🟠 RETURN ONLY MODE — Cannot Add Learner<br>'+SUB_REASON.replace(/\n/g,'<br>')+'<br>Contact Xintimani Group to reactivate.</div>'; return; }
   if(!canEdit()){ alert('Only Librarian / Admin / Principal can add learners.'); return; }
