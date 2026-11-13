@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.07</title>
+<title>Makhanani LTSM — Learners v2.09</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -61,19 +61,30 @@ th{background:#0a1f4d;color:#fff}
 .uploadBox b{color:#5b21b6;font-size:15px}
 .previewBox{background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;max-height:200px;overflow-y:auto}
 .printOnly{display:none}
-@page{ size:A4; margin:8mm; }
+@page{ size:A4; margin:10mm; }
 @media print{
   header,#cloudStatus,.topnav,.btn,.noPrint{display:none!important}
   body{background:#fff} main{max-width:100%;padding:0} .card{box-shadow:none;border:none;padding:0;margin:0}
   .printOnly{display:block!important}
-  .printGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-  .printGrid .barcodeBox{margin:0;break-inside:avoid}
-  .printLogo{width:48px;height:48px;object-fit:contain}
+  .printPage{page-break-after:always;position:relative}
+  .printPage:last-child{page-break-after:auto}
+  .printGrid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:50mm;gap:0;background:repeating-linear-gradient(to right, transparent 0, transparent calc(33.33% - 0.5px), #999 calc(33.33% - 0.5px), #999 calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px)),repeating-linear-gradient(to right, transparent 0, transparent calc(66.66% - 0.5px), #999 calc(66.66% - 0.5px), #999 calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px))}
+  .printGrid .barcodeBox{margin:0;break-inside:avoid;height:50mm;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:4mm 3mm;border:1px dashed #999;border-radius:0;overflow:hidden;background:#fff;position:relative}
+  .printGrid .barcodeBox::before{content:"✂";position:absolute;top:1mm;left:1.5mm;font-size:10px;color:#999}
+  .printGrid .barcodeBox::after{content:"✂";position:absolute;bottom:1mm;right:1.5mm;font-size:10px;color:#999;transform:rotate(180deg)}
+  .printGrid .barcodeBox svg{width:100%;max-width:55mm;height:32px}
+  .printGrid .bname{font-size:13px;line-height:1.1}
+  .printGrid .bmeta{font-size:10px;line-height:1.1}
+  .printLogo{width:44px;height:44px;object-fit:contain}
+  .printHeader{page-break-after:avoid;margin-bottom:4mm}
+  .cutHint{font-size:10px;text-align:center;color:#555;border-top:1px dashed #999;border-bottom:1px dashed #999;padding:2mm 0;margin-bottom:4mm}
+  .cutHint::before{content:"✂ ";}
+  .cutHint::after{content:" ✂";}
 }
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Learners — Makhanani LTSM</h1><p>Add Learners • Upload Excel • Real Barcode • Due 30 Nov • v2.07<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.07 LEARNERS</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Learners — Makhanani LTSM</h1><p>Add Learners • Upload Excel • Real Barcode • A4 3x5 Cut Lines • Due 30 Nov • v2.09<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.09 LEARNERS</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -147,7 +158,7 @@ th{background:#0a1f4d;color:#fff}
 <div><label>Print Filter</label><select id="printFilter"><option value="FILTERED">🖨️ Print FILTERED list (what you see)</option><option value="ALL">🖨️ Print ALL learners</option></select></div>
 </div>
 <div class="grid2">
-<button class="btn btn-blue" onclick="printBarcodes()">🖨️ Print REAL Barcodes — Filtered / All</button>
+<button class="btn btn-blue" onclick="printBarcodes()">🖨️ Print REAL Barcodes — A4 3x5 Cut Lines</button>
 <button class="btn btn-gold" onclick="exportLearnersCSV()">📥 Export Learners (CSV)</button>
 </div>
 <div id="learnerList"></div>
@@ -155,14 +166,15 @@ th{background:#0a1f4d;color:#fff}
 </div>
 
 <div class="card printOnly" id="printCard">
-<div style="text-align:center;border-bottom:3px solid #0a1f4d;padding-bottom:8px">
+<div class="printHeader" style="text-align:center;border-bottom:3px solid #0a1f4d;padding-bottom:8px">
 <img src="logo.png" alt="Makhanani Logo" class="printLogo" onerror="this.style.display='none'">
 <h2 style="border:none;margin:4px 0 0;font-size:20px">MAKHANANI LTSM — LEARNER BARCODES</h2>
 <div style="font-size:14px;font-weight:900" id="printTitle">WORDSWORTH HIGH SCHOOL</div>
 <div style="font-size:12px" id="printMeta">Printed: —</div>
 </div>
 <div style="font-size:12px;margin:8px 0" id="printSummary"></div>
-<div class="printGrid" id="printList"></div>
+<div class="cutHint">CUT ALONG DOTTED LINES — 3 Across × 5 Down = 15 Per Page</div>
+<div id="printList"></div>
 <div style="margin-top:10px;font-size:11px;text-align:center">Makhanani LTSM • WORDSWORTH HIGH SCHOOL • EMIS 700310854 • ALL BOOKS DUE 30 NOVEMBER • Cut out barcode, stick on learner card / exercise book • Scan with Issue page</div>
 </div>
 </main>
@@ -190,7 +202,6 @@ function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGG
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
 function canAdd(){ return ['TEACHER','LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
 function canEditDelete(){ return ['LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
-// REAL BARCODE: clean code for CODE128 — remove spaces, keep A-Z 0-9 - . _ 
 function cleanBarcode(code){ return String(code||'').toUpperCase().replace(/[^A-Z0-9\-\.\_]/g,'').trim() || 'UNKNOWN'; }
 function drawBarcode(svgEl, code){
   try{
@@ -251,8 +262,7 @@ window.saveLearner = async function(){
     $('singleBarcodePreview').style.display='block';
     $('singleBarcodePreview').innerHTML='<div class="barcodeBox" style="max-width:280px;margin:auto"><div style="font-size:10px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+name+'</div><div class="bmeta">'+grade+' '+cls+'</div><svg id="singleSvg"></svg><div class="bmeta">Scan to Issue / Return</div></div>';
     drawBarcode(document.getElementById('singleSvg'), barcode);
-    await loadAll(); 
-    // keep name/barcode visible for print, clear only after? keep form for next — do not clear barcode preview
+    await loadAll();
     $('lName').value=''; $('lBarcode').value='';
   }catch(e){ $('learnerMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
   $('saveLearnerBtn').disabled=false; $('saveLearnerBtn').textContent='✅ Save Learner';
@@ -467,12 +477,15 @@ window.printBarcodes = function(singleList){
   let list = singleList || ( $('printFilter').value==='ALL' ? [...ALL_LEARNERS] : getFiltered() );
   if(list.length===0){ alert('No learners to print.'); return; }
   $('printTitle').textContent=getSchool()+' — EMIS '+getEmis();
-  $('printMeta').textContent='Printed: '+new Date().toLocaleString('en-ZA')+' • Learners: '+list.length+' • By: '+(getLogin()?getLogin().name:'');
-  $('printSummary').innerHTML='<b>Learners:</b> '+list.length+' • Real CODE128 barcodes — scan with Issue page / phone scanner';
-  // REAL BARCODE: svg per learner, JsBarcode draws it
-  $('printList').innerHTML=list.map((l,idx)=> '<div class="barcodeBox"><div style="font-size:10px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+l.name+'</div><div class="bmeta">'+l.grade+' '+l.class+' • ID: '+l.barcode+'</div><svg class="realBarcode" data-code="'+l.barcode+'"></svg><div class="bmeta">Scan to Issue / Return</div></div>').join('');
+  $('printMeta').textContent='Printed: '+new Date().toLocaleString('en-ZA')+' • Learners: '+list.length+' • By: '+(getLogin()?getLogin().name:'')+' • A4 3x5 = 15 per page • Pages: '+Math.ceil(list.length/15);
+  $('printSummary').innerHTML='<b>Learners:</b> '+list.length+' • <b>Pages:</b> '+Math.ceil(list.length/15)+' • Real CODE128 barcodes — Cut along dotted lines';
+  let pagesHtml='';
+  for(let p=0;p<list.length;p+=15){
+    const chunk=list.slice(p,p+15);
+    pagesHtml+='<div class="printPage"><div class="printGrid">'+chunk.map(l=> '<div class="barcodeBox"><div style="font-size:9px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+l.name+'</div><div class="bmeta">'+l.grade+' '+l.class+' • ID: '+l.barcode+'</div><svg class="realBarcode" data-code="'+l.barcode+'"></svg><div class="bmeta">Scan to Issue / Return • Due 30 Nov</div></div>').join('')+'</div></div>';
+  }
+  $('printList').innerHTML=pagesHtml;
   document.getElementById('printCard').style.display='block';
-  // Draw all real barcodes, then print
   document.querySelectorAll('.realBarcode').forEach(svg=> drawBarcode(svg, svg.getAttribute('data-code')));
   setTimeout(()=>{ window.print(); }, 500);
 };
