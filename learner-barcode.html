@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.13</title>
+<title>Makhanani LTSM — Learners v2.14</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -37,7 +37,7 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px;word-break:break-word}
-#subBlockBanner{display:none;background:#dc2626;color:#fff;text-align:center;padding:14px;font-weight:900;font-size:15px;margin:14px;border-radius:12px;line-height:1.5}
+#subBlockBanner{display:none;background:#ea580c;color:#fff;text-align:center;padding:14px;font-weight:900;font-size:15px;margin:14px;border-radius:12px;line-height:1.5}
 #subOkBanner{display:none;background:#059669;color:#fff;text-align:center;padding:8px;font-weight:700;font-size:12px;margin:14px;border-radius:12px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word}
@@ -54,29 +54,29 @@ th{background:#0a1f4d;color:#fff}
 .pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}
 .lockNote{background:#fef3c7;border:1.5px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;text-align:center;font-weight:700;word-break:break-word}
 .barcodeBox{background:#fff;border:2px solid #0a1f4d;border-radius:8px;padding:10px;text-align:center;margin-top:8px}
+.returnOnlyBox{background:#ffedd5;border:2px solid #ea580c;border-radius:12px;padding:14px;margin-top:10px;text-align:center;font-weight:900;color:#9a3412;display:none}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Learners — Makhanani LTSM</h1><p>CSV Bulk Upload • Print Barcodes • Subscription Block • v2.13<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.13 LEARNERS</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Learners — Makhanani LTSM</h1><p>CSV Bulk Upload • Print Barcodes • Return Only • v2.14<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.14 LEARNERS</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <div id="subBlockBanner"></div>
 <div id="subOkBanner"></div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="add-school.html">🏫 Add School</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 My Profile</a></div>
-
 <div class="card">
 <h2>🎓 Learners — <span id="schoolNameTop">—</span> (<span id="learnerCount">0</span>)</h2>
 <div class="info" id="schoolBox">School: —</div>
 <div class="info" id="roleBox">Role: —</div>
 <div class="info" id="subInfoBox">Subscription: Checking...</div>
 <div class="lockNote" id="permissionNote"></div>
-<div class="info"><b>🚫 SUBSCRIPTION RULE:</b> If school is <b>SUSPENDED</b> or <b>EXPIRED</b>, you can VIEW learners + PRINT barcodes, but you <b>CANNOT ADD / EDIT / DELETE</b> learners. Contact Xintimani Group to renew.</div>
+<div id="returnOnlyBox" class="returnOnlyBox">🟠 RETURN ONLY MODE — Subscription Suspended / Expired<br>You can VIEW + PRINT barcodes, but CANNOT Add / Edit / Delete learners.<br>Contact Xintimani Group to reactivate.</div>
+<div class="info"><b>🟠 RETURN ONLY RULE:</b> If school is <b>SUSPENDED</b> or <b>EXPIRED</b>, you can VIEW learners + PRINT barcodes, but you <b>CANNOT ADD / EDIT / DELETE</b> learners. Return of books still works in Issue / Librarian pages.</div>
 <div class="grid2">
 <button class="btn btn-blue" onclick="loadLearners()">🔄 Refresh Learners</button>
 <button class="btn btn-gold" onclick="exportLearnersCSV()">📥 Export Learners (CSV)</button>
 </div>
 </div>
-
 <div class="card" id="addCard">
 <h2>➕ Add One Learner</h2>
 <div class="grid2">
@@ -91,7 +91,6 @@ th{background:#0a1f4d;color:#fff}
 <button class="btn btn-green" id="addLearnerBtn" onclick="addLearner()">➕ ADD Learner</button>
 <div id="addMsg"></div>
 </div>
-
 <div class="card" id="bulkCard">
 <h2>📥 Bulk Upload Learners — CSV</h2>
 <div class="info"><b>CSV Format:</b> <code>Name,Code,Grade,Class,Gender</code><br>Example: <code>Thabo Mokoena,10A001,Grade 10,10A,Male</code><br>First row = header, will be skipped if it says Name.</div>
@@ -99,9 +98,7 @@ th{background:#0a1f4d;color:#fff}
 <input id="csvFile" type="file" accept=".csv">
 <button class="btn btn-purple" id="bulkBtn" onclick="bulkUpload()">📥 Upload CSV — Add All Learners</button>
 <div id="bulkMsg"></div>
-<div class="small">Tip: In Excel, Save As → CSV (Comma delimited). Don’t use spaces in Code.</div>
 </div>
-
 <div class="card">
 <h2>🔍 Search Learners</h2>
 <div class="grid2">
@@ -113,7 +110,7 @@ th{background:#0a1f4d;color:#fff}
 </main>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
@@ -122,32 +119,41 @@ function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || lo
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
-function canEdit(){ return ['LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
-// ===== SUBSCRIPTION BLOCK v2.13 =====
+function isReturnOnly(){ if(localStorage.getItem('MAKHANANI_RETURN_ONLY')==='true') return true; const login=getLogin(); if(login && login.returnOnly===true) return true; return false; }
+function canEdit(){ if(isReturnOnly()) return false; return ['LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
 let SUB_BLOCKED=false, SUB_REASON="";
 async function checkSubscription(){
-  const emis=getEmis(); const banner=$('subBlockBanner'); const okBanner=$('subOkBanner'); const infoBox=$('subInfoBox');
+  const emis=getEmis(); const banner=$('subBlockBanner'); const okBanner=$('subOkBanner'); const infoBox=$('subInfoBox'); const roBox=$('returnOnlyBox');
+  if(isReturnOnly()){
+    SUB_BLOCKED=true; SUB_REASON='🟠 RETURN ONLY MODE — Subscription Suspended / Expired — Contact Xintimani Group.\nSchool: '+getSchool()+' • EMIS '+emis;
+    if(banner){ banner.style.display='block'; banner.style.background='#ea580c'; banner.innerHTML=SUB_REASON.replace(/\n/g,'<br>')+'<br><span style="font-size:12px;font-weight:400">You can VIEW + PRINT. You CANNOT Add / Edit / Delete.</span>'; }
+    if(okBanner) okBanner.style.display='none'; if(roBox) roBox.style.display='block';
+    if(infoBox) infoBox.innerHTML='Subscription: <b style="color:#ea580c">🟠 RETURN ONLY — Suspended / Expired</b> • Contact Xintimani Group';
+    const b1=$('addLearnerBtn'); if(b1){ b1.disabled=true; b1.textContent='🟠 RETURN ONLY — Cannot Add Learner'; } const b2=$('bulkBtn'); if(b2){ b2.disabled=true; b2.textContent='🟠 RETURN ONLY — Cannot Upload'; }
+    return true;
+  }
   try{
     const snap=await getDoc(doc(db,'schools','EMIS_'+emis));
-    if(!snap.exists()){ SUB_BLOCKED=false; if(banner) banner.style.display='none'; if(okBanner) okBanner.style.display='none'; if(infoBox) infoBox.innerHTML='Subscription: <b>No school doc yet</b> — Allowed. Add school in Add School page to enable control.'; return false; }
+    if(!snap.exists()){ SUB_BLOCKED=false; if(banner) banner.style.display='none'; if(okBanner) okBanner.style.display='none'; if(roBox) roBox.style.display='none'; if(infoBox) infoBox.innerHTML='Subscription: <b>No school doc yet</b> — Allowed. Add school in Add School page.'; return false; }
     const s=snap.data(); const today=new Date().toISOString().slice(0,10); const end=s.subscriptionEnd||""; const status=(s.subscription||s.status||"ACTIVE").toUpperCase(); const daysLeft=end?Math.ceil((new Date(end)-new Date(today))/(1000*60*60*24)):9999;
-    if(infoBox){ if(status==='SUSPENDED') infoBox.innerHTML='Subscription: <b style="color:#dc2626">🚫 SUSPENDED</b> • Plan: '+(s.plan||'')+' • End: '+(end||'—')+' • Contact Xintimani Group'; else if(end && end<today) infoBox.innerHTML='Subscription: <b style="color:#dc2626">⌛ EXPIRED on '+end+'</b> • Contact Xintimani Group'; else if(daysLeft<=30) infoBox.innerHTML='Subscription: <b style="color:#92400e">✅ ACTIVE — ⚠️ '+daysLeft+' days left</b> • Plan: '+(s.plan||'')+' • End: '+end; else infoBox.innerHTML='Subscription: <b style="color:#166534">✅ ACTIVE</b> • Plan: '+(s.plan||'')+' • End: '+end+' • '+daysLeft+' days left'; }
-    if(status==='SUSPENDED'){ SUB_BLOCKED=true; SUB_REASON='🚫 SUBSCRIPTION SUSPENDED — Contact Xintimani Group to reactivate.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
-    else if(end && end<today){ SUB_BLOCKED=true; SUB_REASON='⌛ SUBSCRIPTION EXPIRED on '+end+' — Contact Xintimani Group to renew.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
+    if(infoBox){ if(status==='SUSPENDED') infoBox.innerHTML='Subscription: <b style="color:#ea580c">🟠 RETURN ONLY — SUSPENDED</b> • Plan: '+(s.plan||'')+' • End: '+(end||'—'); else if(end && end<today) infoBox.innerHTML='Subscription: <b style="color:#ea580c">🟠 RETURN ONLY — EXPIRED on '+end+'</b>'; else if(daysLeft<=30) infoBox.innerHTML='Subscription: <b style="color:#92400e">✅ ACTIVE — ⚠️ '+daysLeft+' days left</b> • Plan: '+(s.plan||'')+' • End: '+end; else infoBox.innerHTML='Subscription: <b style="color:#166534">✅ ACTIVE</b> • Plan: '+(s.plan||'')+' • End: '+end+' • '+daysLeft+' days left'; }
+    if(status==='SUSPENDED'){ SUB_BLOCKED=true; SUB_REASON='🟠 RETURN ONLY — SUBSCRIPTION SUSPENDED — Contact Xintimani Group.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
+    else if(end && end<today){ SUB_BLOCKED=true; SUB_REASON='🟠 RETURN ONLY — SUBSCRIPTION EXPIRED on '+end+' — Contact Xintimani Group.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
     else { SUB_BLOCKED=false; SUB_REASON=""; }
-    if(SUB_BLOCKED){ if(banner){ banner.style.display='block'; banner.innerHTML=SUB_REASON.replace(/\n/g,'<br>')+'<br><span style="font-size:12px;font-weight:400">You can VIEW + PRINT barcodes. You CANNOT Add / Edit / Delete learners until subscription is active.</span>'; } if(okBanner) okBanner.style.display='none'; const b1=$('addLearnerBtn'); if(b1){ b1.disabled=true; b1.textContent='🚫 BLOCKED — Subscription Expired / Suspended'; } const b2=$('bulkBtn'); if(b2){ b2.disabled=true; b2.textContent='🚫 BLOCKED — Subscription Expired / Suspended'; } }
-    else { if(banner) banner.style.display='none'; if(okBanner && s.subscriptionEnd){ okBanner.style.display='block'; okBanner.textContent='✅ Subscription ACTIVE — '+(s.plan||'')+' • Ends '+s.subscriptionEnd+' • '+daysLeft+' days left'; } const b1=$('addLearnerBtn'); if(b1 && canEdit()){ b1.disabled=false; b1.textContent='➕ ADD Learner'; } const b2=$('bulkBtn'); if(b2 && canEdit()){ b2.disabled=false; b2.textContent='📥 Upload CSV — Add All Learners'; } }
+    if(SUB_BLOCKED){ if(banner){ banner.style.display='block'; banner.style.background='#ea580c'; banner.innerHTML=SUB_REASON.replace(/\n/g,'<br>')+'<br><span style="font-size:12px;font-weight:400">You can VIEW + PRINT. You CANNOT Add / Edit / Delete.</span>'; } if(okBanner) okBanner.style.display='none'; if(roBox) roBox.style.display='block'; const b1=$('addLearnerBtn'); if(b1){ b1.disabled=true; b1.textContent='🟠 RETURN ONLY — Cannot Add Learner'; } const b2=$('bulkBtn'); if(b2){ b2.disabled=true; b2.textContent='🟠 RETURN ONLY — Cannot Upload'; } }
+    else { if(banner) banner.style.display='none'; if(roBox) roBox.style.display='none'; if(okBanner && s.subscriptionEnd){ okBanner.style.display='block'; okBanner.textContent='✅ Subscription ACTIVE — '+(s.plan||'')+' • Ends '+s.subscriptionEnd+' • '+daysLeft+' days left'; } const b1=$('addLearnerBtn'); if(b1 && canEdit()){ b1.disabled=false; b1.textContent='➕ ADD Learner'; } const b2=$('bulkBtn'); if(b2 && canEdit()){ b2.disabled=false; b2.textContent='📥 Upload CSV — Add All Learners'; } }
     return SUB_BLOCKED;
   }catch(e){ SUB_BLOCKED=false; if(infoBox) infoBox.innerHTML='Subscription: Could not check (offline) — Allowed for now.'; return false; }
 }
 function applyRole(){
   const login=getLogin();
   if(!login){ $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; $('permissionNote').innerHTML='⚠️ Login in Home first.'; return; }
-  if(getRole()==='TEACHER'){ $('roleBox').innerHTML='Role: <b>TEACHER</b> • View Only • Cannot Add Learners'; $('permissionNote').innerHTML='👁️ TEACHER — View + Print only. Cannot Add / Edit / Delete learners.'; }
+  if(isReturnOnly()){ $('roleBox').innerHTML='Role: <b>'+getRole()+'</b> • 🟠 RETURN ONLY'; $('permissionNote').innerHTML='🟠 RETURN ONLY MODE — View + Print only. Cannot Add / Edit / Delete. Contact Xintimani Group.'; }
+  else if(getRole()==='TEACHER'){ $('roleBox').innerHTML='Role: <b>TEACHER</b> • View Only • Cannot Add Learners'; $('permissionNote').innerHTML='👁️ TEACHER — View + Print only. Cannot Add / Edit / Delete learners.'; }
   else if(getRole()==='LIBRARIAN'){ $('roleBox').innerHTML='Role: <b>LIBRARIAN</b> • Can Add / Edit Learners'; $('permissionNote').innerHTML='✅ LIBRARIAN — Can Add / Edit / Delete learners (if subscription ACTIVE).'; }
   else if(getRole()==='ADMIN'){ $('roleBox').innerHTML='Role: <b>ADMIN</b> • Full Access'; $('permissionNote').innerHTML='✅ ADMIN — Full Access (if subscription ACTIVE).'; }
   else { $('roleBox').innerHTML='Role: <b>'+getRole()+'</b>'; $('permissionNote').innerHTML=''; }
-  if(!canEdit()){ const b1=$('addLearnerBtn'); if(b1){ b1.disabled=true; b1.textContent='🔒 View Only — Teacher Cannot Add Learners'; } const b2=$('bulkBtn'); if(b2){ b2.disabled=true; b2.textContent='🔒 View Only — Teacher Cannot Upload'; } }
+  if(!canEdit()){ const b1=$('addLearnerBtn'); if(b1 && !isReturnOnly() && !SUB_BLOCKED){ b1.disabled=true; b1.textContent='🔒 View Only — Teacher Cannot Add Learners'; } const b2=$('bulkBtn'); if(b2 && !isReturnOnly() && !SUB_BLOCKED){ b2.disabled=true; b2.textContent='🔒 View Only — Teacher Cannot Upload'; } }
 }
 async function loadLearners(){
   const emis=getEmis();
@@ -155,87 +161,52 @@ async function loadLearners(){
     const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'learners'));
     ALL_LEARNERS=[]; snap.forEach(d=>{ ALL_LEARNERS.push({id:d.id, ...d.data()}); });
     ALL_LEARNERS.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
-    $('learnerCount').textContent=ALL_LEARNERS.length;
-    $('schoolNameTop').textContent=getSchool();
-    $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool()+' • Learners: '+ALL_LEARNERS.length;
+    $('learnerCount').textContent=ALL_LEARNERS.length; $('schoolNameTop').textContent=getSchool();
+    $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool()+' • Learners: '+ALL_LEARNERS.length+(isReturnOnly()?' • 🟠 RETURN ONLY':'');
     renderLearners();
   }catch(e){ $('learnersList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; $('cloudStatus').textContent='🔴 Cloud: Offline — '+e.message; }
 }
 window.loadLearners=loadLearners;
 function renderLearners(){
   const q=($('searchBox').value||'').toLowerCase().trim(); const gf=$('gradeFilter').value;
-  let list=[...ALL_LEARNERS];
-  if(gf) list=list.filter(l=> (l.grade||'')===gf);
-  if(q) list=list.filter(l=> ((l.name||'')+' '+(l.barcode||'')+' '+(l.class||'')+' '+(l.grade||'')).toLowerCase().includes(q));
+  let list=[...ALL_LEARNERS]; if(gf) list=list.filter(l=> (l.grade||'')===gf); if(q) list=list.filter(l=> ((l.name||'')+' '+(l.barcode||'')+' '+(l.class||'')+' '+(l.grade||'')).toLowerCase().includes(q));
   if(list.length===0){ $('learnersList').innerHTML='<div class="info">No learners found. Add learners above or upload CSV.</div>'; return; }
   let html='<div class="tableWrap"><table><tr><th>Barcode</th><th>Name</th><th>Grade / Class</th><th>Actions</th></tr>';
-  list.slice(0,300).forEach(l=>{
-    const code=l.barcode||l.code||l.id;
-    html+='<tr><td><b>'+code+'</b><br><div class="barcodeBox"><svg id="bc_'+l.id.replace(/[^a-zA-Z0-9]/g,'_')+'"></svg></div></td><td><b>'+(l.name||'')+'</b><br><span class="small">'+(l.gender||'')+'</span></td><td>'+(l.grade||'')+' '+(l.class||'')+'</td><td>'+
-    (canEdit() && !SUB_BLOCKED ? '<button class="btn btn-red btn-sm" onclick="deleteLearner(\''+l.id+'\')">🗑️ Delete</button>' : '<span class="small">View Only</span>')+
-    '</td></tr>';
-  });
+  list.slice(0,300).forEach(l=>{ const code=l.barcode||l.code||l.id; html+='<tr><td><b>'+code+'</b><br><div class="barcodeBox"><svg id="bc_'+l.id.replace(/[^a-zA-Z0-9]/g,'_')+'"></svg></div></td><td><b>'+(l.name||'')+'</b><br><span class="small">'+(l.gender||'')+'</span></td><td>'+(l.grade||'')+' '+(l.class||'')+'</td><td>'+(canEdit() && !SUB_BLOCKED ? '<button class="btn btn-red btn-sm" onclick="deleteLearner(\''+l.id+'\')">🗑️ Delete</button>' : '<span class="small">View Only</span>')+'</td></tr>'; });
   html+='</table></div>'; $('learnersList').innerHTML=html;
   list.slice(0,300).forEach(l=>{ try{ JsBarcode('#bc_'+l.id.replace(/[^a-zA-Z0-9]/g,'_'), String(l.barcode||l.code||l.id), {format:'CODE128', width:1.5, height:35, displayValue:true, fontSize:11}); }catch(e){} });
 }
 window.renderLearners=renderLearners;
 window.addLearner = async function(){
-  if(SUB_BLOCKED){ $('addMsg').innerHTML='<div class="warn">🚫 SUBSCRIPTION BLOCKED<br>'+SUB_REASON.replace(/\n/g,'<br>')+'<br>Contact Xintimani Group to renew.</div>'; return; }
+  if(isReturnOnly() || SUB_BLOCKED){ $('addMsg').innerHTML='<div class="warn">🟠 RETURN ONLY MODE — Cannot Add Learner<br>'+SUB_REASON.replace(/\n/g,'<br>')+'<br>Contact Xintimani Group to reactivate.</div>'; return; }
   if(!canEdit()){ alert('Only Librarian / Admin / Principal can add learners.'); return; }
-  const emis=getEmis();
-  const name=($('newName').value||'').trim().toUpperCase(); const code=($('newCode').value||'').trim().toUpperCase(); const grade=$('newGrade').value; const cls=($('newClass').value||'').trim().toUpperCase(); const gender=$('newGender').value;
+  const emis=getEmis(); const name=($('newName').value||'').trim().toUpperCase(); const code=($('newCode').value||'').trim().toUpperCase(); const grade=$('newGrade').value; const cls=($('newClass').value||'').trim().toUpperCase(); const gender=$('newGender').value;
   if(!name || !code || !grade || !cls){ $('addMsg').innerHTML='<div class="warn">⚠️ Fill Name + Code + Grade + Class.</div>'; return; }
   if(ALL_LEARNERS.find(x=> (x.barcode||x.code||'').toUpperCase()===code)){ $('addMsg').innerHTML='<div class="warn">❌ Learner Code <b>'+code+'</b> already exists.</div>'; return; }
-  try{
-    await setDoc(doc(db,'schools','EMIS_'+emis,'learners',code), {name:name, barcode:code, code:code, grade:grade, class:cls, gender:gender, createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''});
-    $('addMsg').innerHTML='<div class="ok">✅ Learner Added: <b>'+name+' ('+code+')</b> • '+grade+' '+cls+'</div>';
-    $('newName').value=''; $('newCode').value=''; $('newGrade').value=''; $('newClass').value=''; $('newGender').value='';
-    await loadLearners();
-  }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+e.message+'</div>'; }
+  try{ await setDoc(doc(db,'schools','EMIS_'+emis,'learners',code), {name:name, barcode:code, code:code, grade:grade, class:cls, gender:gender, createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); $('addMsg').innerHTML='<div class="ok">✅ Learner Added: <b>'+name+' ('+code+')</b> • '+grade+' '+cls+'</div>'; $('newName').value=''; $('newCode').value=''; $('newGrade').value=''; $('newClass').value=''; $('newGender').value=''; await loadLearners(); }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+e.message+'</div>'; }
 };
 window.deleteLearner = async function(id){
-  if(SUB_BLOCKED){ alert('🚫 Subscription Blocked\n'+SUB_REASON); return; }
-  if(!canEdit()) return;
-  const l=ALL_LEARNERS.find(x=>x.id===id); if(!l) return;
+  if(isReturnOnly() || SUB_BLOCKED){ alert('🟠 RETURN ONLY MODE\n'+SUB_REASON); return; }
+  if(!canEdit()) return; const l=ALL_LEARNERS.find(x=>x.id===id); if(!l) return;
   if(!confirm('Delete Learner:\n'+l.name+' ('+(l.barcode||l.id)+')\nThis does NOT delete their issue history.\nConfirm?')) return;
   try{ await deleteDoc(doc(db,'schools','EMIS_'+getEmis(),'learners',id)); await loadLearners(); }catch(e){ alert('Delete failed: '+e.message); }
 };
 window.bulkUpload = async function(){
-  if(SUB_BLOCKED){ $('bulkMsg').innerHTML='<div class="warn">🚫 SUBSCRIPTION BLOCKED<br>'+SUB_REASON.replace(/\n/g,'<br>')+'</div>'; return; }
+  if(isReturnOnly() || SUB_BLOCKED){ $('bulkMsg').innerHTML='<div class="warn">🟠 RETURN ONLY MODE — Cannot Upload<br>'+SUB_REASON.replace(/\n/g,'<br>')+'</div>'; return; }
   if(!canEdit()){ alert('Only Librarian / Admin / Principal can upload.'); return; }
   const file=$('csvFile').files[0]; if(!file){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Choose CSV file first.</div>'; return; }
-  const text=await file.text();
-  const lines=text.split(/\r?\n/).filter(l=>l.trim());
-  if(lines.length<2){ $('bulkMsg').innerHTML='<div class="warn">⚠️ CSV is empty or only header.</div>'; return; }
-  let start=0; if(lines[0].toLowerCase().includes('name')) start=1;
-  let added=0, skipped=0, errors=[];
-  $('bulkMsg').innerHTML='<div class="info">⏳ Uploading '+ (lines.length-start) +' learners...</div>';
-  for(let i=start;i<lines.length;i++){
-    const cols=lines[i].split(',').map(c=>c.trim().replace(/^"|"$/g,''));
-    if(cols.length<4) { skipped++; continue; }
-    const [name, code, grade, cls, gender] = cols;
-    if(!name || !code || !grade || !cls){ skipped++; continue; }
-    const codeU=code.toUpperCase();
-    if(ALL_LEARNERS.find(x=> (x.barcode||x.code||'').toUpperCase()===codeU)){ skipped++; continue; }
-    try{
-      await setDoc(doc(db,'schools','EMIS_'+getEmis(),'learners',codeU), {name:name.toUpperCase(), barcode:codeU, code:codeU, grade:grade, class:cls.toUpperCase(), gender:gender||'', createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''});
-      added++;
-    }catch(e){ errors.push(codeU+': '+e.message); }
-  }
-  $('bulkMsg').innerHTML='<div class="ok">✅ Bulk Upload Done: <b>'+added+' added</b> • '+skipped+' skipped (duplicate / bad row) • '+errors.length+' errors<br>'+(errors.length? errors.join('<br>'):'')+'</div>';
-  await loadLearners();
+  const text=await file.text(); const lines=text.split(/\r?\n/).filter(l=>l.trim()); if(lines.length<2){ $('bulkMsg').innerHTML='<div class="warn">⚠️ CSV is empty or only header.</div>'; return; }
+  let start=0; if(lines[0].toLowerCase().includes('name')) start=1; let added=0, skipped=0, errors=[];
+  $('bulkMsg').innerHTML='<div class="info">⏳ Uploading '+(lines.length-start)+' learners...</div>';
+  for(let i=start;i<lines.length;i++){ const cols=lines[i].split(',').map(c=>c.trim().replace(/^"|"$/g,'')); if(cols.length<4){ skipped++; continue; } const [name, code, grade, cls, gender]=cols; if(!name || !code || !grade || !cls){ skipped++; continue; } const codeU=code.toUpperCase(); if(ALL_LEARNERS.find(x=> (x.barcode||x.code||'').toUpperCase()===codeU)){ skipped++; continue; } try{ await setDoc(doc(db,'schools','EMIS_'+getEmis(),'learners',codeU), {name:name.toUpperCase(), barcode:codeU, code:codeU, grade:grade, class:cls.toUpperCase(), gender:gender||'', createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); added++; }catch(e){ errors.push(codeU+': '+e.message); } }
+  $('bulkMsg').innerHTML='<div class="ok">✅ Bulk Upload Done: <b>'+added+' added</b> • '+skipped+' skipped • '+errors.length+' errors<br>'+(errors.length? errors.join('<br>'):'')+'</div>'; await loadLearners();
 };
 window.exportLearnersCSV = function(){
   if(ALL_LEARNERS.length===0){ alert('No learners.'); return; }
-  let csv='Name,Code,Grade,Class,Gender\n';
-  ALL_LEARNERS.forEach(l=>{ csv+='"'+(l.name||'')+'","'+(l.barcode||l.code||'')+'","'+(l.grade||'')+'","'+(l.class||'')+'","'+(l.gender||'')+'"\n'; });
+  let csv='Name,Code,Grade,Class,Gender\n'; ALL_LEARNERS.forEach(l=>{ csv+='"'+(l.name||'')+'","'+(l.barcode||l.code||'')+'","'+(l.grade||'')+'","'+(l.class||'')+'","'+(l.gender||'')+'"\n'; });
   const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_Learners_'+getEmis()+'.csv'; a.click(); URL.revokeObjectURL(url);
 };
-document.addEventListener('DOMContentLoaded', async ()=>{
-  const login=getLogin(); if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'');
-  $('schoolBox').textContent='School: '+getSchool()+' • EMIS '+getEmis();
-  applyRole(); await checkSubscription(); await loadLearners();
-});
+document.addEventListener('DOMContentLoaded', async ()=>{ const login=getLogin(); if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'')+(isReturnOnly()?' • 🟠 RETURN ONLY':''); $('schoolBox').textContent='School: '+getSchool()+' • EMIS '+getEmis(); applyRole(); await checkSubscription(); await loadLearners(); });
 </script>
 </body>
 </html>
