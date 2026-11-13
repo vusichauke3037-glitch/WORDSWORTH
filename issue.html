@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Issue / Return v2.11</title>
+<title>Makhanani LTSM — Issue / Return v2.12</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -66,7 +66,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Issue / Return — Makhanani LTSM</h1><p>Scan Barcode • Grade Block • Subject Block • Due 30 Nov • v2.11<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.11 ISSUE</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Issue / Return — Makhanani LTSM</h1><p>Scan Barcode • Grade Block • Subject Block • Same Title Block • Due 30 Nov • v2.12<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.12 ISSUE</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -76,7 +76,7 @@ th{background:#0a1f4d;color:#fff}
 <div class="info" id="schoolBox">School: —</div>
 <div class="info" id="roleBox">Role: —</div>
 <div class="lockNote" id="permissionNote"></div>
-<div class="info"><b>🚫 RULES — ISSUE:</b><br>1. <b>Grade must match</b> — Grade 10 book → Grade 10 learner ONLY.<br>2. <b>Teacher = Own Subject ONLY</b> — Maths teacher can issue Maths ONLY.<br><b>✅ RETURN:</b> Anyone can return ANY book, ANY subject, ANY grade — no block.</div>
+<div class="info"><b>🚫 RULES — ISSUE:</b><br>1. <b>Grade must match</b> — Grade 10 book → Grade 10 learner ONLY.<br>2. <b>Same Title Block</b> — Learner CANNOT have same Title OUT twice, even if different copy / different WHS code. Must return first copy first.<br>3. <b>Teacher = Own Subject ONLY</b> — Maths teacher can issue Maths ONLY.<br><b>✅ RETURN:</b> Anyone can return ANY book, ANY subject, ANY grade — no block.</div>
 
 <div id="teacherBox" class="teacherBox">
 <b>👩🏾‍🏫 Teacher — Select Your Subject(s)</b><br>
@@ -181,6 +181,7 @@ function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : 
 function canIssue(){ return ['TEACHER','LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
 function cleanCode(v){ return String(v||'').trim().toUpperCase().replace(/\s+/g,''); }
 function normGrade(g){ return String(g||'').replace(/[^0-9]/g,''); }
+function normTitle(t){ return String(t||'').trim().toLowerCase().replace(/\s+/g,' '); }
 function beep(){
   try{
     const ctx=new (window.AudioContext||window.webkitAudioContext)();
@@ -237,10 +238,10 @@ function updateTeacherSavedText(){
 function applyRole(){
   const login=getLogin();
   if(!login){ $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; $('permissionNote').innerHTML='⚠️ Login in Home first.'; return; }
-  if(getRole()==='TEACHER'){ $('roleBox').innerHTML='Role: <b>TEACHER</b> • Can Issue OWN subject ONLY • Can Return ANY'; $('permissionNote').innerHTML='✅ TEACHER — Issue: Own Subject + Same Grade ONLY. Return: ANY book.'; }
-  else if(getRole()==='LIBRARIAN'){ $('roleBox').innerHTML='Role: <b>LIBRARIAN</b> • Can Issue ANY subject • Same Grade'; $('permissionNote').innerHTML='✅ LIBRARIAN — Issue ANY subject, but Grade must match. Return ANY.'; }
-  else if(getRole()==='ADMIN'){ $('roleBox').innerHTML='Role: <b>ADMIN</b> • Full Access • Grade must match'; $('permissionNote').innerHTML='✅ ADMIN — Issue ANY subject, but Grade must match. Return ANY.'; }
-  else { $('roleBox').innerHTML='Role: <b>'+getRole()+'</b> • Grade must match'; $('permissionNote').innerHTML=''; }
+  if(getRole()==='TEACHER'){ $('roleBox').innerHTML='Role: <b>TEACHER</b> • Can Issue OWN subject ONLY • Can Return ANY'; $('permissionNote').innerHTML='✅ TEACHER — Issue: Own Subject + Same Grade + No Duplicate Title ONLY. Return: ANY book.'; }
+  else if(getRole()==='LIBRARIAN'){ $('roleBox').innerHTML='Role: <b>LIBRARIAN</b> • Can Issue ANY subject • Same Grade • No Duplicate Title'; $('permissionNote').innerHTML='✅ LIBRARIAN — Issue ANY subject, but Grade must match + No Duplicate Title. Return ANY.'; }
+  else if(getRole()==='ADMIN'){ $('roleBox').innerHTML='Role: <b>ADMIN</b> • Full Access • Grade must match • No Duplicate Title'; $('permissionNote').innerHTML='✅ ADMIN — Issue ANY subject, but Grade must match + No Duplicate Title. Return ANY.'; }
+  else { $('roleBox').innerHTML='Role: <b>'+getRole()+'</b> • Grade must match • No Duplicate Title'; $('permissionNote').innerHTML=''; }
   renderTeacherBox();
 }
 window.updateMode = function(){
@@ -254,6 +255,10 @@ function getBlockReason(learner, book, forReturn){
   if(!learner || !book) return null;
   if(normGrade(learner.grade) !== normGrade(book.grade)){
     return '🚫 GRADE MISMATCH — BLOCKED<br>Learner: <b>'+learner.name+' — '+learner.grade+'</b><br>Book: <b>'+book.title+' — '+book.grade+'</b><br>Grade 10 book CANNOT go to Grade '+normGrade(learner.grade)+' learner. Ask Librarian for correct Grade book.';
+  }
+  const alreadyHasTitle = ALL_ISSUES.find(x=> x.learnerCode===learner.barcode && x.status==='OUT' && normTitle(x.bookTitle)===normTitle(book.title));
+  if(alreadyHasTitle){
+    return '🚫 ALREADY HAS THIS TITLE — BLOCKED<br>Learner: <b>'+learner.name+' ('+learner.barcode+')</b> already has <b>'+book.title+'</b> OUT.<br>Copy they have: <b>'+alreadyHasTitle.bookCode+'</b> — Issued: '+(alreadyHasTitle.date||'—')+'<br>You tried to issue: <b>'+book.code+'</b> — Same title, different copy.<br>Learner must RETURN the first copy before taking another copy of same title.';
   }
   if(getRole()==='TEACHER'){
     const mySubjects=getTeacherSubjects();
@@ -274,7 +279,7 @@ window.checkBlocks = function(){
   const okBox=$('okWarning');
   blockBox.style.display='none'; okBox.style.display='none';
   if(mode==='RETURN'){
-    if(bc) { okBox.style.display='block'; okBox.innerHTML='✅ RETURN Mode — No Grade / Subject block. Anyone can return ANY book.'; }
+    if(bc) { okBox.style.display='block'; okBox.innerHTML='✅ RETURN Mode — No Grade / Subject / Title block. Anyone can return ANY book.'; }
     return;
   }
   if(!lc || !bc) return;
@@ -288,7 +293,7 @@ window.checkBlocks = function(){
   } else {
     $('issueBtn').disabled=false; $('issueBtn').textContent='📚 ISSUE Book to Learner';
     okBox.style.display='block';
-    okBox.innerHTML='✅ OK to Issue: Learner <b>'+learner.grade+'</b> + Book <b>'+book.grade+'</b> — Grade matches'+(getRole()==='TEACHER' ? ' • Subject <b>'+book.subject+'</b> is yours ✅' : '');
+    okBox.innerHTML='✅ OK to Issue: Learner <b>'+learner.grade+'</b> + Book <b>'+book.grade+'</b> — Grade matches • No duplicate title'+(getRole()==='TEACHER' ? ' • Subject <b>'+book.subject+'</b> is yours ✅' : '');
   }
 };
 window.startScan = async function(target){
@@ -358,7 +363,8 @@ window.lookupLearner = function(){
   const l=ALL_LEARNERS.find(x=> x.barcode===code || x.id===code);
   if(l){
     box.style.display='block'; box.style.background='#f0fdf4'; box.style.borderColor='#059669';
-    box.innerHTML='✅ Learner Found: <b>'+l.name+'</b> • '+l.grade+' '+l.class+' • ID: <b>'+l.barcode+'</b>';
+    const outs=ALL_ISSUES.filter(x=> x.learnerCode===l.barcode && x.status==='OUT');
+    box.innerHTML='✅ Learner Found: <b>'+l.name+'</b> • '+l.grade+' '+l.class+' • ID: <b>'+l.barcode+'</b> • Has <b>'+outs.length+' book(s) OUT</b>'+(outs.length ? '<br><span class="small">Has: '+outs.map(o=>o.bookTitle+' ('+o.bookCode+')').join(', ')+'</span>' : '');
     $('learnerPick').value=l.id;
   } else {
     box.style.display='block'; box.style.background='#fef3c7'; box.style.borderColor='#d4af37';
@@ -474,6 +480,11 @@ window.doIssue = async function(){
     $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED — GRADE MISMATCH<br>Learner: <b>'+learner.name+' — '+learner.grade+'</b><br>Book: <b>'+book.title+' — '+book.grade+'</b><br>Grade must match. Cannot issue Grade '+normGrade(book.grade)+' book to Grade '+normGrade(learner.grade)+' learner.</div>';
     return;
   }
+  const hasSameTitle = ALL_ISSUES.find(x=> x.learnerCode===learner.barcode && x.status==='OUT' && normTitle(x.bookTitle)===normTitle(book.title));
+  if(hasSameTitle){
+    $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED — ALREADY HAS THIS TITLE<br>Learner <b>'+learner.name+' ('+learner.barcode+')</b> already has <b>'+book.title+'</b> OUT — Copy: <b>'+hasSameTitle.bookCode+'</b><br>They cannot take a second copy of same title. Return first copy first.</div>';
+    return;
+  }
   if(getRole()==='TEACHER'){
     const mySubjects=getTeacherSubjects();
     if(mySubjects.length===0){
@@ -488,7 +499,7 @@ window.doIssue = async function(){
   const alreadyOut=ALL_ISSUES.find(x=> x.bookCode===book.code && x.status==='OUT');
   if(alreadyOut){ $('issueMsg').innerHTML='<div class="warn">❌ Book <b>'+book.code+'</b> is already OUT to <b>'+alreadyOut.learnerName+' ('+alreadyOut.learnerCode+')</b>. Return it first.</div>'; return; }
   const learnerOutCount=ALL_ISSUES.filter(x=> x.learnerCode===learner.barcode && x.status==='OUT').length;
-  if(!confirm('ISSUE:\nBook: '+book.title+' ('+book.code+') '+book.grade+' '+book.subject+'\nTo: '+learner.name+' ('+learner.barcode+') '+learner.grade+' '+learner.class+'\n✅ Grade matches • ✅ Subject OK\nLearner already has '+learnerOutCount+' book(s) OUT.\nConfirm?')) return;
+  if(!confirm('ISSUE:\nBook: '+book.title+' ('+book.code+') '+book.grade+' '+book.subject+'\nTo: '+learner.name+' ('+learner.barcode+') '+learner.grade+' '+learner.class+'\n✅ Grade matches • ✅ No duplicate title • ✅ Subject OK\nLearner already has '+learnerOutCount+' book(s) OUT.\nConfirm?')) return;
   const id='ISS_'+Date.now()+'_'+book.code;
   try{
     await setDoc(doc(db,'schools','EMIS_'+emis,'issues',id), {learnerCode:learner.barcode, learnerName:learner.name, learnerGrade:learner.grade, learnerClass:learner.class, bookCode:book.code, bookTitle:book.title, bookSubject:book.subject, bookGrade:book.grade, status:'OUT', date:new Date().toISOString().slice(0,10), issuedBy:(getLogin()||{}).name||'', whoName:(getLogin()||{}).name||'', whoEmail:(getLogin()||{}).email||'', createdAt:serverTimestamp()});
