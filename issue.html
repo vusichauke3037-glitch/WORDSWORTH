@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Issue / Return v2.10</title>
+<title>Makhanani LTSM — Issue / Return v2.11</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -61,20 +61,30 @@ th{background:#0a1f4d;color:#fff}
 .bigScan{font-size:16px;padding:16px}
 .foundBox{background:#f0fdf4;border:1.5px solid #059669;border-radius:8px;padding:10px;margin-top:8px;font-size:13px;display:none}
 .foundBox b{color:#166534}
+.blockBox{background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:10px;margin-top:8px;font-size:13px;font-weight:700;display:none}
+.teacherBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;display:none}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Issue / Return — Makhanani LTSM</h1><p>Scan Barcode • Issue • Return • Due 30 Nov • v2.10<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.10 ISSUE</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Issue / Return — Makhanani LTSM</h1><p>Scan Barcode • Grade Block • Subject Block • Due 30 Nov • v2.11<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.11 ISSUE</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
 
 <div class="card">
-<h2>📷 Scan + Issue / Return — Fastest Way</h2>
+<h2>📷 Scan + Issue / Return</h2>
 <div class="info" id="schoolBox">School: —</div>
 <div class="info" id="roleBox">Role: —</div>
 <div class="lockNote" id="permissionNote"></div>
-<div class="info"><b>How to scan:</b> 1) Tap <b>📷 SCAN Learner</b> → Allow Camera → Point at learner barcode → It beeps + fills. 2) Tap <b>📷 SCAN Book</b> → Point at book barcode <b>WHS000001</b> → Fills. 3) Tap <b>Issue</b> or <b>Return</b>.<br><b>Tip:</b> On phone, use BACK camera. Hold barcode 15-20cm away, in good light. If camera fails, type code manually below.</div>
+<div class="info"><b>🚫 RULES — ISSUE:</b><br>1. <b>Grade must match</b> — Grade 10 book → Grade 10 learner ONLY.<br>2. <b>Teacher = Own Subject ONLY</b> — Maths teacher can issue Maths ONLY.<br><b>✅ RETURN:</b> Anyone can return ANY book, ANY subject, ANY grade — no block.</div>
+
+<!-- TEACHER SUBJECT SELECTOR — Only shows for TEACHERS -->
+<div id="teacherBox" class="teacherBox">
+<b>👩🏾‍🏫 Teacher — Select Your Subject(s)</b><br>
+<span class="small">You can ONLY issue books for your subject(s). You can return ANY book.<br>If you teach 2 subjects, tick both. This is saved on this phone / laptop.</span>
+<div id="teacherSubjectsList" style="margin-top:8px"></div>
+<div class="small" id="teacherSubjectSaved" style="margin-top:6px;font-weight:700"></div>
+</div>
 
 <div class="grid2">
 <div>
@@ -93,25 +103,26 @@ th{background:#0a1f4d;color:#fff}
 </div>
 </div>
 
-<!-- LEARNER SCAN -->
 <label>👩🏾‍🎓 Learner Code / ID — Scan or Type</label>
 <div class="grid2" style="align-items:end">
-<div><input id="learnerCode" placeholder="e.g. 10A001 — Scan or type" style="text-transform:uppercase" oninput="lookupLearner()"></div>
+<div><input id="learnerCode" placeholder="e.g. 10A001 — Scan or type" style="text-transform:uppercase" oninput="lookupLearner();checkBlocks()"></div>
 <div><button class="btn btn-black bigScan" style="margin-top:0" onclick="startScan('LEARNER')">📷 SCAN Learner</button></div>
 </div>
 <div id="learnerFound" class="foundBox"></div>
-<div class="small">Or pick from list: <select id="learnerPick" onchange="pickLearner()"><option value="">— Pick Learner —</option></select></div>
+<div class="small">Or pick: <select id="learnerPick" onchange="pickLearner()"><option value="">— Pick Learner —</option></select></div>
 
-<!-- BOOK SCAN -->
 <label>📖 Book Code — Scan or Type</label>
 <div class="grid2" style="align-items:end">
-<div><input id="bookCode" placeholder="e.g. WHS000001 — Scan or type" style="text-transform:uppercase" oninput="lookupBook()"></div>
+<div><input id="bookCode" placeholder="e.g. WHS000001 — Scan or type" style="text-transform:uppercase" oninput="lookupBook();checkBlocks()"></div>
 <div><button class="btn btn-black bigScan" style="margin-top:0" onclick="startScan('BOOK')">📷 SCAN Book</button></div>
 </div>
 <div id="bookFound" class="foundBox"></div>
-<div class="small">Or pick from list: <select id="bookPick" onchange="pickBook()"><option value="">— Pick Book —</option></select></div>
+<div class="small">Or pick: <select id="bookPick" onchange="pickBook()"><option value="">— Pick Book —</option></select></div>
 
-<!-- SCANNER BOX -->
+<!-- LIVE BLOCK WARNING — Shows BEFORE you tap Issue -->
+<div id="blockWarning" class="blockBox"></div>
+<div id="okWarning" class="foundBox" style="display:none"></div>
+
 <div id="scanBox" class="scanBox">
 <b id="scanTitle">📷 Scanning...</b><br>
 <span class="small" id="scanHint">Point camera at barcode. Hold steady 15-20cm away.</span>
@@ -149,7 +160,7 @@ th{background:#0a1f4d;color:#fff}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
@@ -162,8 +173,9 @@ const firebaseConfig = {
 };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
-let ALL_LEARNERS=[], ALL_BOOKS=[], ALL_ISSUES=[], ALL_HISTORY=[];
+let ALL_LEARNERS=[], ALL_BOOKS=[], ALL_ISSUES=[];
 let html5QrCode=null, SCAN_TARGET=null, SCANNING=false;
+const SUBJECTS=["Accounting","Afrikaans","Agricultural Sciences","Business Studies","CAT","Consumer Studies","Economics","English","Geography","History","Life Orientation","Life Sciences","Mathematical Literacy","Mathematics","Natural Sciences","Physical Sciences","Sepedi","Setswana","Social Sciences","Technology","Tourism","Visual Arts","isiZulu","isiXhosa"];
 
 function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
@@ -171,6 +183,8 @@ function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGG
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
 function canIssue(){ return ['TEACHER','LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
 function cleanCode(v){ return String(v||'').trim().toUpperCase().replace(/\s+/g,''); }
+// Normalise grade: "Grade 10", "10", "grade10" -> "10"
+function normGrade(g){ return String(g||'').replace(/[^0-9]/g,''); }
 function beep(){
   try{
     const ctx=new (window.AudioContext||window.webkitAudioContext)();
@@ -181,25 +195,121 @@ function beep(){
   }catch(e){}
 }
 function vibrate(){ try{ if(navigator.vibrate) navigator.vibrate(120); }catch(e){} }
+
+// ===== TEACHER SUBJECTS =====
+// Teacher subjects can come from: 1) Login object (subject / subjects), 2) Saved selection in this browser
+function getTeacherSubjects(){
+  const login=getLogin()||{};
+  // 1) From login — if Admin set it in login
+  if(login.subject) return [login.subject];
+  if(login.subjects && Array.isArray(login.subjects) && login.subjects.length) return login.subjects;
+  if(login.subjects && typeof login.subjects==='string') return login.subjects.split(',').map(s=>s.trim()).filter(Boolean);
+  // 2) From saved selection on this device
+  try{
+    const saved=localStorage.getItem('MAKHANANI_TEACHER_SUBJECTS');
+    if(saved) return JSON.parse(saved);
+    const one=localStorage.getItem('MAKHANANI_TEACHER_SUBJECT');
+    if(one) return [one];
+  }catch(e){}
+  return [];
+}
+function saveTeacherSubjects(list){
+  localStorage.setItem('MAKHANANI_TEACHER_SUBJECTS', JSON.stringify(list));
+  // Also try to save into login for other pages
+  try{
+    const login=getLogin();
+    if(login){ login.subjects=list; login.subject=list[0]||''; localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify(login)); }
+  }catch(e){}
+}
+function renderTeacherBox(){
+  if(getRole()!=='TEACHER'){ $('teacherBox').style.display='none'; return; }
+  $('teacherBox').style.display='block';
+  const saved=getTeacherSubjects();
+  let html='<div style="display:flex;flex-wrap:wrap;gap:6px">';
+  SUBJECTS.forEach(s=>{
+    const checked=saved.includes(s) ? 'checked' : '';
+    html+='<label style="display:inline-flex;align-items:center;gap:4px;background:#fff;border:1.5px solid #d4af37;border-radius:20px;padding:6px 10px;font-size:12px;font-weight:700;margin:0;cursor:pointer"><input type="checkbox" value="'+s+'" '+checked+' onchange="onTeacherSubjectChange()" style="width:auto;margin:0"> '+s+'</label>';
+  });
+  html+='</div>';
+  $('teacherSubjectsList').innerHTML=html;
+  updateTeacherSavedText();
+}
+window.onTeacherSubjectChange = function(){
+  const checked=[...document.querySelectorAll('#teacherSubjectsList input:checked')].map(i=>i.value);
+  saveTeacherSubjects(checked);
+  updateTeacherSavedText();
+  checkBlocks();
+};
+function updateTeacherSavedText(){
+  const saved=getTeacherSubjects();
+  $('teacherSubjectSaved').textContent = saved.length ? '✅ Your subject(s): '+saved.join(', ')+' — You can ONLY issue these subjects.' : '⚠️ Select your subject(s) above — You cannot issue until you select at least 1 subject. You can still RETURN any book.';
+}
 function applyRole(){
   const login=getLogin();
   if(!login){ $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; $('permissionNote').innerHTML='⚠️ Login in Home first.'; return; }
-  if(getRole()==='TEACHER'){ $('roleBox').innerHTML='Role: <b>TEACHER</b> • Can Issue / Return'; $('permissionNote').innerHTML='✅ TEACHER — You can Issue + Return books.'; }
-  else if(getRole()==='LIBRARIAN'){ $('roleBox').innerHTML='Role: <b>LIBRARIAN</b> • Can Issue / Return + Manage'; $('permissionNote').innerHTML='✅ LIBRARIAN — Full Issue / Return.'; }
-  else if(getRole()==='ADMIN'){ $('roleBox').innerHTML='Role: <b>ADMIN</b> • Full Access'; $('permissionNote').innerHTML='✅ ADMIN — Full access.'; }
-  else { $('roleBox').innerHTML='Role: <b>'+getRole()+'</b>'; $('permissionNote').innerHTML=''; }
+  if(getRole()==='TEACHER'){ $('roleBox').innerHTML='Role: <b>TEACHER</b> • Can Issue OWN subject ONLY • Can Return ANY'; $('permissionNote').innerHTML='✅ TEACHER — Issue: Own Subject + Same Grade ONLY. Return: ANY book.'; }
+  else if(getRole()==='LIBRARIAN'){ $('roleBox').innerHTML='Role: <b>LIBRARIAN</b> • Can Issue ANY subject • Same Grade'; $('permissionNote').innerHTML='✅ LIBRARIAN — Issue ANY subject, but Grade must match. Return ANY.'; }
+  else if(getRole()==='ADMIN'){ $('roleBox').innerHTML='Role: <b>ADMIN</b> • Full Access • Grade must match'; $('permissionNote').innerHTML='✅ ADMIN — Issue ANY subject, but Grade must match. Return ANY.'; }
+  else { $('roleBox').innerHTML='Role: <b>'+getRole()+'</b> • Grade must match'; $('permissionNote').innerHTML=''; }
+  renderTeacherBox();
 }
 window.updateMode = function(){
   const m=$('scanMode').value;
   if(m==='RETURN'){ $('issueBtn').style.opacity='0.5'; $('returnBtn').style.opacity='1'; }
   else { $('issueBtn').style.opacity='1'; $('returnBtn').style.opacity='0.5'; }
+  checkBlocks();
 };
-// ===== REAL BARCODE SCANNING =====
+// ===== BLOCK CHECKS — Live warning before tapping Issue =====
+function getBlockReason(learner, book, forReturn){
+  if(forReturn) return null; // RETURN: NO BLOCK EVER
+  if(!learner || !book) return null;
+  // 1) GRADE MISMATCH — Applies to EVERYONE, even Admin
+  if(normGrade(learner.grade) !== normGrade(book.grade)){
+    return '🚫 GRADE MISMATCH — BLOCKED<br>Learner: <b>'+learner.name+' — '+learner.grade+'</b><br>Book: <b>'+book.title+' — '+book.grade+'</b><br>Grade 10 book CANNOT go to Grade '+normGrade(learner.grade)+' learner. Ask Librarian for correct Grade book.';
+  }
+  // 2) TEACHER SUBJECT — Only for TEACHERS
+  if(getRole()==='TEACHER'){
+    const mySubjects=getTeacherSubjects();
+    if(mySubjects.length===0){
+      return '🚫 TEACHER SUBJECT NOT SET — BLOCKED<br>Select your subject(s) above first. You cannot issue until you select at least 1 subject.<br>You can still RETURN any book.';
+    }
+    if(!mySubjects.includes(book.subject)){
+      return '🚫 NOT YOUR SUBJECT — BLOCKED<br>Your subject(s): <b>'+mySubjects.join(', ')+'</b><br>Book subject: <b>'+book.subject+' — '+book.title+'</b><br>Teachers can ONLY issue their own subject. Ask the '+book.subject+' teacher / Librarian to issue this book. You CAN return any book.';
+    }
+  }
+  return null;
+}
+window.checkBlocks = function(){
+  const mode=$('scanMode').value;
+  const lc=cleanCode($('learnerCode').value);
+  const bc=cleanCode($('bookCode').value);
+  const blockBox=$('blockWarning');
+  const okBox=$('okWarning');
+  blockBox.style.display='none'; okBox.style.display='none';
+  if(mode==='RETURN'){
+    if(bc) { okBox.style.display='block'; okBox.innerHTML='✅ RETURN Mode — No Grade / Subject block. Anyone can return ANY book.'; }
+    return;
+  }
+  if(!lc || !bc) return;
+  const learner=ALL_LEARNERS.find(x=> x.barcode===lc || x.id===lc);
+  const book=ALL_BOOKS.find(x=> x.code===bc || x.id===bc);
+  if(!learner || !book) return;
+  const reason=getBlockReason(learner, book, false);
+  if(reason){
+    blockBox.style.display='block'; blockBox.innerHTML=reason;
+    $('issueBtn').disabled=true; $('issueBtn').textContent='🚫 BLOCKED — Cannot Issue';
+  } else {
+    $('issueBtn').disabled=false; $('issueBtn').textContent='📚 ISSUE Book to Learner';
+    okBox.style.display='block';
+    okBox.innerHTML='✅ OK to Issue: Learner <b>'+learner.grade+'</b> + Book <b>'+book.grade+'</b> — Grade matches'+(getRole()==='TEACHER' ? ' • Subject <b>'+book.subject+'</b> is yours ✅' : '');
+  }
+};
+// ===== SCANNING =====
 window.startScan = async function(target){
   SCAN_TARGET=target;
   if(!window.Html5Qrcode){ alert('Scanner library failed to load. Check internet / reload. You can still type code manually.'); return; }
   $('scanBox').classList.add('active');
-  $('scanTitle').textContent = target==='LEARNER' ? '📷 Scanning LEARNER barcode — Point at learner card' : '📷 Scanning BOOK barcode — Point at WHS000001 sticker';
+  $('scanTitle').textContent = target==='LEARNER' ? '📷 Scanning LEARNER barcode — Point at learner card' : '📷 Scanning BOOK barcode — Point at WHS sticker';
   $('scanResult').style.display='none';
   $('scanHint').textContent='Point camera at barcode. Hold steady 15-20cm away. It will beep when found.';
   window.scrollTo({top:0, behavior:'smooth'});
@@ -208,43 +318,34 @@ window.startScan = async function(target){
     html5QrCode = new Html5Qrcode("reader");
     SCANNING=true;
     const config={ fps:10, qrbox:{width:260, height:120}, aspectRatio:1.0, disableFlip:false };
-    // Try back camera first
     await html5QrCode.start({ facingMode:"environment" }, config, onScanSuccess, onScanFail);
   }catch(err){
-    // Fallback: try any camera
     try{
       const cams=await Html5Qrcode.getCameras();
       if(cams && cams.length>0){
-        const camId=cams[cams.length-1].id; // last = usually back camera
+        const camId=cams[cams.length-1].id;
         await html5QrCode.start(camId, {fps:10, qrbox:{width:260, height:120}}, onScanSuccess, onScanFail);
       } else throw err;
     }catch(e2){
-      $('scanHint').textContent='❌ Camera failed: '+ (e2.message||e2) + ' — Please type code manually, or allow camera permission in browser settings.';
+      $('scanHint').textContent='❌ Camera failed: '+ (e2.message||e2) + ' — Please type code manually, or allow camera permission.';
       SCANNING=false;
     }
   }
 };
-function onScanFail(error){ /* ignore — scanning every frame */ }
+function onScanFail(error){}
 async function onScanSuccess(decodedText, decodedResult){
   if(!SCANNING) return;
   const code=cleanCode(decodedText);
   if(!code) return;
-  // Avoid double-scan same code in 1 sec
   if(window.__lastScan===code && Date.now()-window.__lastScanTime<1000) return;
   window.__lastScan=code; window.__lastScanTime=Date.now();
   beep(); vibrate();
   $('scanResult').style.display='block';
   $('scanResultCode').textContent=code + (SCAN_TARGET==='LEARNER' ? ' — Learner' : ' — Book');
   $('scanHint').textContent='✅ Scanned! Stopping camera...';
-  // Fill correct field
-  if(SCAN_TARGET==='LEARNER'){
-    $('learnerCode').value=code;
-    lookupLearner();
-  } else {
-    $('bookCode').value=code;
-    lookupBook();
-  }
-  // Stop camera after short delay so user sees result
+  if(SCAN_TARGET==='LEARNER'){ $('learnerCode').value=code; lookupLearner(); }
+  else { $('bookCode').value=code; lookupBook(); }
+  checkBlocks();
   setTimeout(async ()=>{ await stopScan(); checkAuto(); }, 600);
 }
 function checkAuto(){
@@ -256,16 +357,12 @@ function checkAuto(){
     if(mode==='ISSUE') doIssue();
     else doReturn();
   } else if(lc && bc){
-    // Hint to tap button
     $('issueMsg').innerHTML='<div class="info">✅ Both scanned: Learner <b>'+lc+'</b> + Book <b>'+bc+'</b> — Tap <b>'+(mode==='ISSUE'?'ISSUE':'RETURN')+'</b> below.</div>';
   }
 }
 window.stopScan = async function(){
   SCANNING=false;
-  if(html5QrCode){
-    try{ await html5QrCode.stop(); }catch(e){}
-    try{ await html5QrCode.clear(); }catch(e){}
-  }
+  if(html5QrCode){ try{ await html5QrCode.stop(); }catch(e){} try{ await html5QrCode.clear(); }catch(e){} }
   $('scanBox').classList.remove('active');
 };
 window.lookupLearner = function(){
@@ -274,14 +371,14 @@ window.lookupLearner = function(){
   if(!code){ box.style.display='none'; return; }
   const l=ALL_LEARNERS.find(x=> x.barcode===code || x.id===code);
   if(l){
-    box.style.display='block';
+    box.style.display='block'; box.style.background='#f0fdf4'; box.style.borderColor='#059669';
     box.innerHTML='✅ Learner Found: <b>'+l.name+'</b> • '+l.grade+' '+l.class+' • ID: <b>'+l.barcode+'</b>';
     $('learnerPick').value=l.id;
   } else {
-    box.style.display='block';
-    box.style.background='#fef3c7'; box.style.borderColor='#d4af37';
+    box.style.display='block'; box.style.background='#fef3c7'; box.style.borderColor='#d4af37';
     box.innerHTML='⚠️ Learner <b>'+code+'</b> not found. Check code or add learner in Learners page.';
   }
+  checkBlocks();
 };
 window.lookupBook = function(){
   const code=cleanCode($('bookCode').value);
@@ -297,6 +394,7 @@ window.lookupBook = function(){
     box.style.display='block'; box.style.background='#fef3c7'; box.style.borderColor='#d4af37';
     box.innerHTML='⚠️ Book <b>'+code+'</b> not found. Check code or add book in Textbooks page.';
   }
+  checkBlocks();
 };
 window.pickLearner = function(){
   const id=$('learnerPick').value; if(!id) return;
@@ -312,7 +410,8 @@ window.clearScanForm = function(){
   $('learnerCode').value=''; $('bookCode').value='';
   $('learnerFound').style.display='none'; $('bookFound').style.display='none';
   $('learnerPick').value=''; $('bookPick').value='';
-  $('issueMsg').innerHTML='';
+  $('issueMsg').innerHTML=''; $('blockWarning').style.display='none'; $('okWarning').style.display='none';
+  $('issueBtn').disabled=false; $('issueBtn').textContent='📚 ISSUE Book to Learner';
   $('learnerCode').focus();
 };
 async function loadAll(){
@@ -328,14 +427,11 @@ async function loadAll(){
     ALL_ISSUES=[]; is.forEach(d=>{ ALL_ISSUES.push({id:d.id, ...d.data()}); });
     ALL_LEARNERS.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
     ALL_BOOKS.sort((a,b)=> (a.code||'').localeCompare(b.code||''));
-    // Fill pick lists
     $('learnerPick').innerHTML='<option value="">— Pick Learner —</option>'+ALL_LEARNERS.map(l=>`<option value="${l.id}">${l.name} — ${l.barcode} — ${l.grade} ${l.class}</option>`).join('');
     $('bookPick').innerHTML='<option value="">— Pick Book —</option>'+ALL_BOOKS.map(b=>`<option value="${b.id}">${b.title} — ${b.code} — ${b.subject} ${b.grade}</option>`).join('');
-    // Grade filter for OUT list
     const grades=[...new Set(ALL_LEARNERS.map(l=>l.grade).filter(Boolean))].sort();
     $('outGradeFilter').innerHTML='<option value="">All Grades</option>'+grades.map(g=>`<option>${g}</option>`).join('');
     renderOut();
-    // History — last 50 from issues collection sorted by createdAt desc if available, else by id
     const hist=[...ALL_ISSUES].sort((a,b)=> (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,50);
     if(hist.length===0) $('historyList').innerHTML='<div class="info">No history yet.</div>';
     else {
@@ -347,9 +443,9 @@ async function loadAll(){
       h+='</table></div>'; $('historyList').innerHTML=h;
     }
     $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool()+' • Learners: '+ALL_LEARNERS.length+' • Books: '+ALL_BOOKS.length;
-    // Re-lookup if codes already filled
     if($('learnerCode').value) lookupLearner();
     if($('bookCode').value) lookupBook();
+    checkBlocks();
   }catch(e){ $('issueMsg').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; $('cloudStatus').textContent='🔴 Cloud: Offline — '+e.message; }
 }
 window.loadAll=loadAll;
@@ -375,6 +471,7 @@ window.quickReturn = async function(issueId){
   if(!rec) return;
   $('learnerCode').value=rec.learnerCode||''; $('bookCode').value=rec.bookCode||'';
   lookupLearner(); lookupBook();
+  $('scanMode').value='RETURN'; updateMode();
   await doReturn();
 };
 window.doIssue = async function(){
@@ -387,15 +484,32 @@ window.doIssue = async function(){
   if(!learner){ $('issueMsg').innerHTML='<div class="warn">❌ Learner <b>'+lc+'</b> not found. Add learner first.</div>'; return; }
   const book=ALL_BOOKS.find(x=> x.code===bc || x.id===bc);
   if(!book){ $('issueMsg').innerHTML='<div class="warn">❌ Book <b>'+bc+'</b> not found. Add book first.</div>'; return; }
+  // ✅ BLOCK 1: GRADE MISMATCH — Everyone
+  if(normGrade(learner.grade) !== normGrade(book.grade)){
+    $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED — GRADE MISMATCH<br>Learner: <b>'+learner.name+' — '+learner.grade+'</b><br>Book: <b>'+book.title+' — '+book.grade+'</b><br>Grade must match. Cannot issue Grade '+normGrade(book.grade)+' book to Grade '+normGrade(learner.grade)+' learner.</div>';
+    return;
+  }
+  // ✅ BLOCK 2: TEACHER SUBJECT — Teachers only
+  if(getRole()==='TEACHER'){
+    const mySubjects=getTeacherSubjects();
+    if(mySubjects.length===0){
+      $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED — Select your subject(s) above first. You cannot issue until you select at least 1 subject.</div>';
+      return;
+    }
+    if(!mySubjects.includes(book.subject)){
+      $('issueMsg').innerHTML='<div class="warn">🚫 BLOCKED — NOT YOUR SUBJECT<br>Your subject(s): <b>'+mySubjects.join(', ')+'</b><br>Book: <b>'+book.subject+' — '+book.title+'</b><br>Teachers can ONLY issue their own subject. Ask the '+book.subject+' teacher / Librarian.</div>';
+      return;
+    }
+  }
   const alreadyOut=ALL_ISSUES.find(x=> x.bookCode===book.code && x.status==='OUT');
   if(alreadyOut){ $('issueMsg').innerHTML='<div class="warn">❌ Book <b>'+book.code+'</b> is already OUT to <b>'+alreadyOut.learnerName+' ('+alreadyOut.learnerCode+')</b>. Return it first.</div>'; return; }
   const learnerOutCount=ALL_ISSUES.filter(x=> x.learnerCode===learner.barcode && x.status==='OUT').length;
-  if(!confirm('ISSUE:\nBook: '+book.title+' ('+book.code+')\nTo: '+learner.name+' ('+learner.barcode+') '+learner.grade+' '+learner.class+'\nLearner already has '+learnerOutCount+' book(s) OUT.\nConfirm?')) return;
+  if(!confirm('ISSUE:\nBook: '+book.title+' ('+book.code+') '+book.grade+' '+book.subject+'\nTo: '+learner.name+' ('+learner.barcode+') '+learner.grade+' '+learner.class+'\n✅ Grade matches • ✅ Subject OK\nLearner already has '+learnerOutCount+' book(s) OUT.\nConfirm?')) return;
   const id='ISS_'+Date.now()+'_'+book.code;
   try{
     await setDoc(doc(db,'schools','EMIS_'+emis,'issues',id), {learnerCode:learner.barcode, learnerName:learner.name, learnerGrade:learner.grade, learnerClass:learner.class, bookCode:book.code, bookTitle:book.title, bookSubject:book.subject, bookGrade:book.grade, status:'OUT', date:new Date().toISOString().slice(0,10), issuedBy:(getLogin()||{}).name||'', whoName:(getLogin()||{}).name||'', whoEmail:(getLogin()||{}).email||'', createdAt:serverTimestamp()});
     await updateDoc(doc(db,'schools','EMIS_'+emis,'textbooks',book.id), {status:'ISSUED', updatedAt:serverTimestamp()}).catch(()=>{});
-    await setDoc(doc(db,'schools','EMIS_'+emis,'logs','log_'+Date.now()), {action:'BOOK_ISSUED', detail:'Book '+book.code+' issued to '+learner.name+' ('+learner.barcode+')', whoEmail:(getLogin()||{}).email||'', whoName:(getLogin()||{}).name||'', whoRole:(getLogin()||{}).role||'', createdAt:serverTimestamp()});
+    await setDoc(doc(db,'schools','EMIS_'+emis,'logs','log_'+Date.now()), {action:'BOOK_ISSUED', detail:'Book '+book.code+' ('+book.subject+' '+book.grade+') issued to '+learner.name+' ('+learner.barcode+') '+learner.grade, whoEmail:(getLogin()||{}).email||'', whoName:(getLogin()||{}).name||'', whoRole:(getLogin()||{}).role||'', createdAt:serverTimestamp()});
     $('issueMsg').innerHTML='<div class="ok">✅ ISSUED: <b>'+book.title+' ('+book.code+')</b> → <b>'+learner.name+' ('+learner.barcode+')</b><br>Due: <b>30 November</b> • Learner now has '+(learnerOutCount+1)+' book(s) OUT.</div>';
     beep();
     $('bookCode').value=''; $('bookFound').style.display='none'; $('bookPick').value='';
@@ -409,14 +523,13 @@ window.doReturn = async function(){
   const lc=cleanCode($('learnerCode').value);
   const bc=cleanCode($('bookCode').value);
   if(!bc){ $('issueMsg').innerHTML='<div class="warn">⚠️ Scan / Type Book Code first to Return.</div>'; return; }
-  // Find OUT record by book code (learner code optional for return — book is enough)
+  // ✅ RETURN: NO GRADE CHECK, NO SUBJECT CHECK — Anyone can return ANY book
   let rec=ALL_ISSUES.find(x=> x.bookCode===bc && x.status==='OUT');
   if(!rec && lc) rec=ALL_ISSUES.find(x=> x.bookCode===bc && x.learnerCode===lc && x.status==='OUT');
   if(!rec){ $('issueMsg').innerHTML='<div class="warn">❌ Book <b>'+bc+'</b> is NOT OUT. It may already be returned or never issued.</div>'; return; }
-  if(!confirm('RETURN:\nBook: '+rec.bookTitle+' ('+rec.bookCode+')\nFrom: '+rec.learnerName+' ('+rec.learnerCode+')\nConfirm Return?')) return;
+  if(!confirm('RETURN (No Block):\nBook: '+rec.bookTitle+' ('+rec.bookCode+') '+rec.bookSubject+' '+rec.bookGrade+'\nFrom: '+rec.learnerName+' ('+rec.learnerCode+')\nConfirm Return?')) return;
   try{
     await updateDoc(doc(db,'schools','EMIS_'+emis,'issues',rec.id), {status:'RETURNED', returnedAt:serverTimestamp(), returnedBy:(getLogin()||{}).name||'', updatedAt:serverTimestamp()});
-    // Update book status back to AVAILABLE
     const book=ALL_BOOKS.find(x=> x.code===bc);
     if(book) await updateDoc(doc(db,'schools','EMIS_'+emis,'textbooks',book.id), {status:'AVAILABLE', updatedAt:serverTimestamp()}).catch(()=>{});
     await setDoc(doc(db,'schools','EMIS_'+emis,'logs','log_'+Date.now()), {action:'BOOK_RETURNED', detail:'Book '+bc+' returned by '+rec.learnerName+' ('+rec.learnerCode+')', whoEmail:(getLogin()||{}).email||'', whoName:(getLogin()||{}).name||'', whoRole:(getLogin()||{}).role||'', createdAt:serverTimestamp()});
@@ -426,7 +539,6 @@ window.doReturn = async function(){
     await loadAll();
   }catch(e){ $('issueMsg').innerHTML='<div class="warn">❌ Return failed: '+e.message+'</div>'; }
 };
-// Enter key = Issue / Return based on mode
 document.addEventListener('keydown', (e)=>{
   if(e.key==='Enter' && (e.target.id==='learnerCode' || e.target.id==='bookCode')){
     e.preventDefault();
