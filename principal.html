@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Principal v2.13</title>
+<title>Makhanani LTSM — Principal v2.14</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -37,7 +37,7 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px;word-break:break-word}
-#subBlockBanner{display:none;background:#dc2626;color:#fff;text-align:center;padding:14px;font-weight:900;font-size:15px;margin:14px;border-radius:12px;line-height:1.5}
+#subBlockBanner{display:none;background:#ea580c;color:#fff;text-align:center;padding:14px;font-weight:900;font-size:15px;margin:14px;border-radius:12px;line-height:1.5}
 #subOkBanner{display:none;background:#059669;color:#fff;text-align:center;padding:8px;font-weight:700;font-size:12px;margin:14px;border-radius:12px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word}
@@ -61,25 +61,26 @@ th{background:#0a1f4d;color:#fff}
 .stat.red{background:#dc2626}
 .stat.orange{background:#ea580c}
 .subCard{border:2px solid #d4af37;border-radius:12px;padding:14px;background:#fffbeb;margin-top:10px}
-.subCard.red{border-color:#dc2626;background:#fef2f2}
+.subCard.red{border-color:#ea580c;background:#fff7ed}
 .subCard.green{border-color:#059669;background:#f0fdf4}
+.returnOnlyBox{background:#ffedd5;border:2px solid #ea580c;border-radius:12px;padding:14px;margin-top:10px;text-align:center;font-weight:900;color:#9a3412;display:none}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Principal — Makhanani LTSM</h1><p>Dashboard • Subscription • Reports • Due 30 Nov • v2.13<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.13 PRINCIPAL</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Principal — Makhanani LTSM</h1><p>Dashboard • Subscription • Return Only • Reports • Due 30 Nov • v2.14<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.14 PRINCIPAL</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <div id="subBlockBanner"></div>
 <div id="subOkBanner"></div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="add-school.html">🏫 Add School</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 My Profile</a></div>
-
 <div class="card">
 <h2>👩🏾‍🏫 Principal Dashboard — <span id="schoolNameTop">—</span></h2>
 <div class="info" id="schoolBox">School: —</div>
 <div class="info" id="roleBox">Role: —</div>
 <div class="info" id="subInfoBox">Subscription: Checking...</div>
 <div class="lockNote" id="permissionNote"></div>
-<div class="info"><b>👁️ PRINCIPAL = VIEW ONLY</b><br>Principal can see everything — learners, books, who has what, subscription — but <b>cannot Issue / Add / Delete</b>. Only Librarian / Admin can issue. This protects the school — no accidental issues.</div>
+<div id="returnOnlyBox" class="returnOnlyBox">🟠 RETURN ONLY MODE — Subscription Suspended / Expired<br>Your school can ONLY RETURN books. You CANNOT Issue, Add Learners, Add Books.<br>Contact Xintimani Group to reactivate. You can still VIEW everything here.</div>
+<div class="info"><b>👁️ PRINCIPAL = VIEW ONLY</b><br>Principal can see everything — learners, books, who has what, subscription — but <b>cannot Issue / Add / Delete</b>. Only Librarian / Admin can issue. This protects the school.</div>
 <div class="grid4" style="margin-top:12px">
 <div class="stat"><b id="statLearners">0</b><span>🎓 Learners</span></div>
 <div class="stat gold"><b id="statBooks">0</b><span>📖 Total Books</span></div>
@@ -97,21 +98,19 @@ th{background:#0a1f4d;color:#fff}
 <button class="btn btn-gold" onclick="exportReportCSV()">📥 Export Full Report (CSV)</button>
 </div>
 </div>
-
 <div class="card">
 <h2>💰 My School Subscription — Xintimani Group</h2>
 <div id="mySubCard" class="subCard">Checking subscription...</div>
-<div class="info"><b>What happens if subscription expires?</b><br>• Librarian / Teachers <b>CANNOT Issue</b> new books<br>• Librarian <b>CANNOT Add</b> new learners / books<br>• Learners <b>CAN still RETURN</b> books — returns never blocked<br>• Principal <b>CAN still VIEW</b> everything — reports never blocked<br><br>To renew: Contact Xintimani Group — <b>Your Admin will reactivate in Add School page.</b></div>
+<div class="info"><b>What happens if subscription expires?</b><br>• School goes to <b>🟠 RETURN ONLY</b> — Librarian / Teachers can ONLY RETURN books<br>• Librarian <b>CANNOT Issue</b> new books, <b>CANNOT Add</b> new learners / books<br>• Learners <b>CAN still RETURN</b> books — returns never blocked<br>• Principal <b>CAN still VIEW</b> everything — reports never blocked<br><br>To renew: Contact Xintimani Group — Your Admin will reactivate in Admin → All Schools.</div>
 </div>
-
 <div class="card" id="allSchoolsCard" style="display:none">
 <h2>🏫 All Schools — Xintimani Group (Admin Only)</h2>
 <div class="small">You are logged in as <b>ADMIN</b> — you can see all schools’ subscriptions here. Principals / Teachers / Librarians do NOT see this section — they only see their own school.</div>
 <div class="grid4" style="margin-top:12px">
 <div class="stat"><b id="statAllSchools">0</b><span>🏫 Total Schools</span></div>
 <div class="stat green"><b id="statAllActive">0</b><span>✅ Active</span></div>
-<div class="stat red"><b id="statAllSuspended">0</b><span>🚫 Suspended</span></div>
-<div class="stat gold"><b id="statAllExpiring">0</b><span>⚠️ Expiring in 30 Days</span></div>
+<div class="stat orange"><b id="statAllReturnOnly">0</b><span>🟠 Return Only</span></div>
+<div class="stat gold"><b id="statAllExpiring">0</b><span>⚠️ Expiring 30 Days</span></div>
 </div>
 <div class="grid2">
 <button class="btn btn-blue" onclick="loadAllSchools()">🔄 Refresh All Schools</button>
@@ -119,13 +118,11 @@ th{background:#0a1f4d;color:#fff}
 </div>
 <div id="allSchoolsList" style="margin-top:12px"></div>
 </div>
-
 <div class="card">
 <h2>📚 Books OUT by Subject</h2>
 <div class="small">Which subjects still have most books OUT? Use this to chase HODs.</div>
 <div id="subjectBreakdown"></div>
 </div>
-
 <div class="card">
 <h2>🎓 Learners With Books OUT — Follow-up</h2>
 <div class="grid2">
@@ -134,7 +131,6 @@ th{background:#0a1f4d;color:#fff}
 </div>
 <div id="learnerOutList"></div>
 </div>
-
 <div class="card">
 <h2>📚 All Books OUT — Full List</h2>
 <div class="grid2">
@@ -143,13 +139,11 @@ th{background:#0a1f4d;color:#fff}
 </div>
 <div id="outList"></div>
 </div>
-
 <div class="card">
 <h2>📜 Recent Activity (Last 50)</h2>
 <div id="historyList"></div>
 </div>
 </main>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -161,46 +155,37 @@ function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || lo
 function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
+function isReturnOnly(){ if(localStorage.getItem('MAKHANANI_RETURN_ONLY')==='true') return true; const login=getLogin(); if(login && login.returnOnly===true) return true; return false; }
 function daysLeftCalc(endDate){ if(!endDate) return 9999; return Math.ceil((new Date(endDate)-new Date(new Date().toISOString().slice(0,10)))/(1000*60*60*24)); }
 function getStatus(s){ if((s.subscription||s.status||'').toUpperCase()==='SUSPENDED') return 'SUSPENDED'; if(s.subscriptionEnd && daysLeftCalc(s.subscriptionEnd)<0) return 'EXPIRED'; return s.subscription||'ACTIVE'; }
-// ===== SUBSCRIPTION — My School =====
+function isReturnOnlySchool(s){ const st=getStatus(s); return st==='SUSPENDED' || st==='EXPIRED'; }
 let SUB_BLOCKED=false, SUB_REASON="";
 async function checkSubscription(){
-  const emis=getEmis(); const banner=$('subBlockBanner'); const okBanner=$('subOkBanner'); const infoBox=$('subInfoBox'); const myCard=$('mySubCard');
+  const emis=getEmis(); const banner=$('subBlockBanner'); const okBanner=$('subOkBanner'); const infoBox=$('subInfoBox'); const myCard=$('mySubCard'); const roBox=$('returnOnlyBox');
   try{
     const snap=await getDoc(doc(db,'schools','EMIS_'+emis));
-    if(!snap.exists()){
-      SUB_BLOCKED=false; if(banner) banner.style.display='none'; if(okBanner) okBanner.style.display='none';
-      if(infoBox) infoBox.innerHTML='Subscription: <b>No school doc yet</b> — Allowed. Add this school in Add School page to enable control.';
-      if(myCard) myCard.innerHTML='<b>No school doc yet for '+getSchool()+'</b><br><span class="small">Add this school in Add School page with EMIS '+emis+' to enable subscription control. Until then, all features are allowed.</span>';
-      return false;
-    }
+    if(!snap.exists()){ SUB_BLOCKED=false; if(banner) banner.style.display='none'; if(okBanner) okBanner.style.display='none'; if(roBox) roBox.style.display='none'; if(infoBox) infoBox.innerHTML='Subscription: <b>No school doc yet</b> — Allowed.'; if(myCard) myCard.innerHTML='<b>No school doc yet for '+getSchool()+'</b><br><span class="small">Add this school in Add School page with EMIS '+emis+'.</span>'; return false; }
     const s=snap.data(); const today=new Date().toISOString().slice(0,10); const end=s.subscriptionEnd||""; const status=(s.subscription||s.status||"ACTIVE").toUpperCase(); const dl=daysLeftCalc(end);
-    if(infoBox){ if(status==='SUSPENDED') infoBox.innerHTML='Subscription: <b style="color:#dc2626">🚫 SUSPENDED</b> • Plan: '+(s.plan||'')+' • End: '+(end||'—')+' • Contact Xintimani Group'; else if(end && end<today) infoBox.innerHTML='Subscription: <b style="color:#dc2626">⌛ EXPIRED on '+end+'</b> • Contact Xintimani Group'; else if(dl<=30) infoBox.innerHTML='Subscription: <b style="color:#92400e">✅ ACTIVE — ⚠️ '+dl+' days left</b> • Plan: '+(s.plan||'')+' • End: '+end; else infoBox.innerHTML='Subscription: <b style="color:#166534">✅ ACTIVE</b> • Plan: '+(s.plan||'')+' • End: '+end+' • '+dl+' days left'; }
-    if(status==='SUSPENDED'){ SUB_BLOCKED=true; SUB_REASON='🚫 SUBSCRIPTION SUSPENDED — Contact Xintimani Group to reactivate.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
-    else if(end && end<today){ SUB_BLOCKED=true; SUB_REASON='⌛ SUBSCRIPTION EXPIRED on '+end+' — Contact Xintimani Group to renew.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
+    const returnOnly = isReturnOnly() || status==='SUSPENDED' || (end && end<today);
+    if(infoBox){ if(status==='SUSPENDED') infoBox.innerHTML='Subscription: <b style="color:#ea580c">🟠 RETURN ONLY — SUSPENDED</b> • Plan: '+(s.plan||'')+' • End: '+(end||'—'); else if(end && end<today) infoBox.innerHTML='Subscription: <b style="color:#ea580c">🟠 RETURN ONLY — EXPIRED on '+end+'</b>'; else if(dl<=30) infoBox.innerHTML='Subscription: <b style="color:#92400e">✅ ACTIVE — ⚠️ '+dl+' days left</b> • Plan: '+(s.plan||'')+' • End: '+end; else infoBox.innerHTML='Subscription: <b style="color:#166534">✅ ACTIVE</b> • Plan: '+(s.plan||'')+' • End: '+end+' • '+dl+' days left'; }
+    if(status==='SUSPENDED'){ SUB_BLOCKED=true; SUB_REASON='🟠 RETURN ONLY — SUBSCRIPTION SUSPENDED — Contact Xintimani Group.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
+    else if(end && end<today){ SUB_BLOCKED=true; SUB_REASON='🟠 RETURN ONLY — SUBSCRIPTION EXPIRED on '+end+' — Contact Xintimani Group.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
     else { SUB_BLOCKED=false; SUB_REASON=""; }
     if(myCard){
-      if(SUB_BLOCKED){
-        myCard.className='subCard red';
-        myCard.innerHTML='<b style="color:#dc2626;font-size:16px">'+SUB_REASON.replace(/\n/g,'<br>')+'</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Principal:</b> '+(s.principalName||'—')+' '+(s.principalCell||'')+'<br><b>Admin:</b> '+(s.adminName||'—')+' '+(s.adminEmail||'')+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+(end||'—')+'<br><br>⚠️ <b>Issuing is BLOCKED.</b> Adding learners / books is BLOCKED. Returning + Viewing still works.<br>Contact Xintimani Group to reactivate.';
-      } else if(dl<=30){
-        myCard.className='subCard';
-        myCard.innerHTML='<b style="color:#92400e;font-size:16px">⚠️ SUBSCRIPTION ACTIVE — '+dl+' DAYS LEFT — RENEW SOON</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+end+'<br><b>Principal:</b> '+(s.principalName||'—')+'<br><b>Admin:</b> '+(s.adminName||'—')+' '+(s.adminEmail||'')+'<br><br>✅ All features working. Contact Xintimani Group before '+end+' to renew and avoid blocking.';
-      } else {
-        myCard.className='subCard green';
-        myCard.innerHTML='<b style="color:#166534;font-size:16px">✅ SUBSCRIPTION ACTIVE — '+dl+' DAYS LEFT</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+end+'<br><b>Principal:</b> '+(s.principalName||'—')+' '+(s.principalCell||'')+'<br><b>Admin:</b> '+(s.adminName||'—')+' '+(s.adminEmail||'')+'<br><br>✅ All features working — Issue, Add Learners, Add Books, Reports.';
-      }
+      if(SUB_BLOCKED){ myCard.className='subCard red'; myCard.innerHTML='<b style="color:#9a3412;font-size:16px">'+SUB_REASON.replace(/\n/g,'<br>')+'</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Principal:</b> '+(s.principalName||'—')+' '+(s.principalCell||'')+'<br><b>Admin:</b> '+(s.adminName||'—')+' '+(s.adminEmail||'')+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+(end||'—')+'<br><br>⚠️ <b>School is in RETURN ONLY.</b> Issuing BLOCKED. Adding BLOCKED. Returning + Viewing still works.<br>Contact Xintimani Group to reactivate.'; }
+      else if(dl<=30){ myCard.className='subCard'; myCard.innerHTML='<b style="color:#92400e;font-size:16px">⚠️ SUBSCRIPTION ACTIVE — '+dl+' DAYS LEFT — RENEW SOON</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+end+'<br><b>Principal:</b> '+(s.principalName||'—')+'<br><b>Admin:</b> '+(s.adminName||'—')+'<br><br>✅ All features working. Contact Xintimani Group before '+end+'.'; }
+      else { myCard.className='subCard green'; myCard.innerHTML='<b style="color:#166534;font-size:16px">✅ SUBSCRIPTION ACTIVE — '+dl+' DAYS LEFT</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+end+'<br><b>Principal:</b> '+(s.principalName||'—')+'<br><b>Admin:</b> '+(s.adminName||'—')+'<br><br>✅ All features working.'; }
     }
-    if(SUB_BLOCKED){ if(banner){ banner.style.display='block'; banner.innerHTML=SUB_REASON.replace(/\n/g,'<br>')+'<br><span style="font-size:12px;font-weight:400">Principal: You can still VIEW everything. Issuing / Adding is blocked until subscription is active. Contact Xintimani Group.</span>'; } if(okBanner) okBanner.style.display='none'; }
-    else { if(banner) banner.style.display='none'; if(okBanner && s.subscriptionEnd){ okBanner.style.display='block'; okBanner.textContent='✅ Subscription ACTIVE — '+(s.plan||'')+' • Ends '+s.subscriptionEnd+' • '+dl+' days left'; } }
+    if(SUB_BLOCKED || returnOnly){ if(banner){ banner.style.display='block'; banner.style.background='#ea580c'; banner.innerHTML=SUB_REASON.replace(/\n/g,'<br>')+'<br><span style="font-size:12px;font-weight:400">Principal: You can still VIEW everything. Issuing / Adding is blocked until subscription is active.</span>'; } if(okBanner) okBanner.style.display='none'; if(roBox) roBox.style.display='block'; }
+    else { if(banner) banner.style.display='none'; if(roBox) roBox.style.display='none'; if(okBanner && s.subscriptionEnd){ okBanner.style.display='block'; okBanner.textContent='✅ Subscription ACTIVE — '+(s.plan||'')+' • Ends '+s.subscriptionEnd+' • '+dl+' days left'; } }
     return SUB_BLOCKED;
-  }catch(e){ SUB_BLOCKED=false; if(infoBox) infoBox.innerHTML='Subscription: Could not check (offline) — Allowed for now.'; return false; }
+  }catch(e){ SUB_BLOCKED=false; if(infoBox) infoBox.innerHTML='Subscription: Could not check (offline) — Allowed.'; return false; }
 }
 function applyRole(){
   const login=getLogin();
   if(!login){ $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; $('permissionNote').innerHTML='⚠️ Login in Home first.'; return; }
-  if(getRole()==='PRINCIPAL'){ $('roleBox').innerHTML='Role: <b>PRINCIPAL</b> • View Only • Cannot Issue / Add'; $('permissionNote').innerHTML='👁️ PRINCIPAL — View Only. You can see everything, export reports, check subscription. You cannot Issue / Add / Delete.'; }
+  if(isReturnOnly()){ $('roleBox').innerHTML='Role: <b>'+getRole()+'</b> • 🟠 RETURN ONLY'; $('permissionNote').innerHTML='🟠 RETURN ONLY MODE — School in Return Only. You can VIEW everything, RETURN books, but cannot Issue / Add.'; }
+  else if(getRole()==='PRINCIPAL'){ $('roleBox').innerHTML='Role: <b>PRINCIPAL</b> • View Only • Cannot Issue / Add'; $('permissionNote').innerHTML='👁️ PRINCIPAL — View Only. You can see everything, export reports, check subscription.'; }
   else if(getRole()==='ADMIN'){ $('roleBox').innerHTML='Role: <b>ADMIN</b> • Full Access + All Schools'; $('permissionNote').innerHTML='✅ ADMIN — Full Access + You can see All Schools below.'; $('allSchoolsCard').style.display='block'; }
   else if(getRole()==='LIBRARIAN'){ $('roleBox').innerHTML='Role: <b>LIBRARIAN</b> • Can Issue / Add — View Dashboard Here'; $('permissionNote').innerHTML='✅ LIBRARIAN — You can Issue / Add in other pages. This page is View Only dashboard.'; }
   else if(getRole()==='TEACHER'){ $('roleBox').innerHTML='Role: <b>TEACHER</b> • View Only'; $('permissionNote').innerHTML='👁️ TEACHER — View Only dashboard.'; }
@@ -210,124 +195,52 @@ async function loadAll(){
   const emis=getEmis();
   try{
     const [ls, bs, is] = await Promise.all([ getDocs(collection(db,'schools','EMIS_'+emis,'learners')), getDocs(collection(db,'schools','EMIS_'+emis,'textbooks')), getDocs(collection(db,'schools','EMIS_'+emis,'issues')) ]);
-    ALL_LEARNERS=[]; ls.forEach(d=>{ ALL_LEARNERS.push({id:d.id, ...d.data()}); });
-    ALL_BOOKS=[]; bs.forEach(d=>{ ALL_BOOKS.push({id:d.id, ...d.data()}); });
-    ALL_ISSUES=[]; is.forEach(d=>{ ALL_ISSUES.push({id:d.id, ...d.data()}); });
-    $('schoolNameTop').textContent=getSchool();
-    const outList=ALL_ISSUES.filter(x=>x.status==='OUT');
-    const retList=ALL_ISSUES.filter(x=>x.status==='RETURNED');
-    const avail=ALL_BOOKS.length - outList.length;
-    const learnersWithBooks=new Set(outList.map(x=>x.learnerCode)).size;
-    const pct=ALL_BOOKS.length? Math.round((outList.length/ALL_BOOKS.length)*100):0;
-    const subjects=new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean)).size;
-    $('statLearners').textContent=ALL_LEARNERS.length; $('statBooks').textContent=ALL_BOOKS.length; $('statOut').textContent=outList.length; $('statAvail').textContent=avail<0?0:avail;
-    $('statLearnersOut').textContent=learnersWithBooks; $('statPctOut').textContent=pct+'%'; $('statSubjects').textContent=subjects; $('statReturned').textContent=retList.length;
-    const subjList=[...new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean))].sort();
-    $('outSubject').innerHTML='<option value="">All Subjects</option>'+subjList.map(s=>`<option>${s}</option>`).join('');
-    // Subject breakdown
-    let sb='<div class="tableWrap"><table><tr><th>Subject</th><th>Total Books</th><th>OUT</th><th>Available</th><th>% OUT</th></tr>';
-    subjList.forEach(sub=>{
-      const total=ALL_BOOKS.filter(b=>b.subject===sub).length;
-      const out=ALL_ISSUES.filter(x=> x.status==='OUT' && x.bookSubject===sub).length;
-      const av=total-out; const p=total?Math.round((out/total)*100):0;
-      sb+='<tr><td><b>'+sub+'</b></td><td>'+total+'</td><td><span class="pill pill-red">'+out+' OUT</span></td><td>'+av+'</td><td>'+p+'%</td></tr>';
-    });
-    sb+='</table></div>'; $('subjectBreakdown').innerHTML=sb;
+    ALL_LEARNERS=[]; ls.forEach(d=>{ ALL_LEARNERS.push({id:d.id, ...d.data()}); }); ALL_BOOKS=[]; bs.forEach(d=>{ ALL_BOOKS.push({id:d.id, ...d.data()}); }); ALL_ISSUES=[]; is.forEach(d=>{ ALL_ISSUES.push({id:d.id, ...d.data()}); });
+    $('schoolNameTop').textContent=getSchool(); const outList=ALL_ISSUES.filter(x=>x.status==='OUT'); const retList=ALL_ISSUES.filter(x=>x.status==='RETURNED'); const avail=ALL_BOOKS.length-outList.length; const learnersWithBooks=new Set(outList.map(x=>x.learnerCode)).size; const pct=ALL_BOOKS.length? Math.round((outList.length/ALL_BOOKS.length)*100):0; const subjects=new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean)).size;
+    $('statLearners').textContent=ALL_LEARNERS.length; $('statBooks').textContent=ALL_BOOKS.length; $('statOut').textContent=outList.length; $('statAvail').textContent=avail<0?0:avail; $('statLearnersOut').textContent=learnersWithBooks; $('statPctOut').textContent=pct+'%'; $('statSubjects').textContent=subjects; $('statReturned').textContent=retList.length;
+    const subjList=[...new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean))].sort(); $('outSubject').innerHTML='<option value="">All Subjects</option>'+subjList.map(s=>`<option>${s}</option>`).join('');
+    let sb='<div class="tableWrap"><table><tr><th>Subject</th><th>Total Books</th><th>OUT</th><th>Available</th><th>% OUT</th></tr>'; subjList.forEach(sub=>{ const total=ALL_BOOKS.filter(b=>b.subject===sub).length; const out=ALL_ISSUES.filter(x=> x.status==='OUT' && x.bookSubject===sub).length; const av=total-out; const p=total?Math.round((out/total)*100):0; sb+='<tr><td><b>'+sub+'</b></td><td>'+total+'</td><td><span class="pill pill-red">'+out+' OUT</span></td><td>'+av+'</td><td>'+p+'%</td></tr>'; }); sb+='</table></div>'; $('subjectBreakdown').innerHTML=sb;
     renderLearnerOut(); renderOut();
     const hist=[...ALL_ISSUES].sort((a,b)=> (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,50);
-    if(hist.length===0) $('historyList').innerHTML='<div class="info">No history yet.</div>';
-    else { let h='<div class="tableWrap"><table><tr><th>Date</th><th>Learner</th><th>Book</th><th>Action</th><th>By</th></tr>'; hist.forEach(x=>{ const d=x.createdAt?.toDate ? x.createdAt.toDate().toLocaleString('en-ZA') : (x.date||'—'); h+='<tr><td>'+d+'</td><td><b>'+(x.learnerName||'')+'</b><br><span class="small">'+(x.learnerCode||'')+'</span></td><td><b>'+(x.bookTitle||'')+'</b><br><span class="small">'+(x.bookCode||'')+'</span></td><td>'+(x.status==='OUT' ? '<span class="pill pill-blue">📚 ISSUED</span>' : '<span class="pill pill-green">✅ RETURNED</span>')+'</td><td>'+(x.whoName||x.issuedBy||'')+'</td></tr>'; }); h+='</table></div>'; $('historyList').innerHTML=h; }
-    $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool()+' • Learners: '+ALL_LEARNERS.length+' • Books: '+ALL_BOOKS.length+' • OUT: '+outList.length;
+    if(hist.length===0) $('historyList').innerHTML='<div class="info">No history yet.</div>'; else { let h='<div class="tableWrap"><table><tr><th>Date</th><th>Learner</th><th>Book</th><th>Action</th><th>By</th></tr>'; hist.forEach(x=>{ const d=x.createdAt?.toDate ? x.createdAt.toDate().toLocaleString('en-ZA') : (x.date||'—'); h+='<tr><td>'+d+'</td><td><b>'+(x.learnerName||'')+'</b><br><span class="small">'+(x.learnerCode||'')+'</span></td><td><b>'+(x.bookTitle||'')+'</b><br><span class="small">'+(x.bookCode||'')+'</span></td><td>'+(x.status==='OUT' ? '<span class="pill pill-blue">📚 ISSUED</span>' : '<span class="pill pill-green">✅ RETURNED</span>')+'</td><td>'+(x.whoName||x.issuedBy||'')+'</td></tr>'; }); h+='</table></div>'; $('historyList').innerHTML=h; }
+    $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool()+' • Learners: '+ALL_LEARNERS.length+' • Books: '+ALL_BOOKS.length+' • OUT: '+outList.length+(isReturnOnly()?' • 🟠 RETURN ONLY':'');
   }catch(e){ $('historyList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; $('cloudStatus').textContent='🔴 Cloud: Offline — '+e.message; }
 }
 window.loadAll=loadAll;
 function renderLearnerOut(){
-  const q=($('learnerOutSearch').value||'').toLowerCase().trim(); const gf=$('learnerOutGrade').value;
-  const map={};
+  const q=($('learnerOutSearch').value||'').toLowerCase().trim(); const gf=$('learnerOutGrade').value; const map={};
   ALL_ISSUES.filter(x=>x.status==='OUT').forEach(x=>{ const key=x.learnerCode||'UNKNOWN'; if(!map[key]) map[key]={name:x.learnerName||'', code:key, grade:x.learnerGrade||'', cls:x.learnerClass||'', books:[]}; map[key].books.push(x); });
-  let arr=Object.values(map).sort((a,b)=> b.books.length-a.books.length || a.name.localeCompare(b.name));
-  if(gf) arr=arr.filter(l=> (l.grade||'')===gf);
-  if(q) arr=arr.filter(l=> ((l.name||'')+' '+(l.code||'')).toLowerCase().includes(q));
+  let arr=Object.values(map).sort((a,b)=> b.books.length-a.books.length || a.name.localeCompare(b.name)); if(gf) arr=arr.filter(l=> (l.grade||'')===gf); if(q) arr=arr.filter(l=> ((l.name||'')+' '+(l.code||'')).toLowerCase().includes(q));
   if(arr.length===0){ $('learnerOutList').innerHTML='<div class="info">No learners with books OUT ✅</div>'; return; }
-  let html='<div class="tableWrap"><table><tr><th>Learner</th><th>Books OUT</th><th>Books</th></tr>';
-  arr.forEach(l=>{ html+='<tr><td><b>'+l.name+'</b><br><span class="small">'+l.code+' • '+l.grade+' '+l.cls+'</span></td><td><span class="pill pill-red">'+l.books.length+' OUT</span></td><td><span class="small">'+l.books.map(b=>b.bookCode+' — '+b.bookTitle).join('<br>')+'</span></td></tr>'; });
-  html+='</table></div>'; $('learnerOutList').innerHTML=html;
+  let html='<div class="tableWrap"><table><tr><th>Learner</th><th>Books OUT</th><th>Books</th></tr>'; arr.forEach(l=>{ html+='<tr><td><b>'+l.name+'</b><br><span class="small">'+l.code+' • '+l.grade+' '+l.cls+'</span></td><td><span class="pill pill-red">'+l.books.length+' OUT</span></td><td><span class="small">'+l.books.map(b=>b.bookCode+' — '+b.bookTitle).join('<br>')+'</span></td></tr>'; }); html+='</table></div>'; $('learnerOutList').innerHTML=html;
 }
 window.renderLearnerOut=renderLearnerOut;
 function renderOut(){
-  const q=($('outSearch').value||'').toLowerCase().trim(); const sf=$('outSubject').value;
-  let list=ALL_ISSUES.filter(x=> x.status==='OUT');
-  if(sf) list=list.filter(x=> (x.bookSubject||'')===sf);
-  if(q) list=list.filter(x=> ((x.learnerName||'')+' '+(x.learnerCode||'')+' '+(x.bookTitle||'')+' '+(x.bookCode||'')).toLowerCase().includes(q));
+  const q=($('outSearch').value||'').toLowerCase().trim(); const sf=$('outSubject').value; let list=ALL_ISSUES.filter(x=> x.status==='OUT'); if(sf) list=list.filter(x=> (x.bookSubject||'')===sf); if(q) list=list.filter(x=> ((x.learnerName||'')+' '+(x.learnerCode||'')+' '+(x.bookTitle||'')+' '+(x.bookCode||'')).toLowerCase().includes(q));
   if(list.length===0){ $('outList').innerHTML='<div class="info">No books OUT. All returned ✅</div>'; return; }
-  let html='<div class="tableWrap"><table><tr><th>Learner</th><th>Book</th><th>Issued</th></tr>';
-  list.slice(0,200).forEach(x=>{ const d=x.createdAt?.toDate ? x.createdAt.toDate().toLocaleDateString('en-ZA') : (x.date||'—'); html+='<tr><td><b>'+(x.learnerName||'')+'</b><br><span class="small">'+(x.learnerCode||'')+' • '+(x.learnerGrade||'')+' '+(x.learnerClass||'')+'</span></td><td><b>'+(x.bookTitle||'')+'</b><br><span class="small">'+(x.bookCode||'')+' • '+x.bookSubject+'</span></td><td>'+d+'</td></tr>'; });
-  html+='</table></div>'; $('outList').innerHTML=html;
+  let html='<div class="tableWrap"><table><tr><th>Learner</th><th>Book</th><th>Issued</th></tr>'; list.slice(0,200).forEach(x=>{ const d=x.createdAt?.toDate ? x.createdAt.toDate().toLocaleDateString('en-ZA') : (x.date||'—'); html+='<tr><td><b>'+(x.learnerName||'')+'</b><br><span class="small">'+(x.learnerCode||'')+' • '+(x.learnerGrade||'')+' '+(x.learnerClass||'')+'</span></td><td><b>'+(x.bookTitle||'')+'</b><br><span class="small">'+(x.bookCode||'')+' • '+x.bookSubject+'</span></td><td>'+d+'</td></tr>'; }); html+='</table></div>'; $('outList').innerHTML=html;
 }
 window.renderOut=renderOut;
 async function loadAllSchools(){
   if(getRole()!=='ADMIN'){ $('allSchoolsCard').style.display='none'; return; }
   try{
-    const snap=await getDocs(collection(db,'schools'));
-    ALL_SCHOOLS=[];
-    for(const d of snap.docs){
-      const s=d.data(); const emis=s.emis||d.id.replace('EMIS_','');
-      let learners=0, books=0, out=0;
-      try{ const [ls, bs, is] = await Promise.all([ getDocs(collection(db,'schools',d.id,'learners')), getDocs(collection(db,'schools',d.id,'textbooks')), getDocs(collection(db,'schools',d.id,'issues')) ]); learners=ls.size; books=bs.size; is.forEach(x=>{ if(x.data().status==='OUT') out++; }); }catch(e){}
-      ALL_SCHOOLS.push({id:d.id, ...s, emis:emis, learners:learners, books:books, out:out});
-    }
+    const snap=await getDocs(collection(db,'schools')); ALL_SCHOOLS=[];
+    for(const d of snap.docs){ const s=d.data(); const emis=s.emis||d.id.replace('EMIS_',''); let learners=0, books=0, out=0; try{ const [ls, bs, is] = await Promise.all([ getDocs(collection(db,'schools',d.id,'learners')), getDocs(collection(db,'schools',d.id,'textbooks')), getDocs(collection(db,'schools',d.id,'issues')) ]); learners=ls.size; books=bs.size; is.forEach(x=>{ if(x.data().status==='OUT') out++; }); }catch(e){} ALL_SCHOOLS.push({id:d.id, ...s, emis:emis, learners:learners, books:books, out:out}); }
     ALL_SCHOOLS.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
-    const active=ALL_SCHOOLS.filter(s=> getStatus(s)==='ACTIVE').length;
-    const susp=ALL_SCHOOLS.filter(s=> getStatus(s)==='SUSPENDED').length;
-    const expiring=ALL_SCHOOLS.filter(s=> getStatus(s)==='ACTIVE' && daysLeftCalc(s.subscriptionEnd)>=0 && daysLeftCalc(s.subscriptionEnd)<=30).length;
-    $('statAllSchools').textContent=ALL_SCHOOLS.length; $('statAllActive').textContent=active; $('statAllSuspended').textContent=susp; $('statAllExpiring').textContent=expiring;
-    if(ALL_SCHOOLS.length===0){ $('allSchoolsList').innerHTML='<div class="info">No schools found. Add schools in Add School page.</div>'; return; }
+    const active=ALL_SCHOOLS.filter(s=> getStatus(s)==='ACTIVE').length; const retOnly=ALL_SCHOOLS.filter(s=> isReturnOnlySchool(s)).length; const expiring=ALL_SCHOOLS.filter(s=> getStatus(s)==='ACTIVE' && daysLeftCalc(s.subscriptionEnd)>=0 && daysLeftCalc(s.subscriptionEnd)<=30).length;
+    $('statAllSchools').textContent=ALL_SCHOOLS.length; $('statAllActive').textContent=active; $('statAllReturnOnly').textContent=retOnly; $('statAllExpiring').textContent=expiring;
+    if(ALL_SCHOOLS.length===0){ $('allSchoolsList').innerHTML='<div class="info">No schools found.</div>'; return; }
     let html='<div class="tableWrap"><table><tr><th>School</th><th>EMIS</th><th>Admin</th><th>Subscription</th><th>Data</th><th>Actions</th></tr>';
-    ALL_SCHOOLS.forEach(s=>{
-      const st=getStatus(s); const dl=daysLeftCalc(s.subscriptionEnd);
-      const pill = st==='ACTIVE' ? '<span class="pill pill-green">✅ ACTIVE</span>' : st==='SUSPENDED' ? '<span class="pill pill-red">🚫 SUSPENDED</span>' : st==='EXPIRED' ? '<span class="pill pill-red">⌛ EXPIRED</span>' : '<span class="pill pill-gold">'+st+'</span>';
-      const dlText = s.subscriptionEnd ? (dl<0 ? '<b style="color:#dc2626">Expired '+Math.abs(dl)+' days ago</b>' : dl<=30 ? '<b style="color:#92400e">'+dl+' days left ⚠️</b>' : dl+' days left') : '—';
-      html+='<tr><td><b>'+(s.name||'')+'</b><br><span class="small">'+(s.district||'')+' • '+(s.grades||'')+'</span><br><span class="small">Principal: '+(s.principalName||'—')+'</span></td><td><b>'+s.emis+'</b></td><td>'+(s.adminName||'—')+'<br><span class="small">'+(s.adminEmail||'')+'</span></td><td>'+pill+'<br><span class="small">'+(s.plan||'')+'</span><br><span class="small">'+(s.subscriptionStart||'')+' → '+(s.subscriptionEnd||'')+'</span><br><span class="small">'+dlText+'</span></td><td><span class="small">🎓 '+s.learners+' learners<br>📖 '+s.books+' books<br>📚 '+s.out+' OUT</span></td><td>'+
-      (st==='SUSPENDED' ? '<button class="btn btn-green btn-sm" onclick="setSchoolStatus(\''+s.id+'\',\'ACTIVE\')">✅ Activate</button>' : '<button class="btn btn-red btn-sm" onclick="setSchoolStatus(\''+s.id+'\',\'SUSPENDED\')">🚫 Suspend</button>')+
-      '<br><button class="btn btn-gold btn-sm" onclick="extendSchool(\''+s.id+'\')">📅 +12 Months</button></td></tr>';
-    });
+    ALL_SCHOOLS.forEach(s=>{ const st=getStatus(s); const dl=daysLeftCalc(s.subscriptionEnd); const pill = st==='ACTIVE' ? '<span class="pill pill-green">✅ ACTIVE</span>' : st==='SUSPENDED' ? '<span class="pill pill-orange">🟠 RETURN ONLY — SUSPENDED</span>' : st==='EXPIRED' ? '<span class="pill pill-orange">🟠 RETURN ONLY — EXPIRED</span>' : '<span class="pill pill-gold">'+st+'</span>'; const dlText = s.subscriptionEnd ? (dl<0 ? '<b style="color:#ea580c">Expired '+Math.abs(dl)+' days ago — RETURN ONLY</b>' : dl<=30 ? '<b style="color:#92400e">'+dl+' days left ⚠️</b>' : dl+' days left') : '—'; html+='<tr><td><b>'+(s.name||'')+'</b><br><span class="small">'+(s.district||'')+' • '+(s.grades||'')+'</span><br><span class="small">Principal: '+(s.principalName||'—')+'</span></td><td><b>'+s.emis+'</b></td><td>'+(s.adminName||'—')+'<br><span class="small">'+(s.adminEmail||'')+'</span></td><td>'+pill+'<br><span class="small">'+(s.plan||'')+'</span><br><span class="small">'+(s.subscriptionStart||'')+' → '+(s.subscriptionEnd||'')+'</span><br><span class="small">'+dlText+'</span></td><td><span class="small">🎓 '+s.learners+' learners<br>📖 '+s.books+' books<br>📚 '+s.out+' OUT</span></td><td>'+(st==='SUSPENDED' ? '<button class="btn btn-green btn-sm" onclick="setSchoolStatus(\''+s.id+'\',\'ACTIVE\')">✅ Activate</button>' : '<button class="btn btn-red btn-sm" onclick="setSchoolStatus(\''+s.id+'\',\'SUSPENDED\')">🟠 Return Only</button>')+'<br><button class="btn btn-gold btn-sm" onclick="extendSchool(\''+s.id+'\')">📅 +12 Months</button></td></tr>'; });
     html+='</table></div>'; $('allSchoolsList').innerHTML=html;
   }catch(e){ $('allSchoolsList').innerHTML='<div class="warn">❌ Load all schools failed: '+e.message+'</div>'; }
 }
 window.loadAllSchools=loadAllSchools;
-window.setSchoolStatus = async function(docId, newStatus){
-  const s=ALL_SCHOOLS.find(x=>x.id===docId); if(!s) return;
-  if(!confirm((newStatus==='SUSPENDED' ? 'SUSPEND' : 'ACTIVATE')+' school:\n'+s.name+' (EMIS '+s.emis+')\nContinue?')) return;
-  try{ await updateDoc(doc(db,'schools',docId), {subscription:newStatus, status:newStatus, updatedAt:serverTimestamp()}); await loadAllSchools(); await checkSubscription(); }catch(e){ alert('Failed: '+e.message); }
-};
-window.extendSchool = async function(docId){
-  const s=ALL_SCHOOLS.find(x=>x.id===docId); if(!s) return;
-  const currentEnd=s.subscriptionEnd || new Date().toISOString().slice(0,10);
-  const base = daysLeftCalc(currentEnd) < 0 ? new Date().toISOString().slice(0,10) : currentEnd;
-  const d=new Date(base); d.setMonth(d.getMonth()+12); const newEnd=d.toISOString().slice(0,10);
-  if(!confirm('Extend subscription for:\n'+s.name+'\nFrom '+currentEnd+' → '+newEnd+' (12 months)\nConfirm?')) return;
-  try{ await updateDoc(doc(db,'schools',docId), {subscriptionEnd:newEnd, subscription:'ACTIVE', status:'ACTIVE', updatedAt:serverTimestamp()}); await loadAllSchools(); await checkSubscription(); }catch(e){ alert('Failed: '+e.message); }
-};
-window.exportReportCSV = function(){
-  const outList=ALL_ISSUES.filter(x=>x.status==='OUT');
-  let csv='School,'+getSchool()+',EMIS,'+getEmis()+'\n';
-  csv+='Learners,'+ALL_LEARNERS.length+',Books,'+ALL_BOOKS.length+',OUT,'+outList.length+'\n\n';
-  csv+='Learner Name,Learner Code,Grade,Class,Book Title,Book Code,Subject,Book Grade,Issued Date\n';
-  outList.forEach(x=>{ const d=x.createdAt?.toDate ? x.createdAt.toDate().toLocaleDateString('en-ZA') : (x.date||''); csv+='"'+(x.learnerName||'')+'","'+(x.learnerCode||'')+'","'+(x.learnerGrade||'')+'","'+(x.learnerClass||'')+'","'+(x.bookTitle||'')+'","'+(x.bookCode||'')+'","'+(x.bookSubject||'')+'","'+(x.bookGrade||'')+'","'+d+'"\n'; });
-  const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_Principal_Report_'+getEmis()+'_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url);
-};
-window.exportAllSchoolsCSV = function(){
-  if(ALL_SCHOOLS.length===0){ alert('No schools.'); return; }
-  let csv='School Name,EMIS,District,Principal,Admin Name,Admin Email,Plan,Subscription Start,Subscription End,Status,Learners,Books,Books OUT\n';
-  ALL_SCHOOLS.forEach(s=>{ csv+='"'+(s.name||'')+'","'+(s.emis||'')+'","'+(s.district||'')+'","'+(s.principalName||'')+'","'+(s.adminName||'')+'","'+(s.adminEmail||'')+'","'+(s.plan||'')+'","'+(s.subscriptionStart||'')+'","'+(s.subscriptionEnd||'')+'","'+getStatus(s)+'","'+s.learners+'","'+s.books+'","'+s.out+'"\n'; });
-  const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_All_Schools_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url);
-};
-document.addEventListener('DOMContentLoaded', async ()=>{
-  const login=getLogin(); if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'');
-  $('schoolBox').textContent='School: '+getSchool()+' • EMIS '+getEmis();
-  applyRole(); await checkSubscription(); await loadAll();
-  if(getRole()==='ADMIN') await loadAllSchools();
-});
+window.setSchoolStatus = async function(docId, newStatus){ const s=ALL_SCHOOLS.find(x=>x.id===docId); if(!s) return; if(!confirm((newStatus==='SUSPENDED' ? 'Set to RETURN ONLY (Suspend)' : 'ACTIVATE')+' school:\n'+s.name+' (EMIS '+s.emis+')\nContinue?')) return; try{ await updateDoc(doc(db,'schools',docId), {subscription:newStatus, status:newStatus, updatedAt:serverTimestamp()}); await loadAllSchools(); await checkSubscription(); }catch(e){ alert('Failed: '+e.message); } };
+window.extendSchool = async function(docId){ const s=ALL_SCHOOLS.find(x=>x.id===docId); if(!s) return; const currentEnd=s.subscriptionEnd || new Date().toISOString().slice(0,10); const base = daysLeftCalc(currentEnd) < 0 ? new Date().toISOString().slice(0,10) : currentEnd; const d=new Date(base); d.setMonth(d.getMonth()+12); const newEnd=d.toISOString().slice(0,10); if(!confirm('Extend subscription for:\n'+s.name+'\nFrom '+currentEnd+' → '+newEnd+' (12 months)\nConfirm?')) return; try{ await updateDoc(doc(db,'schools',docId), {subscriptionEnd:newEnd, subscription:'ACTIVE', status:'ACTIVE', updatedAt:serverTimestamp()}); await loadAllSchools(); await checkSubscription(); }catch(e){ alert('Failed: '+e.message); } };
+window.exportReportCSV = function(){ const outList=ALL_ISSUES.filter(x=>x.status==='OUT'); let csv='School,'+getSchool()+',EMIS,'+getEmis()+'\n'; csv+='Learners,'+ALL_LEARNERS.length+',Books,'+ALL_BOOKS.length+',OUT,'+outList.length+'\n\n'; csv+='Learner Name,Learner Code,Grade,Class,Book Title,Book Code,Subject,Book Grade,Issued Date\n'; outList.forEach(x=>{ const d=x.createdAt?.toDate ? x.createdAt.toDate().toLocaleDateString('en-ZA') : (x.date||''); csv+='"'+(x.learnerName||'')+'","'+(x.learnerCode||'')+'","'+(x.learnerGrade||'')+'","'+(x.learnerClass||'')+'","'+(x.bookTitle||'')+'","'+(x.bookCode||'')+'","'+(x.bookSubject||'')+'","'+(x.bookGrade||'')+'","'+d+'"\n'; }); const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_Principal_Report_'+getEmis()+'_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url); };
+window.exportAllSchoolsCSV = function(){ if(ALL_SCHOOLS.length===0){ alert('No schools.'); return; } let csv='School Name,EMIS,District,Principal,Admin Name,Admin Email,Plan,Subscription Start,Subscription End,Status,Return Only?,Learners,Books,Books OUT\n'; ALL_SCHOOLS.forEach(s=>{ csv+='"'+(s.name||'')+'","'+(s.emis||'')+'","'+(s.district||'')+'","'+(s.principalName||'')+'","'+(s.adminName||'')+'","'+(s.adminEmail||'')+'","'+(s.plan||'')+'","'+(s.subscriptionStart||'')+'","'+(s.subscriptionEnd||'')+'","'+getStatus(s)+'","'+(isReturnOnlySchool(s)?'YES - RETURN ONLY':'NO')+'","'+s.learners+'","'+s.books+'","'+s.out+'"\n'; }); const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_All_Schools_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url); };
+document.addEventListener('DOMContentLoaded', async ()=>{ const login=getLogin(); if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'')+(isReturnOnly()?' • 🟠 RETURN ONLY':''); $('schoolBox').textContent='School: '+getSchool()+' • EMIS '+getEmis(); applyRole(); await checkSubscription(); await loadAll(); if(getRole()==='ADMIN') await loadAllSchools(); });
 </script>
 </body>
 </html>
