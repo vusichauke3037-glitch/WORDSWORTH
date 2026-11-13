@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Admin v2.13</title>
+<title>Makhanani LTSM — Admin v2.14</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -37,7 +37,7 @@ input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8p
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
 #cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px;word-break:break-word}
-#subBlockBanner{display:none;background:#dc2626;color:#fff;text-align:center;padding:14px;font-weight:900;font-size:15px;margin:14px;border-radius:12px;line-height:1.5}
+#subBlockBanner{display:none;background:#ea580c;color:#fff;text-align:center;padding:14px;font-weight:900;font-size:15px;margin:14px;border-radius:12px;line-height:1.5}
 #subOkBanner{display:none;background:#059669;color:#fff;text-align:center;padding:8px;font-weight:700;font-size:12px;margin:14px;border-radius:12px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word}
@@ -61,31 +61,29 @@ th{background:#0a1f4d;color:#fff}
 .stat.red{background:#dc2626}
 .stat.orange{background:#ea580c}
 .subCard{border:2px solid #d4af37;border-radius:12px;padding:14px;background:#fffbeb;margin-top:10px}
-.subCard.red{border-color:#dc2626;background:#fef2f2}
+.subCard.red{border-color:#ea580c;background:#fff7ed}
 .subCard.green{border-color:#059669;background:#f0fdf4}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .tabs button{background:#e2e8f0;border:none;padding:10px 14px;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer}
 .tabs button.active{background:#0a1f4d;color:#fff}
 .tabContent{display:none}
 .tabContent.active{display:block}
+.returnOnlyBox{background:#ffedd5;border:2px solid #ea580c;border-radius:12px;padding:14px;margin-top:10px;text-align:center;font-weight:900;color:#9a3412;display:none}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Admin — Makhanani LTSM</h1><p>Master Control • Schools • Users • Subscriptions • Logs • v2.13<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.13 ADMIN</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Admin — Makhanani LTSM</h1><p>Master Control • Schools • Users • Return Only • Logs • v2.14<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.14 ADMIN</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <div id="subBlockBanner"></div>
 <div id="subOkBanner"></div>
 <main>
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="add-school.html">🏫 Add School</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 My Profile</a></div>
-
 <div class="card" id="notAdminCard" style="display:none">
 <h2>🔒 Admin Only</h2>
-<div class="warn">Only <b>ADMIN</b> can see this page.<br>Your role is <b id="yourRoleText">—</b>. Login as Admin in Home first.<br><br>This protects schools — teachers / librarians / principals cannot see other schools, cannot change subscriptions, cannot add / delete users.</div>
+<div class="warn">Only <b>ADMIN</b> can see this page.<br>Your role is <b id="yourRoleText">—</b>. Login as Admin in Home first.</div>
 <button class="btn btn-blue" onclick="location.href='index.html'">🏠 Go to Home — Login as Admin</button>
 </div>
-
 <div id="adminContent" style="display:none">
-
 <div class="tabs">
 <button id="tabBtnSchools" class="active" onclick="showTab('schools')">🏫 All Schools</button>
 <button id="tabBtnUsers" onclick="showTab('users')">👥 Users — Current School</button>
@@ -93,17 +91,16 @@ th{background:#0a1f4d;color:#fff}
 <button id="tabBtnLogs" onclick="showTab('logs')">📜 Logs</button>
 <button id="tabBtnSettings" onclick="showTab('settings')">⚙️ Settings</button>
 </div>
-
-<!-- SCHOOLS TAB -->
 <div id="tab-schools" class="tabContent active">
 <div class="card">
 <h2>📊 Xintimani Group — All Schools</h2>
 <div class="info" id="schoolBox">Current school: —</div>
 <div class="info" id="subInfoBox">Subscription: Checking...</div>
-<div class="statGrid grid4" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:12px">
+<div id="returnOnlyBox" class="returnOnlyBox">🟠 RETURN ONLY — This school is Suspended / Expired<br>Admin is NOT blocked — you can still manage schools + users + reactivate here.</div>
+<div class="grid4" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:12px">
 <div class="stat"><b id="statSchools">0</b><span>🏫 Total Schools</span></div>
 <div class="stat green"><b id="statActive">0</b><span>✅ Active</span></div>
-<div class="stat red"><b id="statSuspended">0</b><span>🚫 Suspended</span></div>
+<div class="stat orange"><b id="statReturnOnly">0</b><span>🟠 Return Only</span></div>
 <div class="stat gold"><b id="statExpiring">0</b><span>⚠️ Expiring 30 Days</span></div>
 </div>
 <div class="grid2">
@@ -111,12 +108,11 @@ th{background:#0a1f4d;color:#fff}
 <button class="btn btn-gold" onclick="exportSchoolsCSV()">📥 Export Schools (CSV)</button>
 </div>
 </div>
-
 <div class="card">
 <h2>🏫 All Schools — Manage</h2>
 <div class="grid2">
 <div><label>🔍 Search Schools</label><input id="schoolSearch" placeholder="Search name / EMIS / principal..." oninput="renderSchools()"></div>
-<div><label>Filter Status</label><select id="schoolFilter" onchange="renderSchools()"><option value="">All Schools</option><option value="ACTIVE">✅ Active Only</option><option value="SUSPENDED">🚫 Suspended Only</option><option value="TRIAL">🆓 Trial Only</option><option value="EXPIRED">⌛ Expired</option></select></div>
+<div><label>Filter Status</label><select id="schoolFilter" onchange="renderSchools()"><option value="">All Schools</option><option value="ACTIVE">✅ Active Only</option><option value="RETURN_ONLY">🟠 Return Only Only</option><option value="SUSPENDED">🟠 Suspended Only</option><option value="TRIAL">🆓 Trial Only</option><option value="EXPIRED">⌛ Expired</option></select></div>
 </div>
 <div id="schoolsList"></div>
 <div class="grid2">
@@ -124,7 +120,6 @@ th{background:#0a1f4d;color:#fff}
 <button class="btn btn-blue" onclick="loadSchools()">🔄 Refresh</button>
 </div>
 </div>
-
 <div class="card">
 <h2>🔄 Switch School — Test / Manage Another School</h2>
 <div class="grid2">
@@ -135,8 +130,6 @@ th{background:#0a1f4d;color:#fff}
 <div class="small">Switching changes EMIS for ALL pages. After managing another school, switch back to Wordsworth.</div>
 </div>
 </div>
-
-<!-- USERS TAB -->
 <div id="tab-users" class="tabContent">
 <div class="card">
 <h2>👥 Users — <span id="usersSchoolName">—</span></h2>
@@ -147,7 +140,6 @@ th{background:#0a1f4d;color:#fff}
 </div>
 <div id="usersList"></div>
 </div>
-
 <div class="card">
 <h2>➕ Add New User to This School</h2>
 <div class="grid2">
@@ -162,9 +154,8 @@ th{background:#0a1f4d;color:#fff}
 <div><label>Cell</label><input id="newUserCell" placeholder="e.g. 082 123 4567"></div>
 <button class="btn btn-green" id="addUserBtn" onclick="addUser()">➕ ADD User to This School</button>
 <div id="addUserMsg"></div>
-<div class="info"><b>How login works:</b> New user goes to Home → Selects this school (EMIS) → Types Email + Password → Logs in with Role above.<br>Teacher with Subject = Can ONLY issue that subject. Librarian = Can issue ANY subject (Grade must still match).</div>
+<div class="info"><b>How login works:</b> New user goes to Home → Selects this school (EMIS) → Types Email + Password → Logs in with Role above.<br>If school is in Return Only, new users will login as Return Only too — until Admin reactivates school.</div>
 </div>
-
 <div class="card">
 <h2>🔑 Reset Password / Change Role — Quick</h2>
 <div class="grid2">
@@ -178,21 +169,17 @@ th{background:#0a1f4d;color:#fff}
 <div id="resetMsg"></div>
 </div>
 </div>
-
-<!-- SUBSCRIPTION TAB -->
 <div id="tab-sub" class="tabContent">
 <div class="card">
 <h2>💰 My School Subscription — <span id="subSchoolName">—</span></h2>
 <div id="mySubCard" class="subCard">Checking...</div>
-<div class="info"><b>What happens if expired / suspended?</b><br>• Issue = BLOCKED • Add Learner / Book = BLOCKED • Return = ALWAYS allowed • View / Reports = ALWAYS allowed<br>To reactivate: Go to All Schools tab → Tap ✅ Activate, or 📅 +12 Months.</div>
+<div class="info"><b>What happens if expired / suspended?</b><br>• School goes to <b>🟠 RETURN ONLY</b> — Issue = BLOCKED, Add = BLOCKED, Return = ALWAYS allowed, View = ALWAYS allowed<br>• Admin is <b>NEVER blocked</b> in Admin page — you can always reactivate here.<br>To reactivate: Go to All Schools tab → Tap ✅ Activate, or 📅 +12 Months.</div>
 <div class="grid2">
 <button class="btn btn-blue" onclick="checkSubscription()">🔄 Refresh Subscription</button>
 <button class="btn btn-gold" onclick="extendCurrentSchool()">📅 Extend This School +12 Months</button>
 </div>
 </div>
 </div>
-
-<!-- LOGS TAB -->
 <div id="tab-logs" class="tabContent">
 <div class="card">
 <h2>📜 Activity Logs — Current School (Last 100)</h2>
@@ -207,8 +194,6 @@ th{background:#0a1f4d;color:#fff}
 <div id="logsList"></div>
 </div>
 </div>
-
-<!-- SETTINGS TAB -->
 <div id="tab-settings" class="tabContent">
 <div class="card">
 <h2>⚙️ Settings — Current School</h2>
@@ -227,21 +212,18 @@ th{background:#0a1f4d;color:#fff}
 </div>
 <button class="btn btn-blue" onclick="saveSettings()">💾 Save Settings</button>
 <div id="settingsMsg"></div>
-<div class="info" style="background:#fee2e2;border-color:#dc2626"><b>⚠️ DANGER ZONE</b><br>Deleting a school does NOT delete its learners / books — it only deletes the school doc. Use Suspend instead. Only delete if you created a test school by mistake and you are 100% sure.</div>
+<div class="info" style="background:#fee2e2;border-color:#dc2626"><b>⚠️ DANGER ZONE</b><br>Deleting a school does NOT delete its learners / books — it only deletes the school doc. Use Return Only / Suspend instead. Only delete if you created a test school by mistake.</div>
 <button class="btn btn-red" onclick="deleteCurrentSchool()">🗑️ Delete Current School Doc (Danger)</button>
 <div id="deleteMsg"></div>
 </div>
-
 <div class="card">
 <h2>🧹 Clear This Phone — Logout</h2>
 <div class="info">If this phone is shared / lost, clear login + school selection. You will need to login again.</div>
 <button class="btn btn-red" onclick="logoutClear()">🚪 Logout + Clear This Phone</button>
 </div>
 </div>
-
 </div>
 </main>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -256,257 +238,88 @@ function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : 
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function daysLeftCalc(endDate){ if(!endDate) return 9999; return Math.ceil((new Date(endDate)-new Date(todayISO()))/(1000*60*60*24)); }
 function getStatus(s){ if((s.subscription||s.status||'').toUpperCase()==='SUSPENDED') return 'SUSPENDED'; if(s.subscriptionEnd && daysLeftCalc(s.subscriptionEnd)<0) return 'EXPIRED'; return s.subscription||'ACTIVE'; }
-window.showTab = function(tab){
-  ['schools','users','sub','logs','settings'].forEach(t=>{
-    const btn=$('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1));
-    if(btn) btn.classList.remove('active');
-    const content=$('tab-'+t); if(content) content.classList.remove('active');
-  });
-  const activeBtn=$('tabBtn'+tab.charAt(0).toUpperCase()+tab.slice(1)); if(activeBtn) activeBtn.classList.add('active');
-  const activeContent=$('tab-'+tab); if(activeContent) activeContent.classList.add('active');
-  if(tab==='users') loadUsers();
-  if(tab==='sub') checkSubscription();
-  if(tab==='logs') loadLogs();
-  if(tab==='settings') loadSettings();
-};
-// ===== SUBSCRIPTION — My School =====
+function isReturnOnlySchool(s){ const st=getStatus(s); return st==='SUSPENDED' || st==='EXPIRED'; }
+window.showTab = function(tab){ ['schools','users','sub','logs','settings'].forEach(t=>{ const btn=$('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)); if(btn) btn.classList.remove('active'); const content=$('tab-'+t); if(content) content.classList.remove('active'); }); const activeBtn=$('tabBtn'+tab.charAt(0).toUpperCase()+tab.slice(1)); if(activeBtn) activeBtn.classList.add('active'); const activeContent=$('tab-'+tab); if(activeContent) activeContent.classList.add('active'); if(tab==='users') loadUsers(); if(tab==='sub') checkSubscription(); if(tab==='logs') loadLogs(); if(tab==='settings') loadSettings(); };
 let SUB_BLOCKED=false, SUB_REASON="";
 async function checkSubscription(){
-  const emis=getEmis(); const banner=$('subBlockBanner'); const okBanner=$('subOkBanner'); const infoBox=$('subInfoBox'); const myCard=$('mySubCard');
+  const emis=getEmis(); const banner=$('subBlockBanner'); const okBanner=$('subOkBanner'); const infoBox=$('subInfoBox'); const myCard=$('mySubCard'); const roBox=$('returnOnlyBox');
   try{
     const snap=await getDoc(doc(db,'schools','EMIS_'+emis));
-    if(!snap.exists()){
-      SUB_BLOCKED=false; if(banner) banner.style.display='none'; if(okBanner) okBanner.style.display='none';
-      if(infoBox) infoBox.innerHTML='Subscription: <b>No school doc yet</b> — Allowed. Add school in Add School page.';
-      if(myCard) myCard.innerHTML='<b>No school doc yet for '+getSchool()+'</b><br><span class="small">Add this school in Add School page with EMIS '+emis+' to enable subscription control.</span>';
-      if($('subSchoolName')) $('subSchoolName').textContent=getSchool();
-      return false;
-    }
+    if(!snap.exists()){ SUB_BLOCKED=false; if(banner) banner.style.display='none'; if(okBanner) okBanner.style.display='none'; if(roBox) roBox.style.display='none'; if(infoBox) infoBox.innerHTML='Subscription: <b>No school doc yet</b> — Allowed.'; if(myCard) myCard.innerHTML='<b>No school doc yet for '+getSchool()+'</b>'; if($('subSchoolName')) $('subSchoolName').textContent=getSchool(); return false; }
     const s=snap.data(); const end=s.subscriptionEnd||""; const status=(s.subscription||s.status||"ACTIVE").toUpperCase(); const dl=daysLeftCalc(end);
     if($('subSchoolName')) $('subSchoolName').textContent=s.name||getSchool();
-    if(infoBox){ if(status==='SUSPENDED') infoBox.innerHTML='Subscription: <b style="color:#dc2626">🚫 SUSPENDED</b> • Plan: '+(s.plan||'')+' • End: '+(end||'—'); else if(end && end<todayISO()) infoBox.innerHTML='Subscription: <b style="color:#dc2626">⌛ EXPIRED on '+end+'</b>'; else if(dl<=30) infoBox.innerHTML='Subscription: <b style="color:#92400e">✅ ACTIVE — ⚠️ '+dl+' days left</b> • Plan: '+(s.plan||'')+' • End: '+end; else infoBox.innerHTML='Subscription: <b style="color:#166534">✅ ACTIVE</b> • Plan: '+(s.plan||'')+' • End: '+end+' • '+dl+' days left'; }
-    if(status==='SUSPENDED'){ SUB_BLOCKED=true; SUB_REASON='🚫 SUBSCRIPTION SUSPENDED — Contact Xintimani Group.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
-    else if(end && end<todayISO()){ SUB_BLOCKED=true; SUB_REASON='⌛ SUBSCRIPTION EXPIRED on '+end+' — Contact Xintimani Group.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
+    if(infoBox){ if(status==='SUSPENDED') infoBox.innerHTML='Subscription: <b style="color:#ea580c">🟠 RETURN ONLY — SUSPENDED</b> • Plan: '+(s.plan||'')+' • End: '+(end||'—')+' • Admin can still manage here.'; else if(end && end<todayISO()) infoBox.innerHTML='Subscription: <b style="color:#ea580c">🟠 RETURN ONLY — EXPIRED on '+end+'</b> • Admin can still manage here.'; else if(dl<=30) infoBox.innerHTML='Subscription: <b style="color:#92400e">✅ ACTIVE — ⚠️ '+dl+' days left</b> • Plan: '+(s.plan||'')+' • End: '+end; else infoBox.innerHTML='Subscription: <b style="color:#166534">✅ ACTIVE</b> • Plan: '+(s.plan||'')+' • End: '+end+' • '+dl+' days left'; }
+    if(status==='SUSPENDED'){ SUB_BLOCKED=true; SUB_REASON='🟠 RETURN ONLY — SUBSCRIPTION SUSPENDED — Contact Xintimani Group.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
+    else if(end && end<todayISO()){ SUB_BLOCKED=true; SUB_REASON='🟠 RETURN ONLY — SUBSCRIPTION EXPIRED on '+end+' — Contact Xintimani Group.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
     else { SUB_BLOCKED=false; SUB_REASON=""; }
-    if(myCard){
-      if(SUB_BLOCKED){ myCard.className='subCard red'; myCard.innerHTML='<b style="color:#dc2626;font-size:16px">'+SUB_REASON.replace(/\n/g,'<br>')+'</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Principal:</b> '+(s.principalName||'—')+'<br><b>Admin:</b> '+(s.adminName||'—')+' '+(s.adminEmail||'')+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+(end||'—')+'<br><br>⚠️ Issuing BLOCKED. Adding BLOCKED. Return + View still works.'; }
-      else if(dl<=30){ myCard.className='subCard'; myCard.innerHTML='<b style="color:#92400e;font-size:16px">⚠️ SUBSCRIPTION ACTIVE — '+dl+' DAYS LEFT — RENEW SOON</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+end+'<br><b>Principal:</b> '+(s.principalName||'—')+'<br><b>Admin:</b> '+(s.adminName||'—')+' '+(s.adminEmail||'')+'<br><br>✅ All features working. Renew before '+end+'.'; }
-      else { myCard.className='subCard green'; myCard.innerHTML='<b style="color:#166534;font-size:16px">✅ SUBSCRIPTION ACTIVE — '+dl+' DAYS LEFT</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+end+'<br><b>Principal:</b> '+(s.principalName||'—')+'<br><b>Admin:</b> '+(s.adminName||'—')+' '+(s.adminEmail||'')+'<br><br>✅ All features working.'; }
-    }
-    if(SUB_BLOCKED){ if(banner){ banner.style.display='block'; banner.innerHTML=SUB_REASON.replace(/\n/g,'<br>')+'<br><span style="font-size:12px;font-weight:400">Admin: You can still manage schools + users. Issuing / Adding is blocked for this school until active.</span>'; } if(okBanner) okBanner.style.display='none'; }
-    else { if(banner) banner.style.display='none'; if(okBanner && s.subscriptionEnd){ okBanner.style.display='block'; okBanner.textContent='✅ Subscription ACTIVE — '+(s.plan||'')+' • Ends '+s.subscriptionEnd+' • '+dl+' days left'; } }
+    if(myCard){ if(SUB_BLOCKED){ myCard.className='subCard red'; myCard.innerHTML='<b style="color:#9a3412;font-size:16px">'+SUB_REASON.replace(/\n/g,'<br>')+'</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Principal:</b> '+(s.principalName||'—')+'<br><b>Admin:</b> '+(s.adminName||'—')+' '+(s.adminEmail||'')+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+(end||'—')+'<br><br>⚠️ School is in RETURN ONLY. Issuing BLOCKED. Adding BLOCKED. Return + View still works. Admin can reactivate below.'; } else if(dl<=30){ myCard.className='subCard'; myCard.innerHTML='<b style="color:#92400e;font-size:16px">⚠️ SUBSCRIPTION ACTIVE — '+dl+' DAYS LEFT — RENEW SOON</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+end+'<br><b>Principal:</b> '+(s.principalName||'—')+'<br><b>Admin:</b> '+(s.adminName||'—')+'<br><br>✅ All features working. Renew before '+end+'.'; } else { myCard.className='subCard green'; myCard.innerHTML='<b style="color:#166534;font-size:16px">✅ SUBSCRIPTION ACTIVE — '+dl+' DAYS LEFT</b><br><br><b>School:</b> '+(s.name||'')+' • EMIS '+(s.emis||emis)+'<br><b>Plan:</b> '+(s.plan||'')+' • <b>Start:</b> '+(s.subscriptionStart||'')+' • <b>End:</b> '+end+'<br><b>Principal:</b> '+(s.principalName||'—')+'<br><b>Admin:</b> '+(s.adminName||'—')+'<br><br>✅ All features working.'; } }
+    if(SUB_BLOCKED){ if(banner){ banner.style.display='block'; banner.style.background='#ea580c'; banner.innerHTML=SUB_REASON.replace(/\n/g,'<br>')+'<br><span style="font-size:12px;font-weight:400">Admin: You are NOT blocked — you can still manage schools + users + reactivate here.</span>'; } if(okBanner) okBanner.style.display='none'; if(roBox) roBox.style.display='block'; }
+    else { if(banner) banner.style.display='none'; if(roBox) roBox.style.display='none'; if(okBanner && s.subscriptionEnd){ okBanner.style.display='block'; okBanner.textContent='✅ Subscription ACTIVE — '+(s.plan||'')+' • Ends '+s.subscriptionEnd+' • '+dl+' days left'; } }
     return SUB_BLOCKED;
   }catch(e){ SUB_BLOCKED=false; if(infoBox) infoBox.innerHTML='Subscription: Could not check (offline) — Allowed.'; return false; }
 }
 window.checkSubscription=checkSubscription;
-window.extendCurrentSchool = async function(){
-  const emis=getEmis(); const snap=await getDoc(doc(db,'schools','EMIS_'+emis)); if(!snap.exists()){ alert('No school doc yet. Add school in Add School page.'); return; }
-  const s=snap.data(); const currentEnd=s.subscriptionEnd||todayISO(); const base=daysLeftCalc(currentEnd)<0?todayISO():currentEnd; const d=new Date(base); d.setMonth(d.getMonth()+12); const newEnd=d.toISOString().slice(0,10);
-  if(!confirm('Extend subscription for:\n'+(s.name||getSchool())+'\nFrom '+currentEnd+' → '+newEnd+' (12 months)\nConfirm?')) return;
-  try{ await updateDoc(doc(db,'schools','EMIS_'+emis), {subscriptionEnd:newEnd, subscription:'ACTIVE', status:'ACTIVE', updatedAt:serverTimestamp()}); await checkSubscription(); await loadSchools(); alert('✅ Extended to '+newEnd); }catch(e){ alert('Failed: '+e.message); }
-};
-// ===== SCHOOLS =====
+window.extendCurrentSchool = async function(){ const emis=getEmis(); const snap=await getDoc(doc(db,'schools','EMIS_'+emis)); if(!snap.exists()){ alert('No school doc yet. Add school in Add School page.'); return; } const s=snap.data(); const currentEnd=s.subscriptionEnd||todayISO(); const base=daysLeftCalc(currentEnd)<0?todayISO():currentEnd; const d=new Date(base); d.setMonth(d.getMonth()+12); const newEnd=d.toISOString().slice(0,10); if(!confirm('Extend subscription for:\n'+(s.name||getSchool())+'\nFrom '+currentEnd+' → '+newEnd+' (12 months)\nConfirm?')) return; try{ await updateDoc(doc(db,'schools','EMIS_'+emis), {subscriptionEnd:newEnd, subscription:'ACTIVE', status:'ACTIVE', updatedAt:serverTimestamp()}); await checkSubscription(); await loadSchools(); alert('✅ Extended to '+newEnd); }catch(e){ alert('Failed: '+e.message); } };
 async function loadSchools(){
   try{
-    const snap=await getDocs(collection(db,'schools'));
-    ALL_SCHOOLS=[];
-    for(const d of snap.docs){
-      const s=d.data(); const emis=s.emis||d.id.replace('EMIS_','');
-      let learners=0, books=0, out=0;
-      try{ const [ls, bs, is] = await Promise.all([ getDocs(collection(db,'schools',d.id,'learners')), getDocs(collection(db,'schools',d.id,'textbooks')), getDocs(collection(db,'schools',d.id,'issues')) ]); learners=ls.size; books=bs.size; is.forEach(x=>{ if(x.data().status==='OUT') out++; }); }catch(e){}
-      ALL_SCHOOLS.push({id:d.id, ...s, emis:emis, learners:learners, books:books, out:out});
-    }
+    const snap=await getDocs(collection(db,'schools')); ALL_SCHOOLS=[];
+    for(const d of snap.docs){ const s=d.data(); const emis=s.emis||d.id.replace('EMIS_',''); let learners=0, books=0, out=0; try{ const [ls, bs, is] = await Promise.all([ getDocs(collection(db,'schools',d.id,'learners')), getDocs(collection(db,'schools',d.id,'textbooks')), getDocs(collection(db,'schools',d.id,'issues')) ]); learners=ls.size; books=bs.size; is.forEach(x=>{ if(x.data().status==='OUT') out++; }); }catch(e){} ALL_SCHOOLS.push({id:d.id, ...s, emis:emis, learners:learners, books:books, out:out}); }
     ALL_SCHOOLS.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
-    const active=ALL_SCHOOLS.filter(s=> getStatus(s)==='ACTIVE').length;
-    const susp=ALL_SCHOOLS.filter(s=> getStatus(s)==='SUSPENDED').length;
-    const expiring=ALL_SCHOOLS.filter(s=> getStatus(s)==='ACTIVE' && daysLeftCalc(s.subscriptionEnd)>=0 && daysLeftCalc(s.subscriptionEnd)<=30).length;
-    $('statSchools').textContent=ALL_SCHOOLS.length; $('statActive').textContent=active; $('statSuspended').textContent=susp; $('statExpiring').textContent=expiring;
+    const active=ALL_SCHOOLS.filter(s=> getStatus(s)==='ACTIVE').length; const retOnly=ALL_SCHOOLS.filter(s=> isReturnOnlySchool(s)).length; const expiring=ALL_SCHOOLS.filter(s=> getStatus(s)==='ACTIVE' && daysLeftCalc(s.subscriptionEnd)>=0 && daysLeftCalc(s.subscriptionEnd)<=30).length;
+    $('statSchools').textContent=ALL_SCHOOLS.length; $('statActive').textContent=active; $('statReturnOnly').textContent=retOnly; $('statExpiring').textContent=expiring;
     $('switchSchoolSelect').innerHTML='<option value="">— Pick School —</option>'+ALL_SCHOOLS.map(s=>`<option value="${s.emis}">${s.name} — EMIS ${s.emis} — ${getStatus(s)}</option>`).join('');
-    renderSchools();
-    $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool()+' • Schools: '+ALL_SCHOOLS.length;
+    renderSchools(); $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool()+' • Schools: '+ALL_SCHOOLS.length+' • Return Only: '+retOnly;
   }catch(e){ $('schoolsList').innerHTML='<div class="warn">❌ Load schools failed: '+e.message+'</div>'; $('cloudStatus').textContent='🔴 Cloud: Offline — '+e.message; }
 }
 window.loadSchools=loadSchools;
 window.renderSchools = function(){
-  const q=($('schoolSearch').value||'').toLowerCase().trim(); const f=$('schoolFilter').value;
-  let list=[...ALL_SCHOOLS];
+  const q=($('schoolSearch').value||'').toLowerCase().trim(); const f=$('schoolFilter').value; let list=[...ALL_SCHOOLS];
   if(q) list=list.filter(s=> ((s.name||'')+' '+(s.emis||'')+' '+(s.principalName||'')+' '+(s.adminEmail||'')).toLowerCase().includes(q));
-  if(f==='EXPIRED') list=list.filter(s=> getStatus(s)==='EXPIRED');
-  else if(f) list=list.filter(s=> getStatus(s)===f || (f==='ACTIVE' && getStatus(s)==='ACTIVE'));
+  if(f==='RETURN_ONLY') list=list.filter(s=> isReturnOnlySchool(s));
+  else if(f==='EXPIRED') list=list.filter(s=> getStatus(s)==='EXPIRED');
+  else if(f) list=list.filter(s=> getStatus(s)===f);
   if(list.length===0){ $('schoolsList').innerHTML='<div class="info">No schools found. Add your first school in Add School page.</div>'; return; }
   let html='<div class="tableWrap"><table><tr><th>School</th><th>EMIS</th><th>Admin</th><th>Subscription</th><th>Data</th><th>Actions</th></tr>';
-  list.forEach(s=>{
-    const st=getStatus(s); const dl=daysLeftCalc(s.subscriptionEnd);
-    const pill = st==='ACTIVE' ? '<span class="pill pill-green">✅ ACTIVE</span>' : st==='SUSPENDED' ? '<span class="pill pill-red">🚫 SUSPENDED</span>' : st==='EXPIRED' ? '<span class="pill pill-red">⌛ EXPIRED</span>' : '<span class="pill pill-gold">'+st+'</span>';
-    const dlText = s.subscriptionEnd ? (dl<0 ? '<b style="color:#dc2626">Expired '+Math.abs(dl)+' days ago</b>' : dl<=30 ? '<b style="color:#92400e">'+dl+' days left ⚠️</b>' : dl+' days left') : '—';
-    html+='<tr><td><b>'+(s.name||'')+'</b><br><span class="small">'+(s.district||'')+' • '+(s.grades||'')+'</span><br><span class="small">Principal: '+(s.principalName||'—')+' '+(s.principalCell||'')+'</span></td><td><b>'+s.emis+'</b></td><td>'+(s.adminName||'—')+'<br><span class="small">'+(s.adminEmail||'')+'</span></td><td>'+pill+'<br><span class="small">'+(s.plan||'')+'</span><br><span class="small">'+(s.subscriptionStart||'')+' → '+(s.subscriptionEnd||'')+'</span><br><span class="small">'+dlText+'</span></td><td><span class="small">🎓 '+s.learners+' learners<br>📖 '+s.books+' books<br>📚 '+s.out+' OUT</span></td><td>'+
-    '<button class="btn btn-blue btn-sm" onclick="switchToSchoolByEmis(\''+s.emis+'\',\''+(s.name||'').replace(/'/g,"")+'\')">🔄 Switch</button><br>'+
-    (st==='SUSPENDED' ? '<button class="btn btn-green btn-sm" onclick="setSchoolStatus(\''+s.id+'\',\'ACTIVE\')">✅ Activate</button>' : '<button class="btn btn-red btn-sm" onclick="setSchoolStatus(\''+s.id+'\',\'SUSPENDED\')">🚫 Suspend</button>')+
-    '<br><button class="btn btn-gold btn-sm" onclick="extendSchool(\''+s.id+'\')">📅 +12 Months</button></td></tr>';
-  });
+  list.forEach(s=>{ const st=getStatus(s); const dl=daysLeftCalc(s.subscriptionEnd); const pill = st==='ACTIVE' ? '<span class="pill pill-green">✅ ACTIVE</span>' : st==='SUSPENDED' ? '<span class="pill pill-orange">🟠 RETURN ONLY — SUSPENDED</span>' : st==='EXPIRED' ? '<span class="pill pill-orange">🟠 RETURN ONLY — EXPIRED</span>' : '<span class="pill pill-gold">'+st+'</span>'; const dlText = s.subscriptionEnd ? (dl<0 ? '<b style="color:#ea580c">Expired '+Math.abs(dl)+' days ago — RETURN ONLY</b>' : dl<=30 ? '<b style="color:#92400e">'+dl+' days left ⚠️</b>' : dl+' days left') : '—'; html+='<tr><td><b>'+(s.name||'')+'</b><br><span class="small">'+(s.district||'')+' • '+(s.grades||'')+'</span><br><span class="small">Principal: '+(s.principalName||'—')+' '+(s.principalCell||'')+'</span></td><td><b>'+s.emis+'</b></td><td>'+(s.adminName||'—')+'<br><span class="small">'+(s.adminEmail||'')+'</span></td><td>'+pill+'<br><span class="small">'+(s.plan||'')+'</span><br><span class="small">'+(s.subscriptionStart||'')+' → '+(s.subscriptionEnd||'')+'</span><br><span class="small">'+dlText+'</span></td><td><span class="small">🎓 '+s.learners+' learners<br>📖 '+s.books+' books<br>📚 '+s.out+' OUT</span></td><td>'+'<button class="btn btn-blue btn-sm" onclick="switchToSchoolByEmis(\''+s.emis+'\',\''+(s.name||'').replace(/'/g,"")+'\')">🔄 Switch</button><br>'+(st==='SUSPENDED' ? '<button class="btn btn-green btn-sm" onclick="setSchoolStatus(\''+s.id+'\',\'ACTIVE\')">✅ Activate</button>' : '<button class="btn btn-orange btn-sm" onclick="setSchoolStatus(\''+s.id+'\',\'SUSPENDED\')">🟠 Return Only</button>')+'<br><button class="btn btn-gold btn-sm" onclick="extendSchool(\''+s.id+'\')">📅 +12 Months</button></td></tr>'; });
   html+='</table></div>'; $('schoolsList').innerHTML=html;
 };
-window.setSchoolStatus = async function(docId, newStatus){
-  const s=ALL_SCHOOLS.find(x=>x.id===docId); if(!s) return;
-  if(!confirm((newStatus==='SUSPENDED' ? 'SUSPEND' : 'ACTIVATE')+' school:\n'+s.name+' (EMIS '+s.emis+')\nContinue?')) return;
-  try{ await updateDoc(doc(db,'schools',docId), {subscription:newStatus, status:newStatus, updatedAt:serverTimestamp()}); await loadSchools(); await checkSubscription(); }catch(e){ alert('Failed: '+e.message); }
-};
-window.extendSchool = async function(docId){
-  const s=ALL_SCHOOLS.find(x=>x.id===docId); if(!s) return;
-  const currentEnd=s.subscriptionEnd||todayISO(); const base=daysLeftCalc(currentEnd)<0?todayISO():currentEnd; const d=new Date(base); d.setMonth(d.getMonth()+12); const newEnd=d.toISOString().slice(0,10);
-  if(!confirm('Extend subscription for:\n'+s.name+'\nFrom '+currentEnd+' → '+newEnd+' (12 months)\nConfirm?')) return;
-  try{ await updateDoc(doc(db,'schools',docId), {subscriptionEnd:newEnd, subscription:'ACTIVE', status:'ACTIVE', updatedAt:serverTimestamp()}); await loadSchools(); await checkSubscription(); }catch(e){ alert('Failed: '+e.message); }
-};
-window.switchToSchoolByEmis = function(emis, name){
-  localStorage.setItem('MAKHANANI_SELECTED_EMIS', emis); localStorage.setItem('MAKHANANI_SCHOOL_EMIS', emis); localStorage.setItem('MAKHANANI_SELECTED_SCHOOL', name); localStorage.setItem('MAKHANANI_SCHOOL_NAME', name);
-  $('switchMsg').innerHTML='<div class="ok">✅ Switched to: <b>'+name+'</b> • EMIS '+emis+'<br>Now go to Users / Logs / Settings tabs — you are now in that school. Switch back to Wordsworth after.</div>';
-  $('schoolBox').textContent='Current school: '+name+' • EMIS '+emis;
-  checkSubscription(); loadUsers(); loadLogs(); loadSettings();
-};
+window.setSchoolStatus = async function(docId, newStatus){ const s=ALL_SCHOOLS.find(x=>x.id===docId); if(!s) return; if(!confirm((newStatus==='SUSPENDED' ? 'Set to RETURN ONLY (Suspend)' : 'ACTIVATE')+' school:\n'+s.name+' (EMIS '+s.emis+')\nContinue?')) return; try{ await updateDoc(doc(db,'schools',docId), {subscription:newStatus, status:newStatus, updatedAt:serverTimestamp()}); await loadSchools(); await checkSubscription(); }catch(e){ alert('Failed: '+e.message); } };
+window.extendSchool = async function(docId){ const s=ALL_SCHOOLS.find(x=>x.id===docId); if(!s) return; const currentEnd=s.subscriptionEnd||todayISO(); const base=daysLeftCalc(currentEnd)<0?todayISO():currentEnd; const d=new Date(base); d.setMonth(d.getMonth()+12); const newEnd=d.toISOString().slice(0,10); if(!confirm('Extend subscription for:\n'+s.name+'\nFrom '+currentEnd+' → '+newEnd+' (12 months)\nConfirm?')) return; try{ await updateDoc(doc(db,'schools',docId), {subscriptionEnd:newEnd, subscription:'ACTIVE', status:'ACTIVE', updatedAt:serverTimestamp()}); await loadSchools(); await checkSubscription(); }catch(e){ alert('Failed: '+e.message); } };
+window.switchToSchoolByEmis = function(emis, name){ localStorage.setItem('MAKHANANI_SELECTED_EMIS', emis); localStorage.setItem('MAKHANANI_SCHOOL_EMIS', emis); localStorage.setItem('MAKHANANI_SELECTED_SCHOOL', name); localStorage.setItem('MAKHANANI_SCHOOL_NAME', name); $('switchMsg').innerHTML='<div class="ok">✅ Switched to: <b>'+name+'</b> • EMIS '+emis+'<br>Now go to Users / Logs / Settings tabs — you are now in that school. Switch back to Wordsworth after.</div>'; $('schoolBox').textContent='Current school: '+name+' • EMIS '+emis; checkSubscription(); loadUsers(); loadLogs(); loadSettings(); };
 window.switchToSchool = function(){ const emis=$('switchSchoolSelect').value; if(!emis){ $('switchMsg').innerHTML='<div class="warn">⚠️ Pick a school first.</div>'; return; } const s=ALL_SCHOOLS.find(x=>x.emis===emis); if(!s) return; switchToSchoolByEmis(s.emis, s.name); };
-window.exportSchoolsCSV = function(){
-  if(ALL_SCHOOLS.length===0){ alert('No schools.'); return; }
-  let csv='School Name,EMIS,District,Principal,Principal Cell,Admin Name,Admin Email,Plan,Subscription Start,Subscription End,Status,Learners,Books,Books OUT\n';
-  ALL_SCHOOLS.forEach(s=>{ csv+='"'+(s.name||'')+'","'+(s.emis||'')+'","'+(s.district||'')+'","'+(s.principalName||'')+'","'+(s.principalCell||'')+'","'+(s.adminName||'')+'","'+(s.adminEmail||'')+'","'+(s.plan||'')+'","'+(s.subscriptionStart||'')+'","'+(s.subscriptionEnd||'')+'","'+getStatus(s)+'","'+s.learners+'","'+s.books+'","'+s.out+'"\n'; });
-  const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_Schools_'+todayISO()+'.csv'; a.click(); URL.revokeObjectURL(url);
-};
-// ===== USERS =====
+window.exportSchoolsCSV = function(){ if(ALL_SCHOOLS.length===0){ alert('No schools.'); return; } let csv='School Name,EMIS,District,Principal,Principal Cell,Admin Name,Admin Email,Plan,Subscription Start,Subscription End,Status,Return Only?,Learners,Books,Books OUT\n'; ALL_SCHOOLS.forEach(s=>{ csv+='"'+(s.name||'')+'","'+(s.emis||'')+'","'+(s.district||'')+'","'+(s.principalName||'')+'","'+(s.principalCell||'')+'","'+(s.adminName||'')+'","'+(s.adminEmail||'')+'","'+(s.plan||'')+'","'+(s.subscriptionStart||'')+'","'+(s.subscriptionEnd||'')+'","'+getStatus(s)+'","'+(isReturnOnlySchool(s)?'YES - RETURN ONLY':'NO')+'","'+s.learners+'","'+s.books+'","'+s.out+'"\n'; }); const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_Schools_'+todayISO()+'.csv'; a.click(); URL.revokeObjectURL(url); };
 async function loadUsers(){
   const emis=getEmis(); $('usersSchoolName').textContent=getSchool(); $('usersEmis').textContent=emis;
   try{
-    const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'users'));
-    ALL_USERS=[]; snap.forEach(d=>{ ALL_USERS.push({id:d.id, ...d.data()}); });
-    ALL_USERS.sort((a,b)=> (a.role||'').localeCompare(b.role||'') || (a.name||'').localeCompare(b.name||''));
-    $('usersCount').textContent=ALL_USERS.length+' users';
-    $('resetUserSelect').innerHTML='<option value="">— Pick User —</option>'+ALL_USERS.map(u=>`<option value="${u.id}">${u.name} — ${u.email} — ${u.role}</option>`).join('');
-    if(ALL_USERS.length===0){ $('usersList').innerHTML='<div class="info">No users for this school yet. Add the first user below.<br>Note: If this school was created before Users feature, its Admin may not be in Users list — add them now.</div>'; return; }
-    let html='<div class="tableWrap"><table><tr><th>Name</th><th>Email / Login</th><th>Role</th><th>Subject</th><th>Actions</th></tr>';
-    ALL_USERS.forEach(u=>{
-      const pill = u.role==='ADMIN' ? '<span class="pill pill-purple">ADMIN</span>' : u.role==='LIBRARIAN' ? '<span class="pill pill-blue">LIBRARIAN</span>' : u.role==='PRINCIPAL' ? '<span class="pill pill-gold">PRINCIPAL</span>' : u.role==='HOD' ? '<span class="pill pill-orange">HOD</span>' : '<span class="pill pill-green">TEACHER</span>';
-      html+='<tr><td><b>'+(u.name||'')+'</b><br><span class="small">'+(u.cell||'')+'</span></td><td>'+(u.email||'')+'<br><span class="small">Pass: '+(u.password ? '••••••' : '—')+'</span></td><td>'+pill+'</td><td>'+(u.subject || (u.subjects ? u.subjects.join(', ') : '—'))+'</td><td>'+
-      '<button class="btn btn-purple btn-sm" onclick="promptResetUser(\''+u.id+'\')">🔑 Reset Pass</button><br>'+
-      '<button class="btn btn-red btn-sm" onclick="deleteUser(\''+u.id+'\')">🗑️ Delete</button></td></tr>';
-    });
-    html+='</table></div>'; $('usersList').innerHTML=html;
+    const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'users')); ALL_USERS=[]; snap.forEach(d=>{ ALL_USERS.push({id:d.id, ...d.data()}); }); ALL_USERS.sort((a,b)=> (a.role||'').localeCompare(b.role||'') || (a.name||'').localeCompare(b.name||'')); $('usersCount').textContent=ALL_USERS.length+' users'; $('resetUserSelect').innerHTML='<option value="">— Pick User —</option>'+ALL_USERS.map(u=>`<option value="${u.id}">${u.name} — ${u.email} — ${u.role}</option>`).join('');
+    if(ALL_USERS.length===0){ $('usersList').innerHTML='<div class="info">No users for this school yet. Add the first user below.</div>'; return; }
+    let html='<div class="tableWrap"><table><tr><th>Name</th><th>Email / Login</th><th>Role</th><th>Subject</th><th>Actions</th></tr>'; ALL_USERS.forEach(u=>{ const pill = u.role==='ADMIN' ? '<span class="pill pill-purple">ADMIN</span>' : u.role==='LIBRARIAN' ? '<span class="pill pill-blue">LIBRARIAN</span>' : u.role==='PRINCIPAL' ? '<span class="pill pill-gold">PRINCIPAL</span>' : u.role==='HOD' ? '<span class="pill pill-orange">HOD</span>' : '<span class="pill pill-green">TEACHER</span>'; html+='<tr><td><b>'+(u.name||'')+'</b><br><span class="small">'+(u.cell||'')+'</span></td><td>'+(u.email||'')+'<br><span class="small">Pass: ••••••</span></td><td>'+pill+'</td><td>'+(u.subject || (u.subjects ? u.subjects.join(', ') : '—'))+'</td><td>'+'<button class="btn btn-purple btn-sm" onclick="promptResetUser(\''+u.id+'\')">🔑 Reset Pass</button><br>'+'<button class="btn btn-red btn-sm" onclick="deleteUser(\''+u.id+'\')">🗑️ Delete</button></td></tr>'; }); html+='</table></div>'; $('usersList').innerHTML=html;
   }catch(e){ $('usersList').innerHTML='<div class="warn">❌ Load users failed: '+e.message+'</div>'; }
 }
 window.loadUsers=loadUsers;
 window.addUser = async function(){
-  const emis=getEmis();
-  const name=($('newUserName').value||'').trim(); const email=($('newUserEmail').value||'').trim().toLowerCase(); const role=$('newUserRole').value; const subject=$('newUserSubject').value; const pass=($('newUserPass').value||'').trim(); const cell=($('newUserCell').value||'').trim();
+  const emis=getEmis(); const name=($('newUserName').value||'').trim(); const email=($('newUserEmail').value||'').trim().toLowerCase(); const role=$('newUserRole').value; const subject=$('newUserSubject').value; const pass=($('newUserPass').value||'').trim(); const cell=($('newUserCell').value||'').trim();
   if(!name || !email || !role || !pass){ $('addUserMsg').innerHTML='<div class="warn">⚠️ Fill Name + Email + Role + Password.</div>'; return; }
   if(!email.includes('@')){ $('addUserMsg').innerHTML='<div class="warn">⚠️ Email looks wrong: '+email+'</div>'; return; }
   if(ALL_USERS.find(u=> (u.email||'').toLowerCase()===email)){ $('addUserMsg').innerHTML='<div class="warn">❌ User <b>'+email+'</b> already exists in this school.</div>'; return; }
   if(!confirm('ADD USER to '+getSchool()+' (EMIS '+emis+')?\n\nName: '+name+'\nEmail: '+email+'\nRole: '+role+'\nSubject: '+(subject||'—')+'\nPassword: '+pass+'\n\nConfirm?')) return;
-  try{
-    const docId=email.replace(/[^a-z0-9@._-]/gi,'_');
-    await setDoc(doc(db,'schools','EMIS_'+emis,'users',docId), {name:name, email:email, password:pass, role:role, subject:subject||'', subjects: subject ? [subject] : [], cell:cell, school:getSchool(), emis:emis, active:true, createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''});
-    await setDoc(doc(db,'schools','EMIS_'+emis,'logs','log_'+Date.now()), {action:'USER_ADDED', detail:'User '+name+' ('+email+') added as '+role+' '+(subject? '('+subject+')':'')+' by '+(getLogin()||{}).name||'' , whoEmail:(getLogin()||{}).email||'', whoName:(getLogin()||{}).name||'', whoRole:(getLogin()||{}).role||'', createdAt:serverTimestamp()});
-    $('addUserMsg').innerHTML='<div class="ok">✅ User Added: <b>'+name+' ('+email+')</b> • Role: <b>'+role+'</b> • Pass: <b>'+pass+'</b><br>Send them: School <b>'+getSchool()+'</b> • EMIS <b>'+emis+'</b> • Login: '+email+' / '+pass+'</div>';
-    $('newUserName').value=''; $('newUserEmail').value=''; $('newUserCell').value=''; $('newUserPass').value='Makhanani123'; $('newUserSubject').value='';
-    await loadUsers();
-  }catch(e){ $('addUserMsg').innerHTML='<div class="warn">❌ Add user failed: '+e.message+'</div>'; }
+  try{ const docId=email.replace(/[^a-z0-9@._-]/gi,'_'); await setDoc(doc(db,'schools','EMIS_'+emis,'users',docId), {name:name, email:email, password:pass, role:role, subject:subject||'', subjects: subject ? [subject] : [], cell:cell, school:getSchool(), emis:emis, active:true, createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); await setDoc(doc(db,'schools','EMIS_'+emis,'logs','log_'+Date.now()), {action:'USER_ADDED', detail:'User '+name+' ('+email+') added as '+role+' '+(subject? '('+subject+')':'')+' by '+(getLogin()||{}).name||'', whoEmail:(getLogin()||{}).email||'', whoName:(getLogin()||{}).name||'', whoRole:(getLogin()||{}).role||'', createdAt:serverTimestamp()}); $('addUserMsg').innerHTML='<div class="ok">✅ User Added: <b>'+name+' ('+email+')</b> • Role: <b>'+role+'</b> • Pass: <b>'+pass+'</b><br>Send them: School <b>'+getSchool()+'</b> • EMIS <b>'+emis+'</b> • Login: '+email+' / '+pass+'</div>'; $('newUserName').value=''; $('newUserEmail').value=''; $('newUserCell').value=''; $('newUserPass').value='Makhanani123'; $('newUserSubject').value=''; await loadUsers(); }catch(e){ $('addUserMsg').innerHTML='<div class="warn">❌ Add user failed: '+e.message+'</div>'; }
 };
-window.promptResetUser = function(id){ $('resetUserSelect').value=id; $('resetPassInput').value='Makhanani123'; $('resetPassInput').focus(); window.scrollTo({top:0, behavior:'smooth'}); showTab('users'); $('resetMsg').innerHTML='<div class="info">Resetting password for: <b>'+(ALL_USERS.find(u=>u.id===id)?.name||'')+'</b> — Type new password + Tap Reset.</div>'; };
-window.resetUser = async function(){
-  const id=$('resetUserSelect').value; const newPass=($('resetPassInput').value||'').trim(); const newRole=$('resetRoleSelect').value;
-  if(!id){ $('resetMsg').innerHTML='<div class="warn">⚠️ Pick a user first.</div>'; return; }
-  if(!newPass && !newRole){ $('resetMsg').innerHTML='<div class="warn">⚠️ Type new password OR pick new role.</div>'; return; }
-  const u=ALL_USERS.find(x=>x.id===id); if(!u) return;
-  if(!confirm('Reset User:\n'+u.name+' ('+u.email+')\n'+(newPass?'New Pass: '+newPass+'\n':'')+(newRole?'New Role: '+newRole+'\n':'')+'Confirm?')) return;
-  try{
-    const updates={updatedAt:serverTimestamp()};
-    if(newPass) updates.password=newPass;
-    if(newRole) updates.role=newRole;
-    await updateDoc(doc(db,'schools','EMIS_'+getEmis(),'users',id), updates);
-    await setDoc(doc(db,'schools','EMIS_'+getEmis(),'logs','log_'+Date.now()), {action:'USER_RESET', detail:'User '+u.name+' ('+u.email+') password/role reset by '+(getLogin()||{}).name||'', whoEmail:(getLogin()||{}).email||'', whoName:(getLogin()||{}).name||'', whoRole:(getLogin()||{}).role||'', createdAt:serverTimestamp()});
-    $('resetMsg').innerHTML='<div class="ok">✅ Reset Done: <b>'+u.name+' ('+u.email+')</b>'+(newPass?' • New Pass: <b>'+newPass+'</b>':'')+(newRole?' • New Role: <b>'+newRole+'</b>':'')+'<br>Send them new login.</div>';
-    await loadUsers();
-  }catch(e){ $('resetMsg').innerHTML='<div class="warn">❌ Reset failed: '+e.message+'</div>'; }
-};
-window.deleteUser = async function(id){
-  const u=ALL_USERS.find(x=>x.id===id); if(!u) return;
-  const login=getLogin()||{};
-  if(u.email && login.email && u.email.toLowerCase()===login.email.toLowerCase()){ alert('❌ You cannot delete yourself. Ask another Admin to delete you.'); return; }
-  if(!confirm('DELETE User:\n'+u.name+' ('+u.email+') — '+u.role+'\nThey will NOT be able to login anymore.\nConfirm?')) return;
-  try{ await deleteDoc(doc(db,'schools','EMIS_'+getEmis(),'users',id)); await loadUsers(); }catch(e){ alert('Delete failed: '+e.message); }
-};
-window.exportUsersCSV = function(){
-  if(ALL_USERS.length===0){ alert('No users.'); return; }
-  let csv='Name,Email,Role,Subject,Cell,School,EMIS\n';
-  ALL_USERS.forEach(u=>{ csv+='"'+(u.name||'')+'","'+(u.email||'')+'","'+(u.role||'')+'","'+(u.subject||'')+'","'+(u.cell||'')+'","'+getSchool()+'","'+getEmis()+'"\n'; });
-  const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_Users_'+getEmis()+'_'+todayISO()+'.csv'; a.click(); URL.revokeObjectURL(url);
-};
-// ===== LOGS =====
-async function loadLogs(){
-  const emis=getEmis();
-  try{
-    const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'logs'));
-    ALL_LOGS=[]; snap.forEach(d=>{ ALL_LOGS.push({id:d.id, ...d.data()}); });
-    ALL_LOGS.sort((a,b)=> (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-    renderLogs();
-  }catch(e){ $('logsList').innerHTML='<div class="warn">❌ Load logs failed: '+e.message+'</div>'; }
-}
+window.promptResetUser = function(id){ $('resetUserSelect').value=id; $('resetPassInput').value='Makhanani123'; $('resetPassInput').focus(); window.scrollTo({top:0, behavior:'smooth'}); showTab('users'); $('resetMsg').innerHTML='<div class="info">Resetting password for: <b>'+(ALL_USERS.find(u=>u.id===id)?.name||'')+'</b></div>'; };
+window.resetUser = async function(){ const id=$('resetUserSelect').value; const newPass=($('resetPassInput').value||'').trim(); const newRole=$('resetRoleSelect').value; if(!id){ $('resetMsg').innerHTML='<div class="warn">⚠️ Pick a user first.</div>'; return; } if(!newPass && !newRole){ $('resetMsg').innerHTML='<div class="warn">⚠️ Type new password OR pick new role.</div>'; return; } const u=ALL_USERS.find(x=>x.id===id); if(!u) return; if(!confirm('Reset User:\n'+u.name+' ('+u.email+')\n'+(newPass?'New Pass: '+newPass+'\n':'')+(newRole?'New Role: '+newRole+'\n':'')+'Confirm?')) return; try{ const updates={updatedAt:serverTimestamp()}; if(newPass) updates.password=newPass; if(newRole) updates.role=newRole; await updateDoc(doc(db,'schools','EMIS_'+getEmis(),'users',id), updates); await setDoc(doc(db,'schools','EMIS_'+getEmis(),'logs','log_'+Date.now()), {action:'USER_RESET', detail:'User '+u.name+' ('+u.email+') password/role reset by '+(getLogin()||{}).name||'', whoEmail:(getLogin()||{}).email||'', whoName:(getLogin()||{}).name||'', whoRole:(getLogin()||{}).role||'', createdAt:serverTimestamp()}); $('resetMsg').innerHTML='<div class="ok">✅ Reset Done: <b>'+u.name+' ('+u.email+')</b>'+(newPass?' • New Pass: <b>'+newPass+'</b>':'')+(newRole?' • New Role: <b>'+newRole+'</b>':'')+'</div>'; await loadUsers(); }catch(e){ $('resetMsg').innerHTML='<div class="warn">❌ Reset failed: '+e.message+'</div>'; } };
+window.deleteUser = async function(id){ const u=ALL_USERS.find(x=>x.id===id); if(!u) return; const login=getLogin()||{}; if(u.email && login.email && u.email.toLowerCase()===login.email.toLowerCase()){ alert('❌ You cannot delete yourself.'); return; } if(!confirm('DELETE User:\n'+u.name+' ('+u.email+') — '+u.role+'\nConfirm?')) return; try{ await deleteDoc(doc(db,'schools','EMIS_'+getEmis(),'users',id)); await loadUsers(); }catch(e){ alert('Delete failed: '+e.message); } };
+window.exportUsersCSV = function(){ if(ALL_USERS.length===0){ alert('No users.'); return; } let csv='Name,Email,Role,Subject,Cell,School,EMIS\n'; ALL_USERS.forEach(u=>{ csv+='"'+(u.name||'')+'","'+(u.email||'')+'","'+(u.role||'')+'","'+(u.subject||'')+'","'+(u.cell||'')+'","'+getSchool()+'","'+getEmis()+'"\n'; }); const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_Users_'+getEmis()+'_'+todayISO()+'.csv'; a.click(); URL.revokeObjectURL(url); };
+async function loadLogs(){ const emis=getEmis(); try{ const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'logs')); ALL_LOGS=[]; snap.forEach(d=>{ ALL_LOGS.push({id:d.id, ...d.data()}); }); ALL_LOGS.sort((a,b)=> (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)); renderLogs(); }catch(e){ $('logsList').innerHTML='<div class="warn">❌ Load logs failed: '+e.message+'</div>'; } }
 window.loadLogs=loadLogs;
-function renderLogs(){
-  const q=($('logSearch').value||'').toLowerCase().trim(); const f=$('logFilter').value;
-  let list=[...ALL_LOGS];
-  if(f==='USER') list=list.filter(l=> (l.action||'').includes('USER'));
-  else if(f) list=list.filter(l=> (l.action||'')===f);
-  if(q) list=list.filter(l=> ((l.action||'')+' '+(l.detail||'')+' '+(l.whoName||'')+' '+(l.whoEmail||'')).toLowerCase().includes(q));
-  if(list.length===0){ $('logsList').innerHTML='<div class="info">No logs yet for this school. Logs are created when books are issued / returned, users added, schools created.</div>'; return; }
-  let html='<div class="tableWrap"><table><tr><th>Date</th><th>Action</th><th>Detail</th><th>By</th></tr>';
-  list.slice(0,100).forEach(l=>{
-    const d=l.createdAt?.toDate ? l.createdAt.toDate().toLocaleString('en-ZA') : '—';
-    html+='<tr><td>'+d+'</td><td><b>'+(l.action||'')+'</b></td><td>'+(l.detail||'')+'</td><td>'+(l.whoName||'')+'<br><span class="small">'+(l.whoEmail||'')+' • '+(l.whoRole||'')+'</span></td></tr>';
-  });
-  html+='</table></div>'; $('logsList').innerHTML=html;
-}
+function renderLogs(){ const q=($('logSearch').value||'').toLowerCase().trim(); const f=$('logFilter').value; let list=[...ALL_LOGS]; if(f==='USER') list=list.filter(l=> (l.action||'').includes('USER')); else if(f) list=list.filter(l=> (l.action||'')===f); if(q) list=list.filter(l=> ((l.action||'')+' '+(l.detail||'')+' '+(l.whoName||'')+' '+(l.whoEmail||'')).toLowerCase().includes(q)); if(list.length===0){ $('logsList').innerHTML='<div class="info">No logs yet.</div>'; return; } let html='<div class="tableWrap"><table><tr><th>Date</th><th>Action</th><th>Detail</th><th>By</th></tr>'; list.slice(0,100).forEach(l=>{ const d=l.createdAt?.toDate ? l.createdAt.toDate().toLocaleString('en-ZA') : '—'; html+='<tr><td>'+d+'</td><td><b>'+(l.action||'')+'</b></td><td>'+(l.detail||'')+'</td><td>'+(l.whoName||'')+'<br><span class="small">'+(l.whoEmail||'')+' • '+(l.whoRole||'')+'</span></td></tr>'; }); html+='</table></div>'; $('logsList').innerHTML=html; }
 window.renderLogs=renderLogs;
-window.exportLogsCSV = function(){
-  if(ALL_LOGS.length===0){ alert('No logs.'); return; }
-  let csv='Date,Action,Detail,By Name,By Email,By Role\n';
-  ALL_LOGS.forEach(l=>{ const d=l.createdAt?.toDate ? l.createdAt.toDate().toLocaleString('en-ZA') : ''; csv+='"'+d+'","'+(l.action||'')+'","'+(l.detail||'').replace(/"/g,'')+'","'+(l.whoName||'')+'","'+(l.whoEmail||'')+'","'+(l.whoRole||'')+'"\n'; });
-  const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_Logs_'+getEmis()+'_'+todayISO()+'.csv'; a.click(); URL.revokeObjectURL(url);
-};
-// ===== SETTINGS =====
-async function loadSettings(){
-  const emis=getEmis(); $('settingsEmis').value=emis; $('settingsSchoolName').value=getSchool();
-  try{ const snap=await getDoc(doc(db,'schools','EMIS_'+emis)); if(snap.exists()){ const s=snap.data(); $('settingsPrincipal').value=s.principalName||''; $('settingsPrincipalCell').value=s.principalCell||''; $('settingsDistrict').value=s.district||''; $('settingsNotes').value=s.notes||''; } }catch(e){}
-}
+window.exportLogsCSV = function(){ if(ALL_LOGS.length===0){ alert('No logs.'); return; } let csv='Date,Action,Detail,By Name,By Email,By Role\n'; ALL_LOGS.forEach(l=>{ const d=l.createdAt?.toDate ? l.createdAt.toDate().toLocaleString('en-ZA') : ''; csv+='"'+d+'","'+(l.action||'')+'","'+(l.detail||'').replace(/"/g,'')+'","'+(l.whoName||'')+'","'+(l.whoEmail||'')+'","'+(l.whoRole||'')+'"\n'; }); const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_Logs_'+getEmis()+'_'+todayISO()+'.csv'; a.click(); URL.revokeObjectURL(url); };
+async function loadSettings(){ const emis=getEmis(); $('settingsEmis').value=emis; $('settingsSchoolName').value=getSchool(); try{ const snap=await getDoc(doc(db,'schools','EMIS_'+emis)); if(snap.exists()){ const s=snap.data(); $('settingsPrincipal').value=s.principalName||''; $('settingsPrincipalCell').value=s.principalCell||''; $('settingsDistrict').value=s.district||''; $('settingsNotes').value=s.notes||''; } }catch(e){} }
 window.loadSettings=loadSettings;
-window.saveSettings = async function(){
-  const emis=getEmis();
-  try{
-    await updateDoc(doc(db,'schools','EMIS_'+emis), {principalName:($('settingsPrincipal').value||'').trim(), principalCell:($('settingsPrincipalCell').value||'').trim(), district:($('settingsDistrict').value||'').trim().toUpperCase(), notes:($('settingsNotes').value||'').trim(), updatedAt:serverTimestamp()});
-    $('settingsMsg').innerHTML='<div class="ok">✅ Settings saved for <b>'+getSchool()+'</b></div>'; await loadSchools();
-  }catch(e){ $('settingsMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+' — School doc may not exist yet. Add school in Add School page.</div>'; }
-};
-window.deleteCurrentSchool = async function(){
-  const emis=getEmis(); const school=getSchool();
-  if(!confirm('⚠️ DANGER — Delete School Doc?\n\nSchool: '+school+' (EMIS '+emis+')\n\nThis deletes ONLY the school doc (subscription + principal). It does NOT delete learners / books / issues — those stay in Firebase.\n\nUse SUSPEND instead unless this is a test school you created by mistake.\n\nType DELETE to confirm — Tap OK to delete, Cancel to stop.')) return;
-  const typed=prompt('Type DELETE to confirm deletion of '+school+' (EMIS '+emis+'):');
-  if(typed!=='DELETE'){ alert('Cancelled. School NOT deleted.'); return; }
-  try{ await deleteDoc(doc(db,'schools','EMIS_'+emis)); $('deleteMsg').innerHTML='<div class="ok">✅ School doc deleted: <b>'+school+'</b>. Learners / books still in Firebase, but subscription control is off until you re-add school.</div>'; await loadSchools(); }catch(e){ $('deleteMsg').innerHTML='<div class="warn">❌ Delete failed: '+e.message+'</div>'; }
-};
-window.logoutClear = function(){
-  if(!confirm('Logout + Clear This Phone?\nYou will need to login again.\nConfirm?')) return;
-  localStorage.removeItem('MAKHANANI_LOGGED_IN'); localStorage.removeItem('MAKHANANI_SELECTED_EMIS'); localStorage.removeItem('MAKHANANI_SCHOOL_EMIS'); localStorage.removeItem('MAKHANANI_SELECTED_SCHOOL'); localStorage.removeItem('MAKHANANI_SCHOOL_NAME');
-  location.href='index.html';
-};
-document.addEventListener('DOMContentLoaded', async ()=>{
-  const login=getLogin();
-  if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'');
-  $('schoolBox').textContent='Current school: '+getSchool()+' • EMIS '+getEmis();
-  if(getRole()!=='ADMIN'){
-    $('notAdminCard').style.display='block'; $('adminContent').style.display='none';
-    $('yourRoleText').textContent=getRole()||'NOT LOGGED IN';
-    $('cloudStatus').textContent='🔒 Admin Only — Login as Admin';
-    return;
-  }
-  $('notAdminCard').style.display='none'; $('adminContent').style.display='block';
-  await checkSubscription(); await loadSchools(); await loadUsers(); await loadLogs(); await loadSettings();
-});
+window.saveSettings = async function(){ const emis=getEmis(); try{ await updateDoc(doc(db,'schools','EMIS_'+emis), {principalName:($('settingsPrincipal').value||'').trim(), principalCell:($('settingsPrincipalCell').value||'').trim(), district:($('settingsDistrict').value||'').trim().toUpperCase(), notes:($('settingsNotes').value||'').trim(), updatedAt:serverTimestamp()}); $('settingsMsg').innerHTML='<div class="ok">✅ Settings saved for <b>'+getSchool()+'</b></div>'; await loadSchools(); }catch(e){ $('settingsMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; } };
+window.deleteCurrentSchool = async function(){ const emis=getEmis(); const school=getSchool(); if(!confirm('⚠️ DANGER — Delete School Doc?\n\nSchool: '+school+' (EMIS '+emis+')\nUse RETURN ONLY / Suspend instead unless this is a test school.')) return; const typed=prompt('Type DELETE to confirm deletion of '+school+' (EMIS '+emis+'):'); if(typed!=='DELETE'){ alert('Cancelled.'); return; } try{ await deleteDoc(doc(db,'schools','EMIS_'+emis)); $('deleteMsg').innerHTML='<div class="ok">✅ School doc deleted: <b>'+school+'</b>.</div>'; await loadSchools(); }catch(e){ $('deleteMsg').innerHTML='<div class="warn">❌ Delete failed: '+e.message+'</div>'; } };
+window.logoutClear = function(){ if(!confirm('Logout + Clear This Phone?\nYou will need to login again.')) return; localStorage.removeItem('MAKHANANI_LOGGED_IN'); localStorage.removeItem('MAKHANANI_RETURN_ONLY'); localStorage.removeItem('MAKHANANI_SELECTED_EMIS'); localStorage.removeItem('MAKHANANI_SCHOOL_EMIS'); localStorage.removeItem('MAKHANANI_SELECTED_SCHOOL'); localStorage.removeItem('MAKHANANI_SCHOOL_NAME'); location.href='index.html'; };
+document.addEventListener('DOMContentLoaded', async ()=>{ const login=getLogin(); if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||''); $('schoolBox').textContent='Current school: '+getSchool()+' • EMIS '+getEmis(); if(getRole()!=='ADMIN'){ $('notAdminCard').style.display='block'; $('adminContent').style.display='none'; $('yourRoleText').textContent=getRole()||'NOT LOGGED IN'; $('cloudStatus').textContent='🔒 Admin Only — Login as Admin'; return; } $('notAdminCard').style.display='none'; $('adminContent').style.display='block'; await checkSubscription(); await loadSchools(); await loadUsers(); await loadLogs(); await loadSettings(); });
 </script>
 </body>
 </html>
