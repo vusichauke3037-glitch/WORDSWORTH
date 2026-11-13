@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makhanani LTSM — Financial Projection — ADMIN ONLY v1.0</title>
+<meta name="theme-color" content="#0a1f4d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
+header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+header h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:12px;opacity:.85}
+.logoHeader{display:flex;align-items:center;gap:12px}
+.logoHeader img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:12px;padding:4px}
+.badge{background:#dc2626;color:#fff;font-weight:900;padding:4px 10px;border-radius:20px;font-size:12px}
+main{max-width:1100px;margin:auto;padding:14px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
+label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
+input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+@media(max-width:900px){.grid4,.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
+.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}.btn-grey{background:#e2e8f0}
+.btn:disabled{opacity:.5}
+#cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px}
+.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.small{font-size:12px;color:#64748b}
+.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
+th{background:#0a1f4d;color:#fff}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
+.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-orange{background:#ffedd5;color:#9a3412}
+.kpi{background:#0a1f4d;color:#fff;border-radius:12px;padding:14px;text-align:center}
+.kpi.green{background:#059669}.kpi.gold{background:#d4af37;color:#0a1f4d}.kpi.purple{background:#7c3aed}
+.kpi .label{font-size:12px;opacity:.9}
+.kpi .value{font-size:22px;font-weight:900;margin:6px 0}
+.kpi .sub{font-size:11px;opacity:.85;line-height:1.4}
+.lifeBox{background:#dcfce7;border:2px solid #059669;border-radius:12px;padding:12px;margin-top:10px;font-size:13px;font-weight:700;color:#166534;text-align:center}
+/* ADMIN GATE - hidden by default, never flashes */
+#adminContent{display:none}
+#adminDenied{display:none;background:#fee2e2;border:2px solid #dc2626;border-radius:12px;padding:20px;text-align:center;font-weight:900;font-size:16px;color:#991b1b;margin-top:14px}
+@media print{ body{background:#fff} .noPrint{display:none!important} .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid} }
+</style>
+</head>
+<body>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Financial Projection — Makhanani LTSM</h1><p>ADMIN ONLY • Xintimani Group (Pty) Ltd • Setup Once-off for Life • v1.0<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">🔒 ADMIN ONLY</span></div></header>
+<div id="cloudStatus">☁️ Cloud: Connecting...</div>
+<main>
+<div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="add-school.html">🏫 Add School</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="barcode-print.html">🖨️ Print Barcodes 3x5 A4</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="financial-projection.html">💰 Financial Projection</a><a href="checklist.html">✅ Checklist</a></div>
+
+<div id="adminDenied">🔒 FINANCIAL PROJECTION IS ADMIN ONLY<br><span style="font-size:13px;font-weight:400">Only Administrator can see revenue / projections.<br>Principal / Teacher / Librarian / HOD / Public cannot see this page.<br><br>Login as ADMIN in Home first.</span><br><br><button class="btn btn-blue" style="max-width:300px;margin:auto" onclick="location.href='index.html'">🏠 Go to Home — Login as Admin</button></div>
+
+<div id="adminContent">
+<div class="card">
+<h2>💰 Financial Projection — <span id="asOfDate">—</span></h2>
+<div class="lifeBox">💚 SETUP = ONCE-OFF FOR LIFE — Setup counted ONCE per school. Renewals = Monthly OR Once-off / Year ONLY. Setup NEVER counted again in Year 2 / 3.<br>DEMO = R0 • All numbers are projections from current schools in Firebase — if a school cancels / suspends, projection drops.</div>
+<div class="info" id="schoolCountBox">Schools: —</div>
+<div class="grid2 noPrint">
+<button class="btn btn-blue" onclick="loadProjection()">🔄 Refresh Projection</button>
+<button class="btn btn-gold" onclick="window.print()">🖨️ Print / Save as PDF — Admin Only</button>
+</div>
+</div>
+
+<div class="card">
+<h2>📊 Headline — Next 12 Months + 3 Years</h2>
+<div class="grid4">
+<div class="kpi"><div class="label">Active + Trial Schools</div><div class="value" id="kpiSchools">—</div><div class="sub" id="kpiSchoolsSub">—</div></div>
+<div class="kpi green"><div class="label">Monthly Recurring (MRR)</div><div class="value" id="kpiMRR">—</div><div class="sub" id="kpiMRRSub">Monthly billing schools only<br>DEMO + Once-off excluded</div></div>
+<div class="kpi gold"><div class="label">Next 12 Months Revenue</div><div class="value" id="kpi12M">—</div><div class="sub" id="kpi12MSub">—</div></div>
+<div class="kpi purple"><div class="label">3-Year Revenue (Current Schools)</div><div class="value" id="kpi3Y">—</div><div class="sub" id="kpi3YSub">No new schools added<br>No cancellations assumed</div></div>
+</div>
+<div class="info" id="headlineNote"></div>
+</div>
+
+<div class="card">
+<h2>📅 Year-by-Year Breakdown — Current Schools Only (No Growth)</h2>
+<div class="info">Year 1 = Next 12 months from today. Year 2 / 3 = Renewals only — Setup = R0 in Year 2 / 3 because Setup was already paid for life in Year 1 (or earlier).</div>
+<table>
+<tr><th>Period</th><th>Setup (Once for Life)</th><th>Monthly Revenue</th><th>Once-off / Year Revenue</th><th>Total Revenue</th></tr>
+<tr><td><b>Year 1</b> — Next 12 months</td><td id="y1Setup">—</td><td id="y1Monthly">—</td><td id="y1Once">—</td><td><b id="y1Total">—</b></td></tr>
+<tr><td><b>Year 2</b> — Months 13-24</td><td>R0 — Already Paid</td><td id="y2Monthly">—</td><td id="y2Once">—</td><td><b id="y2Total">—</b></td></tr>
+<tr><td><b>Year 3</b> — Months 25-36</td><td>R0 — Already Paid</td><td id="y3Monthly">—</td><td id="y3Once">—</td><td><b id="y3Total">—</b></td></tr>
+<tr><td><b>3-Year Total</b></td><td id="y3Setup">—</td><td id="y3MonthlyTotal">—</td><td id="y3OnceTotal">—</td><td><b id="y3Grand">—</b></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h2>📦 By Plan — Current Schools</h2>
+<table>
+<tr><th>Plan</th><th>Schools</th><th>Setup (Once for Life)</th><th>Monthly / Month</th><th>Once-off / Year</th><th>Year 1 Total</th></tr>
+<tbody id="byPlanBody"></tbody>
+</table>
+<div class="info" id="byPlanNote"></div>
+</div>
+
+<div class="card">
+<h2>🏫 Per School — What Each School Pays + When It Renews</h2>
+<div class="info">Suspended schools are <b>excluded</b> from projection (they pay R0 until reactivated). Trial / DEMO = R0. Setup shows Paid / Not Paid — if Paid, Setup is NOT counted again.</div>
+<table>
+<tr><th>School</th><th>Plan</th><th>Billing</th><th>Status</th><th>Setup</th><th>Pays Per Period</th><th>Next Renewal / End</th><th>Year 1 Revenue</th></tr>
+<tbody id="perSchoolBody"></tbody>
+</table>
+</div>
+
+<div class="card noPrint">
+<h2>🔮 What-If Calculator — Growth Projection</h2>
+<div class="info">Add hypothetical NEW schools to see growth. This does NOT save to Firebase — it only calculates on screen. New schools pay Setup ONCE in Year 1, then Monthly / Once-off only in Year 2 / 3.</div>
+<div class="grid3">
+<div><label>New Schools to Add</label><input id="whatIfCount" type="number" value="10" min="0" max="1000" oninput="calcWhatIf()"></div>
+<div><label>Plan for New Schools</label><select id="whatIfPlan" onchange="calcWhatIf()"><option>STARTER</option><option selected>STANDARD</option><option>PREMIUM</option></select></div>
+<div><label>Billing for New Schools</label><select id="whatIfBilling" onchange="calcWhatIf()"><option value="MONTHLY">Monthly</option><option value="ONCE_OFF" selected>Once-off / Year</option></select></div>
+</div>
+<div class="grid4" style="margin-top:12px">
+<div class="kpi"><div class="label">Extra Year 1 (with Setup)</div><div class="value" id="wiY1">—</div><div class="sub" id="wiY1Sub">—</div></div>
+<div class="kpi green"><div class="label">Extra Year 2 (No Setup)</div><div class="value" id="wiY2">—</div><div class="sub">Renewal only</div></div>
+<div class="kpi gold"><div class="label">Extra 3-Year Total</div><div class="value" id="wi3Y">—</div><div class="sub">Year 1 + Year 2 + Year 3</div></div>
+<div class="kpi purple"><div class="label">Combined 3-Year (Current + New)</div><div class="value" id="wiCombined">—</div><div class="sub" id="wiCombinedSub">—</div></div>
+</div>
+<div class="info" id="whatIfDetail"></div>
+</div>
+
+<div class="card">
+<h2>⚠️ Assumptions + Notes — Read Before Sharing</h2>
+<div class="info">
+<b>Assumptions:</b><br>
+1. Setup = Once-off for Life — counted only if school has NOT paid Setup yet. Existing schools in Firebase are treated as Setup Already Paid (unless Setup Paid = NO in Add School).<br>
+2. Suspended schools = R0 until reactivated — they are excluded from MRR / Year totals.<br>
+3. DEMO / TRIAL = R0.<br>
+4. Monthly schools pay every month for 12 months in Year 1, Year 2, Year 3 — no churn assumed.<br>
+5. Once-off schools pay once per year — Year 1, Year 2, Year 3 — no churn assumed.<br>
+6. No new schools in “Current Schools” totals — use What-If calculator for growth.<br>
+7. Prices: DEMO FREE • STARTER Setup R3 000 / Monthly R350 / Once-off R4 500 • STANDARD Setup R4 500 / Monthly R500 / Once-off R7 500 • PREMIUM Setup R5 500 / Monthly R600 / Once-off R9 000.<br><br>
+<b>Do NOT share this page with Principal / Teacher / Librarian.</b> This is Admin Only — Xintimani Group internal. Print to PDF and keep private.
+</div>
+</div>
+</div>
+</main>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
+let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
+const $ = id => document.getElementById(id);
+const PLANS={
+  DEMO:{setup:0, monthly:0, onceOff:0},
+  STARTER:{setup:3000, monthly:350, onceOff:4500},
+  STANDARD:{setup:4500, monthly:500, onceOff:7500},
+  PREMIUM:{setup:5500, monthly:600, onceOff:9000}
+};
+function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
+function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
+function fmt(n){ return 'R' + Math.round(Number(n||0)).toLocaleString('en-ZA'); }
+function fmt0(n){ return n===0 ? 'R0' : fmt(n); }
+let CURRENT={ y1Setup:0, y1Monthly:0, y1Once:0, y1Total:0, y2Monthly:0, y2Once:0, y2Total:0, y3Monthly:0, y3Once:0, y3Total:0, grand3Y:0, mrr:0, activeCount:0 };
+function applyAdminGate(){
+  const login=getLogin();
+  const isAdmin = getRole()==='ADMIN';
+  const content=$('adminContent'); const denied=$('adminDenied');
+  if(isAdmin){ if(content) content.style.display='block'; if(denied) denied.style.display='none'; if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • ADMIN • '+(login.email||''); }
+  else { if(content) content.style.display='none'; if(denied) denied.style.display='block'; $('whoLine').textContent= login ? 'Logged in: '+(login.name||'')+' • '+(login.role||'')+' • 🔒 NOT ADMIN' : 'Not logged in — Admin Only'; }
+  return isAdmin;
+}
+window.loadProjection = async function(){
+  if(!applyAdminGate()) return;
+  $('asOfDate').textContent = new Date().toLocaleDateString('en-ZA',{day:'2-digit', month:'long', year:'numeric'});
+  try{
+    const snap=await getDocs(collection(db,'schools'));
+    let schools=[]; snap.forEach(d=>{ const s=d.data(); schools.push({id:d.id, ...s}); });
+    schools.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
+    // Filter: exclude SUSPENDED from revenue, keep DEMO (R0) in count
+    const today=new Date().toISOString().slice(0,10);
+    let activeSchools=[]; let suspendedCount=0; let demoCount=0;
+    schools.forEach(s=>{
+      const status=(s.subscription||s.status||'ACTIVE').toUpperCase();
+      const end=s.subscriptionEnd||'';
+      const isSuspended = status==='SUSPENDED' || (end && end<today && status!=='TRIAL' && status!=='ACTIVE' ? true : false);
+      // Simpler: SUSPENDED status = excluded. Expired but not suspended - treat as expired, excluded if end < today and status != TRIAL
+      const expired = end && end<today;
+      if(status==='SUSPENDED'){ suspendedCount++; return; }
+      if(expired && status==='ACTIVE'){ suspendedCount++; return; } // expired = not paying until renewed
+      activeSchools.push(s);
+      if((s.plan||'').toUpperCase()==='DEMO' || status==='TRIAL') demoCount++;
+    });
+    // Per plan + per school calc
+    let byPlan={}; Object.keys(PLANS).forEach(p=> byPlan[p]={count:0, setup:0, monthly:0, once:0, y1:0});
+    let y1Setup=0, y1Monthly=0, y1Once=0, mrr=0;
+    let perSchoolHtml='';
+    activeSchools.forEach(s=>{
+      const plan=(s.plan||'STANDARD').toUpperCase(); const p=PLANS[plan]||PLANS.STANDARD;
+      const billing=(s.billingType||s.billing||'MONTHLY').toUpperCase();
+      const status=(s.subscription||s.status||'ACTIVE').toUpperCase();
+      // Setup: if school already has setupPaid=true, setup = 0. If setupPaid is missing (old schools), assume already paid if school was created before v2.1 - treat as paid.
+      // Only count setup if setupPaid === false explicitly, or if school is brand new with setupPaidDate empty and created recently? For safety: old schools = paid.
+      // In Add School v2.1, new schools save setupPaid=true after save. So any existing school with setupPaid !== false = paid.
+      const setupAlreadyPaid = s.setupPaid!==false; // true / undefined = paid (old school)
+      const setupToCount = (plan==='DEMO' || setupAlreadyPaid) ? 0 : p.setup;
+      let paysPerPeriod=0, y1=0, monthlyPart=0, oncePart=0;
+      if(plan==='DEMO' || status==='TRIAL'){ paysPerPeriod=0; y1=setupToCount; }
+      else if(billing==='MONTHLY'){ paysPerPeriod=p.monthly; monthlyPart=p.monthly*12; y1=setupToCount+monthlyPart; mrr+=p.monthly; }
+      else { paysPerPeriod=p.onceOff; oncePart=p.onceOff; y1=setupToCount+oncePart; }
+      y1Setup+=setupToCount; y1Monthly+=monthlyPart; y1Once+=oncePart;
+      byPlan[plan].count++; byPlan[plan].setup+=setupToCount; byPlan[plan].monthly+= (billing==='MONTHLY' && plan!=='DEMO' ? p.monthly : 0); byPlan[plan].once+= (billing!=='MONTHLY' && plan!=='DEMO' ? p.onceOff : 0); byPlan[plan].y1+=y1;
+      const setupCell = plan==='DEMO' ? 'FREE' : (setupAlreadyPaid ? '✅ Paid for Life' : '❌ Not Paid — '+fmt(p.setup));
+      perSchoolHtml+='<tr><td><b>'+(s.name||'')+'</b><br><span class="small">EMIS '+(s.emis||'')+'</span></td><td><b>'+plan+'</b></td><td>'+billing+'</td><td>'+status+'</td><td>'+setupCell+'</td><td>'+fmt0(paysPerPeriod)+' '+(billing==='MONTHLY'?' / month':' / year')+'</td><td>'+(s.subscriptionEnd||'—')+'</td><td><b>'+fmt(y1)+'</b></td></tr>';
+    });
+    const y1Total=y1Setup+y1Monthly+y1Once;
+    // Year 2 / 3: Setup = 0, Monthly x12, Once-off x1 per year (same as Year 1 recurring)
+    const y2Monthly=y1Monthly, y2Once=y1Once, y2Total=y2Monthly+y2Once;
+    const y3Monthly=y1Monthly, y3Once=y1Once, y3Total=y3Monthly+y3Once;
+    const grand3Y=y1Total+y2Total+y3Total;
+    CURRENT={ y1Setup, y1Monthly, y1Once, y1Total, y2Monthly, y2Once, y2Total, y3Monthly, y3Once, y3Total, grand3Y, mrr, activeCount:activeSchools.length };
+    $('schoolCountBox').innerHTML='Schools in Firebase: <b>'+schools.length+'</b> &nbsp;|&nbsp; Paying / Trial (in projection): <b>'+activeSchools.length+'</b> &nbsp;|&nbsp; Suspended / Expired (excluded, R0): <b>'+suspendedCount+'</b> &nbsp;|&nbsp; DEMO (R0): <b>'+demoCount+'</b>';
+    $('kpiSchools').textContent=activeSchools.length; $('kpiSchoolsSub').textContent='Paying + Trial • Suspended excluded';
+    $('kpiMRR').textContent=fmt(mrr); $('kpiMRRSub').innerHTML='Monthly billing schools only<br>Annualised MRR: '+fmt(mrr*12)+' / year';
+    $('kpi12M').textContent=fmt(y1Total); $('kpi12MSub').innerHTML='Setup '+fmt(y1Setup)+' + Monthly '+fmt(y1Monthly)+' + Once-off '+fmt(y1Once);
+    $('kpi3Y').textContent=fmt(grand3Y); $('kpi3YSub').innerHTML='Year 1 '+fmt(y1Total)+' + Year 2 '+fmt(y2Total)+' + Year 3 '+fmt(y3Total);
+    $('headlineNote').innerHTML='If all current schools stay ACTIVE and pay on time, Xintimani Group earns <b>'+fmt(y1Total)+' in next 12 months</b> and <b>'+fmt(grand3Y)+' over 3 years</b> — without adding any new schools. Add new schools in What-If below to see growth.';
+    $('y1Setup').textContent=fmt(y1Setup); $('y1Monthly').textContent=fmt(y1Monthly); $('y1Once').textContent=fmt(y1Once); $('y1Total').textContent=fmt(y1Total);
+    $('y2Monthly').textContent=fmt(y2Monthly); $('y2Once').textContent=fmt(y2Once); $('y2Total').textContent=fmt(y2Total);
+    $('y3Monthly').textContent=fmt(y3Monthly); $('y3Once').textContent=fmt(y3Once); $('y3Total').textContent=fmt(y3Total);
+    $('y3Setup').textContent=fmt(y1Setup); $('y3MonthlyTotal').textContent=fmt(y1Monthly*3); $('y3OnceTotal').textContent=fmt(y1Once*3); $('y3Grand').textContent=fmt(grand3Y);
+    let byHtml=''; Object.keys(PLANS).forEach(p=>{ const b=byPlan[p]; if(b.count===0) return; byHtml+='<tr><td><b>'+p+'</b></td><td>'+b.count+'</td><td>'+fmt(b.setup)+'</td><td>'+fmt(b.monthly)+' / month</td><td>'+fmt(b.once)+' / year</td><td><b>'+fmt(b.y1)+'</b></td></tr>'; });
+    if(!byHtml) byHtml='<tr><td colspan="6">No active schools yet.</td></tr>';
+    $('byPlanBody').innerHTML=byHtml;
+    $('byPlanNote').innerHTML='Setup in Year 1 above is <b>only for schools that have NOT paid Setup yet</b>. Most existing schools show Setup R0 because they already paid for life.';
+    $('perSchoolBody').innerHTML = perSchoolHtml || '<tr><td colspan="8">No active schools.</td></tr>';
+    $('cloudStatus').textContent='☁️ Cloud: Connected — '+schools.length+' school(s) • Projection updated';
+    calcWhatIf();
+  }catch(e){ $('cloudStatus').textContent='🔴 Cloud: Offline — '+e.message; }
+};
+window.calcWhatIf = function(){
+  const count=parseInt($('whatIfCount').value||'0',10); const plan=$('whatIfPlan').value; const billing=$('whatIfBilling').value; const p=PLANS[plan];
+  const setupPer=p.setup; const perPeriod = billing==='MONTHLY' ? p.monthly : p.onceOff;
+  const y1 = count*(setupPer + (billing==='MONTHLY' ? p.monthly*12 : p.onceOff));
+  const y2 = count*(billing==='MONTHLY' ? p.monthly*12 : p.onceOff);
+  const y3 = y2;
+  const total3 = y1+y2+y3;
+  $('wiY1').textContent=fmt(y1); $('wiY1Sub').textContent=count+' x ('+fmt(setupPer)+' Setup once + '+fmt(perPeriod)+' '+(billing==='MONTHLY'?'x 12 months':'/ year')+')';
+  $('wiY2').textContent=fmt(y2);
+  $('wi3Y').textContent=fmt(total3);
+  $('wiCombined').textContent=fmt(CURRENT.grand3Y + total3); $('wiCombinedSub').textContent='Current '+fmt(CURRENT.grand3Y)+' + New '+fmt(total3);
+  $('whatIfDetail').innerHTML='If you add <b>'+count+' new '+plan+' schools</b> on <b>'+billing+'</b>: Year 1 extra = <b>'+fmt(y1)+'</b> (includes Setup once for life: '+fmt(count*setupPer)+'). Year 2 extra = <b>'+fmt(y2)+'</b> (No Setup). Year 3 extra = <b>'+fmt(y3)+'</b> (No Setup). Combined 3-year with current schools = <b>'+fmt(CURRENT.grand3Y + total3)+'</b>.';
+};
+document.addEventListener('DOMContentLoaded', async ()=>{ if(applyAdminGate()){ await loadProjection(); } });
+</script>
+</body>
+</html>
