@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.06</title>
+<title>Makhanani LTSM — Learners v2.07</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <style>
 *{box-sizing:border-box}
 html,body{overflow-x:hidden}
@@ -55,6 +56,7 @@ th{background:#0a1f4d;color:#fff}
 .barcodeBox .bcode{font-family:'Courier New',monospace;font-weight:900;font-size:18px;letter-spacing:2px}
 .barcodeBox .bname{font-weight:900;font-size:14px}
 .barcodeBox .bmeta{font-size:11px;color:#555}
+.barcodeBox svg{width:100%;max-width:220px;height:52px}
 .uploadBox{border:2.5px dashed #7c3aed;border-radius:12px;padding:14px;background:#f5f3ff;text-align:center;margin-top:10px}
 .uploadBox b{color:#5b21b6;font-size:15px}
 .previewBox{background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;max-height:200px;overflow-y:auto}
@@ -71,7 +73,7 @@ th{background:#0a1f4d;color:#fff}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Learners — Makhanani LTSM</h1><p>Add Learners • Upload Excel • Print Barcodes • Due 30 Nov • v2.06<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.06 LEARNERS</span></div></header>
+<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Learners — Makhanani LTSM</h1><p>Add Learners • Upload Excel • Real Barcode • Due 30 Nov • v2.07<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.07 LEARNERS</span></div></header>
 <div id="cloudStatus">☁️ Cloud: Connecting...</div>
 <main>
 <div class="topnav noPrint"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a></div>
@@ -97,17 +99,16 @@ th{background:#0a1f4d;color:#fff}
 <button class="btn btn-green" id="saveLearnerBtn" onclick="saveLearner()">✅ Save Learner</button>
 <button class="btn btn-grey" onclick="clearLearnerForm()">🔄 Clear Form — New Learner</button>
 <div id="learnerMsg"></div>
+<div id="singleBarcodePreview" style="display:none;text-align:center;margin-top:12px"></div>
 </div>
 
 <div class="card noPrint">
 <h2>📤 Upload Learners — From Excel / CSV File</h2>
-<div class="small">Easiest way! Save your Excel class list as <b>.CSV</b> then upload here.<br><b>How to save Excel as CSV:</b> In Excel → File → Save As → Choose <b>CSV (Comma delimited) (*.csv)</b> → Save.<br><br><b>✅ RULE:</b> Same NAME allowed. Only <b>Learner ID / Barcode</b> must be unique. If your file has no Barcode column, IDs are auto-generated and will never clash.<br><br><b>Your Excel can be:</b><br>✅ Column A = Name only — e.g. <code>Lesedi Mokoena</code><br>✅ OR Name, Grade, Class — e.g. <code>Lesedi Mokoena, Grade 10, 10A</code><br>✅ OR Name, Barcode, Grade, Class, Gender, Phone</div>
-
+<div class="small">Save your Excel class list as <b>.CSV</b> then upload here.<br><b>✅ RULE:</b> Same NAME allowed. Only <b>Learner ID / Barcode</b> must be unique.</div>
 <div class="grid2">
 <div><label>📤 Upload Grade (if file has Name only)</label><select id="uploadGrade"><option value="">— Grade —</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option></select></div>
 <div><label>📤 Upload Class (if file has Name only)</label><input id="uploadClass" placeholder="e.g. 10A" style="text-transform:uppercase"></div>
 </div>
-
 <div class="uploadBox">
 <b>📤 CHOOSE EXCEL / CSV FILE</b><br>
 <span class="small">Tap below → Select your .csv file → It will show preview → Tap Confirm Upload</span><br><br>
@@ -116,18 +117,15 @@ th{background:#0a1f4d;color:#fff}
 <button class="btn btn-purple" id="confirmUploadBtn" onclick="confirmUpload()" style="display:none">✅ Confirm Upload — Add All Learners</button>
 <button class="btn btn-grey" id="cancelUploadBtn" onclick="cancelUpload()" style="display:none">❌ Cancel Upload</button>
 </div>
-
 <div id="uploadMsg"></div>
-
 <div style="margin-top:12px">
 <button class="btn btn-gold" onclick="downloadTemplate()">📥 Download Empty Template (CSV) — Fill in Excel</button>
-<div class="small" style="text-align:center;margin-top:4px">Download → Open in Excel → Fill names → Save As CSV → Upload here</div>
 </div>
 </div>
 
 <div class="card noPrint">
-<h2>📥 Bulk Add Learners — Paste List (Old Way Still Works)</h2>
-<div class="small">Paste from Excel / Word: <b>One learner per line</b> — Format: <b>Name, Grade, Class</b><br>Same NAME allowed. Only ID must be unique.</div>
+<h2>📥 Bulk Add Learners — Paste List</h2>
+<div class="small">Paste: <b>One learner per line</b> — Format: <b>Name, Grade, Class</b><br>Same NAME allowed. Only ID must be unique.</div>
 <div class="grid2">
 <div><label>Bulk Grade</label><select id="bulkGrade"><option value="">— Grade —</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option></select></div>
 <div><label>Bulk Class</label><input id="bulkClass" placeholder="e.g. 10A" style="text-transform:uppercase"></div>
@@ -149,7 +147,7 @@ th{background:#0a1f4d;color:#fff}
 <div><label>Print Filter</label><select id="printFilter"><option value="FILTERED">🖨️ Print FILTERED list (what you see)</option><option value="ALL">🖨️ Print ALL learners</option></select></div>
 </div>
 <div class="grid2">
-<button class="btn btn-blue" onclick="printBarcodes()">🖨️ Print Barcodes — Filtered / All</button>
+<button class="btn btn-blue" onclick="printBarcodes()">🖨️ Print REAL Barcodes — Filtered / All</button>
 <button class="btn btn-gold" onclick="exportLearnersCSV()">📥 Export Learners (CSV)</button>
 </div>
 <div id="learnerList"></div>
@@ -165,7 +163,7 @@ th{background:#0a1f4d;color:#fff}
 </div>
 <div style="font-size:12px;margin:8px 0" id="printSummary"></div>
 <div class="printGrid" id="printList"></div>
-<div style="margin-top:10px;font-size:11px;text-align:center">Makhanani LTSM • WORDSWORTH HIGH SCHOOL • EMIS 700310854 • ALL BOOKS DUE 30 NOVEMBER • Cut out barcode, stick on learner card / exercise book</div>
+<div style="margin-top:10px;font-size:11px;text-align:center">Makhanani LTSM • WORDSWORTH HIGH SCHOOL • EMIS 700310854 • ALL BOOKS DUE 30 NOVEMBER • Cut out barcode, stick on learner card / exercise book • Scan with Issue page</div>
 </div>
 </main>
 
@@ -192,6 +190,13 @@ function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGG
 function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
 function canAdd(){ return ['TEACHER','LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
 function canEditDelete(){ return ['LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
+// REAL BARCODE: clean code for CODE128 — remove spaces, keep A-Z 0-9 - . _ 
+function cleanBarcode(code){ return String(code||'').toUpperCase().replace(/[^A-Z0-9\-\.\_]/g,'').trim() || 'UNKNOWN'; }
+function drawBarcode(svgEl, code){
+  try{
+    if(window.JsBarcode && svgEl){ JsBarcode(svgEl, cleanBarcode(code), {format:'CODE128', lineColor:'#000', background:'#fff', width:2, height:52, displayValue:true, fontSize:14, margin:4}); }
+  }catch(e){ if(svgEl) svgEl.outerHTML='<div style="font-family:monospace;font-weight:900;font-size:16px">'+cleanBarcode(code)+'</div>'; }
+}
 function applyRole(){
   const login=getLogin();
   if(!login){ $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; $('permissionNote').innerHTML='⚠️ Login in Home first.'; return; }
@@ -204,7 +209,7 @@ window.clearLearnerForm = function(){
   EDIT_ID=null;
   $('lName').value=''; $('lGrade').value=''; $('lClass').value=''; $('lBarcode').value=''; $('lGender').value=''; $('lPhone').value='';
   $('saveLearnerBtn').textContent='✅ Save Learner';
-  $('learnerMsg').innerHTML='';
+  $('learnerMsg').innerHTML=''; $('singleBarcodePreview').style.display='none';
   $('lBarcode').placeholder='e.g. 10A001 — Leave blank to auto-generate';
 };
 function makeBarcode(grade, cls, existingCount){
@@ -220,10 +225,7 @@ function makeBarcode(grade, cls, existingCount){
   const next = Math.max(maxNum+1, existingCount+1);
   return prefix + String(next).padStart(3,'0');
 }
-// NEW RULE: Only Barcode / ID must be unique. Name duplicate is ALLOWED.
-function isBarcodeTaken(barcode, excludeId){
-  return ALL_LEARNERS.some(l=> l.barcode===barcode && l.id!==excludeId);
-}
+function isBarcodeTaken(barcode, excludeId){ return ALL_LEARNERS.some(l=> l.barcode===barcode && l.id!==excludeId); }
 window.saveLearner = async function(){
   if(!canAdd()){ alert('Login first.'); return; }
   const emis=getEmis();
@@ -234,10 +236,8 @@ window.saveLearner = async function(){
   const gender=$('lGender').value; const phone=($('lPhone').value||'').trim();
   if(!name || !grade || !cls){ $('learnerMsg').innerHTML='<div class="warn">⚠️ Fill Name + Grade + Class.</div>'; return; }
   if(!barcode) barcode=makeBarcode(grade, cls, ALL_LEARNERS.length);
-  // ✅ FIXED: Check ONLY Barcode, NOT Name. Same name allowed.
   if(isBarcodeTaken(barcode, EDIT_ID)){ $('learnerMsg').innerHTML='<div class="warn">❌ Learner ID / Barcode <b>'+barcode+'</b> already exists! Use a different ID. Same NAME is allowed, but ID must be unique.</div>'; return; }
   if(EDIT_ID && !canEditDelete()){ alert('🚫 TEACHER cannot Edit. Ask Librarian / Admin.'); return; }
-  // Warn if same name exists — but still allow
   const sameNameCount = ALL_LEARNERS.filter(l=> l.name.toLowerCase()===name.toLowerCase() && l.class.toUpperCase()===cls.toUpperCase() && l.id!==EDIT_ID).length;
   const id = EDIT_ID || barcode;
   const data={ name:name, fullName:name, barcode:barcode, code:barcode, grade:grade, class:cls, gender:gender, phone:phone, emis:emis, school:getSchool(), updatedAt:serverTimestamp() };
@@ -247,8 +247,13 @@ window.saveLearner = async function(){
     await setDoc(doc(db,'schools','EMIS_'+emis,'learners',id), data, {merge:true});
     await setDoc(doc(db,'schools','EMIS_'+emis,'logs','log_'+Date.now()), {action: EDIT_ID ? 'LEARNER_EDITED' : 'LEARNER_ADDED', detail:'Learner '+name+' ('+barcode+') '+grade+' '+cls, whoEmail:(getLogin()||{}).email||'', whoName:(getLogin()||{}).name||'', whoRole:(getLogin()||{}).role||'', createdAt:serverTimestamp()});
     let extra = sameNameCount>0 ? '<br><span class="small">⚠️ Note: There is already another learner with same name in '+cls+'. That is OK — they have different IDs. This one is <b>'+barcode+'</b>.</span>' : '';
-    $('learnerMsg').innerHTML='<div class="ok">✅ Learner Saved: <b>'+name+' • '+barcode+' • '+grade+' '+cls+'</b>'+extra+'</div>';
-    await loadAll(); clearLearnerForm();
+    $('learnerMsg').innerHTML='<div class="ok">✅ Learner Saved: <b>'+name+' • '+barcode+' • '+grade+' '+cls+'</b>'+extra+'<br><span class="small">Real barcode below — scan to test in Issue page.</span></div>';
+    $('singleBarcodePreview').style.display='block';
+    $('singleBarcodePreview').innerHTML='<div class="barcodeBox" style="max-width:280px;margin:auto"><div style="font-size:10px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+name+'</div><div class="bmeta">'+grade+' '+cls+'</div><svg id="singleSvg"></svg><div class="bmeta">Scan to Issue / Return</div></div>';
+    drawBarcode(document.getElementById('singleSvg'), barcode);
+    await loadAll(); 
+    // keep name/barcode visible for print, clear only after? keep form for next — do not clear barcode preview
+    $('lName').value=''; $('lBarcode').value='';
   }catch(e){ $('learnerMsg').innerHTML='<div class="warn">❌ Save failed: '+e.message+'</div>'; }
   $('saveLearnerBtn').disabled=false; $('saveLearnerBtn').textContent='✅ Save Learner';
 };
@@ -313,10 +318,7 @@ window.previewUpload = function(event){
         else if(cells[1].toLowerCase().includes('grade')) grade=cells[1];
         else cls=cells[1].toUpperCase();
       }
-      if(!grade && cls){
-        const m=cls.match(/^(\d+)/);
-        if(m) grade='Grade '+m[1];
-      }
+      if(!grade && cls){ const m=cls.match(/^(\d+)/); if(m) grade='Grade '+m[1]; }
       if(!grade) grade=defaultGrade;
       if(!cls) cls=defaultClass;
       if(!name || !grade || !cls) continue;
@@ -324,14 +326,14 @@ window.previewUpload = function(event){
       UPLOAD_DATA.push({name:name, barcode:barcode, grade:grade, class:cls, gender:gender, phone:phone});
     }
     if(UPLOAD_DATA.length===0){
-      $('uploadPreview').innerHTML='<div class="warn">⚠️ No learners found. Check file format.<br>Need: <b>Name</b> in first column + select Grade + Class above, OR file with Name, Grade, Class.</div>';
+      $('uploadPreview').innerHTML='<div class="warn">⚠️ No learners found.</div>';
       $('confirmUploadBtn').style.display='none'; $('cancelUploadBtn').style.display='none';
       return;
     }
     let html='<div class="ok">✅ <b>Preview:</b> Found <b>'+UPLOAD_DATA.length+' learner(s)</b> in file <b>'+file.name+'</b><br>Same NAME allowed — only ID must be unique.<br>First 5:</div><div class="previewBox">';
     UPLOAD_DATA.slice(0,5).forEach((l,idx)=>{ html+='<div>'+(idx+1)+'. <b>'+l.name+'</b> — '+l.grade+' '+l.class+(l.barcode?' • ID: '+l.barcode:' • ID: auto')+'</div>'; });
     if(UPLOAD_DATA.length>5) html+='<div>... + '+(UPLOAD_DATA.length-5)+' more</div>';
-    html+='</div><div class="small">Barcodes will be auto-generated if not in file. Only duplicate IDs will be skipped — duplicate NAMES will be added.</div>';
+    html+='</div>';
     $('uploadPreview').innerHTML=html;
     $('confirmUploadBtn').style.display='block'; $('cancelUploadBtn').style.display='block';
     $('confirmUploadBtn').textContent='✅ Confirm Upload — Add '+UPLOAD_DATA.length+' Learner(s)';
@@ -351,13 +353,10 @@ window.confirmUpload = async function(){
   $('confirmUploadBtn').disabled=true; $('confirmUploadBtn').textContent='Uploading... Please wait...';
   for(let i=0;i<UPLOAD_DATA.length;i++){
     const l=UPLOAD_DATA[i];
-    // ✅ FIXED: Do NOT skip on same name. Only skip if Barcode / ID already exists.
     let barcode=l.barcode || '';
     if(barcode){
-      // If file gave an ID and it already exists in system → skip this one only
       if(isBarcodeTaken(barcode, null)){ skipped.push(l.name+' — ID '+barcode+' already exists'); continue; }
     } else {
-      // Auto-generate — will always be unique
       barcode=makeBarcode(l.grade, l.class, ALL_LEARNERS.length + done);
       let tries=0;
       while(isBarcodeTaken(barcode, null) && tries<30){ tries++; barcode=makeBarcode(l.grade, l.class, ALL_LEARNERS.length + done + tries); }
@@ -369,7 +368,7 @@ window.confirmUpload = async function(){
       done++;
     }catch(e){ failed.push(l.name+' — '+e.message); }
   }
-  $('uploadMsg').innerHTML='<div class="ok">✅ Upload Done! Added <b>'+done+' learner(s)</b> — Same NAME allowed, only duplicate ID skipped.'+(skipped.length ? '<br>Skipped (ID already exists): '+skipped.slice(0,10).join(', ')+(skipped.length>10 ? ' + '+(skipped.length-10)+' more' : '') : '')+(failed.length ? '<br>Failed: '+failed.join(', ') : '')+'</div>';
+  $('uploadMsg').innerHTML='<div class="ok">✅ Upload Done! Added <b>'+done+' learner(s)</b>'+(skipped.length ? '<br>Skipped (ID already exists): '+skipped.slice(0,10).join(', ') : '')+(failed.length ? '<br>Failed: '+failed.join(', ') : '')+'</div>';
   cancelUpload();
   $('confirmUploadBtn').disabled=false;
   await loadAll();
@@ -401,7 +400,6 @@ window.bulkAdd = async function(){
       if(parts[2]) c=parts[2].toUpperCase();
     }
     if(!name) continue;
-    // ✅ FIXED: No name check. Only barcode must be unique — auto-generated is always unique.
     let barcode=makeBarcode(g, c, ALL_LEARNERS.length + done);
     let tries=0;
     while(isBarcodeTaken(barcode, null) && tries<20){ tries++; barcode=makeBarcode(g, c, ALL_LEARNERS.length + done + tries); }
@@ -453,7 +451,6 @@ window.renderLearners = function(){
   list.slice(0,300).forEach(l=>{
     const outs=ALL_ISSUES.filter(x=>x.learnerCode===l.barcode && x.status==='OUT');
     const outPill = outs.length===0 ? '<span class="pill pill-green">✅ 0 — Done</span>' : '<span class="pill pill-red">'+outs.length+' OUT</span>';
-    // Show warning if same name exists in same class — helps tell twins / same-name learners apart
     const sameName = ALL_LEARNERS.filter(x=> x.name.toLowerCase()===l.name.toLowerCase() && x.class.toUpperCase()===(l.class||'').toUpperCase() && x.barcode!==l.barcode).length;
     const dupPill = sameName>0 ? ' <span class="pill pill-gold">⚠️ Same Name ×'+(sameName+1)+' — Check ID</span>' : '';
     const action = canED ? `<button class="btn btn-blue btn-sm" onclick="editLearner('${l.id}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="deleteLearner('${l.id}','${l.name.replace(/'/g,"")}','${l.barcode}')">🗑️ Delete</button>` : `<button class="btn btn-grey btn-sm" disabled>🔒 View Only</button>`;
@@ -471,10 +468,13 @@ window.printBarcodes = function(singleList){
   if(list.length===0){ alert('No learners to print.'); return; }
   $('printTitle').textContent=getSchool()+' — EMIS '+getEmis();
   $('printMeta').textContent='Printed: '+new Date().toLocaleString('en-ZA')+' • Learners: '+list.length+' • By: '+(getLogin()?getLogin().name:'');
-  $('printSummary').innerHTML='<b>Learners:</b> '+list.length;
-  $('printList').innerHTML=list.map(l=> '<div class="barcodeBox"><div style="font-size:10px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+l.name+'</div><div class="bmeta">'+l.grade+' '+l.class+' • ID: '+l.barcode+'</div><div style="font-size:28px;letter-spacing:4px;font-family:monospace">|||| |||| |||| ||||</div><div class="bcode">'+l.barcode+'</div><div class="bmeta">Scan to Issue / Return</div></div>').join('');
+  $('printSummary').innerHTML='<b>Learners:</b> '+list.length+' • Real CODE128 barcodes — scan with Issue page / phone scanner';
+  // REAL BARCODE: svg per learner, JsBarcode draws it
+  $('printList').innerHTML=list.map((l,idx)=> '<div class="barcodeBox"><div style="font-size:10px;font-weight:900">MAKHANANI LTSM • '+getSchool()+'</div><div class="bname">'+l.name+'</div><div class="bmeta">'+l.grade+' '+l.class+' • ID: '+l.barcode+'</div><svg class="realBarcode" data-code="'+l.barcode+'"></svg><div class="bmeta">Scan to Issue / Return</div></div>').join('');
   document.getElementById('printCard').style.display='block';
-  setTimeout(()=>{ window.print(); }, 300);
+  // Draw all real barcodes, then print
+  document.querySelectorAll('.realBarcode').forEach(svg=> drawBarcode(svg, svg.getAttribute('data-code')));
+  setTimeout(()=>{ window.print(); }, 500);
 };
 window.exportLearnersCSV = function(){
   const list=getFiltered();
