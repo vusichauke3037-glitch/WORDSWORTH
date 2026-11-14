@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.0 — Add / Bulk / Barcodes</title>
+<title>Makhanani LTSM — Learners v2.3 — Real Barcode + Beep</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -23,7 +24,7 @@ label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
 input,select,textarea{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
 textarea{min-height:140px;font-family:monospace}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-orange{background:#ea580c;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
+.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-orange{background:#ea580c;color:#fff}
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
@@ -32,25 +33,22 @@ th{background:#0a1f4d;color:#fff}
 .info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.greenBox{background:#dcfce7;border:2px solid #059669;border-radius:12px;padding:12px;margin-top:10px;font-size:13px;font-weight:700;color:#166534}
 .goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}
 .orangeBox{background:#ffedd5;border:2px solid #ea580c;border-radius:12px;padding:12px;margin-top:10px;font-weight:700;color:#9a3412;font-size:13px}
 .small{font-size:12px;color:#64748b}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
 .topnav a.safe{background:#dcfce7;color:#166534;border:1.5px solid #059669}
 .tabBtn{padding:10px 14px;border:none;border-radius:20px;font-weight:900;font-size:13px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}
 .tabBtn.active{background:#0a1f4d;color:#fff}
-/* Barcode labels — 3 across x 5 down = 15 per A4 */
 .barcodeGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
 .label{border:2px solid #111;border-radius:8px;padding:10px;text-align:center;background:#fff;break-inside:avoid}
 .label b{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .label span{font-size:11px;color:#333;display:block}
-.label .code{font-family:monospace;font-size:20px;font-weight:900;letter-spacing:2px;margin:6px 0}
-.label .bars{font-family:monospace;font-size:22px;letter-spacing:-1px;line-height:1}
+.label .code{font-family:monospace;font-size:20px;font-weight:900;letter-spacing:1px;margin:4px 0}
+.label svg{width:100%;height:48px}
 @media(max-width:700px){.barcodeGrid{grid-template-columns:1fr 1fr}}
 @media print{
   body{background:#fff} .noPrint{display:none!important} .card{box-shadow:none;border:1px solid #ccc}
@@ -65,20 +63,23 @@ th{background:#0a1f4d;color:#fff}
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <div id="offlineQueue" data-offline-queue style="background:#ffedd5;color:#9a3412;text-align:center;padding:8px;font-weight:700;font-size:12px;display:none"></div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🎓 Makhanani LTSM — Learners v2.0</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Due Date: 30 November — Every book must come back • Return is NEVER blocked</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🎓 Makhanani LTSM — Learners v2.3</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Due Date: 30 November — Every book must come back • Return is NEVER blocked<br><b>Real Barcode (CODE128) + Beep • Numbering: 10A001</b></p>
 </header>
 <main>
 <div class="card noPrint">
 <div class="topnav"><a href="index.html">🏠 Home</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 My Profile</a><a href="checklist-principal.html" class="safe">✅ Safe Checklist</a></div>
 <div class="info" id="loginInfo">Checking login...</div>
-<div id="returnOnlyBox" class="orangeBox" style="display:none">🟠 RETURN ONLY MODE — Subscription Suspended / Expired<br>You can ONLY RETURN books. You cannot Issue / Add.<br>Principal: Contact Xintimani Group to reactivate.</div>
+<div id="returnOnlyBox" class="orangeBox" style="display:none">🟠 RETURN ONLY MODE — You can ONLY RETURN books. You cannot Issue / Add.</div>
 <div class="grid2">
 <button class="btn btn-green" onclick="location.href='issue.html'">📚 Go to Issue / Return</button>
 <button class="btn btn-blue" onclick="location.href='librarian.html'">📚 Librarian</button>
 </div>
+<div class="grid2">
+<button class="btn btn-grey" onclick="beepOK()">🔊 Test Beep — Success</button>
+<button class="btn btn-grey" onclick="beepError()">🔊 Test Beep — Error</button>
 </div>
-
+</div>
 <div class="card noPrint">
 <h2>⚡ Quick — Add / Bulk / Barcodes</h2>
 <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -87,61 +88,53 @@ th{background:#0a1f4d;color:#fff}
 <button class="tabBtn" id="tabListBtn" onclick="showTab('list')">👀 View Learners</button>
 <button class="tabBtn" id="tabBarBtn" onclick="showTab('bar')">🏷️ Barcodes — Print</button>
 </div>
+<div class="info" id="prefixInfo">Pick Grade + Class to see next Learner ID for that class.</div>
 </div>
-
 <div class="card noPrint" id="oneCard">
-<h2>➕ Add ONE Learner</h2>
+<h2>➕ Add ONE Learner — 10A001 Format</h2>
+<div class="goldBox"><b>Learner Numbering:</b> Class + 3-digit sequence — Auto per class<br>Class <b>10A</b> → <b>10A001, 10A002...</b> • Class <b>10B</b> → <b>10B001...</b><br>Tap <b>✨ Auto-Generate</b> after picking Grade + Class.</div>
 <div class="grid2">
-<div><label>Full Name * — As on school list</label><input id="oneName" placeholder="e.g. Thabo Mokoena"></div>
-<div><label>Grade *</label><select id="oneGrade"><option value="">-- Pick Grade --</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+<div><label>Full Name *</label><input id="oneName" placeholder="e.g. Thabo Mokoena"></div>
+<div><label>Grade *</label><select id="oneGrade" onchange="updateOnePreview()"><option value="">-- Pick Grade --</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
 </div>
 <div class="grid2">
-<div><label>Class * — e.g. 10A, 8B</label><input id="oneClass" placeholder="e.g. 10A"></div>
-<div><label>Learner ID / Barcode * — Must be unique in this school</label><input id="oneId" placeholder="e.g. 2024001 or scan card" inputmode="numeric"></div>
+<div><label>Class * — e.g. 10A, 8B</label><input id="oneClass" placeholder="e.g. 10A" oninput="updateOnePreview()"></div>
+<div><label>Learner ID / Barcode * — Auto: Class + 001</label><input id="oneId" placeholder="Tap ✨ Auto-Generate"><button class="btn btn-gold" type="button" onclick="autoLearnerId()">✨ Auto-Generate ID — e.g. 10A001</button><div id="oneBarcodePreview" style="text-align:center;margin-top:8px;background:#fff;border:1px dashed #cbd5e1;border-radius:8px;padding:8px;display:none"><svg id="oneBarcodeSvg"></svg></div></div>
 </div>
-<div class="info">Barcode = Learner ID. Stick this barcode on the learner’s card. Scan it in Issue / Return.<br>If you leave Learner ID blank, system will use Name + Grade — but <b>always use a real ID</b> so scanning works.</div>
+<div class="info" id="onePreview">Pick Grade + Class → Next ID will show here.</div>
 <button class="btn btn-green" id="addOneBtn" onclick="addOne()">➕ Add Learner</button>
 <div id="oneMsg"></div>
 </div>
-
 <div class="card noPrint" id="bulkCard" style="display:none">
-<h2>📋 Bulk CSV — Add Many Learners At Once</h2>
-<div class="goldBox"><b>CSV Format — 4 columns, first row = header:</b><br><code>Name,Grade,Class,LearnerID</code><br>Example:<br><code>Name,Grade,Class,LearnerID<br>Thabo Mokoena,Grade 10,10A,2024001<br>Naledi Dube,Grade 10,10A,2024002</code><br><br>Grade must be exactly like <b>Grade 10</b> (with space + capital G). Class like <b>10A</b>. LearnerID must be unique.</div>
-<div><label>Paste CSV Here *</label><textarea id="csvBox" placeholder="Name,Grade,Class,LearnerID&#10;Thabo Mokoena,Grade 10,10A,2024001&#10;Naledi Dube,Grade 10,10A,2024002"></textarea></div>
-<div class="grid2">
-<button class="btn btn-blue" onclick="previewCSV()">👀 Preview CSV</button>
-<button class="btn btn-grey" onclick="loadSample()">✏️ Load Sample CSV</button>
-</div>
+<h2>📋 Bulk CSV — Add Many Learners — 10A001 Format</h2>
+<div class="goldBox"><b>CSV:</b> <code>Name,Grade,Class,LearnerID</code><br>Example:<br><code>Name,Grade,Class,LearnerID<br>Thabo Mokoena,Grade 10,10A,10A001<br>Naledi Dube,Grade 10,10A,10A002<br>Sipho Nkosi,Grade 10,10B,10B001</code><br><b>Tip:</b> Leave LearnerID blank → Auto-generates per class.</div>
+<div><label>Paste CSV Here *</label><textarea id="csvBox" placeholder="Name,Grade,Class,LearnerID&#10;Thabo Mokoena,Grade 10,10A,10A001&#10;Naledi Dube,Grade 10,10A,10A002"></textarea></div>
+<div class="grid2"><button class="btn btn-blue" onclick="previewCSV()">👀 Preview CSV</button><button class="btn btn-grey" onclick="loadSample()">✏️ Load Sample CSV</button></div>
 <div><label>Or Upload .csv File</label><input type="file" id="csvFile" accept=".csv,text/csv" onchange="readCSVFile(event)"></div>
 <div id="csvPreview"></div>
 <button class="btn btn-green" id="addBulkBtn" onclick="addBulk()" style="display:none">✅ Add All — <span id="bulkCount">0</span> Learners</button>
 <div id="bulkMsg"></div>
 </div>
-
 <div class="card" id="listCard" style="display:none">
 <h2>👀 View Learners — <span id="listCount">0</span> learners</h2>
 <div class="grid2 noPrint">
-<div><label>Search (Name / ID / Barcode)</label><input id="searchBox" placeholder="Type to filter..." oninput="renderList()"></div>
+<div><label>Search (Name / ID)</label><input id="searchBox" placeholder="e.g. 10A001" oninput="renderList()"></div>
 <div><label>Filter Grade</label><select id="filterGrade" onchange="renderList()"><option value="">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
 </div>
 <div class="grid2 noPrint">
-<div><label>Filter Class</label><input id="filterClass" placeholder="e.g. 10A — leave blank for all" oninput="renderList()"></div>
+<div><label>Filter Class</label><input id="filterClass" placeholder="e.g. 10A" oninput="renderList()"></div>
 <div><label>&nbsp;</label><button class="btn btn-blue" onclick="loadLearners()">🔄 Refresh List</button></div>
 </div>
 <div id="listBody"></div>
 </div>
-
 <div class="card printArea" id="barCard" style="display:none">
-<h2>🏷️ Barcodes — Print 3 × 5 = 15 per A4</h2>
-<div class="info">Barcodes use the <b>current filters</b> (Search / Grade / Class). Filter first, then Print. Stick one on each learner’s card.<br>Scan with any phone camera in Issue / Return, or type the number.</div>
+<h2>🏷️ Real Barcodes — Print 3 × 5 = 15 per A4</h2>
+<div class="info">Real CODE128 barcodes — scannable by any phone camera / scanner. Filter first, then Print.</div>
 <div class="grid2 noPrint">
 <div><label>Filter Barcodes — Grade</label><select id="barGrade" onchange="renderBarcodes()"><option value="">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
 <div><label>Filter Barcodes — Class</label><input id="barClass" placeholder="e.g. 10A" oninput="renderBarcodes()"></div>
 </div>
-<div class="grid2 noPrint">
-<button class="btn btn-gold" onclick="printBarcodes()">🖨️ Print Barcodes — This Filter</button>
-<button class="btn btn-blue" onclick="loadLearners()">🔄 Refresh Barcodes</button>
-</div>
+<div class="grid2 noPrint"><button class="btn btn-gold" onclick="printBarcodes()">🖨️ Print Barcodes — This Filter</button><button class="btn btn-blue" onclick="loadLearners()">🔄 Refresh Barcodes</button></div>
 <div id="barcodeGrid" class="barcodeGrid"></div>
 <div id="barMsg"></div>
 </div>
@@ -149,7 +142,7 @@ th{background:#0a1f4d;color:#fff}
 <script src="offline-queue.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
@@ -157,90 +150,115 @@ function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 let login=getLogin();
 let learners=[];
-let currentTab='one';
 let parsedBulk=[];
-
+// === BEEP ===
+let audioCtx=null;
+function tone(freq,dur,delay){
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    const t0=audioCtx.currentTime+(delay||0);
+    const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
+    o.type='sine'; o.frequency.value=freq;
+    g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.25,t0+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.connect(g); g.connect(audioCtx.destination); o.start(t0); o.stop(t0+dur+0.02);
+  }catch(e){}
+}
+window.beepOK=function(){ tone(880,0.12,0); };
+window.beepError=function(){ tone(220,0.15,0); tone(220,0.15,0.18); };
+window.beepScan=function(){ tone(1200,0.08,0); };
+// === REAL BARCODE ===
+function drawBarcode(svgEl,value){ try{ JsBarcode(svgEl,String(value),{format:'CODE128',width:1.6,height:48,displayValue:false,margin:0,background:'#ffffff',lineColor:'#000000'}); }catch(e){} }
+function drawAllBarcodes(){ document.querySelectorAll('svg[data-barcode]').forEach(svg=>drawBarcode(svg,svg.getAttribute('data-barcode'))); }
+function previewOneBarcode(){
+  const v=($('oneId').value||'').trim().toUpperCase(); const box=$('oneBarcodePreview');
+  if(!v){ box.style.display='none'; return; }
+  box.style.display='block'; drawBarcode($('oneBarcodeSvg'),v);
+}
+$('oneId').addEventListener('input',previewOneBarcode);
+// === NUMBERING: Class + 3 digits = 10A001 ===
+function classCode(cls){ return String(cls||'').trim().toUpperCase().replace(/\s+/g,''); }
+function formatLearnerId(grade,cls,n){ return classCode(cls)+String(n).padStart(3,'0'); }
+function nextLearnerSeq(grade,cls,extraIds){
+  const prefix=classCode(cls); let max=0;
+  const all=[...learners.map(l=>String(l.learnerId||l.barcode||'')),...(extraIds||[])];
+  all.forEach(id=>{ const clean=String(id).toUpperCase().replace(/-/g,''); if(clean.startsWith(prefix)){ const m=clean.match(/(\d{3})$/); if(m) max=Math.max(max,parseInt(m[1],10)); } });
+  return max+1;
+}
+function updateOnePreview(){
+  const grade=$('oneGrade').value||''; const cls=$('oneClass').value||'';
+  if(!grade||!cls){ $('onePreview').innerHTML='Pick Grade + Class → Next ID will show here.'; return; }
+  const n=nextLearnerSeq(grade,cls,[]);
+  $('onePreview').innerHTML='Grade: <b>'+esc(grade)+'</b> • Class: <b>'+esc(classCode(cls))+'</b> • Next Learner ID: <b>'+formatLearnerId(grade,cls,n)+'</b>';
+  const pi=$('prefixInfo'); if(pi) pi.innerHTML='Next for '+esc(grade)+' / '+esc(classCode(cls))+': <b>'+formatLearnerId(grade,cls,n)+'</b>';
+}
+window.updateOnePreview=updateOnePreview;
+window.autoLearnerId=function(){
+  const grade=$('oneGrade').value||''; const cls=$('oneClass').value||'';
+  if(!grade||!cls){ $('oneMsg').innerHTML='<div class="warn">⚠️ Pick Grade + Class first.</div>'; beepError(); return; }
+  const id=formatLearnerId(grade,cls,nextLearnerSeq(grade,cls,[]));
+  $('oneId').value=id; $('oneMsg').innerHTML='<div class="ok">✅ Next Learner ID: <b>'+id+'</b></div>'; beepOK(); previewOneBarcode();
+};
 window.showTab=function(t){
-  currentTab=t;
-  ['One','Bulk','List','Bar'].forEach(x=>{ const b=$('tab'+x+'Btn'); if(b) b.classList.toggle('active', x.toLowerCase()===t); });
-  $('oneCard').style.display = t==='one' ? 'block' : 'none';
-  $('bulkCard').style.display = t==='bulk' ? 'block' : 'none';
-  $('listCard').style.display = t==='list' ? 'block' : 'none';
-  $('barCard').style.display = t==='bar' ? 'block' : 'none';
-  if(t==='list') renderList();
-  if(t==='bar') renderBarcodes();
+  ['One','Bulk','List','Bar'].forEach(x=>{ const b=$('tab'+x+'Btn'); if(b) b.classList.toggle('active',x.toLowerCase()===t); });
+  $('oneCard').style.display=t==='one'?'block':'none'; $('bulkCard').style.display=t==='bulk'?'block':'none'; $('listCard').style.display=t==='list'?'block':'none'; $('barCard').style.display=t==='bar'?'block':'none';
+  if(t==='list') renderList(); if(t==='bar') renderBarcodes();
 };
-window.loadSample=function(){
-  $('csvBox').value='Name,Grade,Class,LearnerID\nThabo Mokoena,Grade 10,10A,2024001\nNaledi Dube,Grade 10,10A,2024002\nSipho Nkosi,Grade 10,10B,2024003';
-  previewCSV();
-};
-window.readCSVFile=function(e){
-  const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=()=>{ $('csvBox').value=r.result; previewCSV(); }; r.readAsText(f);
-};
+window.loadSample=function(){ $('csvBox').value='Name,Grade,Class,LearnerID\nThabo Mokoena,Grade 10,10A,10A001\nNaledi Dube,Grade 10,10A,10A002\nSipho Nkosi,Grade 10,10B,10B001'; previewCSV(); };
+window.readCSVFile=function(e){ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ $('csvBox').value=r.result; previewCSV(); }; r.readAsText(f); };
 function parseCSV(text){
-  const lines=text.trim().split(/\r?\n/).filter(l=>l.trim());
-  if(!lines.length) return [];
-  const header=lines[0].split(',').map(h=>h.trim().toLowerCase());
-  const hasHeader=header.includes('name')||header.includes('grade');
+  const lines=text.trim().split(/\r?\n/).filter(l=>l.trim()); if(!lines.length) return [];
+  const header=lines[0].split(',').map(h=>h.trim().toLowerCase()); const hasHeader=header.includes('name')||header.includes('grade');
   const rows=hasHeader?lines.slice(1):lines;
-  return rows.map((line,idx)=>{
-    const parts=line.split(',').map(p=>p.trim().replace(/^"|"$/g,''));
-    return { line: idx+(hasHeader?2:1), name: parts[0]||'', grade: parts[1]||'', class: parts[2]||'', learnerId: parts[3]||'' };
-  }).filter(r=>r.name||r.learnerId);
+  return rows.map((line,idx)=>{ const parts=line.split(',').map(p=>p.trim().replace(/^"|"$/g,'')); return { line:idx+(hasHeader?2:1), name:parts[0]||'', grade:parts[1]||'', class:parts[2]||'', learnerId:parts[3]||'' }; }).filter(r=>r.name||r.learnerId);
 }
 window.previewCSV=function(){
-  const text=$('csvBox').value||'';
-  parsedBulk=parseCSV(text);
-  if(!parsedBulk.length){ $('csvPreview').innerHTML='<div class="warn">⚠️ No rows found. Paste CSV with header: Name,Grade,Class,LearnerID</div>'; $('addBulkBtn').style.display='none'; return; }
-  let html='<table><tr><th>#</th><th>Name</th><th>Grade</th><th>Class</th><th>Learner ID</th><th>Check</th></tr>';
-  let bad=0;
+  const text=$('csvBox').value||''; parsedBulk=parseCSV(text);
+  if(!parsedBulk.length){ $('csvPreview').innerHTML='<div class="warn">⚠️ No rows found.</div>'; $('addBulkBtn').style.display='none'; return; }
+  const assigned={}; const used=new Set(learners.map(l=>String(l.learnerId||l.barcode||'').toUpperCase()));
   parsedBulk.forEach(r=>{
-    const errs=[];
-    if(!r.name) errs.push('No Name');
-    if(!r.grade) errs.push('No Grade');
-    if(!r.class) errs.push('No Class');
-    if(!r.learnerId) errs.push('No ID');
-    if(learners.some(l=>String(l.learnerId||l.barcode||'')===String(r.learnerId))) errs.push('Duplicate ID — already exists');
-    if(errs.length) bad++;
-    html+='<tr><td>'+r.line+'</td><td>'+esc(r.name)+'</td><td>'+esc(r.grade)+'</td><td>'+esc(r.class)+'</td><td>'+esc(r.learnerId)+'</td><td>'+(errs.length?'<span class="pill pill-red">'+esc(errs.join(', '))+'</span>':'<span class="pill pill-green">✅ OK</span>')+'</td></tr>';
+    if(!r.learnerId && r.grade && r.class){
+      let n=nextLearnerSeq(r.grade,r.class,[...assigned[r.grade+'|'+r.class]||[]]);
+      while(used.has(formatLearnerId(r.grade,r.class,n).toUpperCase())) n++;
+      r.learnerId=formatLearnerId(r.grade,r.class,n); r.auto=true;
+      if(!assigned[r.grade+'|'+r.class]) assigned[r.grade+'|'+r.class]=[]; assigned[r.grade+'|'+r.class].push(r.learnerId); used.add(r.learnerId.toUpperCase());
+    } else if(r.learnerId){ r.learnerId=String(r.learnerId).toUpperCase().replace(/-/g,''); used.add(r.learnerId); }
   });
-  html+='</table><div class="info">Preview: '+parsedBulk.length+' rows • OK: '+(parsedBulk.length-bad)+' • Problems: '+bad+' — Fix problems before Add All, or duplicates will be skipped.</div>';
-  $('csvPreview').innerHTML=html;
-  $('bulkCount').textContent=parsedBulk.length;
-  $('addBulkBtn').style.display='block';
+  let html='<table><tr><th>#</th><th>Name</th><th>Grade</th><th>Class</th><th>Learner ID</th><th>Check</th></tr>'; let bad=0;
+  parsedBulk.forEach(r=>{ const errs=[]; if(!r.name) errs.push('No Name'); if(!r.grade) errs.push('No Grade'); if(!r.class) errs.push('No Class'); if(!r.learnerId) errs.push('No ID'); if(learners.some(l=>String(l.learnerId||l.barcode||'').toUpperCase().replace(/-/g,'')===String(r.learnerId).toUpperCase())) errs.push('Duplicate'); if(errs.length) bad++; html+='<tr><td>'+r.line+'</td><td>'+esc(r.name)+'</td><td>'+esc(r.grade)+'</td><td>'+esc(r.class)+'</td><td>'+esc(r.learnerId)+(r.auto?' <span class="pill pill-blue">AUTO</span>':'')+'</td><td>'+(errs.length?'<span class="pill pill-red">'+esc(errs.join(', '))+'</span>':'<span class="pill pill-green">✅ OK</span>')+'</td></tr>'; });
+  html+='</table><div class="info">Preview: '+parsedBulk.length+' rows • OK: '+(parsedBulk.length-bad)+' • Problems: '+bad+'</div>';
+  $('csvPreview').innerHTML=html; $('bulkCount').textContent=parsedBulk.length; $('addBulkBtn').style.display='block';
 };
 window.addOne=async function(){
-  const name=($('oneName').value||'').trim(); const grade=$('oneGrade').value||''; const cls=($('oneClass').value||'').trim(); let lid=($('oneId').value||'').trim();
-  if(!name||!grade||!cls){ $('oneMsg').innerHTML='<div class="warn">⚠️ Fill Name + Grade + Class.</div>'; return; }
-  if(!login){ $('oneMsg').innerHTML='<div class="warn">🔒 Login first.</div>'; return; }
-  if(login.returnOnly && (login.role||'').toUpperCase()!=='ADMIN'){ $('oneMsg').innerHTML='<div class="warn">🟠 RETURN ONLY — Cannot Add. Principal: Contact Xintimani Group.</div>'; return; }
-  if(!navigator.onLine){ $('oneMsg').innerHTML='<div class="warn">🟠 Offline — Cannot Add Learner offline. Add works online only. Issue / Return works offline.</div>'; return; }
-  if(!lid) lid='L'+Date.now().toString().slice(-6);
-  if(learners.some(l=>String(l.learnerId||l.barcode||'')===String(lid))){ $('oneMsg').innerHTML='<div class="warn">❌ Duplicate — Learner ID '+esc(lid)+' already exists in this school. Use a different ID.</div>'; return; }
+  const name=($('oneName').value||'').trim(); const grade=$('oneGrade').value||''; const cls=($('oneClass').value||'').trim(); let lid=($('oneId').value||'').trim().toUpperCase().replace(/-/g,'');
+  if(!name||!grade||!cls){ $('oneMsg').innerHTML='<div class="warn">⚠️ Fill Name + Grade + Class.</div>'; beepError(); return; }
+  if(!login){ $('oneMsg').innerHTML='<div class="warn">🔒 Login first.</div>'; beepError(); return; }
+  if(login.returnOnly && (login.role||'').toUpperCase()!=='ADMIN'){ $('oneMsg').innerHTML='<div class="warn">🟠 RETURN ONLY — Cannot Add.</div>'; beepError(); return; }
+  if(!navigator.onLine){ $('oneMsg').innerHTML='<div class="warn">🟠 Offline — Cannot Add Learner offline.</div>'; beepError(); return; }
+  if(!lid){ lid=formatLearnerId(grade,cls,nextLearnerSeq(grade,cls,[])); $('oneId').value=lid; }
+  if(learners.some(l=>String(l.learnerId||l.barcode||'').toUpperCase().replace(/-/g,'')===String(lid).toUpperCase())){ $('oneMsg').innerHTML='<div class="warn">❌ Duplicate — '+esc(lid)+' already exists.</div>'; beepError(); return; }
   $('addOneBtn').disabled=true; $('addOneBtn').textContent='⏳ Adding...';
   try{
-    await addDoc(collection(db,'schools','EMIS_'+login.emis,'learners'), { name, grade, class: cls, learnerId: lid, barcode: lid, createdAt: new Date().toISOString(), createdBy: login.name||login.email||'' });
-    $('oneMsg').innerHTML='<div class="ok">✅ Learner added: <b>'+esc(name)+'</b> • '+esc(grade)+' • '+esc(cls)+' • ID '+esc(lid)+'</div>';
-    $('oneName').value=''; $('oneId').value=''; $('oneClass').value='';
-    await loadLearners(); renderList();
-  }catch(e){ $('oneMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; }
+    await addDoc(collection(db,'schools','EMIS_'+login.emis,'learners'),{name,grade,class:classCode(cls),learnerId:lid,barcode:lid,createdAt:new Date().toISOString(),createdBy:login.name||login.email||''});
+    $('oneMsg').innerHTML='<div class="ok">✅ Learner added: <b>'+esc(name)+'</b> • '+esc(grade)+' • '+esc(classCode(cls))+' • ID '+esc(lid)+'</div>'; beepOK();
+    $('oneName').value=''; $('oneId').value=''; $('oneClass').value=''; $('oneBarcodePreview').style.display='none';
+    await loadLearners(); renderList(); updateOnePreview();
+  }catch(e){ $('oneMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; beepError(); }
   $('addOneBtn').disabled=false; $('addOneBtn').textContent='➕ Add Learner';
 };
 window.addBulk=async function(){
-  if(!parsedBulk.length){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Preview CSV first.</div>'; return; }
-  if(!login){ $('bulkMsg').innerHTML='<div class="warn">🔒 Login first.</div>'; return; }
-  if(login.returnOnly && (login.role||'').toUpperCase()!=='ADMIN'){ $('bulkMsg').innerHTML='<div class="warn">🟠 RETURN ONLY — Cannot Add.</div>'; return; }
-  if(!navigator.onLine){ $('bulkMsg').innerHTML='<div class="warn">🟠 Offline — Bulk Add needs internet.</div>'; return; }
+  if(!parsedBulk.length){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Preview CSV first.</div>'; beepError(); return; }
+  if(!login){ $('bulkMsg').innerHTML='<div class="warn">🔒 Login first.</div>'; beepError(); return; }
+  if(login.returnOnly && (login.role||'').toUpperCase()!=='ADMIN'){ $('bulkMsg').innerHTML='<div class="warn">🟠 RETURN ONLY — Cannot Add.</div>'; beepError(); return; }
+  if(!navigator.onLine){ $('bulkMsg').innerHTML='<div class="warn">🟠 Offline — Bulk Add needs internet.</div>'; beepError(); return; }
   $('addBulkBtn').disabled=true; $('addBulkBtn').textContent='⏳ Adding...';
-  let added=0, skipped=0; const seen=new Set(learners.map(l=>String(l.learnerId||l.barcode||'')));
+  let added=0,skipped=0; const seen=new Set(learners.map(l=>String(l.learnerId||l.barcode||'').toUpperCase()));
   for(const r of parsedBulk){
     if(!r.name||!r.grade||!r.class||!r.learnerId){ skipped++; continue; }
-    if(seen.has(String(r.learnerId))){ skipped++; continue; }
-    try{ await addDoc(collection(db,'schools','EMIS_'+login.emis,'learners'), { name:r.name, grade:r.grade, class:r.class, learnerId:r.learnerId, barcode:r.learnerId, createdAt:new Date().toISOString(), createdBy:login.name||login.email||'' }); seen.add(String(r.learnerId)); added++; }
-    catch(e){ skipped++; }
+    const lid=String(r.learnerId).toUpperCase(); if(seen.has(lid)){ skipped++; continue; }
+    try{ await addDoc(collection(db,'schools','EMIS_'+login.emis,'learners'),{name:r.name,grade:r.grade,class:classCode(r.class),learnerId:lid,barcode:lid,createdAt:new Date().toISOString(),createdBy:login.name||login.email||''}); seen.add(lid); added++; }catch(e){ skipped++; }
   }
-  $('bulkMsg').innerHTML='<div class="ok">✅ Bulk done — Added: '+added+' • Skipped (duplicate / missing): '+skipped+'</div>';
+  $('bulkMsg').innerHTML='<div class="ok">✅ Bulk done — Added: '+added+' • Skipped: '+skipped+'</div>'; beepOK();
   $('addBulkBtn').disabled=false; $('addBulkBtn').textContent='✅ Add All — '+parsedBulk.length+' Learners';
   await loadLearners(); renderList();
 };
@@ -249,58 +267,35 @@ window.loadLearners=async function(){
   if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login on Home first</a>.'; $('whoLine').textContent='Not logged in'; return; }
   const role=(login.role||'').toUpperCase();
   if(role==='TEACHER'){ $('loginInfo').innerHTML='🚫 Teachers cannot Add Learners. <a href="issue.html">Go to Issue / Return</a>.'; $('oneCard').style.display='none'; $('bulkCard').style.display='none'; return; }
-  if(role==='PRINCIPAL'){ $('loginInfo').innerHTML='👩🏾‍🏫 Principal — View only. To Add Learners, ask Librarian / HOD.'; $('oneCard').style.display='none'; $('bulkCard').style.display='none'; }
-  else { $('loginInfo').innerHTML='✅ Logged in as <b>'+role+' — '+(login.name||'')+'</b> • '+(login.school||'')+' (EMIS '+(login.emis||'')+')' + (login.returnOnly ? ' • <span class="pill pill-orange">🟠 RETURN ONLY</span>' : ' • <span class="pill pill-green">✅ ACTIVE</span>'); }
+  if(role==='PRINCIPAL'){ $('loginInfo').innerHTML='👩🏾‍🏫 Principal — View only.'; $('oneCard').style.display='none'; $('bulkCard').style.display='none'; }
+  else { $('loginInfo').innerHTML='✅ Logged in as <b>'+role+' — '+(login.name||'')+'</b> • '+(login.school||'')+' (EMIS '+(login.emis||'')+')'+(login.returnOnly?' • <span class="pill pill-orange">🟠 RETURN ONLY</span>':' • <span class="pill pill-green">✅ ACTIVE</span>'); }
   $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
   if(login.returnOnly && role!=='ADMIN') $('returnOnlyBox').style.display='block';
-  try{
-    const snap=await getDocs(collection(db,'schools','EMIS_'+login.emis,'learners'));
-    learners=[]; snap.forEach(d=>learners.push({id:d.id,...d.data()}));
-    learners.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
-    $('listCount').textContent=learners.length;
-    renderList(); renderBarcodes();
-  }catch(e){ $('listBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
+  try{ const snap=await getDocs(collection(db,'schools','EMIS_'+login.emis,'learners')); learners=[]; snap.forEach(d=>learners.push({id:d.id,...d.data()})); learners.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''))); $('listCount').textContent=learners.length; renderList(); renderBarcodes(); updateOnePreview(); }
+  catch(e){ $('listBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
 };
 window.renderList=function(){
   const q=($('searchBox').value||'').trim().toLowerCase(); const fg=$('filterGrade').value||''; const fc=($('filterClass').value||'').trim().toLowerCase();
   const list=learners.filter(u=>{ const hay=[u.name,u.learnerId,u.barcode,u.class,u.grade].join(' ').toLowerCase(); if(q&&!hay.includes(q)) return false; if(fg&&String(u.grade||'')!==fg) return false; if(fc&&String(u.class||'').toLowerCase()!==fc) return false; return true; });
-  if(!list.length){ $('listBody').innerHTML='<div class="info">No learners for this filter. Add learners above.</div>'; return; }
-  let html='<table><tr><th>Name</th><th>Grade / Class</th><th>Learner ID / Barcode</th></tr>';
+  if(!list.length){ $('listBody').innerHTML='<div class="info">No learners for this filter.</div>'; return; }
+  let html='<table><tr><th>Name</th><th>Grade / Class</th><th>Learner ID</th></tr>';
   list.slice(0,300).forEach(u=>{ html+='<tr><td><b>'+esc(u.name||'')+'</b></td><td>'+esc(u.grade||'')+' • '+esc(u.class||'')+'</td><td><b>'+esc(u.learnerId||u.barcode||u.id)+'</b></td></tr>'; });
-  html+='</table><div class="small">Showing '+list.slice(0,300).length+' of '+list.length+' learners.</div>';
-  $('listBody').innerHTML=html;
+  html+='</table><div class="small">Showing '+list.slice(0,300).length+' of '+list.length+'</div>'; $('listBody').innerHTML=html;
 };
 window.renderBarcodes=function(){
   const fg=$('barGrade').value||''; const fc=($('barClass').value||'').trim().toLowerCase();
   const list=learners.filter(u=>{ if(fg&&String(u.grade||'')!==fg) return false; if(fc&&String(u.class||'').toLowerCase()!==fc) return false; return true; });
   if(!list.length){ $('barcodeGrid').innerHTML='<div class="info">No learners for this filter.</div>'; $('barMsg').innerHTML=''; return; }
-  let html='';
-  list.slice(0,150).forEach(u=>{
-    const code=String(u.learnerId||u.barcode||u.id);
-    html+='<div class="label"><b>'+esc(u.name||'')+'</b><span>'+esc(u.grade||'')+' • '+esc(u.class||'')+' • '+esc(login?.school||'')+'</span><div class="code">'+esc(code)+'</div><div class="bars">||| || ||| || ||| || |||</div><span>Learner Card — Scan in Issue / Return</span></div>';
-  });
-  $('barcodeGrid').innerHTML=html;
-  $('barMsg').innerHTML='<div class="info">Showing '+list.slice(0,150).length+' of '+list.length+' barcodes (max 150 per print — filter by Grade / Class to print in batches).</div>';
+  let html=''; list.slice(0,150).forEach(u=>{ const code=String(u.learnerId||u.barcode||u.id); html+='<div class="label"><b>'+esc(u.name||'')+'</b><span>'+esc(u.grade||'')+' • '+esc(u.class||'')+' • '+esc(login?.school||'')+'</span><svg data-barcode="'+esc(code)+'"></svg><div class="code">'+esc(code)+'</div><span>Learner Card — Scan in Issue / Return</span></div>'; });
+  $('barcodeGrid').innerHTML=html; drawAllBarcodes();
+  $('barMsg').innerHTML='<div class="info">Showing '+list.slice(0,150).length+' of '+list.length+' real barcodes.</div>';
 };
-window.printBarcodes=function(){
-  renderBarcodes();
-  document.querySelectorAll('.card').forEach(c=>c.classList.remove('printArea'));
-  $('barCard').classList.add('printArea');
-  setTimeout(()=>window.print(),300);
-};
-window.addEventListener('afterprint', ()=>{ document.querySelectorAll('.card').forEach(c=>c.classList.add('printArea')); });
-document.addEventListener('DOMContentLoaded', async ()=>{
-  if(window.OfflineQueue) OfflineQueue.updateBadge();
-  document.querySelectorAll('.card').forEach(c=>c.classList.add('printArea'));
-  await loadLearners();
-});
+window.printBarcodes=function(){ renderBarcodes(); setTimeout(()=>{ document.querySelectorAll('.card').forEach(c=>c.classList.remove('printArea')); $('barCard').classList.add('printArea'); setTimeout(()=>window.print(),300); },300); };
+window.addEventListener('afterprint',()=>{ document.querySelectorAll('.card').forEach(c=>c.classList.add('printArea')); });
+document.addEventListener('DOMContentLoaded',async()=>{ if(window.OfflineQueue) OfflineQueue.updateBadge(); document.querySelectorAll('.card').forEach(c=>c.classList.add('printArea')); await loadLearners(); });
 </script>
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW failed', e));
-  });
-}
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW failed', e)); }); }
 </script>
 </body>
 </html>
