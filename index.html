@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Login v2.0 — Xintimani Group</title>
+<title>Makhanani LTSM — Login v2.2 — Dropdown + Email + Password</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
@@ -29,20 +29,11 @@ input,select{width:100%;padding:14px;border:1.5px solid #cbd5e1;border-radius:10
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:10px;padding:11px;font-size:13px;margin-top:12px}
 .goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:12px;font-size:13px;text-align:center}
 .small{font-size:12px;color:#64748b;text-align:center}
-.schoolList{border:1.5px solid #cbd5e1;border-radius:10px;max-height:240px;overflow-y:auto;display:none;background:#fff;margin-top:4px}
-.schoolList button{width:100%;text-align:left;background:#fff;border:none;border-bottom:1px solid #e2e8f0;padding:12px;cursor:pointer;font-size:15px}
-.schoolList button:hover{background:#dbeafe}
-.schoolList button b{display:block}
-.schoolList button span{font-size:12px;color:#64748b}
-.userList{border:1.5px solid #cbd5e1;border-radius:10px;max-height:240px;overflow-y:auto;display:none;background:#fff;margin-top:4px}
-.userList button{width:100%;text-align:left;background:#fff;border:none;border-bottom:1px solid #e2e8f0;padding:12px;cursor:pointer;font-size:15px}
-.userList button:hover{background:#dbeafe}
-.userList button b{display:block}
-.userList button span{font-size:12px;color:#64748b}
 .quickGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .quickGrid a{background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center;text-decoration:none;color:#0a1f4d;font-weight:900;font-size:13px}
 .quickGrid a b{display:block;font-size:20px}
 .footer{font-size:12px;color:#64748b;text-align:center;margin:14px 0;line-height:1.6}
+.eyeBtn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#e2e8f0;border:none;border-radius:20px;padding:6px 10px;cursor:pointer;font-weight:900}
 </style>
 </head>
 <body>
@@ -50,43 +41,47 @@ input,select{width:100%;padding:14px;border:1.5px solid #cbd5e1;border-radius:10
 <header>
 <div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"></div>
 <h1>Makhanani LTSM</h1>
-<p>Xintimani Group (Pty) Ltd • Every Book Must Come Back!<br>Learner Textbook System Management • v2.0</p>
+<p>Xintimani Group (Pty) Ltd • Every Book Must Come Back!<br>Learner Textbook System Management • v2.2</p>
 </header>
 <main>
 <div class="card">
-<h2>🔐 Login — Pick School → Role → Name → PIN</h2>
-<div class="info" id="loadInfo">⏳ Loading schools + users from Firestore...</div>
+<h2>🔐 Login — School Dropdown + Email + Password</h2>
+<div class="info" id="loadInfo">⏳ Loading schools...</div>
 
-<label>🏫 1. School * — Type to search, then tap school</label>
-<input id="schoolSearch" placeholder="Type school name... e.g. Makhanani" autocomplete="off" oninput="filterSchools()" onfocus="showSchoolList()">
-<div id="schoolList" class="schoolList"></div>
-<div id="schoolPicked" class="goldBox" style="display:none"></div>
-
-<label>🎭 2. Role *</label>
-<select id="roleSelect" onchange="onRoleChange()">
-<option value="TEACHER">👩🏾‍🏫 Teacher</option>
-<option value="LIBRARIAN">📚 Librarian / HOD</option>
-<option value="PRINCIPAL">👩🏾‍🏫 Principal</option>
-<option value="ADMIN">⚙️ Admin (Xintimani Only)</option>
+<label>🏫 1. School * — Pick from dropdown</label>
+<select id="schoolSelect" onchange="onSchoolChange()">
+<option value="">⏳ Loading schools...</option>
 </select>
+<div id="schoolPicked" class="goldBox" style="display:none"></div>
+<div id="schoolStatusBox" class="goldBox" style="display:none"></div>
 
-<label>👤 3. Your Name * — Type to search, then tap your name</label>
-<input id="userSearch" placeholder="Type your name... e.g. Thandi" autocomplete="off" oninput="filterUsers()" onfocus="showUserList()">
-<div id="userList" class="userList"></div>
-<div id="userPicked" class="goldBox" style="display:none"></div>
+<label>📧 2. Email *</label>
+<input id="emailInput" type="email" placeholder="e.g. thandi@makhanani.co.za" autocomplete="email" autocapitalize="off">
 
-<label>🔐 4. PIN * — 4 digits</label>
-<input id="pinInput" placeholder="e.g. 1234" inputmode="numeric" maxlength="4" autocomplete="off">
+<label>🔐 3. Password *</label>
+<div style="position:relative">
+<input id="passwordInput" type="password" placeholder="Enter your password" autocomplete="current-password" style="padding-right:52px">
+<button type="button" class="eyeBtn" onclick="togglePass()">👁️</button>
+</div>
 
 <button class="btn btn-blue" id="loginBtn" onclick="doLogin()">🔓 Login</button>
 <div id="loginMsg"></div>
 
-<div class="goldBox" id="schoolStatusBox" style="display:none"></div>
-
 <div class="small" style="margin-top:12px">
-Forgot PIN? Ask Admin / Principal to Reset PIN to 1234 in Profile page.<br>
+Forgot Password? Ask Admin / Principal to Reset Password in Profile page.<br>
 Blocked? Ask Admin to Unblock you in Profile page.<br>
-New School / New User? Admin adds them — they appear here automatically.
+New School / New User? Admin adds them — they appear in dropdown automatically.<br>
+No Email yet? Use <b>Name + PIN</b> fallback below.
+</div>
+
+<div class="goldBox" style="text-align:left">
+<b>🔄 No Email Yet? — Old Login (Name + PIN)</b><br>
+If Admin has not set your Email yet, login with Name + PIN here. Then ask Admin to add your Email in Profile.<br>
+<label>👤 Your Name</label>
+<input id="fallbackName" placeholder="e.g. Thandi Mokoena">
+<label>🔐 PIN (4 digits)</label>
+<input id="fallbackPin" placeholder="e.g. 1234" inputmode="numeric" maxlength="4">
+<button class="btn btn-grey" onclick="doFallbackLogin()">Login with Name + PIN</button>
 </div>
 </div>
 
@@ -108,19 +103,20 @@ New School / New User? Admin adds them — they appear here automatically.
 <div class="card">
 <h2>📖 How to Use — 30 Seconds</h2>
 <div style="font-size:13px;line-height:1.7">
-<b>1.</b> Pick School → Role → Your Name → PIN → Login<br>
-<b>2.</b> Teacher / Librarian → Issue / Return books by scanning barcodes<br>
-<b>3.</b> Librarian → Quick Issue in Librarian page (fastest)<br>
-<b>4.</b> Principal → Dashboard + SGB Pack (1 click = 5 CSVs + PDF)<br>
-<b>5.</b> Admin → Schools + Subscription + Bin + Audit<br>
-<b>6.</b> Return is NEVER blocked — even if school is SUSPENDED or Offline.<br>
-<b>7.</b> Every Book Must Come Back!
+<b>1.</b> Pick School from dropdown → Type Email → Type Password → Login<br>
+<b>2.</b> Your Role is auto-detected — You go to the right page automatically.<br>
+<b>3.</b> Teacher / Librarian → Issue / Return books by scanning barcodes<br>
+<b>4.</b> Librarian → Quick Issue in Librarian page (fastest)<br>
+<b>5.</b> Principal → Dashboard + SGB Pack<br>
+<b>6.</b> Admin → Schools + Subscription + Bin + Audit + Finance<br>
+<b>7.</b> Return is NEVER blocked — even if school is SUSPENDED or Offline.<br>
+<b>8.</b> Every Book Must Come Back!
 </div>
 </div>
 
 <div class="footer">
 Makhanani LTSM • Xintimani Group (Pty) Ltd<br>
-Version 2.0 • Firestore + Offline Queue + Audit + SGB Pack<br>
+Version 2.2 • Dropdown + Email + Password • Firestore + Offline Queue + Audit + SGB Pack<br>
 <span id="appVersion">Loading...</span>
 </div>
 </main>
@@ -135,33 +131,35 @@ function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function saveLogin(l){ localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify(l)); }
 let schools=[], users=[];
-let pickedSchool=null, pickedUser=null;
+let pickedSchool=null;
 function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,4) || 'MK'); }
 function binLabel(d){ if(d===0 || d==='0') return 'OFF'; return d+' days'; }
 function statusPill(st){ st=(st||'ACTIVE').toUpperCase(); if(st==='ACTIVE') return '<span class="pill pill-green">✅ ACTIVE</span>'; if(st==='RETURN_ONLY') return '<span class="pill pill-orange">🟠 RETURN ONLY</span>'; return '<span class="pill pill-red">🔴 SUSPENDED</span>'; }
+window.togglePass=function(){
+  const el=$('passwordInput');
+  el.type = el.type==='password' ? 'text' : 'password';
+};
 async function loadData(){
   $('loadInfo').innerHTML='⏳ Loading schools + users...';
-  // Fallback demo data — if Firestore fails, login still works for testing
   const fallbackSchools=[
-    { school:'Makhanani Primary School', emis:'123456789', status:'ACTIVE', binAutoEmptyDays:30 },
-    { school:'Makhanani Secondary School', emis:'123456790', status:'ACTIVE', binAutoEmptyDays:30 },
-    { school:'Thabo Secondary School', emis:'987654321', status:'ACTIVE', binAutoEmptyDays:30 },
+    { school:'Makhanani Primary School', emis:'123456789', status:'ACTIVE', binAutoEmptyDays:30, tier:'STANDARD' },
+    { school:'Makhanani Secondary School', emis:'123456790', status:'ACTIVE', binAutoEmptyDays:30, tier:'STANDARD' },
+    { school:'Thabo Secondary School', emis:'987654321', status:'ACTIVE', binAutoEmptyDays:30, tier:'STARTER' },
   ];
   const fallbackUsers=[
-    { name:'Admin User', role:'ADMIN', school:'Makhanani Primary School', emis:'123456789', pin:'1234', status:'ACTIVE' },
-    { name:'Thandi Mokoena', role:'TEACHER', school:'Makhanani Primary School', emis:'123456789', pin:'1234', status:'ACTIVE' },
-    { name:'Bongi Librarian', role:'LIBRARIAN', school:'Makhanani Primary School', emis:'123456789', pin:'1234', status:'ACTIVE' },
-    { name:'Mrs Principal', role:'PRINCIPAL', school:'Makhanani Primary School', emis:'123456789', pin:'1234', status:'ACTIVE' },
+    { id:'U1', name:'Admin User', role:'ADMIN', school:'Makhanani Primary School', emis:'123456789', email:'admin@makhanani.co.za', password:'admin1234', pin:'1234', status:'ACTIVE' },
+    { id:'U2', name:'Thandi Mokoena', role:'TEACHER', school:'Makhanani Primary School', emis:'123456789', email:'thandi@makhanani.co.za', password:'thandi1234', pin:'1234', status:'ACTIVE' },
+    { id:'U3', name:'Bongi Librarian', role:'LIBRARIAN', school:'Makhanani Primary School', emis:'123456789', email:'bongi@makhanani.co.za', password:'bongi1234', pin:'1234', status:'ACTIVE' },
+    { id:'U4', name:'Mrs Principal', role:'PRINCIPAL', school:'Makhanani Primary School', emis:'123456789', email:'principal@makhanani.co.za', password:'principal1234', pin:'1234', status:'ACTIVE' },
   ];
   try{
     const [sSnap,uSnap]=await Promise.all([ getDocs(collection(db,'schools')), getDocs(collection(db,'users')) ]);
-    const fromDbS=[]; sSnap.forEach(d=>{ const v=d.data()||{}; const emis=v.emis || String(d.id||'').replace('EMIS_',''); const name=v.school||v.name||''; if(name && emis) fromDbS.push({ id:d.id, school:name, emis:String(emis), status:(v.status||v.subscription||'ACTIVE').toUpperCase(), binAutoEmptyDays:(typeof v.binAutoEmptyDays==='number'?v.binAutoEmptyDays:30) }); });
-    const fromDbU=[]; uSnap.forEach(d=>{ const v=d.data()||{}; if(v.name) fromDbU.push({ id:d.id, name:v.name||'', role:(v.role||'TEACHER').toUpperCase(), school:v.school||'', emis:String(v.emis||''), pin:String(v.pin||v.PIN||''), phone:v.phone||'', status:(v.status||'ACTIVE').toUpperCase() }); });
+    const fromDbS=[]; sSnap.forEach(d=>{ const v=d.data()||{}; const emis=v.emis || String(d.id||'').replace('EMIS_',''); const name=v.school||v.name||''; if(name && emis) fromDbS.push({ id:d.id, school:name, emis:String(emis), status:(v.status||v.subscription||'ACTIVE').toUpperCase(), binAutoEmptyDays:(typeof v.binAutoEmptyDays==='number'?v.binAutoEmptyDays:30), tier:(v.tier||'STANDARD').toUpperCase() }); });
+    const fromDbU=[]; uSnap.forEach(d=>{ const v=d.data()||{}; if(v.name) fromDbU.push({ id:d.id, name:v.name||'', role:(v.role||'TEACHER').toUpperCase(), school:v.school||'', emis:String(v.emis||''), email:String(v.email||'').toLowerCase().trim(), password:String(v.password||v.pass||''), pin:String(v.pin||v.PIN||''), phone:v.phone||'', status:(v.status||'ACTIVE').toUpperCase() }); });
     schools=fromDbS.length?fromDbS:fallbackSchools;
     users=fromDbU.length?fromDbU:fallbackUsers;
-    // If Firestore returned data, show it; if empty, show fallback note
     if(fromDbS.length || fromDbU.length){
-      $('loadInfo').innerHTML='✅ Loaded <b>'+schools.length+'</b> school(s) + <b>'+users.length+'</b> user(s) from Firestore. Pick your school below.';
+      $('loadInfo').innerHTML='✅ Loaded <b>'+schools.length+'</b> school(s) + <b>'+users.length+'</b> user(s) from Firestore. Pick your school from dropdown below.';
     } else {
       $('loadInfo').innerHTML='⚠️ Firestore empty / offline — Showing demo schools. Admin: Add real schools in Admin page when online, they will appear here.';
     }
@@ -171,123 +169,93 @@ async function loadData(){
   }
   schools.sort((a,b)=>a.school.localeCompare(b.school));
   users.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
+  // Fill School Dropdown
+  const sel=$('schoolSelect');
+  sel.innerHTML='<option value="">— Pick Your School —</option>' + schools.map(s=>'<option value="'+esc(s.emis)+'">'+esc(s.school)+' — EMIS '+esc(s.emis)+'</option>').join('');
   $('appVersion').textContent='Schools: '+schools.length+' • Users: '+users.length+' • '+new Date().toLocaleDateString('en-ZA');
   // Restore logged in
   const cur=getLogin();
   if(cur){
     $('loggedInBox').style.display='block';
     $('loggedInBox').innerHTML='✅ Currently logged in as: <b>'+esc(cur.name||'')+'</b> • '+(cur.role||'')+' • '+(cur.school||'')+' (EMIS '+(cur.emis||'')+')<br><span class="small">Tap a Quick Link above to continue, or login again below to switch user.</span>';
-    // Pre-fill school + role + user
-    const sc=schools.find(s=>String(s.emis)===String(cur.emis));
-    if(sc){ pickSchool(sc.emis); }
-    $('roleSelect').value=(cur.role||'TEACHER').toUpperCase();
-    const u=users.find(x=>String(x.name||'').toLowerCase()===String(cur.name||'').toLowerCase() && String(x.emis)===String(cur.emis));
-    if(u){ pickUser(u.id); }
+    sel.value=String(cur.emis||'');
+    onSchoolChange();
+    if(cur.email) $('emailInput').value=cur.email;
   }
 }
-function renderSchoolList(filter){
-  const q=(filter||'').trim().toLowerCase();
-  const list=schools.filter(s=>!q || s.school.toLowerCase().includes(q) || String(s.emis).includes(q));
-  const box=$('schoolList');
-  if(!list.length){ box.innerHTML='<div style="padding:12px;font-size:13px">No school found. Ask Admin to add it in Admin page.</div>'; box.style.display='block'; return; }
-  box.innerHTML=list.map(s=>'<button type="button" onclick="pickSchool(\''+esc(s.emis)+'\')"><b>'+esc(s.school)+'</b><span>EMIS: '+esc(s.emis)+' • '+esc(s.status||'ACTIVE')+' • Prefix: '+getPrefix(s.school)+' • Bin: '+binLabel(s.binAutoEmptyDays)+'</span></button>').join('');
-  box.style.display='block';
-}
-window.filterSchools=function(){ renderSchoolList($('schoolSearch').value); };
-window.showSchoolList=function(){ renderSchoolList($('schoolSearch').value); };
-window.pickSchool=function(emis){
-  pickedSchool=schools.find(s=>String(s.emis)===String(emis));
-  if(!pickedSchool) return;
-  $('schoolSearch').value=pickedSchool.school; $('schoolList').style.display='none'; $('schoolPicked').style.display='block';
-  $('schoolPicked').innerHTML='✅ Picked: <b>'+esc(pickedSchool.school)+'</b> • EMIS: <b>'+esc(pickedSchool.emis)+'</b><br>Status: '+statusPill(pickedSchool.status)+' • Prefix: <b>'+getPrefix(pickedSchool.school)+'</b> • Bin: <b>'+binLabel(pickedSchool.binAutoEmptyDays)+'</b>';
+window.onSchoolChange=function(){
+  const emis=$('schoolSelect').value;
+  pickedSchool=schools.find(s=>String(s.emis)===String(emis)) || null;
+  if(!pickedSchool){ $('schoolPicked').style.display='none'; $('schoolStatusBox').style.display='none'; return; }
+  $('schoolPicked').style.display='block';
+  $('schoolPicked').innerHTML='✅ Picked: <b>'+esc(pickedSchool.school)+'</b> • EMIS: <b>'+esc(pickedSchool.emis)+'</b><br>Status: '+statusPill(pickedSchool.status)+' • Prefix: <b>'+getPrefix(pickedSchool.school)+'</b> • Bin: <b>'+binLabel(pickedSchool.binAutoEmptyDays)+'</b> • Tier: <b>'+esc(pickedSchool.tier||'')+'</b>';
   $('schoolStatusBox').style.display='block';
   if(pickedSchool.status!=='ACTIVE'){
     $('schoolStatusBox').innerHTML='🟠 <b>'+esc(pickedSchool.school)+'</b> is <b>'+esc(pickedSchool.status)+'</b> — Issue + Add are BLOCKED. Return is NEVER blocked. You can still login to Return books.';
   } else {
     $('schoolStatusBox').innerHTML='✅ <b>'+esc(pickedSchool.school)+'</b> is ACTIVE — Issue + Return + Add allowed.';
   }
-  // Clear user pick when school changes (users are per-school)
-  pickedUser=null; $('userSearch').value=''; $('userPicked').style.display='none';
-  renderUserList('');
+  $('emailInput').focus();
 };
-window.onRoleChange=function(){ pickedUser=null; $('userSearch').value=''; $('userPicked').style.display='none'; renderUserList(''); };
-function renderUserList(filter){
-  const q=(filter||'').trim().toLowerCase();
-  const role=$('roleSelect').value||'TEACHER';
-  // Filter by picked school + role
-  let list=users.filter(u=>{
-    if(pickedSchool && String(u.emis)!==String(pickedSchool.emis)) return false;
-    if(u.role!==role) return false;
-    if(!q) return true;
-    return String(u.name||'').toLowerCase().includes(q);
-  });
-  const box=$('userList');
-  if(!pickedSchool){ box.innerHTML='<div style="padding:12px;font-size:13px">Pick a School first (Step 1).</div>'; box.style.display='block'; return; }
-  if(!list.length){ box.innerHTML='<div style="padding:12px;font-size:13px">No '+esc(role)+' found in '+esc(pickedSchool.school)+'.<br>Ask Admin to add you in Profile page, or check Role is correct.</div>'; box.style.display='block'; return; }
-  box.innerHTML=list.map(u=>'<button type="button" onclick="pickUser(\''+esc(u.id)+'\')"><b>'+esc(u.name||'')+'</b><span>'+esc(u.role||'')+' • '+esc(u.school||'')+' • '+(u.status==='BLOCKED'?'🔴 BLOCKED':'✅ Active')+'</span></button>').join('');
-  box.style.display='block';
-}
-window.filterUsers=function(){ renderUserList($('userSearch').value); };
-window.showUserList=function(){ renderUserList($('userSearch').value); };
-window.pickUser=function(id){
-  pickedUser=users.find(u=>String(u.id)===String(id));
-  if(!pickedUser) return;
-  $('userSearch').value=pickedUser.name; $('userList').style.display='none'; $('userPicked').style.display='block';
-  $('userPicked').innerHTML='✅ Picked: <b>'+esc(pickedUser.name||'')+'</b> • '+(pickedUser.role||'')+' • '+(pickedUser.status==='BLOCKED'?'<span class="pill pill-red">🔴 BLOCKED — Cannot login</span>':'<span class="pill pill-green">✅ Active</span>');
-  $('pinInput').focus();
-};
-document.addEventListener('click',(e)=>{
-  if(!e.target.closest('#schoolSearch') && !e.target.closest('#schoolList')) $('schoolList').style.display='none';
-  if(!e.target.closest('#userSearch') && !e.target.closest('#userList')) $('userList').style.display='none';
-});
 window.logout=function(){
   localStorage.removeItem('MAKHANANI_LOGGED_IN');
   $('loggedInBox').style.display='none';
-  $('loginMsg').innerHTML='<div class="ok">✅ Logged out. Pick School → Role → Name → PIN to login again.</div>';
-  pickedUser=null; $('userSearch').value=''; $('userPicked').style.display='none'; $('pinInput').value='';
+  $('loginMsg').innerHTML='<div class="ok">✅ Logged out. Pick School → Email → Password to login again.</div>';
+  $('emailInput').value=''; $('passwordInput').value=''; $('fallbackName').value=''; $('fallbackPin').value='';
 };
-window.doLogin=function(){
-  const pin=($('pinInput').value||'').trim();
-  if(!pickedSchool){ $('loginMsg').innerHTML='<div class="warn">⚠️ Pick a School first (Step 1).</div>'; return; }
-  if(!pickedUser){ $('loginMsg').innerHTML='<div class="warn">⚠️ Pick Your Name (Step 3) — type your name and tap it.</div>'; return; }
-  if(!/^\d{4}$/.test(pin)){ $('loginMsg').innerHTML='<div class="warn">⚠️ Enter 4-digit PIN.</div>'; return; }
-  // BLOCKED CHECK — Must be before PIN check, so blocked user cannot guess PIN
-  if((pickedUser.status||'ACTIVE').toUpperCase()==='BLOCKED'){
-    $('loginMsg').innerHTML='<div class="warn">🚫 <b>Your account is BLOCKED.</b><br>Ask Admin / Principal to Unblock you in Profile page.<br>You cannot login until unblocked.</div>';
-    return;
-  }
-  // PIN CHECK
-  if(String(pickedUser.pin||'')!==pin){
-    $('loginMsg').innerHTML='<div class="warn">❌ Wrong PIN for '+esc(pickedUser.name)+'. Try again, or ask Admin to Reset PIN to 1234.</div>';
-    return;
-  }
-  // ROLE / SCHOOL MISMATCH CHECK — User must match picked school + role
-  if(String(pickedUser.emis)!==String(pickedSchool.emis)){
-    $('loginMsg').innerHTML='<div class="warn">❌ '+esc(pickedUser.name)+' is not in '+esc(pickedSchool.school)+'. Pick the correct school for this user.</div>';
-    return;
-  }
-  const role=$('roleSelect').value||'TEACHER';
-  if(pickedUser.role!==role){
-    $('loginMsg').innerHTML='<div class="warn">❌ '+esc(pickedUser.name)+' is '+esc(pickedUser.role)+', not '+esc(role)+'. Change Role to '+esc(pickedUser.role)+' and try again.</div>';
-    return;
-  }
-  // SUCCESS — Save login
-  const loginObj={ id:pickedUser.id, name:pickedUser.name, role:pickedUser.role, school:pickedSchool.school, emis:pickedSchool.emis, pin:pickedUser.pin, phone:pickedUser.phone||'', status:pickedUser.status||'ACTIVE' };
+function finishLogin(user, schoolObj){
+  const loginObj={ id:user.id, name:user.name, role:user.role, school:schoolObj.school, emis:schoolObj.emis, email:user.email||'', phone:user.phone||'', status:user.status||'ACTIVE' };
   saveLogin(loginObj);
-  $('loginMsg').innerHTML='<div class="ok">✅ Welcome, <b>'+esc(pickedUser.name)+'</b>! Logging in to '+esc(pickedSchool.school)+'...</div>';
-  // ROLE ROUTING
+  $('loginMsg').innerHTML='<div class="ok">✅ Welcome, <b>'+esc(user.name)+'</b>! Logging in to '+esc(schoolObj.school)+'...</div>';
   setTimeout(()=>{
-    if(role==='ADMIN') window.location.href='admin.html';
-    else if(role==='PRINCIPAL') window.location.href='principal.html';
-    else if(role==='LIBRARIAN') window.location.href='librarian.html';
-    else window.location.href='issue.html'; // TEACHER → Issue
+    if(user.role==='ADMIN') window.location.href='admin.html';
+    else if(user.role==='PRINCIPAL') window.location.href='principal.html';
+    else if(user.role==='LIBRARIAN') window.location.href='librarian.html';
+    else window.location.href='issue.html';
   },600);
+}
+window.doLogin=function(){
+  const email=($('emailInput').value||'').trim().toLowerCase();
+  const pass=($('passwordInput').value||'').trim();
+  if(!pickedSchool){ $('loginMsg').innerHTML='<div class="warn">⚠️ Pick Your School from dropdown first (Step 1).</div>'; return; }
+  if(!email){ $('loginMsg').innerHTML='<div class="warn">⚠️ Enter your Email.</div>'; return; }
+  if(!pass){ $('loginMsg').innerHTML='<div class="warn">⚠️ Enter your Password.</div>'; return; }
+  // Find user by Email + School
+  const user=users.find(u=>String(u.email||'').toLowerCase()===email && String(u.emis)===String(pickedSchool.emis));
+  if(!user){
+    $('loginMsg').innerHTML='<div class="warn">❌ No user with email <b>'+esc(email)+'</b> in <b>'+esc(pickedSchool.school)+'</b>.<br>Check School dropdown is correct, or use Name + PIN fallback below, or ask Admin to add your Email in Profile.</div>';
+    return;
+  }
+  if((user.status||'ACTIVE').toUpperCase()==='BLOCKED'){
+    $('loginMsg').innerHTML='<div class="warn">🚫 <b>Your account is BLOCKED.</b><br>Ask Admin / Principal to Unblock you in Profile page.</div>';
+    return;
+  }
+  // Password check — support both password and pin (if password not set yet, pin works)
+  const correctPass = user.password || user.pin || '';
+  if(String(correctPass)!==pass){
+    $('loginMsg').innerHTML='<div class="warn">❌ Wrong Password for '+esc(user.name)+'. Try again, or ask Admin to Reset Password.</div>';
+    return;
+  }
+  finishLogin(user, pickedSchool);
 };
-// Enter key on PIN → Login
+window.doFallbackLogin=function(){
+  const name=($('fallbackName').value||'').trim().toLowerCase();
+  const pin=($('fallbackPin').value||'').trim();
+  if(!pickedSchool){ $('loginMsg').innerHTML='<div class="warn">⚠️ Pick Your School from dropdown first.</div>'; return; }
+  if(!name){ $('loginMsg').innerHTML='<div class="warn">⚠️ Enter Your Name for fallback login.</div>'; return; }
+  if(!/^\d{4}$/.test(pin)){ $('loginMsg').innerHTML='<div class="warn">⚠️ Enter 4-digit PIN for fallback login.</div>'; return; }
+  const user=users.find(u=>String(u.name||'').toLowerCase()===name && String(u.emis)===String(pickedSchool.emis));
+  if(!user){ $('loginMsg').innerHTML='<div class="warn">❌ No user named <b>'+esc(name)+'</b> in '+esc(pickedSchool.school)+'. Check School + Name.</div>'; return; }
+  if((user.status||'ACTIVE').toUpperCase()==='BLOCKED'){ $('loginMsg').innerHTML='<div class="warn">🚫 <b>Your account is BLOCKED.</b> Ask Admin to Unblock you.</div>'; return; }
+  if(String(user.pin||'')!==pin){ $('loginMsg').innerHTML='<div class="warn">❌ Wrong PIN for '+esc(user.name)+'. Try again.</div>'; return; }
+  finishLogin(user, pickedSchool);
+};
 document.addEventListener('DOMContentLoaded', ()=>{
   if(window.OfflineQueue) OfflineQueue.updateBadge();
-  const pinEl=$('pinInput');
-  if(pinEl) pinEl.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  const passEl=$('passwordInput');
+  if(passEl) passEl.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  const emailEl=$('emailInput');
+  if(emailEl) emailEl.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
   loadData();
 });
 </script>
