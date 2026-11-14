@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Profile v2.0 — My Profile + Users + Audit</title>
+<title>Makhanani LTSM — Profile v2.3 — Email + Password + Users</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
@@ -30,28 +30,22 @@ input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8p
 .goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}
 .small{font-size:12px;color:#64748b}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}
 .topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
 .topnav a.safe{background:#dcfce7;color:#166534;border:1.5px solid #059669}
-.schoolList{border:1.5px solid #cbd5e1;border-radius:8px;max-height:220px;overflow-y:auto;display:none;background:#fff}
-.schoolList button{width:100%;text-align:left;background:#fff;border:none;border-bottom:1px solid #e2e8f0;padding:11px 12px;cursor:pointer;font-size:14px}
-.schoolList button:hover{background:#dbeafe}
-.schoolList button b{display:block}
-.schoolList button span{font-size:12px;color:#64748b}
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .miniBtn{padding:6px 10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;margin:2px}
-.avatar{width:84px;height:84px;border-radius:50%;background:#0a1f4d;color:#d4af37;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;margin:auto;border:3px solid #d4af37}
+.eyeBtn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#e2e8f0;border:none;border-radius:20px;padding:6px 10px;cursor:pointer;font-weight:900}
 </style>
 </head>
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>👤 Makhanani LTSM — Profile v2.0</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>My Profile + Users + Audit</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>👤 Makhanani LTSM — Profile v2.3</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>My Profile + Users • Email + Password • My School Only (Admin: All Schools)</p>
 </header>
 <main>
 <div class="card">
@@ -63,76 +57,117 @@ th{background:#0a1f4d;color:#fff}
 <div id="profileBody" style="display:none">
 
 <div class="card">
-<h2>👤 My Profile</h2>
-<div class="avatar" id="avatarLetter">M</div>
-<div style="text-align:center;margin-top:8px"><b id="myNameTitle" style="font-size:18px">—</b><br><span id="myRolePill"></span> <span id="myStatusPill"></span></div>
-<div class="goldBox" id="myDetails"></div>
-<label>✏️ My Name — Edit and Save</label>
-<input id="editMyName" placeholder="Full name">
-<label>📞 My Phone</label>
-<input id="editMyPhone" placeholder="e.g. 082 123 4567">
-<button class="btn btn-green" id="saveMeBtn" onclick="saveMyProfile()">💾 Save My Profile</button>
-<div id="saveMeMsg"></div>
+<h2>👤 1. My Profile — <span id="myNameTitle">—</span></h2>
+<div class="goldBox" id="myProfileBox"></div>
+<label>👤 My Full Name</label>
+<input id="myName" placeholder="e.g. Thandi Mokoena">
+<label>📧 My Email * — Used to Login in index.html</label>
+<input id="myEmail" type="email" placeholder="e.g. thandi@makhanani.co.za" autocapitalize="off">
+<label>📞 My Phone (Optional)</label>
+<input id="myPhone" placeholder="e.g. 0821234567" inputmode="tel">
+<button class="btn btn-blue" onclick="saveMyProfile()">💾 Save My Profile (Name / Email / Phone)</button>
+<div id="myProfileMsg"></div>
+
+<h2 style="margin-top:20px">🔐 Change My Password</h2>
+<div class="small">Leave blank if you do NOT want to change password. New password is used at next login.</div>
+<label>🔐 New Password *</label>
+<div style="position:relative">
+<input id="myNewPassword" type="password" placeholder="e.g. thandi1234" style="padding-right:52px">
+<button type="button" class="eyeBtn" onclick="togglePass('myNewPassword')">👁️</button>
+</div>
+<label>🔐 Confirm New Password *</label>
+<input id="myConfirmPassword" type="password" placeholder="Type same password again">
+<label>🔐 Old PIN (Optional — For Old Users)</label>
+<input id="myPin" placeholder="e.g. 1234" inputmode="numeric" maxlength="4">
+<div class="small">PIN is kept for fallback login (Name + PIN) if Email fails. Keep it 4 digits.</div>
+<button class="btn btn-gold" onclick="changeMyPassword()">🔐 Change My Password</button>
+<div id="myPassMsg"></div>
+<button class="btn btn-red" onclick="logout()">🚪 Logout</button>
 </div>
 
-<div class="card">
-<h2>🔐 Change My PIN</h2>
-<div class="small">PIN is 4 digits, used to login. Do NOT share it. After changing, you must login again with new PIN.</div>
-<label>Current PIN *</label>
-<input id="oldPin" placeholder="e.g. 1234" inputmode="numeric" maxlength="4">
-<label>New PIN * — 4 digits</label>
-<input id="newPin" placeholder="e.g. 5678" inputmode="numeric" maxlength="4">
-<label>Confirm New PIN *</label>
-<input id="newPin2" placeholder="Repeat new PIN" inputmode="numeric" maxlength="4">
-<button class="btn btn-blue" onclick="changeMyPin()">🔐 Change PIN</button>
-<div id="pinMsg"></div>
+<div class="card" id="usersCard">
+<h2>👥 2. Users — My School — <span id="userCount">0</span> users</h2>
+<div class="small" id="usersPermNote"></div>
+<div class="grid2">
+<label>Search Users — Name / Email / Role</label>
+<label>Filter by Role</label>
 </div>
-
-<div class="card">
-<h2>📜 My Activity — Last 20 Actions</h2>
-<div class="small">Shows only YOUR actions. Admin sees everyone's actions in Admin → Audit Log.</div>
-<button class="btn btn-blue" onclick="loadMyActivity()">🔄 Refresh My Activity</button>
-<div id="myActivityBody"></div>
+<div class="grid2">
+<input id="searchUsers" placeholder="Type name or email..." oninput="renderUsers()">
+<select id="filterRole" onchange="renderUsers()"><option value="ALL">All Roles</option><option value="ADMIN">Admin</option><option value="PRINCIPAL">Principal</option><option value="LIBRARIAN">Librarian</option><option value="TEACHER">Teacher</option></select>
 </div>
-
-<div id="adminSection" style="display:none">
-
-<div class="card">
-<h2>➕ Add New User — Appears in Login</h2>
-<div class="goldBox"><b>How it works:</b> Add here once → Saved to Firestore `users` → That person can login with School + Role + PIN. No code edit needed.<br><b>PIN:</b> Give them a 4-digit PIN, tell them privately. They can change it in My Profile.</div>
-<label>👤 Full Name *</label>
-<input id="newUserName" placeholder="e.g. Thandi Mokoena">
-<label>📞 Phone (Optional)</label>
-<input id="newUserPhone" placeholder="e.g. 082 123 4567">
-<label>🎭 Role *</label>
-<select id="newUserRole"><option value="TEACHER">👩🏾‍🏫 Teacher</option><option value="LIBRARIAN">📚 Librarian / HOD</option><option value="PRINCIPAL">👩🏾‍🏫 Principal</option><option value="ADMIN">⚙️ Admin (Xintimani Only)</option></select>
-<label>🏫 School * — Type to search</label>
-<input id="newUserSchoolSearch" placeholder="Type school name..." autocomplete="off" oninput="filterNewUserSchools()" onfocus="showNewUserSchoolList()">
-<div id="newUserSchoolList" class="schoolList"></div>
-<div id="newUserSchoolPicked" class="info" style="display:none"></div>
-<label>🔐 PIN * — 4 digits</label>
-<input id="newUserPin" placeholder="e.g. 1234" inputmode="numeric" maxlength="4">
-<button class="btn btn-green" id="addUserBtn" onclick="addUser()">➕ Add User</button>
-<div id="addUserMsg"></div>
-</div>
-
-<div class="card">
-<h2>👥 All Users — <span id="userCount">0</span> users</h2>
-<label>Search Users — Name / School / Role / EMIS</label>
-<input id="searchUsers" placeholder="Type to filter..." oninput="renderUsers()">
-<div class="grid3">
 <button class="btn btn-blue" onclick="loadUsers()">🔄 Refresh Users</button>
-<button class="btn btn-grey" onclick="filterUsersByRole('ALL')">All</button>
-<button class="btn btn-gold" onclick="filterUsersByRole('TEACHER')">Teachers</button>
-</div>
-<div class="grid3">
-<button class="btn btn-grey" onclick="filterUsersByRole('LIBRARIAN')">Librarians</button>
-<button class="btn btn-grey" onclick="filterUsersByRole('PRINCIPAL')">Principals</button>
-<button class="btn btn-grey" onclick="filterUsersByRole('ADMIN')">Admins</button>
-</div>
 <div id="usersBody"></div>
 </div>
 
+<div class="card" id="addUserCard">
+<h2>➕ 3. Add New User — Email + Password — For This School</h2>
+<div class="info" id="addUserInfo">New user will login with Email + Password in index.html. School is auto-filled from your school, or pick from dropdown if you are Admin.</div>
+<label>👤 Full Name *</label>
+<input id="newUserName" placeholder="e.g. Sipho Dlamini">
+<label>📧 Email * — Will be used to Login</label>
+<input id="newUserEmail" type="email" placeholder="e.g. sipho@makhanani.co.za" autocapitalize="off">
+<div class="grid2">
+<label>🔐 Password *</label>
+<label>🔐 Confirm Password *</label>
+</div>
+<div class="grid2">
+<div style="position:relative"><input id="newUserPassword" type="password" placeholder="e.g. sipho1234" style="padding-right:52px"><button type="button" class="eyeBtn" onclick="togglePass('newUserPassword')">👁️</button></div>
+<input id="newUserConfirm" type="password" placeholder="Type same password again">
+</div>
+<div class="grid2">
+<label>🎭 Role *</label>
+<label>🏫 School * — Dropdown</label>
+</div>
+<div class="grid2">
+<select id="newUserRole"><option value="TEACHER">👩🏾‍🏫 TEACHER — Issue / Return</option><option value="LIBRARIAN">📚 LIBRARIAN — Quick Issue + Textbooks</option><option value="PRINCIPAL">👩🏾‍🏫 PRINCIPAL — Dashboard + SGB</option><option value="ADMIN">⚙️ ADMIN — All Schools + Finance</option></select>
+<select id="newUserSchool"></select>
+</div>
+<div class="grid2">
+<label>📞 Phone (Optional)</label>
+<label>🔐 PIN (4 digits) — For Fallback Name + PIN Login</label>
+</div>
+<div class="grid2">
+<input id="newUserPhone" placeholder="e.g. 0821234567" inputmode="tel">
+<input id="newUserPin" placeholder="e.g. 1234" inputmode="numeric" maxlength="4">
+</div>
+<button class="btn btn-green" onclick="addUser()">➕ Add User</button>
+<div id="addUserMsg"></div>
+</div>
+
+<div class="card" id="editUserCard" style="display:none">
+<h2>✏️ Edit User — <span id="editUserTitle">—</span></h2>
+<div class="info">Admin can fix Email / Password here if user forgot it. Leave Password blank if you do NOT want to change it.</div>
+<label>👤 Full Name *</label>
+<input id="editUserName" placeholder="e.g. Thandi Mokoena">
+<label>📧 Email * — Used to Login</label>
+<input id="editUserEmail" type="email" placeholder="e.g. thandi@makhanani.co.za" autocapitalize="off">
+<label>🔐 New Password — Leave Blank = Keep Old Password</label>
+<div style="position:relative">
+<input id="editUserPassword" type="password" placeholder="Leave blank to keep old password" style="padding-right:52px">
+<button type="button" class="eyeBtn" onclick="togglePass('editUserPassword')">👁️</button>
+</div>
+<div class="grid2">
+<label>🎭 Role *</label>
+<label>📊 Status *</label>
+</div>
+<div class="grid2">
+<select id="editUserRole"><option value="TEACHER">TEACHER</option><option value="LIBRARIAN">LIBRARIAN</option><option value="PRINCIPAL">PRINCIPAL</option><option value="ADMIN">ADMIN</option></select>
+<select id="editUserStatus"><option value="ACTIVE">✅ ACTIVE</option><option value="BLOCKED">🔴 BLOCKED</option></select>
+</div>
+<div class="grid2">
+<label>📞 Phone</label>
+<label>🔐 PIN (4 digits)</label>
+</div>
+<div class="grid2">
+<input id="editUserPhone" placeholder="e.g. 0821234567">
+<input id="editUserPin" placeholder="e.g. 1234" inputmode="numeric" maxlength="4">
+</div>
+<label>🏫 School (Read-Only — Cannot Move User to Another School Here)</label>
+<input id="editUserSchool" readonly>
+<button class="btn btn-blue" onclick="saveEditUser()">💾 Save Changes</button>
+<button class="btn btn-grey" onclick="cancelEditUser()">Cancel</button>
+<div id="editUserMsg"></div>
 </div>
 
 </div>
@@ -140,7 +175,7 @@ th{background:#0a1f4d;color:#fff}
 <script src="offline-queue.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, setDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, setDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
@@ -148,165 +183,205 @@ function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 function saveLogin(l){ localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify(l)); }
 let login=getLogin();
-let schools=[], users=[], selectedNewUserSchool=null, roleFilter='ALL';
+let users=[], schools=[], editingUserId=null, myUserId=null;
 async function auditLog(action, details){
   try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){}
 }
-function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,4) || 'MK'); }
-function rolePill(r){ r=(r||'').toUpperCase(); if(r==='ADMIN') return '<span class="pill pill-red">⚙️ ADMIN</span>'; if(r==='PRINCIPAL') return '<span class="pill pill-gold">👩🏾‍🏫 PRINCIPAL</span>'; if(r==='LIBRARIAN'||r==='HOD') return '<span class="pill pill-blue">📚 LIBRARIAN / HOD</span>'; return '<span class="pill pill-green">👩🏾‍🏫 TEACHER</span>'; }
-function statusPill(s){ s=(s||'ACTIVE').toUpperCase(); return s==='BLOCKED' ? '<span class="pill pill-red">🔴 BLOCKED</span>' : '<span class="pill pill-green">✅ ACTIVE</span>'; }
+window.togglePass=function(id){
+  const el=$(id); if(!el) return;
+  el.type = el.type==='password' ? 'text' : 'password';
+};
+window.logout=function(){
+  localStorage.removeItem('MAKHANANI_LOGGED_IN');
+  window.location.href='index.html';
+};
+function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e||'').trim()); }
 async function loadSchools(){
   try{
-    const snap=await getDocs(collection(db,'schools')); schools=[];
-    snap.forEach(d=>{ const data=d.data()||{}; const emis=data.emis || String(d.id||'').replace('EMIS_',''); const name=data.school || data.name || ''; if(name && emis) schools.push({ id:d.id, school:name, emis:String(emis), status:(data.status||'ACTIVE').toUpperCase(), binAutoEmptyDays:(typeof data.binAutoEmptyDays==='number'?data.binAutoEmptyDays:30) }); });
+    const snap=await getDocs(collection(db,'schools'));
+    schools=[]; snap.forEach(d=>{ const v=d.data()||{}; const emis=v.emis || String(d.id||'').replace('EMIS_',''); const name=v.school||v.name||''; if(name && emis) schools.push({id:d.id, school:name, emis:String(emis), status:(v.status||'ACTIVE').toUpperCase()}); });
     schools.sort((a,b)=>a.school.localeCompare(b.school));
   }catch(e){ schools=[]; }
-  if(!schools.length) schools=[ { school:'Makhanani Primary School', emis:'123456789', status:'ACTIVE', binAutoEmptyDays:30 }, { school:'Makhanani Secondary School', emis:'123456790', status:'ACTIVE', binAutoEmptyDays:30 } ];
+  if(!schools.length){
+    schools=[{school:login?.school||'Makhanani Primary School', emis:String(login?.emis||'123456789'), status:'ACTIVE'}];
+  }
+  // Fill Add User School Dropdown
+  const sel=$('newUserSchool');
+  const isAdmin=(login?.role||'').toUpperCase()==='ADMIN';
+  if(isAdmin){
+    sel.innerHTML=schools.map(s=>'<option value="'+esc(s.emis)+'">'+esc(s.school)+' — EMIS '+esc(s.emis)+'</option>').join('');
+    sel.value=String(login?.emis||schools[0]?.emis||'');
+  } else {
+    sel.innerHTML='<option value="'+esc(login?.emis||'')+'">'+esc(login?.school||'')+' — EMIS '+esc(login?.emis||'')+' (My School Only)</option>';
+    sel.value=String(login?.emis||'');
+  }
 }
-function renderNewUserSchoolList(filter){
-  const q=(filter||'').trim().toLowerCase();
-  const list=schools.filter(s=>!q || s.school.toLowerCase().includes(q) || String(s.emis).includes(q));
-  const box=$('newUserSchoolList');
-  if(!list.length){ box.innerHTML='<div style="padding:12px;font-size:13px">No school found.</div>'; box.style.display='block'; return; }
-  box.innerHTML=list.map(s=>'<button type="button" onclick="pickNewUserSchool(\''+esc(s.emis)+'\')"><b>'+esc(s.school)+'</b><span>EMIS: '+esc(s.emis)+' • '+(s.status||'ACTIVE')+'</span></button>').join('');
-  box.style.display='block';
-}
-window.filterNewUserSchools=function(){ renderNewUserSchoolList($('newUserSchoolSearch').value); };
-window.showNewUserSchoolList=function(){ renderNewUserSchoolList($('newUserSchoolSearch').value); };
-window.pickNewUserSchool=function(emis){ selectedNewUserSchool=schools.find(s=>String(s.emis)===String(emis)); if(!selectedNewUserSchool) return; $('newUserSchoolSearch').value=selectedNewUserSchool.school; $('newUserSchoolList').style.display='none'; $('newUserSchoolPicked').style.display='block'; $('newUserSchoolPicked').innerHTML='✅ Picked: <b>'+esc(selectedNewUserSchool.school)+'</b> • EMIS: <b>'+esc(selectedNewUserSchool.emis)+'</b> • Prefix: <b>'+getPrefix(selectedNewUserSchool.school)+'</b>'; };
-document.addEventListener('click',(e)=>{ if(!e.target.closest('#newUserSchoolSearch') && !e.target.closest('#newUserSchoolList')) $('newUserSchoolList').style.display='none'; });
-function renderMyProfile(){
-  if(!login) return;
-  const mySchool=schools.find(s=>String(s.emis)===String(login.emis));
-  const binDays=mySchool ? (typeof mySchool.binAutoEmptyDays==='number'?mySchool.binAutoEmptyDays:30) : 30;
-  const sub=mySchool ? mySchool.status : 'ACTIVE';
-  $('avatarLetter').textContent=String(login.name||'M').trim().charAt(0).toUpperCase();
-  $('myNameTitle').textContent=login.name||'—';
-  $('myRolePill').innerHTML=rolePill(login.role);
-  $('myStatusPill').innerHTML=statusPill(login.status||'ACTIVE');
-  $('editMyName').value=login.name||''; $('editMyPhone').value=login.phone||'';
-  $('myDetails').innerHTML='🏫 School: <b>'+esc(login.school||'')+'</b><br>🆔 EMIS: <b>'+esc(login.emis||'')+'</b> • Prefix: <b>'+getPrefix(login.school||'')+'</b><br>🎭 Role: <b>'+esc(login.role||'')+'</b> • 📞 Phone: <b>'+esc(login.phone||'—')+'</b><br>💳 School Subscription: <b>'+esc(sub)+'</b> • ♻️ Bin Auto-Empty: <b>'+(binDays===0?'OFF — Never':binDays+' days')+'</b><br><span class="small">Your School / Role can only be changed by Admin. Ask Admin if your school or role is wrong.</span>';
-}
-async function findMyUserId(){
-  let myId=login.id || login.uid || null;
-  if(myId) return myId;
-  try{ const snap=await getDocs(collection(db,'users')); snap.forEach(d=>{ const v=d.data(); if(String(v.name||'').toLowerCase()===String(login.name||'').toLowerCase() && String(v.emis||'')===String(login.emis||'')) myId=d.id; }); }catch(e){}
-  return myId;
-}
-window.saveMyProfile=async function(){
-  const name=($('editMyName').value||'').trim(); const phone=($('editMyPhone').value||'').trim();
-  if(!name){ $('saveMeMsg').innerHTML='<div class="warn">⚠️ Enter your name.</div>'; return; }
+async function loadUsers(){
   try{
-    const myId=await findMyUserId();
-    if(myId) await updateDoc(doc(db,'users',myId),{name,phone,updatedAt:new Date().toISOString()});
-    const oldName=login.name;
-    login.name=name; login.phone=phone; saveLogin(login);
-    renderMyProfile();
-    await auditLog('MY_PROFILE_UPDATED','Updated my profile — Name: '+oldName+' → '+name+' • Phone: '+phone);
-    $('saveMeMsg').innerHTML='<div class="ok">✅ Saved — My Profile updated.</div>';
-  }catch(e){ $('saveMeMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; }
-};
-window.changeMyPin=async function(){
-  const oldPin=($('oldPin').value||'').trim(); const np=($('newPin').value||'').trim(); const np2=($('newPin2').value||'').trim();
-  if(oldPin!==String(login.pin||login.PIN||'')){ $('pinMsg').innerHTML='<div class="warn">❌ Current PIN is wrong.</div>'; return; }
-  if(!/^\d{4}$/.test(np)){ $('pinMsg').innerHTML='<div class="warn">⚠️ New PIN must be 4 digits.</div>'; return; }
-  if(np!==np2){ $('pinMsg').innerHTML='<div class="warn">❌ New PINs do not match.</div>'; return; }
-  try{
-    const myId=await findMyUserId();
-    if(myId) await updateDoc(doc(db,'users',myId),{pin:np,PIN:np,updatedAt:new Date().toISOString()});
-    login.pin=np; login.PIN=np; saveLogin(login);
-    await auditLog('MY_PIN_CHANGED','Changed my own PIN');
-    $('pinMsg').innerHTML='<div class="ok">✅ PIN changed! Login again with new PIN next time. You are still logged in now.</div>';
-    $('oldPin').value=''; $('newPin').value=''; $('newPin2').value='';
-    loadMyActivity();
-  }catch(e){ $('pinMsg').innerHTML='<div class="warn">❌ Change PIN failed: '+esc(e.message)+'</div>'; }
-};
-window.loadMyActivity=async function(){
-  try{
-    const snap=await getDocs(collection(db,'auditLog'));
-    let mine=[];
-    snap.forEach(d=>{ const v=d.data(); if(String(v.who||'').toLowerCase()===String(login.name||'').toLowerCase() && String(v.emis||'')===String(login.emis||'')) mine.push({id:d.id,...v}); });
-    mine.sort((a,b)=>String(b.when||'').localeCompare(String(a.when||'')));
-    mine=mine.slice(0,20);
-    if(!mine.length){ $('myActivityBody').innerHTML='<div class="info">No activity yet. Do something — e.g. change your PIN — and it will show here.</div>'; return; }
-    let html='<table><tr><th>When</th><th>Action</th><th>Details</th></tr>';
-    mine.forEach(a=>{ html+='<tr><td>'+esc(String(a.when||'').slice(0,16).replace('T',' '))+'</td><td><span class="pill pill-blue">'+esc(a.action||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>'; });
-    html+='</table>'; $('myActivityBody').innerHTML=html;
-  }catch(e){ $('myActivityBody').innerHTML='<div class="warn">❌ Activity failed: '+esc(e.message)+'</div>'; }
-};
-window.filterUsersByRole=function(r){ roleFilter=r; renderUsers(); };
-window.loadUsers=async function(){
-  try{ const snap=await getDocs(collection(db,'users')); users=[]; snap.forEach(d=>{ const v=d.data()||{}; users.push({ id:d.id, name:v.name||'', phone:v.phone||'', role:(v.role||'TEACHER').toUpperCase(), school:v.school||'', emis:String(v.emis||''), pin:v.pin||v.PIN||'', status:(v.status||'ACTIVE').toUpperCase() }); }); users.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''))); }catch(e){ users=[]; }
+    const snap=await getDocs(collection(db,'users'));
+    users=[]; snap.forEach(d=>{ const v=d.data()||{}; users.push({id:d.id, name:v.name||'', role:(v.role||'TEACHER').toUpperCase(), school:v.school||'', emis:String(v.emis||''), email:String(v.email||'').toLowerCase().trim(), password:String(v.password||v.pass||''), pin:String(v.pin||v.PIN||''), phone:v.phone||'', status:(v.status||'ACTIVE').toUpperCase()}); });
+  }catch(e){ users=[]; }
+  // Find My User — match by name + emis (most reliable) or email
+  const me=users.find(u=>String(u.name||'').toLowerCase()===String(login?.name||'').toLowerCase() && String(u.emis)===String(login?.emis)) || users.find(u=>String(u.email||'').toLowerCase()===String(login?.email||'').toLowerCase() && String(u.emis)===String(login?.emis));
+  myUserId=me?.id || null;
+  if(me){
+    $('myName').value=me.name||''; $('myEmail').value=me.email||''; $('myPhone').value=me.phone||''; $('myPin').value=me.pin||'';
+    $('myNameTitle').textContent=me.name||'';
+    $('myProfileBox').innerHTML='👤 <b>'+esc(me.name||'')+'</b> • '+(me.role||'')+' • '+(me.school||'')+' (EMIS '+(me.emis||'')+')<br>📧 Email: <b>'+esc(me.email||'— Not set — Ask Admin to set it')+'</b> • 📞 Phone: '+(me.phone||'—')+'<br>Status: '+(me.status==='BLOCKED'?'<span class="pill pill-red">🔴 BLOCKED</span>':'<span class="pill pill-green">✅ ACTIVE</span>')+' • 🔐 Password: '+(me.password?'✅ Set':'❌ Not set — Set it below')+' • PIN: '+(me.pin?'✅ Set':'❌ Not set');
+  } else {
+    $('myName').value=login?.name||''; $('myEmail').value=login?.email||''; $('myPhone').value=login?.phone||'';
+    $('myNameTitle').textContent=login?.name||'';
+    $('myProfileBox').innerHTML='⚠️ Your user record was not found in Firestore by Name + EMIS. You can still update My Profile below — it will create / update your record.<br>Logged in as: <b>'+esc(login?.name||'')+'</b> • '+(login?.role||'')+' • '+(login?.school||'')+' (EMIS '+(login?.emis||'')+')';
+  }
   renderUsers();
-};
+}
 window.renderUsers=function(){
-  const q=($('searchUsers').value||'').trim().toLowerCase();
-  let list=users.filter(u=>{ if(roleFilter!=='ALL' && u.role!==roleFilter) return false; if(!q) return true; const hay=(u.name+' '+u.school+' '+u.role+' '+u.emis+' '+u.phone).toLowerCase(); return hay.includes(q); });
-  $('userCount').textContent=users.length;
-  if(!list.length){ $('usersBody').innerHTML='<div class="info">No users found. Add one above, or check Firestore `users` collection.</div>'; return; }
-  let html='<table><tr><th>User</th><th>Role / Status</th><th>School / EMIS</th><th>Action</th></tr>';
+  const q=($('searchUsers').value||'').trim().toLowerCase(); const rf=$('filterRole').value||'ALL';
+  const isAdmin=(login?.role||'').toUpperCase()==='ADMIN';
+  let list=users.filter(u=>{ if(!isAdmin && String(u.emis)!==String(login?.emis)) return false; if(rf!=='ALL' && u.role!==rf) return false; if(!q) return true; return (u.name+' '+u.email+' '+u.role+' '+u.school).toLowerCase().includes(q); });
+  list.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
+  $('userCount').textContent=list.length;
+  $('usersPermNote').innerHTML=isAdmin ? '✅ Admin: You see ALL schools. You can Add / Edit / Block any user.' : 'ℹ️ You see ONLY your school: <b>'+esc(login?.school||'')+'</b>. Only Admin can Add / Edit users. Principal can Reset Password (see Edit).';
+  if(!list.length){ $('usersBody').innerHTML='<div class="info">No users found. Add one below.</div>'; return; }
+  let html='<table><tr><th>User</th><th>Email / Phone</th><th>Role / School</th><th>Status</th><th>Action</th></tr>';
   list.forEach(u=>{
-    html+='<tr><td><b>'+esc(u.name)+'</b><br><span class="small">📞 '+esc(u.phone||'—')+' • PIN: ****</span></td><td>'+rolePill(u.role)+'<br>'+statusPill(u.status)+'</td><td><b>'+esc(u.school)+'</b><br>EMIS: '+esc(u.emis)+'</td><td>'
-      +'<select id="role_'+u.id+'" style="padding:8px;margin-bottom:4px"><option value="TEACHER" '+(u.role==='TEACHER'?'selected':'')+'>Teacher</option><option value="LIBRARIAN" '+(u.role==='LIBRARIAN'?'selected':'')+'>Librarian / HOD</option><option value="PRINCIPAL" '+(u.role==='PRINCIPAL'?'selected':'')+'>Principal</option><option value="ADMIN" '+(u.role==='ADMIN'?'selected':'')+'>Admin</option></select>'
-      +'<select id="school_'+u.id+'" style="padding:8px;margin-bottom:4px">'+schools.map(s=>'<option value="'+esc(s.emis)+'|'+esc(s.school)+'" '+(String(s.emis)===String(u.emis)?'selected':'')+'>'+esc(s.school)+' ('+esc(s.emis)+')</option>').join('')+'</select>'
-      +'<button class="miniBtn btn-green" onclick="saveUserChange(\''+esc(u.id)+'\')">💾 Save Role + School</button>'
-      +'<button class="miniBtn '+(u.status==='BLOCKED'?'btn-green':'btn-orange')+'" onclick="toggleBlockUser(\''+esc(u.id)+'\')">'+(u.status==='BLOCKED'?'✅ Unblock':'🚫 Block')+'</button>'
-      +'<button class="miniBtn btn-blue" onclick="resetUserPin(\''+esc(u.id)+'\')">🔐 Reset PIN to 1234</button>'
-      +'<button class="miniBtn btn-red" onclick="deleteUser(\''+esc(u.id)+'\')">🗑️ Delete</button>'
+    const isMe=u.id===myUserId;
+    html+='<tr><td><b>'+esc(u.name||'')+'</b>'+(isMe?' <span class="pill pill-blue">YOU</span>':'')+'<br><span class="small">PIN: '+(u.pin?'••••':'—')+' • Pass: '+(u.password?'✅ Set':'❌ Not set')+'</span></td><td>'+esc(u.email||'— No Email —')+'<br><span class="small">'+esc(u.phone||'—')+'</span></td><td>'+esc(u.role||'')+'<br><span class="small">'+esc(u.school||'')+' ('+esc(u.emis||'')+')</span></td><td>'+(u.status==='BLOCKED'?'<span class="pill pill-red">🔴 BLOCKED</span>':'<span class="pill pill-green">✅ ACTIVE</span>')+'</td><td>'
+      +(isAdmin?'<button class="miniBtn btn-blue" onclick="startEditUser(\''+esc(u.id)+'\')">✏️ Edit Email / Pass</button>':'')
+      +(isAdmin && u.status!=='BLOCKED'?'<button class="miniBtn btn-red" onclick="blockUser(\''+esc(u.id)+'\')">🚫 Block</button>':'')
+      +(isAdmin && u.status==='BLOCKED'?'<button class="miniBtn btn-green" onclick="unblockUser(\''+esc(u.id)+'\')">✅ Unblock</button>':'')
+      +(isAdmin?'<button class="miniBtn btn-gold" onclick="resetPasswordPrompt(\''+esc(u.id)+'\')">🔐 Reset Pass</button>':'')
       +'</td></tr>';
   });
   html+='</table>'; $('usersBody').innerHTML=html;
 };
-window.saveUserChange=async function(id){
-  const u=users.find(x=>x.id===id); if(!u) return;
-  const role=$('role_'+id).value; const schoolVal=$('school_'+id).value; const parts=schoolVal.split('|'); const emis=parts[0]; const school=parts.slice(1).join('|');
-  if(!confirm('Save changes for '+u.name+'?\n\nRole: '+u.role+' → '+role+'\nSchool: '+u.school+' → '+school+'\nEMIS: '+emis)) return;
+window.saveMyProfile=async function(){
+  const name=($('myName').value||'').trim(); const email=($('myEmail').value||'').trim().toLowerCase(); const phone=($('myPhone').value||'').trim();
+  if(!name){ $('myProfileMsg').innerHTML='<div class="warn">⚠️ Enter Your Name.</div>'; return; }
+  if(!isValidEmail(email)){ $('myProfileMsg').innerHTML='<div class="warn">⚠️ Enter a valid Email (e.g. thandi@makhanani.co.za). Email is used to Login.</div>'; return; }
+  if(!navigator.onLine){ $('myProfileMsg').innerHTML='<div class="warn">🟠 Offline — Save Profile needs internet.</div>'; return; }
   try{
-    await updateDoc(doc(db,'users',id),{role,school,emis,updatedAt:new Date().toISOString(),updatedBy:login.name||''});
-    await auditLog('USER_ROLE_SCHOOL_CHANGED',u.name+' — Role '+u.role+' → '+role+' • School '+u.school+' → '+school+' (EMIS '+emis+')');
-    u.role=role; u.school=school; u.emis=emis;
-    if(String(login.id||login.uid||'')===String(id)){ login.role=role; login.school=school; login.emis=emis; saveLogin(login); renderMyProfile(); }
-    renderUsers(); alert('✅ Saved for '+u.name);
-  }catch(e){ alert('❌ Save failed: '+e.message); }
+    // Check if email already used by another user in same school
+    const dup=users.find(u=>String(u.email||'').toLowerCase()===email && String(u.emis)===String(login?.emis) && u.id!==myUserId);
+    if(dup){ $('myProfileMsg').innerHTML='<div class="warn">❌ Email '+esc(email)+' is already used by <b>'+esc(dup.name)+'</b> in this school. Use another email.</div>'; return; }
+    if(myUserId){
+      await updateDoc(doc(db,'users',myUserId),{name,email,phone,updatedAt:new Date().toISOString()});
+    } else {
+      const newId='USER_'+login.emis+'_'+Date.now();
+      await setDoc(doc(db,'users',newId),{name,email,phone,role:login.role,school:login.school,emis:String(login.emis),password:'',pin:($('myPin').value||'').trim(),status:'ACTIVE',createdAt:new Date().toISOString()});
+      myUserId=newId;
+    }
+    login.name=name; login.email=email; login.phone=phone; saveLogin(login);
+    await auditLog('MY_PROFILE_UPDATED','Updated My Profile — Name: '+name+' • Email: '+email);
+    $('myProfileMsg').innerHTML='<div class="ok">✅ My Profile saved: <b>'+esc(name)+'</b> • Email: <b>'+esc(email)+'</b><br>Use this Email at next login in index.html.</div>';
+    await loadUsers();
+  }catch(e){ $('myProfileMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; }
 };
-window.toggleBlockUser=async function(id){
-  const u=users.find(x=>x.id===id); if(!u) return;
-  const newStatus=u.status==='BLOCKED'?'ACTIVE':'BLOCKED';
-  if(!confirm((newStatus==='BLOCKED'?'🚫 BLOCK ':'✅ UNBLOCK ')+u.name+'?\n\n'+(newStatus==='BLOCKED'?'They will NOT be able to login.':'They will be able to login again.'))) return;
-  try{ await updateDoc(doc(db,'users',id),{status:newStatus,updatedAt:new Date().toISOString()}); await auditLog(newStatus==='BLOCKED'?'USER_BLOCKED':'USER_UNBLOCKED',(newStatus==='BLOCKED'?'Blocked ':'Unblocked ')+u.name+' ('+u.role+' • '+u.school+')'); u.status=newStatus; renderUsers(); }
-  catch(e){ alert('❌ Failed: '+e.message); }
-};
-window.resetUserPin=async function(id){
-  const u=users.find(x=>x.id===id); if(!u) return;
-  if(!confirm('🔐 Reset PIN for '+u.name+' to 1234?\n\nTell them privately to login with 1234 and change it in My Profile.')) return;
-  try{ await updateDoc(doc(db,'users',id),{pin:'1234',PIN:'1234',updatedAt:new Date().toISOString()}); await auditLog('USER_PIN_RESET','Reset PIN to 1234 for '+u.name+' ('+u.school+')'); alert('✅ PIN reset to 1234 for '+u.name); }
-  catch(e){ alert('❌ Reset failed: '+e.message); }
-};
-window.deleteUser=async function(id){
-  const u=users.find(x=>x.id===id); if(!u) return;
-  if(String(login.id||login.uid||'')===String(id)){ alert('❌ You cannot delete yourself.'); return; }
-  if(!confirm('🗑️ Delete user '+u.name+'?\n\nRole: '+u.role+' • School: '+u.school+'\n\nThey will NOT be able to login. This cannot be undone.')) return;
-  try{ await deleteDoc(doc(db,'users',id)); await auditLog('USER_DELETED','Deleted user '+u.name+' • Role '+u.role+' • School '+u.school+' (EMIS '+u.emis+')'); users=users.filter(x=>x.id!==id); renderUsers(); }
-  catch(e){ alert('❌ Delete failed: '+e.message); }
+window.changeMyPassword=async function(){
+  const newPass=($('myNewPassword').value||'').trim(); const confirm=($('myConfirmPassword').value||'').trim(); const pin=($('myPin').value||'').trim();
+  if(!newPass){ $('myPassMsg').innerHTML='<div class="warn">⚠️ Enter New Password.</div>'; return; }
+  if(newPass.length<4){ $('myPassMsg').innerHTML='<div class="warn">⚠️ Password must be at least 4 characters.</div>'; return; }
+  if(newPass!==confirm){ $('myPassMsg').innerHTML='<div class="warn">⚠️ Passwords do not match. Type same password twice.</div>'; return; }
+  if(pin && !/^\d{4}$/.test(pin)){ $('myPassMsg').innerHTML='<div class="warn">⚠️ PIN must be 4 digits.</div>'; return; }
+  try{
+    const payload={password:newPass, updatedAt:new Date().toISOString()};
+    if(pin) payload.pin=pin;
+    if(myUserId) await updateDoc(doc(db,'users',myUserId),payload);
+    else {
+      const newId='USER_'+login.emis+'_'+Date.now();
+      await setDoc(doc(db,'users',newId),{name:login.name,email:login.email||'',phone:login.phone||'',role:login.role,school:login.school,emis:String(login.emis),password:newPass,pin:pin||'',status:'ACTIVE',createdAt:new Date().toISOString()});
+      myUserId=newId;
+    }
+    await auditLog('MY_PIN_CHANGED','Changed My Password — User: '+(login?.name||''));
+    $('myPassMsg').innerHTML='<div class="ok">✅ Password changed! Next login, use: Email <b>'+esc($('myEmail').value||login?.email||'')+'</b> + New Password <b>'+esc(newPass)+'</b>.</div>';
+    $('myNewPassword').value=''; $('myConfirmPassword').value='';
+    await loadUsers();
+  }catch(e){ $('myPassMsg').innerHTML='<div class="warn">❌ Password change failed: '+esc(e.message)+'</div>'; }
 };
 window.addUser=async function(){
-  const name=($('newUserName').value||'').trim(); const phone=($('newUserPhone').value||'').trim(); const role=$('newUserRole').value||'TEACHER'; const pin=($('newUserPin').value||'').trim();
+  const isAdmin=(login?.role||'').toUpperCase()==='ADMIN';
+  if(!isAdmin){ $('addUserMsg').innerHTML='<div class="warn">🚫 Only Admin can Add Users. Ask Admin to add this user.</div>'; return; }
+  const name=($('newUserName').value||'').trim(); const email=($('newUserEmail').value||'').trim().toLowerCase(); const pass=($('newUserPassword').value||'').trim(); const confirm=($('newUserConfirm').value||'').trim();
+  const role=$('newUserRole').value; const emis=$('newUserSchool').value; const phone=($('newUserPhone').value||'').trim(); const pin=($('newUserPin').value||'').trim();
   if(!name){ $('addUserMsg').innerHTML='<div class="warn">⚠️ Enter Full Name.</div>'; return; }
-  if(!selectedNewUserSchool){ $('addUserMsg').innerHTML='<div class="warn">⚠️ Pick a School from dropdown.</div>'; return; }
-  if(!/^\d{4}$/.test(pin)){ $('addUserMsg').innerHTML='<div class="warn">⚠️ PIN must be 4 digits.</div>'; return; }
-  if(users.some(u=>String(u.name||'').toLowerCase()===name.toLowerCase() && String(u.emis)===String(selectedNewUserSchool.emis))){ $('addUserMsg').innerHTML='<div class="warn">❌ User with same name already exists in this school.</div>'; return; }
+  if(!isValidEmail(email)){ $('addUserMsg').innerHTML='<div class="warn">⚠️ Enter a valid Email (e.g. sipho@makhanani.co.za).</div>'; return; }
+  if(!pass){ $('addUserMsg').innerHTML='<div class="warn">⚠️ Enter Password.</div>'; return; }
+  if(pass.length<4){ $('addUserMsg').innerHTML='<div class="warn">⚠️ Password must be at least 4 characters.</div>'; return; }
+  if(pass!==confirm){ $('addUserMsg').innerHTML='<div class="warn">⚠️ Passwords do not match.</div>'; return; }
+  if(!emis){ $('addUserMsg').innerHTML='<div class="warn">⚠️ Pick School from dropdown.</div>'; return; }
+  if(pin && !/^\d{4}$/.test(pin)){ $('addUserMsg').innerHTML='<div class="warn">⚠️ PIN must be 4 digits (or leave blank).</div>'; return; }
+  const dup=users.find(u=>String(u.email||'').toLowerCase()===email && String(u.emis)===String(emis));
+  if(dup){ $('addUserMsg').innerHTML='<div class="warn">❌ Email '+esc(email)+' already exists in this school for <b>'+esc(dup.name)+'</b>. Use another email.</div>'; return; }
   if(!navigator.onLine){ $('addUserMsg').innerHTML='<div class="warn">🟠 Offline — Add User needs internet.</div>'; return; }
-  $('addUserBtn').disabled=true; $('addUserBtn').textContent='⏳ Adding...';
   try{
-    const id='USER_'+selectedNewUserSchool.emis+'_'+Date.now();
-    await setDoc(doc(db,'users',id),{name,phone,role,school:selectedNewUserSchool.school,emis:selectedNewUserSchool.emis,pin,PIN:pin,status:'ACTIVE',createdAt:new Date().toISOString(),createdBy:login?.name||''});
-    await auditLog('USER_ADDED','Added user '+name+' • Role '+role+' • School '+selectedNewUserSchool.school+' (EMIS '+selectedNewUserSchool.emis+')');
-    $('addUserMsg').innerHTML='<div class="ok">✅ User added: <b>'+esc(name)+'</b> • '+esc(role)+' • '+esc(selectedNewUserSchool.school)+' • PIN: <b>'+esc(pin)+'</b><br>Tell them: Login → Pick School → Role → Name → PIN '+esc(pin)+'</div>';
-    $('newUserName').value=''; $('newUserPhone').value=''; $('newUserPin').value=''; $('newUserSchoolSearch').value=''; selectedNewUserSchool=null; $('newUserSchoolPicked').style.display='none';
+    const schoolObj=schools.find(s=>String(s.emis)===String(emis)) || {school:login.school, emis:String(emis)};
+    const newId='USER_'+emis+'_'+Date.now();
+    await setDoc(doc(db,'users',newId),{name,email,password:pass,pin:pin||'',role,school:schoolObj.school,emis:String(emis),phone,status:'ACTIVE',createdAt:new Date().toISOString(),createdBy:login?.name||''});
+    await auditLog('USER_ADDED','Added user '+name+' ('+email+') • '+role+' • '+schoolObj.school+' (EMIS '+emis+')');
+    $('addUserMsg').innerHTML='<div class="ok">✅ User added: <b>'+esc(name)+'</b> • Email: <b>'+esc(email)+'</b> • Role: <b>'+role+'</b> • School: <b>'+esc(schoolObj.school)+'</b><br>Tell them: Login in index.html → Pick School <b>'+esc(schoolObj.school)+'</b> → Email <b>'+esc(email)+'</b> → Password <b>'+esc(pass)+'</b></div>';
+    $('newUserName').value=''; $('newUserEmail').value=''; $('newUserPassword').value=''; $('newUserConfirm').value=''; $('newUserPhone').value=''; $('newUserPin').value='';
     await loadUsers();
   }catch(e){ $('addUserMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; }
-  $('addUserBtn').disabled=false; $('addUserBtn').textContent='➕ Add User';
 };
+window.startEditUser=function(id){
+  const u=users.find(x=>x.id===id); if(!u) return;
+  editingUserId=id;
+  $('editUserTitle').textContent=u.name||'';
+  $('editUserName').value=u.name||''; $('editUserEmail').value=u.email||''; $('editUserPassword').value='';
+  $('editUserRole').value=u.role||'TEACHER'; $('editUserStatus').value=u.status||'ACTIVE';
+  $('editUserPhone').value=u.phone||''; $('editUserPin').value=u.pin||''; $('editUserSchool').value=(u.school||'')+' (EMIS '+(u.emis||'')+')';
+  $('editUserCard').style.display='block';
+  $('editUserCard').scrollIntoView({behavior:'smooth'});
+};
+window.cancelEditUser=function(){
+  editingUserId=null; $('editUserCard').style.display='none';
+};
+window.saveEditUser=async function(){
+  if(!editingUserId){ $('editUserMsg').innerHTML='<div class="warn">⚠️ No user selected to edit.</div>'; return; }
+  const u=users.find(x=>x.id===editingUserId); if(!u){ $('editUserMsg').innerHTML='<div class="warn">❌ User not found.</div>'; return; }
+  const name=($('editUserName').value||'').trim(); const email=($('editUserEmail').value||'').trim().toLowerCase(); const newPass=($('editUserPassword').value||'').trim();
+  const role=$('editUserRole').value; const status=$('editUserStatus').value; const phone=($('editUserPhone').value||'').trim(); const pin=($('editUserPin').value||'').trim();
+  if(!name){ $('editUserMsg').innerHTML='<div class="warn">⚠️ Enter Full Name.</div>'; return; }
+  if(!isValidEmail(email)){ $('editUserMsg').innerHTML='<div class="warn">⚠️ Enter a valid Email.</div>'; return; }
+  if(newPass && newPass.length<4){ $('editUserMsg').innerHTML='<div class="warn">⚠️ New Password must be at least 4 characters (or leave blank to keep old).</div>'; return; }
+  if(pin && !/^\d{4}$/.test(pin)){ $('editUserMsg').innerHTML='<div class="warn">⚠️ PIN must be 4 digits.</div>'; return; }
+  const dup=users.find(x=>String(x.email||'').toLowerCase()===email && String(x.emis)===String(u.emis) && x.id!==editingUserId);
+  if(dup){ $('editUserMsg').innerHTML='<div class="warn">❌ Email '+esc(email)+' already used by <b>'+esc(dup.name)+'</b> in this school.</div>'; return; }
+  try{
+    const payload={name,email,role,status,phone,pin,updatedAt:new Date().toISOString(),updatedBy:login?.name||''};
+    if(newPass) payload.password=newPass;
+    await updateDoc(doc(db,'users',editingUserId),payload);
+    await auditLog('USER_EDITED','Edited user '+u.name+' → '+name+' ('+email+') • '+role+' • '+status+(newPass?' • Password Reset':''));
+    $('editUserMsg').innerHTML='<div class="ok">✅ User updated: <b>'+esc(name)+'</b> • Email: <b>'+esc(email)+'</b> • Role: <b>'+role+'</b> • Status: <b>'+status+'</b>'+(newPass?' • Password: <b>Changed to '+esc(newPass)+'</b> — Tell them new password.': ' • Password: Kept old.')+'</div>';
+    if(u.id===myUserId){ login.name=name; login.email=email; saveLogin(login); }
+    await loadUsers();
+  }catch(e){ $('editUserMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; }
+};
+window.blockUser=async function(id){
+  const u=users.find(x=>x.id===id); if(!u) return;
+  if(!confirm('🚫 Block '+u.name+' ('+u.email+')?\n\nThey will NOT be able to login.')) return;
+  try{ await updateDoc(doc(db,'users',id),{status:'BLOCKED',updatedAt:new Date().toISOString()}); await auditLog('USER_BLOCKED','Blocked user '+u.name+' ('+u.email+') • '+u.role); await loadUsers(); }catch(e){ alert('❌ Block failed: '+e.message); }
+};
+window.unblockUser=async function(id){
+  const u=users.find(x=>x.id===id); if(!u) return;
+  try{ await updateDoc(doc(db,'users',id),{status:'ACTIVE',updatedAt:new Date().toISOString()}); await auditLog('USER_UNBLOCKED','Unblocked user '+u.name+' ('+u.email+') • '+u.role); await loadUsers(); }catch(e){ alert('❌ Unblock failed: '+e.message); }
+};
+window.resetPasswordPrompt=function(id){
+  const u=users.find(x=>x.id===id); if(!u) return;
+  const newPass=prompt('Reset Password for '+u.name+' ('+u.email+')\n\nEnter NEW Password (at least 4 characters):', '');
+  if(newPass===null) return;
+  const p=newPass.trim(); if(p.length<4){ alert('Password must be at least 4 characters.'); return; }
+  resetPassword(id, p);
+};
+async function resetPassword(id, newPass){
+  const u=users.find(x=>x.id===id); if(!u) return;
+  try{
+    await updateDoc(doc(db,'users',id),{password:newPass,updatedAt:new Date().toISOString()});
+    await auditLog('USER_PASSWORD_RESET','Reset password for user '+u.name+' ('+u.email+')');
+    alert('✅ Password reset for '+u.name+'.\n\nNew Password: '+newPass+'\n\nTell them: Login → School '+u.school+' → Email '+u.email+' → Password '+newPass);
+    await loadUsers();
+  }catch(e){ alert('❌ Reset failed: '+e.message); }
+}
 document.addEventListener('DOMContentLoaded', async ()=>{
   if(window.OfflineQueue) OfflineQueue.updateBadge();
   login=getLogin();
@@ -315,8 +390,10 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
   $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
   $('profileBody').style.display='block';
-  await loadSchools(); renderMyProfile(); await loadMyActivity();
-  if(role==='ADMIN'){ $('adminSection').style.display='block'; await loadUsers(); }
+  const isAdmin=role==='ADMIN';
+  if(!isAdmin){ $('addUserCard').style.display='none'; }
+  await loadSchools();
+  await loadUsers();
 });
 </script>
 <script>
