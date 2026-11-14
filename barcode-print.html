@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Barcode Print v2.19 — Camera Scan Real Stickers</title>
+<title>Makhanani LTSM — Barcode Print v2.20 — Camera Fixed — No unpkg</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -75,8 +75,8 @@ th{background:#0a1f4d;color:#fff}
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🖨️📷 Makhanani LTSM — Barcode Print v2.19</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Camera Scan Real Stickers • Dropdown + Preview • 3x5 A4 • 9E003 • WHS000001</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🖨️📷 Makhanani LTSM — Barcode Print v2.20</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Camera Fixed — No unpkg — Built-in Scanner + jsDelivr • Dropdown + Preview • 3x5 A4 • 9E003 • WHS000001</p>
 </header>
 <main>
 <div class="card noPrint">
@@ -88,8 +88,8 @@ th{background:#0a1f4d;color:#fff}
 <div id="printBody" style="display:none">
 
 <div class="card noPrint">
-<h2>📷 Camera Scan — Scan Real Printed Stickers</h2>
-<div class="info"><b>How to scan a real sticker:</b><br>1. Print labels first → Cut + Stick on book / card<br>2. Tap <b>📷 Open Camera</b> → Allow Camera<br>3. Hold phone 15-20cm away, barcode inside green box, good light<br>4. It <b>BEEPS</b> + Finds learner / book automatically.<br><span class="small">Works on: Phone back camera (best) + Laptop webcam. Needs HTTPS (GitHub Pages is HTTPS ✅) + Camera permission. If camera fails, use USB scanner or type code below.</span></div>
+<h2>📷 Camera Scan — Scan Real Printed Stickers — FIXED v2.20</h2>
+<div class="info"><b>How to scan:</b><br>1. Tap <b>📷 Open Camera</b> → Allow Camera<br>2. Hold phone 15-20cm away, barcode inside box, good light<br>3. It <b>BEEPS</b> + Finds learner / book.<br><b>v2.20 Fix:</b> Uses phone's built-in scanner first — No unpkg, no “library failed”. If camera fails, type code below — That still works.<br><span class="small">Use Chrome / Safari, NOT WhatsApp browser — WhatsApp blocks camera. Needs HTTPS (GitHub Pages ✅).</span></div>
 <div class="grid2">
 <button class="btn btn-green" onclick="openCamera()">📷 Open Camera — Scan Sticker</button>
 <button class="btn btn-gold" onclick="testBeep()">🔊 Test Beep</button>
@@ -186,18 +186,18 @@ th{background:#0a1f4d;color:#fff}
 
 <div class="modalOverlay" id="cameraModal">
 <div class="modalBox">
-<h2>📷 Camera Scan — Point At Barcode Sticker</h2>
-<div class="info">Hold phone <b>15-20cm</b> away. Keep barcode <b>inside box</b>, flat, good light, no shadow. It will BEEP when found.<br>Tip: If it won't scan, move slowly closer / further, or turn on torch on phone.</div>
+<h2 id="cameraTitle">📷 Camera Scan — Point At Barcode Sticker</h2>
+<div class="info" id="cameraHint">Hold phone <b>15-20cm</b> away. Keep barcode <b>inside box</b>, flat, good light, no shadow. It will BEEP when found.</div>
 <div class="cameraFrame">
 <div id="cameraReader"></div>
 <div class="small" id="cameraStatus">Starting camera...</div>
 <div id="cameraLastScan"></div>
 </div>
-<div class="grid2 noPrint">
+<div class="grid2">
 <button class="btn btn-green" onclick="closeCamera(true)">✅ Done — Close Camera</button>
 <button class="btn btn-grey" onclick="closeCamera(false)">❌ Cancel</button>
 </div>
-<div class="small">Camera Mode: <span id="cameraModeLabel">Find Only</span> • Scanned: <span id="cameraScanCount">0</span></div>
+<div class="small">Mode: <span id="cameraModeLabel">FIND</span> • Scanned: <span id="cameraScanCount">0</span></div>
 </div>
 </div>
 
@@ -234,43 +234,64 @@ function beepSuccess(){ beep(880,0.12,'square',0.25); setTimeout(()=>beep(1320,0
 function beepError(){ beep(220,0.2,'square',0.25); setTimeout(()=>beep(180,0.25,'square',0.25),120); }
 window.testBeep=function(){ beepSuccess(); $('queueMsg').innerHTML='<div class="ok">🔊 Beep played!</div>'; };
 function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,3) || 'WHS'); }
-// ===== CAMERA SCAN — v2.19 =====
-let html5Qr=null, cameraRunning=false, lastCameraCode='', lastCameraTime=0, cameraScanCount=0;
+// ===== CAMERA v2.20 — FIX: No unpkg, Native BarcodeDetector + jsDelivr fallback =====
+let html5Qr=null, cameraRunning=false, nativeStream=null, nativeRaf=null, nativeDetector=null, lastCameraCode='', lastCameraTime=0, cameraScanCount=0;
 window.openCamera=function(){
-  if(!window.Html5Qrcode){ alert('❌ Camera library failed to load. Check internet, refresh page.'); return; }
   $('cameraModal').style.display='block';
-  $('cameraModeLabel').textContent=$('cameraAction').value==='ADD_QUEUE'?'Find + Add To Queue':$('cameraAction').value==='ISSUE'?'Find + Go To Issue':'Find Only';
+  try{ $('cameraModeLabel').textContent=$('cameraAction').value||'FIND'; }catch(e){}
   $('cameraStatus').textContent='Starting camera... Allow Camera when asked...';
   $('cameraLastScan').innerHTML='';
+  if('BarcodeDetector' in window){ startNativeCamera(); return; }
+  if(window.Html5Qrcode){ startHtml5Camera(); return; }
+  $('cameraStatus').textContent='Loading camera library from jsDelivr...';
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js';
+  s.onload=()=>{ if(window.Html5Qrcode) startHtml5Camera(); else $('cameraStatus').textContent='❌ Camera library still failed — Use Type / USB below.'; };
+  s.onerror=()=>{ $('cameraStatus').textContent='❌ No internet for camera library — Use Type / USB below.'; $('cameraLastScan').innerHTML='<div class="warn">No internet / CDN blocked. Fix: 1) Turn WiFi ON 2) Open in Chrome (not WhatsApp) 3) Refresh. Or just type code: 9E003 / WHS000001 + Enter — That still works.</div>'; };
+  document.head.appendChild(s);
+};
+async function startNativeCamera(){
+  try{
+    $('cameraStatus').textContent='✅ Using phone built-in scanner — Point at barcode...';
+    let reader=$('cameraReader');
+    reader.innerHTML='<video id="nativeVideo" autoplay playsinline muted style="width:100%;height:auto;background:#000;border-radius:8px"></video><div style="border:2px dashed #059669;margin:8px;padding:6px;text-align:center;color:#059669;font-weight:900">⬜ Put Barcode Inside Here ⬜</div>';
+    const video=document.getElementById('nativeVideo');
+    nativeStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
+    video.srcObject=nativeStream;
+    await video.play();
+    cameraRunning=true;
+    nativeDetector=new BarcodeDetector({formats:['code_128','code_39','ean_13','ean_8','upc_a','upc_e','qr_code']});
+    const loop=async()=>{
+      if(!cameraRunning) return;
+      try{ const codes=await nativeDetector.detect(video); if(codes && codes.length) onCameraScan(codes[0].rawValue); }catch(e){}
+      nativeRaf=requestAnimationFrame(loop);
+    };
+    loop();
+  }catch(e){
+    $('cameraStatus').textContent='❌ Camera failed: '+e.message;
+    $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? 1) Use Chrome / Safari (not WhatsApp browser) 2) Padlock → Site Settings → Camera → Allow 3) HTTPS only 4) Close Zoom / Teams.<br>Or type code below — That still works.</div>';
+  }
+}
+function startHtml5Camera(){
   if(cameraRunning) return;
   html5Qr=new Html5Qrcode('cameraReader');
   const config={fps:10, qrbox:{width:280,height:120}, aspectRatio:1.2, supportedScanTypes:[Html5QrcodeScanType.SCAN_TYPE_CAMERA]};
-  // Try back camera first (phone), fallback to default
-  html5Qr.start({facingMode:'environment'}, config, onCameraScan, (err)=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at barcode sticker...'; }).catch(err=>{
-    // Fallback: try any camera
+  html5Qr.start({facingMode:'environment'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at barcode sticker...'; }).catch(()=>{
     html5Qr.start({facingMode:'user'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at barcode...'; }).catch(e2=>{
-      $('cameraStatus').textContent='❌ Camera failed: '+esc(e2.message||e2)+' — Use USB scanner or type code.';
-      $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? Check: 1) You are on HTTPS (GitHub Pages ✅) 2) Browser → Site Settings → Camera → Allow 3) Close other apps using camera 4) Try Chrome on Android / Safari on iPhone.</div>';
+      $('cameraStatus').textContent='❌ Camera failed: '+esc(e2.message||e2);
+      $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? Use Chrome, Allow Camera, HTTPS only.</div>';
     });
   });
-};
+}
 function onCameraScan(decodedText){
-  const code=String(decodedText||'').trim().toUpperCase();
-  if(!code) return;
-  const now=Date.now();
-  // Ignore same code within 2 sec (prevents double-add)
-  if(code===lastCameraCode && now-lastCameraTime<2000) return;
-  lastCameraCode=code; lastCameraTime=now; cameraScanCount++;
-  $('cameraScanCount').textContent=cameraScanCount;
+  const code=String(decodedText||'').trim().toUpperCase(); if(!code) return;
+  const now=Date.now(); if(code===lastCameraCode && now-lastCameraTime<2000) return;
+  lastCameraCode=code; lastCameraTime=now; cameraScanCount++; $('cameraScanCount').textContent=cameraScanCount;
   $('cameraLastScan').innerHTML='<div class="ok">📷 Scanned: <b>'+esc(code)+'</b></div>';
   handleScannedCode(code, true);
 }
-window.closeCamera=async function(done){
-  try{ if(html5Qr && cameraRunning){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){}
-  cameraRunning=false; html5Qr=null;
-  $('cameraModal').style.display='none';
-  if(done && lastCameraCode) $('scanTest').value=lastCameraCode;
-};
+async function closeCameraSilent(){ cameraRunning=false; if(nativeRaf) cancelAnimationFrame(nativeRaf); if(nativeStream){ nativeStream.getTracks().forEach(t=>t.stop()); nativeStream=null; } try{ if(html5Qr){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){} html5Qr=null; $('cameraModal').style.display='none'; }
+window.closeCamera=async function(done){ await closeCameraSilent(); if(done && lastCameraCode) $('scanTest').value=lastCameraCode; };
 function handleScannedCode(code, fromCamera){
   code=String(code||'').trim().toUpperCase(); if(!code) return;
   const l=learners.find(x=>String(x.learnerId||'').toUpperCase()===code);
@@ -278,7 +299,7 @@ function handleScannedCode(code, fromCamera){
   const action=$('cameraAction').value||'FIND';
   if(l){
     beepSuccess();
-    const html='<div class="ok">🔊 BEEP! ✅ Learner: <b>'+esc(l.name)+'</b> • ID: <b>'+esc(l.learnerId)+'</b> • '+esc(l.grade)+' • '+esc(l.class)+'<br>Top: '+esc(login.school||'')+' • MAKHANANI LTSM • LEARNER • Bottom: '+esc(l.learnerId)+'</div>';
+    const html='<div class="ok">🔊 BEEP! ✅ Learner: <b>'+esc(l.name)+'</b> • ID: <b>'+esc(l.learnerId)+'</b> • '+esc(l.grade)+' • '+esc(l.class)+'</div>';
     $('scanMsg').innerHTML=html; $('scanResult').innerHTML=html;
     if(action==='ADD_QUEUE'){ selected.push({kind:'LEARNER', code:String(l.learnerId||''), name:l.name||'', sub:(l.grade||'')+' • '+(l.class||''), grade:l.grade||''}); renderQueue(); renderPreview(); $('queueMsg').innerHTML='<div class="ok">✅ Added learner '+esc(l.name)+' to print queue.</div>'; }
     if(action==='ISSUE'){ setTimeout(()=>{ window.location.href='issue.html'; }, 800); }
@@ -287,7 +308,7 @@ function handleScannedCode(code, fromCamera){
   }
   if(b){
     beepSuccess();
-    const html='<div class="ok">🔊 BEEP! ✅ Book: <b>'+esc(b.title)+'</b> • BookNo: <b>'+esc(b.bookNo)+'</b> • '+esc(b.subject)+' • '+esc(b.grade)+'<br>Top: '+esc(login.school||'')+' • MAKHANANI LTSM • TEXTBOOK • Bottom: '+esc(b.bookNo)+'</div>';
+    const html='<div class="ok">🔊 BEEP! ✅ Book: <b>'+esc(b.title)+'</b> • BookNo: <b>'+esc(b.bookNo)+'</b> • '+esc(b.subject)+' • '+esc(b.grade)+'</div>';
     $('scanMsg').innerHTML=html; $('scanResult').innerHTML=html;
     if(action==='ADD_QUEUE'){ selected.push({kind:'TEXTBOOK', code:String(b.bookNo||''), name:b.title||'', sub:(b.subject||'')+' • '+(b.grade||''), grade:b.grade||''}); renderQueue(); renderPreview(); $('queueMsg').innerHTML='<div class="ok">✅ Added book '+esc(b.title)+' to print queue.</div>'; }
     if(action==='ISSUE'){ setTimeout(()=>{ window.location.href='issue.html'; }, 800); }
@@ -295,11 +316,11 @@ function handleScannedCode(code, fromCamera){
     return;
   }
   beepError();
-  const html='<div class="warn">🔊 BEEP-BEEP! ❌ Not found: <b>'+esc(code)+'</b><br>Check code is 9E003 (Learner) or WHS000001 (Book), or Add it in Learners / Textbooks.</div>';
+  const html='<div class="warn">🔊 BEEP-BEEP! ❌ Not found: <b>'+esc(code)+'</b></div>';
   $('scanMsg').innerHTML=html; $('scanResult').innerHTML='';
   if(fromCamera) $('cameraLastScan').innerHTML=html;
 }
-// ===== DROPDOWN + QUEUE + PREVIEW — v2.18 kept =====
+// ===== DROPDOWN + QUEUE + PREVIEW =====
 window.loadAll=async function(){
   try{
     const base='EMIS_'+login.emis;
