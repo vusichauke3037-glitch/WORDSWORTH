@@ -6,13 +6,17 @@
 <title>Makhanani LTSM — My Profile v1.0</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
+<link rel="manifest" href="manifest.json">
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
 header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}
 header h1{margin:0;font-size:22px}
 header p{margin:6px 0 0;opacity:.9;font-size:13px}
-main{max-width:900px;margin:auto;padding:14px}
+.logoRow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.logoRow img{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:2px solid #d4af37}
+@media(max-width:700px){.logoRow img{width:44px;height:44px}}
+main{max-width:800px;margin:auto;padding:14px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
@@ -23,11 +27,12 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
-.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}.pill-orange{background:#ffedd5;color:#9a3412}
+.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-orange{background:#ffedd5;color:#9a3412}
 .info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .greenBox{background:#dcfce7;border:2px solid #059669;border-radius:12px;padding:12px;margin-top:10px;font-size:13px;font-weight:700;color:#166534}
+.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}
 .orangeBox{background:#ffedd5;border:2px solid #ea580c;border-radius:12px;padding:12px;margin-top:10px;font-weight:700;color:#9a3412;font-size:13px}
 .small{font-size:12px;color:#64748b}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -35,142 +40,174 @@ th{background:#0a1f4d;color:#fff}
 .topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
 .topnav a.safe{background:#dcfce7;color:#166534;border:1.5px solid #059669}
-@media print{ body{background:#fff} .noPrint{display:none!important} .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid} header{background:#0a1f4d!important;-webkit-print-color-adjust:exact;print-color-adjust:exact} }
+@media print{ body{background:#fff} .noPrint{display:none!important} .card{box-shadow:none;border:1px solid #ccc} }
 </style>
 </head>
 <body>
+<div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
+<div id="offlineQueue" data-offline-queue style="background:#ffedd5;color:#9a3412;text-align:center;padding:8px;font-weight:700;font-size:12px;display:none"></div>
 <header>
-<h1>👤 My Profile — v1.0</h1>
-<p>Makhanani LTSM • Xintimani Group (Pty) Ltd<br><span id="whoLine">Not logged in</span></p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>👤 Makhanani LTSM — My Profile v1.0</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Due Date: 30 November — Every book must come back • Return is NEVER blocked</p>
 </header>
 <main>
 <div class="card noPrint">
-<div class="topnav"><a href="index.html">🏠 Home</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 My Profile</a><a href="checklist-principal.html" class="safe">✅ Safe Checklist</a><a href="summary.html" class="safe">📋 Summary — Safe</a><a href="master-checklist.html" class="safe">📋 Master Checklist — Safe</a><a href="company-profile.html" class="safe">🏢 Company Profile — Safe</a><a href="terms-and-conditions.html" class="safe">📜 Terms — Safe</a></div>
+<div class="topnav"><a href="index.html">🏠 Home</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 My Profile</a><a href="checklist-principal.html" class="safe">✅ Safe Checklist</a></div>
 <div class="info" id="loginInfo">Checking login...</div>
-<div id="returnOnlyBox" class="orangeBox" style="display:none">🟠 RETURN ONLY MODE — Subscription Suspended / Expired<br>You can ONLY RETURN books. You cannot Issue / Add.<br>Contact Xintimani Group to reactivate.</div>
+<div id="returnOnlyBox" class="orangeBox" style="display:none">🟠 RETURN ONLY MODE — Subscription Suspended / Expired<br>You can ONLY RETURN books. You cannot Issue / Add.</div>
 </div>
 
-<div class="card" id="profileCard" style="display:none">
+<div class="card" id="profileCard">
 <h2>👤 My Details</h2>
 <table>
-<tr><th>Field</th><th>Your Details</th></tr>
-<tr><td><b>Name</b></td><td id="pName">—</td></tr>
-<tr><td><b>Email</b></td><td id="pEmail">—</td></tr>
-<tr><td><b>Role</b></td><td id="pRole">—</td></tr>
-<tr><td><b>School</b></td><td id="pSchool">—</td></tr>
-<tr><td><b>EMIS</b></td><td id="pEmis">—</td></tr>
-<tr><td><b>Subscription</b></td><td id="pSub">—</td></tr>
-<tr><td><b>What I Can Do</b></td><td id="pCanDo">—</td></tr>
+<tr><th>Name</th><td id="pName">—</td></tr>
+<tr><th>Email</th><td id="pEmail">—</td></tr>
+<tr><th>Role</th><td id="pRole">—</td></tr>
+<tr><th>School</th><td id="pSchool">—</td></tr>
+<tr><th>EMIS</th><td id="pEmis">—</td></tr>
+<tr><th>Subject (Teacher)</th><td id="pSubject">—</td></tr>
+<tr><th>Status</th><td id="pStatus">—</td></tr>
 </table>
-<div class="info" id="roleInfo"></div>
-<div class="grid2">
-<button class="btn btn-blue" onclick="location.href='issue.html'">📚 Go to Issue / Return</button>
-<button class="btn btn-gold" onclick="location.href='index.html'">🏠 Go to Home</button>
+<div class="grid2 noPrint">
+<button class="btn btn-blue" onclick="location.href='index.html'">🏠 Home</button>
+<button class="btn btn-green" onclick="location.href='issue.html'">📚 Issue / Return</button>
 </div>
+<div id="profileMsg"></div>
 </div>
 
-<div class="card" id="passwordCard" style="display:none">
-<h2>🔑 Change My Password</h2>
-<div class="info">Your password is stored in your school's Users list. Changing it here updates it in the cloud — use the new password next time you login.<br><b>Do NOT share your password.</b> If you forgot your current password, ask Admin: Admin → Users → Reset Pass.</div>
-<div><label>Current Password *</label><input id="curPass" type="password" placeholder="Your current password"></div>
-<div><label>New Password *</label><input id="newPass" type="password" placeholder="New password — at least 6 characters"></div>
-<div><label>Confirm New Password *</label><input id="confirmPass" type="password" placeholder="Type new password again"></div>
-<button class="btn btn-green" id="changeBtn" onclick="changePassword()">🔑 CHANGE PASSWORD</button>
+<div class="card noPrint" id="subjectCard" style="display:none">
+<h2>📚 My Subject — Teacher Only</h2>
+<div class="info">If you are a Teacher and your Subject is wrong, change it here. It must match the Subject Admin gave you, or Issue will block you with 🚫 NOT YOUR SUBJECT.</div>
+<div><label>My Subject *</label>
+<select id="newSubject">
+<option value="">-- Pick Subject --</option>
+<option>English</option><option>Afrikaans</option><option>isiZulu</option><option>Sepedi</option><option>Setswana</option><option>Xitsonga</option><option>Tshivenda</option><option>isiXhosa</option><option>isiNdebele</option><option>SiSwati</option><option>Mathematics</option><option>Mathematical Literacy</option><option>Physical Sciences</option><option>Life Sciences</option><option>Geography</option><option>History</option><option>Accounting</option><option>Business Studies</option><option>Economics</option><option>Life Orientation</option><option>Technology</option><option>Computer Applications Technology</option><option>Information Technology</option><option>Engineering Graphics and Design</option><option>Consumer Studies</option><option>Tourism</option><option>Agricultural Sciences</option><option>Visual Arts</option><option>Dramatic Arts</option><option>Music</option><option>Religion Studies</option><option>Other</option>
+</select></div>
+<button class="btn btn-blue" id="saveSubjectBtn" onclick="saveSubject()">💾 Save My Subject</button>
+<div id="subjectMsg"></div>
+</div>
+
+<div class="card noPrint" id="passwordCard">
+<h2>🔐 Change My Password</h2>
+<div class="info">Change your own password here. No Admin needed.<br><b>Do NOT share your password.</b> If someone else knows it, change it now.<br>Password must be at least 6 characters. Use letters + numbers.</div>
+<div><label>Current Password *</label><input id="oldPass" type="password" placeholder="Your current password" autocomplete="current-password"></div>
+<div><label>New Password * (min 6 characters)</label><input id="newPass" type="password" placeholder="New password" autocomplete="new-password"></div>
+<div><label>Confirm New Password *</label><input id="confirmPass" type="password" placeholder="Type new password again" autocomplete="new-password"></div>
+<button class="btn btn-green" id="changeBtn" onclick="changePassword()">🔐 Change Password</button>
 <div id="passMsg"></div>
-<div class="small">Tip: Use a password you can remember but others cannot guess. Do not use your name, school name, or 123456.</div>
+<div class="small">Forgot your password? Ask Admin: Admin → Users → Reset Pass. Do NOT share your password with anyone.</div>
 </div>
 
-<div class="card" id="helpCard" style="display:none">
-<h2>🛠️ Quick Help — For My Role</h2>
-<div id="helpContent"></div>
-</div>
-
-<div class="card">
+<div class="card noPrint">
 <h2>🚪 Logout</h2>
-<div class="info">Logging out clears your login on this device only. Your school data stays in the cloud.</div>
+<div class="warn">If you logout offline, you cannot login again until you are back online. First login must be online.<br><b>Do NOT logout offline</b> if you still need to Issue / Return offline.</div>
 <button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button>
-<div id="logoutMsg"></div>
 </div>
 
 <div class="card">
-<h2>ℹ️ About My Profile</h2>
-<div class="info"><b>Due Date: 30 November</b> — Every book must come back.<br><b>Return is NEVER blocked</b> — anyone can return any book.<br><b>Role must match what Admin gave you.</b> If Admin changes your Role, logout → login again with the new Role.<br><b>Cannot edit Name / Role / School here.</b> Ask Admin to edit your user in Admin → Users.<br><br><b>Built by Xintimani Group (Pty) Ltd</b> • Financial Year-End: February (SARS)</div>
+<h2>🛡️ Safety Reminders</h2>
+<ul>
+<li><b>Never share your password</b> — not with learners, not with other teachers.</li>
+<li><b>Remove leavers:</b> If a teacher / librarian leaves, tell Admin to remove them immediately.</li>
+<li><b>One login per person</b> — do not share one login for the whole school.</li>
+<li><b>Return is NEVER blocked</b> — anyone can return any book, even in Return Only Mode.</li>
+</ul>
 </div>
 </main>
+<script src="offline-queue.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
-function roleCanDo(role){
-  if(role==='ADMIN') return '✅ Everything — Schools, Users, Plans, Subscriptions, All Schools';
-  if(role==='PRINCIPAL') return '✅ View Dashboard + Pricing. ❌ Cannot Add Learners / Books. ❌ Cannot see Admin Checklist / Audit / Projection.';
-  if(role==='LIBRARIAN' || role==='HOD') return '✅ Add Learners / Books, Issue / Return Any Subject, View Dashboards. ❌ Cannot see Pricing.';
-  if(role==='TEACHER') return '✅ Issue / Return Own Subject only. ❌ Cannot see Pricing. ❌ Cannot Add Learners / Books.';
-  return '—';
-}
-function roleHelp(role){
-  if(role==='TEACHER') return '<b>Teacher:</b><br>• Issue / Return → Pick your Subject only<br>• Scan learner card + scan book<br>• If you see 🚫 NOT YOUR SUBJECT — that book is not your subject, ask Librarian / HOD<br>• Return is never blocked';
-  if(role==='LIBRARIAN' || role==='HOD') return '<b>Librarian / HOD:</b><br>• Issue / Return Any Subject<br>• Add Learners / Books — manually or bulk CSV<br>• Print Barcodes 3x5 A4 — stick on books + cards<br>• Librarian page → Who Has This Book?';
-  if(role==='PRINCIPAL') return '<b>Principal:</b><br>• Principal page → Dashboard + Pricing<br>• Check Totals + Issued + Returned + Overdue + Missing per Grade / Subject<br>• For Safe Checklist / Summary / Master Checklist / Company Profile / Terms — use Home green buttons';
-  if(role==='ADMIN') return '<b>Admin:</b><br>• Admin page → Schools + Users + Subscriptions<br>• Add School → Total = Setup + First Payment (NEW) / First Payment only (RENEW)<br>• Never delete a school to fix subscription — use Activate or +12 Months';
-  return '—';
-}
+function setLogin(l){ localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify(l)); }
+let login=getLogin();
+let userDoc=null;
+
 async function loadProfile(){
-  const login=getLogin();
-  if(!login){
-    $('whoLine').textContent='Not logged in';
-    $('loginInfo').innerHTML='🔒 <b>Not logged in.</b> Please login on <a href="index.html">Home</a> first, then come back to My Profile.';
-    $('profileCard').style.display='none'; $('passwordCard').style.display='none'; $('helpCard').style.display='none';
-    return;
-  }
+  login=getLogin();
+  if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login on Home first</a>.'; $('whoLine').textContent='Not logged in'; $('profileCard').style.display='none'; $('passwordCard').style.display='none'; return; }
   const role=(login.role||'').toUpperCase();
-  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.email||'');
-  $('loginInfo').innerHTML='✅ Logged in as <b>'+role+' — '+(login.name||'')+'</b> • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
-  if(login.returnOnly){ $('returnOnlyBox').style.display='block'; } else { $('returnOnlyBox').style.display='none'; }
-  $('profileCard').style.display='block'; $('passwordCard').style.display='block'; $('helpCard').style.display='block';
+  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  $('loginInfo').innerHTML='✅ Logged in as <b>'+role+' — '+(login.name||'')+'</b> • '+(login.school||'')+' (EMIS '+(login.emis||'')+')' + (login.returnOnly ? ' • <span class="pill pill-orange">🟠 RETURN ONLY</span>' : ' • <span class="pill pill-green">✅ ACTIVE</span>');
+  if(login.returnOnly && role!=='ADMIN') $('returnOnlyBox').style.display='block';
   $('pName').textContent=login.name||'—';
   $('pEmail').textContent=login.email||'—';
-  $('pRole').innerHTML='<span class="pill pill-purple">'+role+'</span>';
+  $('pRole').innerHTML='<span class="pill pill-blue">'+esc(role)+'</span>';
   $('pSchool').textContent=login.school||'—';
   $('pEmis').textContent=login.emis||'—';
-  $('pSub').innerHTML = login.returnOnly ? '<span class="pill pill-orange">🟠 RETURN ONLY</span>' : (role==='ADMIN' ? '<span class="pill pill-green">✅ ADMIN — Full Access</span>' : '<span class="pill pill-green">✅ ACTIVE</span>');
-  $('pCanDo').textContent=roleCanDo(role);
-  $('roleInfo').innerHTML='<b>'+role+'</b> — '+roleCanDo(role);
-  $('helpContent').innerHTML=roleHelp(role);
-  // Refresh subscription from cloud
+  $('pSubject').textContent=login.subject||'—';
+  $('pStatus').innerHTML= login.returnOnly ? '<span class="pill pill-orange">🟠 RETURN ONLY</span>' : '<span class="pill pill-green">✅ ACTIVE</span>';
+  if(role==='TEACHER'){ $('subjectCard').style.display='block'; if(login.subject) $('newSubject').value=login.subject; }
+  // Load full user doc to verify current password + userId
+  if(!navigator.onLine){ $('profileMsg').innerHTML='<div class="info">🟠 Offline — You can view your profile. Change Password / Subject needs internet.</div>'; return; }
   try{
-    const snap=await getDoc(doc(db,'schools','EMIS_'+login.emis));
-    if(snap.exists()){
-      const s=snap.data(); const today=new Date().toISOString().slice(0,10); const end=s.subscriptionEnd||""; const status=(s.subscription||s.status||"ACTIVE").toUpperCase();
-      const suspended = status==='SUSPENDED' || (end && end<today);
-      if(suspended && role!=='ADMIN'){ $('pSub').innerHTML='<span class="pill pill-orange">🟠 RETURN ONLY — '+(status==='SUSPENDED'?'SUSPENDED':'EXPIRED '+end)+'</span>'; $('returnOnlyBox').style.display='block'; }
-      else if(!suspended){ $('pSub').innerHTML='<span class="pill pill-green">✅ ACTIVE</span> • Plan: '+(s.plan||'')+' • Ends: '+(end||'—'); $('returnOnlyBox').style.display='none'; }
+    if(login.userId){
+      const snap=await getDoc(doc(db,'schools','EMIS_'+login.emis,'users',login.userId));
+      if(snap.exists()) userDoc={id:snap.id,...snap.data()};
     }
-  }catch(e){ /* offline — keep local value */ }
+    if(!userDoc){
+      const snap=await getDocs(collection(db,'schools','EMIS_'+login.emis,'users'));
+      snap.forEach(d=>{ const u=d.data(); if((u.email||'').toLowerCase()===(login.email||'').toLowerCase()) userDoc={id:d.id,...u}; });
+      if(userDoc) { login.userId=userDoc.id; setLogin(login); }
+    }
+    if(!userDoc){ $('profileMsg').innerHTML='<div class="warn">⚠️ Could not find your user record. Ask Admin to check Users. You can still logout / login, but Change Password may fail.</div>'; }
+  }catch(e){ $('profileMsg').innerHTML='<div class="warn">⚠️ Could not load full profile: '+esc(e.message)+'</div>'; }
 }
+
+window.saveSubject = async function(){
+  const ns=$('newSubject').value||'';
+  if(!ns){ $('subjectMsg').innerHTML='<div class="warn">⚠️ Pick a Subject first.</div>'; return; }
+  if(!navigator.onLine){ $('subjectMsg').innerHTML='<div class="warn">🟠 Offline — Cannot save Subject offline. Connect to internet and try again.</div>'; return; }
+  if(!userDoc){ $('subjectMsg').innerHTML='<div class="warn">❌ User record not found. Ask Admin to check Users.</div>'; return; }
+  $('saveSubjectBtn').disabled=true; $('saveSubjectBtn').textContent='⏳ Saving...';
+  try{
+    await setDoc(doc(db,'schools','EMIS_'+login.emis,'users',userDoc.id), { subject: ns, teachingSubject: ns }, { merge:true });
+    login.subject=ns; setLogin(login); userDoc.subject=ns;
+    $('pSubject').textContent=ns;
+    $('subjectMsg').innerHTML='<div class="ok">✅ Subject saved: <b>'+esc(ns)+'</b>. Issue / Return will now use this Subject.</div>';
+  }catch(e){ $('subjectMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; }
+  $('saveSubjectBtn').disabled=false; $('saveSubjectBtn').textContent='💾 Save My Subject';
+};
+
 window.changePassword = async function(){
-  const login=getLogin(); if(!login){ $('passMsg').innerHTML='<div class="warn">🔒 Not logged in. Login on Home first.</div>'; return; }
-  const cur=$('curPass').value; const nw=$('newPass').value; const cf=$('confirmPass').value;
-  if(!cur || !nw || !cf){ $('passMsg').innerHTML='<div class="warn">⚠️ Fill Current + New + Confirm.</div>'; return; }
-  if(nw.length<6){ $('passMsg').innerHTML='<div class="warn">⚠️ New password must be at least 6 characters.</div>'; return; }
-  if(nw!==cf){ $('passMsg').innerHTML='<div class="warn">⚠️ New + Confirm do not match.</div>'; return; }
+  const oldP=$('oldPass').value; const np=$('newPass').value; const cp=$('confirmPass').value;
+  if(!oldP||!np||!cp){ $('passMsg').innerHTML='<div class="warn">⚠️ Fill Current + New + Confirm Password.</div>'; return; }
+  if(np.length<6){ $('passMsg').innerHTML='<div class="warn">⚠️ New password must be at least 6 characters.</div>'; return; }
+  if(np!==cp){ $('passMsg').innerHTML='<div class="warn">⚠️ New Password and Confirm do NOT match.</div>'; return; }
+  if(!navigator.onLine){ $('passMsg').innerHTML='<div class="warn">🟠 Offline — Cannot change password offline. Connect to internet and try again.</div>'; return; }
+  if(!userDoc){ $('passMsg').innerHTML='<div class="warn">❌ User record not found. Ask Admin to check Users.</div>'; return; }
+  if(String(userDoc.password||'')!==String(oldP)){ $('passMsg').innerHTML='<div class="warn">❌ Current Password is wrong.</div>'; return; }
   $('changeBtn').disabled=true; $('changeBtn').textContent='⏳ Changing...';
   try{
-    const snap=await getDocs(collection(db,'schools','EMIS_'+login.emis,'users'));
-    let found=null; snap.forEach(d=>{ const u=d.data(); if((u.email||'').toLowerCase()===(login.email||'').toLowerCase()) found={id:d.id, ...u}; });
-    if(!found){ $('passMsg').innerHTML='<div class="warn">❌ User not found in this school. Ask Admin to check.</div>'; $('changeBtn').disabled=false; $('changeBtn').textContent='🔑 CHANGE PASSWORD'; return; }
-    if(String(found.password||'')!==String(cur)){ $('passMsg').innerHTML='<div class="warn">❌ Current password is wrong.</div>'; $('changeBtn').disabled=false; $('changeBtn').textContent='🔑 CHANGE PASSWORD'; return; }
-    await updateDoc(doc(db,'schools','EMIS_'+login.emis,'users',found.id), { password: nw });
-    $('passMsg').innerHTML='<div class="ok">✅ Password changed. Use the new password next time you login.</div>';
-    $('curPass').value=''; $('newPass').value=''; $('confirmPass').value='';
-  }catch(e){ $('passMsg').innerHTML='<div class="warn">❌ Change failed: '+e.message+'</div>'; }
-  $('changeBtn').disabled=false; $('changeBtn').textContent='🔑 CHANGE PASSWORD';
+    await setDoc(doc(db,'schools','EMIS_'+login.emis,'users',userDoc.id), { password: np }, { merge:true });
+    userDoc.password=np;
+    $('passMsg').innerHTML='<div class="ok">✅ Password changed. Use your NEW password next time you login.<br>Do NOT share it.</div>';
+    $('oldPass').value=''; $('newPass').value=''; $('confirmPass').value='';
+  }catch(e){ $('passMsg').innerHTML='<div class="warn">❌ Change failed: '+esc(e.message)+'</div>'; }
+  $('changeBtn').disabled=false; $('changeBtn').textContent='🔐 Change Password';
 };
-window.doLogout = function(){ localStorage.removeItem('MAKHANANI_LOGGED_IN'); localStorage.setItem('MAKHANANI_RETURN_ONLY','false'); $('logoutMsg').innerHTML='<div class="ok">✅ Logged out. <a href="index.html">Go to Home to login again</a>.</div>'; $('whoLine').textContent='Not logged in'; loadProfile(); };
-document.addEventListener('DOMContentLoaded', loadProfile);
+
+window.doLogout = function(){
+  localStorage.removeItem('MAKHANANI_LOGGED_IN');
+  localStorage.setItem('MAKHANANI_RETURN_ONLY','false');
+  location.href='index.html';
+};
+
+document.addEventListener('DOMContentLoaded', async ()=>{
+  if(window.OfflineQueue) OfflineQueue.updateBadge();
+  await loadProfile();
+});
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW failed', e));
+  });
+}
 </script>
 </body>
 </html>
