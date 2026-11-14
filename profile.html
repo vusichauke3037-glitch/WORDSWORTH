@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Profile v1.0 — My Profile + Users</title>
+<title>Makhanani LTSM — Profile v2.0 — My Profile + Users + Audit</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
@@ -50,8 +50,8 @@ th{background:#0a1f4d;color:#fff}
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>👤 Makhanani LTSM — Profile v1.0</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>My Profile + Admin User Management</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>👤 Makhanani LTSM — Profile v2.0</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>My Profile + Users + Audit</p>
 </header>
 <main>
 <div class="card">
@@ -86,6 +86,13 @@ th{background:#0a1f4d;color:#fff}
 <input id="newPin2" placeholder="Repeat new PIN" inputmode="numeric" maxlength="4">
 <button class="btn btn-blue" onclick="changeMyPin()">🔐 Change PIN</button>
 <div id="pinMsg"></div>
+</div>
+
+<div class="card">
+<h2>📜 My Activity — Last 20 Actions</h2>
+<div class="small">Shows only YOUR actions. Admin sees everyone's actions in Admin → Audit Log.</div>
+<button class="btn btn-blue" onclick="loadMyActivity()">🔄 Refresh My Activity</button>
+<div id="myActivityBody"></div>
 </div>
 
 <div id="adminSection" style="display:none">
@@ -133,7 +140,7 @@ th{background:#0a1f4d;color:#fff}
 <script src="offline-queue.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, setDoc, updateDoc, deleteDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, setDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
@@ -142,39 +149,19 @@ function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGG
 function saveLogin(l){ localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify(l)); }
 let login=getLogin();
 let schools=[], users=[], selectedNewUserSchool=null, roleFilter='ALL';
-function getPrefix(schoolName){
-  const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean);
-  return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,4) || 'MK');
+async function auditLog(action, details){
+  try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){}
 }
-function rolePill(r){
-  r=(r||'').toUpperCase();
-  if(r==='ADMIN') return '<span class="pill pill-red">⚙️ ADMIN</span>';
-  if(r==='PRINCIPAL') return '<span class="pill pill-gold">👩🏾‍🏫 PRINCIPAL</span>';
-  if(r==='LIBRARIAN'||r==='HOD') return '<span class="pill pill-blue">📚 LIBRARIAN / HOD</span>';
-  return '<span class="pill pill-green">👩🏾‍🏫 TEACHER</span>';
-}
-function statusPill(s){
-  s=(s||'ACTIVE').toUpperCase();
-  return s==='BLOCKED' ? '<span class="pill pill-red">🔴 BLOCKED</span>' : '<span class="pill pill-green">✅ ACTIVE</span>';
-}
+function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,4) || 'MK'); }
+function rolePill(r){ r=(r||'').toUpperCase(); if(r==='ADMIN') return '<span class="pill pill-red">⚙️ ADMIN</span>'; if(r==='PRINCIPAL') return '<span class="pill pill-gold">👩🏾‍🏫 PRINCIPAL</span>'; if(r==='LIBRARIAN'||r==='HOD') return '<span class="pill pill-blue">📚 LIBRARIAN / HOD</span>'; return '<span class="pill pill-green">👩🏾‍🏫 TEACHER</span>'; }
+function statusPill(s){ s=(s||'ACTIVE').toUpperCase(); return s==='BLOCKED' ? '<span class="pill pill-red">🔴 BLOCKED</span>' : '<span class="pill pill-green">✅ ACTIVE</span>'; }
 async function loadSchools(){
   try{
-    const snap=await getDocs(collection(db,'schools'));
-    schools=[];
-    snap.forEach(d=>{
-      const data=d.data()||{};
-      const emis=data.emis || String(d.id||'').replace('EMIS_','');
-      const name=data.school || data.name || '';
-      if(name && emis) schools.push({ id:d.id, school:name, emis:String(emis), status:(data.status||'ACTIVE').toUpperCase(), binAutoEmptyDays:(typeof data.binAutoEmptyDays==='number'?data.binAutoEmptyDays:30) });
-    });
+    const snap=await getDocs(collection(db,'schools')); schools=[];
+    snap.forEach(d=>{ const data=d.data()||{}; const emis=data.emis || String(d.id||'').replace('EMIS_',''); const name=data.school || data.name || ''; if(name && emis) schools.push({ id:d.id, school:name, emis:String(emis), status:(data.status||'ACTIVE').toUpperCase(), binAutoEmptyDays:(typeof data.binAutoEmptyDays==='number'?data.binAutoEmptyDays:30) }); });
     schools.sort((a,b)=>a.school.localeCompare(b.school));
   }catch(e){ schools=[]; }
-  if(!schools.length){
-    schools=[
-      { school:'Makhanani Primary School', emis:'123456789', status:'ACTIVE', binAutoEmptyDays:30 },
-      { school:'Makhanani Secondary School', emis:'123456790', status:'ACTIVE', binAutoEmptyDays:30 },
-    ];
-  }
+  if(!schools.length) schools=[ { school:'Makhanani Primary School', emis:'123456789', status:'ACTIVE', binAutoEmptyDays:30 }, { school:'Makhanani Secondary School', emis:'123456790', status:'ACTIVE', binAutoEmptyDays:30 } ];
 }
 function renderNewUserSchoolList(filter){
   const q=(filter||'').trim().toLowerCase();
@@ -186,17 +173,8 @@ function renderNewUserSchoolList(filter){
 }
 window.filterNewUserSchools=function(){ renderNewUserSchoolList($('newUserSchoolSearch').value); };
 window.showNewUserSchoolList=function(){ renderNewUserSchoolList($('newUserSchoolSearch').value); };
-window.pickNewUserSchool=function(emis){
-  selectedNewUserSchool=schools.find(s=>String(s.emis)===String(emis));
-  if(!selectedNewUserSchool) return;
-  $('newUserSchoolSearch').value=selectedNewUserSchool.school;
-  $('newUserSchoolList').style.display='none';
-  $('newUserSchoolPicked').style.display='block';
-  $('newUserSchoolPicked').innerHTML='✅ Picked: <b>'+esc(selectedNewUserSchool.school)+'</b> • EMIS: <b>'+esc(selectedNewUserSchool.emis)+'</b> • Prefix: <b>'+getPrefix(selectedNewUserSchool.school)+'</b>';
-};
-document.addEventListener('click',(e)=>{
-  if(!e.target.closest('#newUserSchoolSearch') && !e.target.closest('#newUserSchoolList')) $('newUserSchoolList').style.display='none';
-});
+window.pickNewUserSchool=function(emis){ selectedNewUserSchool=schools.find(s=>String(s.emis)===String(emis)); if(!selectedNewUserSchool) return; $('newUserSchoolSearch').value=selectedNewUserSchool.school; $('newUserSchoolList').style.display='none'; $('newUserSchoolPicked').style.display='block'; $('newUserSchoolPicked').innerHTML='✅ Picked: <b>'+esc(selectedNewUserSchool.school)+'</b> • EMIS: <b>'+esc(selectedNewUserSchool.emis)+'</b> • Prefix: <b>'+getPrefix(selectedNewUserSchool.school)+'</b>'; };
+document.addEventListener('click',(e)=>{ if(!e.target.closest('#newUserSchoolSearch') && !e.target.closest('#newUserSchoolList')) $('newUserSchoolList').style.display='none'; });
 function renderMyProfile(){
   if(!login) return;
   const mySchool=schools.find(s=>String(s.emis)===String(login.emis));
@@ -209,21 +187,22 @@ function renderMyProfile(){
   $('editMyName').value=login.name||''; $('editMyPhone').value=login.phone||'';
   $('myDetails').innerHTML='🏫 School: <b>'+esc(login.school||'')+'</b><br>🆔 EMIS: <b>'+esc(login.emis||'')+'</b> • Prefix: <b>'+getPrefix(login.school||'')+'</b><br>🎭 Role: <b>'+esc(login.role||'')+'</b> • 📞 Phone: <b>'+esc(login.phone||'—')+'</b><br>💳 School Subscription: <b>'+esc(sub)+'</b> • ♻️ Bin Auto-Empty: <b>'+(binDays===0?'OFF — Never':binDays+' days')+'</b><br><span class="small">Your School / Role can only be changed by Admin. Ask Admin if your school or role is wrong.</span>';
 }
+async function findMyUserId(){
+  let myId=login.id || login.uid || null;
+  if(myId) return myId;
+  try{ const snap=await getDocs(collection(db,'users')); snap.forEach(d=>{ const v=d.data(); if(String(v.name||'').toLowerCase()===String(login.name||'').toLowerCase() && String(v.emis||'')===String(login.emis||'')) myId=d.id; }); }catch(e){}
+  return myId;
+}
 window.saveMyProfile=async function(){
   const name=($('editMyName').value||'').trim(); const phone=($('editMyPhone').value||'').trim();
   if(!name){ $('saveMeMsg').innerHTML='<div class="warn">⚠️ Enter your name.</div>'; return; }
   try{
-    // Find my user doc by name+emis+role, or by id if stored
-    let myId=login.id || login.uid || null;
-    if(!myId){
-      const snap=await getDocs(collection(db,'users'));
-      snap.forEach(d=>{ const v=d.data(); if(String(v.name||'').toLowerCase()===String(login.name||'').toLowerCase() && String(v.emis||'')===String(login.emis||'')) myId=d.id; });
-    }
-    if(myId){
-      await updateDoc(doc(db,'users',myId),{name,phone,updatedAt:new Date().toISOString()});
-    }
+    const myId=await findMyUserId();
+    if(myId) await updateDoc(doc(db,'users',myId),{name,phone,updatedAt:new Date().toISOString()});
+    const oldName=login.name;
     login.name=name; login.phone=phone; saveLogin(login);
     renderMyProfile();
+    await auditLog('MY_PROFILE_UPDATED','Updated my profile — Name: '+oldName+' → '+name+' • Phone: '+phone);
     $('saveMeMsg').innerHTML='<div class="ok">✅ Saved — My Profile updated.</div>';
   }catch(e){ $('saveMeMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; }
 };
@@ -233,35 +212,36 @@ window.changeMyPin=async function(){
   if(!/^\d{4}$/.test(np)){ $('pinMsg').innerHTML='<div class="warn">⚠️ New PIN must be 4 digits.</div>'; return; }
   if(np!==np2){ $('pinMsg').innerHTML='<div class="warn">❌ New PINs do not match.</div>'; return; }
   try{
-    let myId=login.id || login.uid || null;
-    if(!myId){
-      const snap=await getDocs(collection(db,'users'));
-      snap.forEach(d=>{ const v=d.data(); if(String(v.name||'').toLowerCase()===String(login.name||'').toLowerCase() && String(v.emis||'')===String(login.emis||'')) myId=d.id; });
-    }
+    const myId=await findMyUserId();
     if(myId) await updateDoc(doc(db,'users',myId),{pin:np,PIN:np,updatedAt:new Date().toISOString()});
     login.pin=np; login.PIN=np; saveLogin(login);
+    await auditLog('MY_PIN_CHANGED','Changed my own PIN');
     $('pinMsg').innerHTML='<div class="ok">✅ PIN changed! Login again with new PIN next time. You are still logged in now.</div>';
     $('oldPin').value=''; $('newPin').value=''; $('newPin2').value='';
+    loadMyActivity();
   }catch(e){ $('pinMsg').innerHTML='<div class="warn">❌ Change PIN failed: '+esc(e.message)+'</div>'; }
+};
+window.loadMyActivity=async function(){
+  try{
+    const snap=await getDocs(collection(db,'auditLog'));
+    let mine=[];
+    snap.forEach(d=>{ const v=d.data(); if(String(v.who||'').toLowerCase()===String(login.name||'').toLowerCase() && String(v.emis||'')===String(login.emis||'')) mine.push({id:d.id,...v}); });
+    mine.sort((a,b)=>String(b.when||'').localeCompare(String(a.when||'')));
+    mine=mine.slice(0,20);
+    if(!mine.length){ $('myActivityBody').innerHTML='<div class="info">No activity yet. Do something — e.g. change your PIN — and it will show here.</div>'; return; }
+    let html='<table><tr><th>When</th><th>Action</th><th>Details</th></tr>';
+    mine.forEach(a=>{ html+='<tr><td>'+esc(String(a.when||'').slice(0,16).replace('T',' '))+'</td><td><span class="pill pill-blue">'+esc(a.action||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>'; });
+    html+='</table>'; $('myActivityBody').innerHTML=html;
+  }catch(e){ $('myActivityBody').innerHTML='<div class="warn">❌ Activity failed: '+esc(e.message)+'</div>'; }
 };
 window.filterUsersByRole=function(r){ roleFilter=r; renderUsers(); };
 window.loadUsers=async function(){
-  try{
-    const snap=await getDocs(collection(db,'users'));
-    users=[];
-    snap.forEach(d=>{ const v=d.data()||{}; users.push({ id:d.id, name:v.name||'', phone:v.phone||'', role:(v.role||'TEACHER').toUpperCase(), school:v.school||'', emis:String(v.emis||''), pin:v.pin||v.PIN||'', status:(v.status||'ACTIVE').toUpperCase() }); });
-    users.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
-  }catch(e){ users=[]; }
+  try{ const snap=await getDocs(collection(db,'users')); users=[]; snap.forEach(d=>{ const v=d.data()||{}; users.push({ id:d.id, name:v.name||'', phone:v.phone||'', role:(v.role||'TEACHER').toUpperCase(), school:v.school||'', emis:String(v.emis||''), pin:v.pin||v.PIN||'', status:(v.status||'ACTIVE').toUpperCase() }); }); users.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''))); }catch(e){ users=[]; }
   renderUsers();
 };
 window.renderUsers=function(){
   const q=($('searchUsers').value||'').trim().toLowerCase();
-  let list=users.filter(u=>{
-    if(roleFilter!=='ALL' && u.role!==roleFilter) return false;
-    if(!q) return true;
-    const hay=(u.name+' '+u.school+' '+u.role+' '+u.emis+' '+u.phone).toLowerCase();
-    return hay.includes(q);
-  });
+  let list=users.filter(u=>{ if(roleFilter!=='ALL' && u.role!==roleFilter) return false; if(!q) return true; const hay=(u.name+' '+u.school+' '+u.role+' '+u.emis+' '+u.phone).toLowerCase(); return hay.includes(q); });
   $('userCount').textContent=users.length;
   if(!list.length){ $('usersBody').innerHTML='<div class="info">No users found. Add one above, or check Firestore `users` collection.</div>'; return; }
   let html='<table><tr><th>User</th><th>Role / Status</th><th>School / EMIS</th><th>Action</th></tr>';
@@ -279,35 +259,34 @@ window.renderUsers=function(){
 };
 window.saveUserChange=async function(id){
   const u=users.find(x=>x.id===id); if(!u) return;
-  const role=$('role_'+id).value;
-  const schoolVal=$('school_'+id).value; const parts=schoolVal.split('|'); const emis=parts[0]; const school=parts.slice(1).join('|');
+  const role=$('role_'+id).value; const schoolVal=$('school_'+id).value; const parts=schoolVal.split('|'); const emis=parts[0]; const school=parts.slice(1).join('|');
   if(!confirm('Save changes for '+u.name+'?\n\nRole: '+u.role+' → '+role+'\nSchool: '+u.school+' → '+school+'\nEMIS: '+emis)) return;
   try{
     await updateDoc(doc(db,'users',id),{role,school,emis,updatedAt:new Date().toISOString(),updatedBy:login.name||''});
+    await auditLog('USER_ROLE_SCHOOL_CHANGED',u.name+' — Role '+u.role+' → '+role+' • School '+u.school+' → '+school+' (EMIS '+emis+')');
     u.role=role; u.school=school; u.emis=emis;
     if(String(login.id||login.uid||'')===String(id)){ login.role=role; login.school=school; login.emis=emis; saveLogin(login); renderMyProfile(); }
-    renderUsers();
-    alert('✅ Saved for '+u.name);
+    renderUsers(); alert('✅ Saved for '+u.name);
   }catch(e){ alert('❌ Save failed: '+e.message); }
 };
 window.toggleBlockUser=async function(id){
   const u=users.find(x=>x.id===id); if(!u) return;
   const newStatus=u.status==='BLOCKED'?'ACTIVE':'BLOCKED';
   if(!confirm((newStatus==='BLOCKED'?'🚫 BLOCK ':'✅ UNBLOCK ')+u.name+'?\n\n'+(newStatus==='BLOCKED'?'They will NOT be able to login.':'They will be able to login again.'))) return;
-  try{ await updateDoc(doc(db,'users',id),{status:newStatus,updatedAt:new Date().toISOString()}); u.status=newStatus; renderUsers(); }
+  try{ await updateDoc(doc(db,'users',id),{status:newStatus,updatedAt:new Date().toISOString()}); await auditLog(newStatus==='BLOCKED'?'USER_BLOCKED':'USER_UNBLOCKED',(newStatus==='BLOCKED'?'Blocked ':'Unblocked ')+u.name+' ('+u.role+' • '+u.school+')'); u.status=newStatus; renderUsers(); }
   catch(e){ alert('❌ Failed: '+e.message); }
 };
 window.resetUserPin=async function(id){
   const u=users.find(x=>x.id===id); if(!u) return;
   if(!confirm('🔐 Reset PIN for '+u.name+' to 1234?\n\nTell them privately to login with 1234 and change it in My Profile.')) return;
-  try{ await updateDoc(doc(db,'users',id),{pin:'1234',PIN:'1234',updatedAt:new Date().toISOString()}); alert('✅ PIN reset to 1234 for '+u.name); }
+  try{ await updateDoc(doc(db,'users',id),{pin:'1234',PIN:'1234',updatedAt:new Date().toISOString()}); await auditLog('USER_PIN_RESET','Reset PIN to 1234 for '+u.name+' ('+u.school+')'); alert('✅ PIN reset to 1234 for '+u.name); }
   catch(e){ alert('❌ Reset failed: '+e.message); }
 };
 window.deleteUser=async function(id){
   const u=users.find(x=>x.id===id); if(!u) return;
   if(String(login.id||login.uid||'')===String(id)){ alert('❌ You cannot delete yourself.'); return; }
   if(!confirm('🗑️ Delete user '+u.name+'?\n\nRole: '+u.role+' • School: '+u.school+'\n\nThey will NOT be able to login. This cannot be undone.')) return;
-  try{ await deleteDoc(doc(db,'users',id)); users=users.filter(x=>x.id!==id); renderUsers(); }
+  try{ await deleteDoc(doc(db,'users',id)); await auditLog('USER_DELETED','Deleted user '+u.name+' • Role '+u.role+' • School '+u.school+' (EMIS '+u.emis+')'); users=users.filter(x=>x.id!==id); renderUsers(); }
   catch(e){ alert('❌ Delete failed: '+e.message); }
 };
 window.addUser=async function(){
@@ -321,6 +300,7 @@ window.addUser=async function(){
   try{
     const id='USER_'+selectedNewUserSchool.emis+'_'+Date.now();
     await setDoc(doc(db,'users',id),{name,phone,role,school:selectedNewUserSchool.school,emis:selectedNewUserSchool.emis,pin,PIN:pin,status:'ACTIVE',createdAt:new Date().toISOString(),createdBy:login?.name||''});
+    await auditLog('USER_ADDED','Added user '+name+' • Role '+role+' • School '+selectedNewUserSchool.school+' (EMIS '+selectedNewUserSchool.emis+')');
     $('addUserMsg').innerHTML='<div class="ok">✅ User added: <b>'+esc(name)+'</b> • '+esc(role)+' • '+esc(selectedNewUserSchool.school)+' • PIN: <b>'+esc(pin)+'</b><br>Tell them: Login → Pick School → Role → Name → PIN '+esc(pin)+'</div>';
     $('newUserName').value=''; $('newUserPhone').value=''; $('newUserPin').value=''; $('newUserSchoolSearch').value=''; selectedNewUserSchool=null; $('newUserSchoolPicked').style.display='none';
     await loadUsers();
@@ -335,8 +315,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
   $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
   $('profileBody').style.display='block';
-  await loadSchools();
-  renderMyProfile();
+  await loadSchools(); renderMyProfile(); await loadMyActivity();
   if(role==='ADMIN'){ $('adminSection').style.display='block'; await loadUsers(); }
 });
 </script>
