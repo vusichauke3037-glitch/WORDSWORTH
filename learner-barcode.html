@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.0 — Barcode + Bin + Audit</title>
+<title>Makhanani LTSM — Learners v2.1 — ID 10A001 + Barcode + Bin + Audit</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
@@ -31,8 +31,7 @@ input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8p
 .goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}
 .small{font-size:12px;color:#64748b}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}
 .topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
 .topnav a.safe{background:#dcfce7;color:#166534;border:1.5px solid #059669}
@@ -57,8 +56,8 @@ th{background:#0a1f4d;color:#fff}
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🎓 Makhanani LTSM — Learners v2.0</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Learners + Barcode + Bin + Audit • My School Only</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🎓 Makhanani LTSM — Learners v2.1</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Learners • ID Format: 10A001 • Barcode + Bin + Audit • My School Only</p>
 </header>
 <main>
 <div class="card">
@@ -71,18 +70,20 @@ th{background:#0a1f4d;color:#fff}
 <div id="learnerBody" style="display:none">
 
 <div class="card">
-<h2>➕ Add Learner — Auto LearnerID: <span id="nextIdPreview">—</span></h2>
+<h2>➕ Add Learner — Next ID: <span id="nextIdPreview">— Pick Grade + Class —</span></h2>
+<div class="small">Format: <b>Grade + Class Letter + 001</b> — e.g. Grade 10, Class A → <b>10A001</b> • Grade 5, Class B → <b>5B001</b> • Grade R, Class A → <b>RA001</b></div>
 <div class="goldBox" id="schoolInfo"></div>
 <label>👤 Learner Full Name *</label>
 <input id="newName" placeholder="e.g. Thandi Mokoena">
 <div class="grid2">
 <label>🎓 Grade *</label>
-<label>🏫 Class *</label>
+<label>🏫 Class * — Type Letter Only: A or B</label>
 </div>
 <div class="grid2">
-<select id="newGrade"><option value="">Select Grade</option><option value="Grade R">Grade R</option><option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option><option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option></select>
-<input id="newClass" placeholder="e.g. 5A, 6B">
+<select id="newGrade" onchange="updateNextIdPreview()"><option value="">Select Grade</option><option value="Grade R">Grade R</option><option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option><option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option></select>
+<input id="newClass" placeholder="e.g. A, B, 10A, 5A" oninput="updateNextIdPreview()">
 </div>
+<div class="small">Class examples: Type <b>A</b> for 10A, <b>B</b> for 10B. Or type full <b>10A</b> — letter will be extracted. Count is per class: 10A001, 10A002 → 10B001 starts again at 001.</div>
 <button class="btn btn-green" id="addBtn" onclick="addLearner()">➕ Add Learner</button>
 <div id="addMsg"></div>
 <div id="newBarcodeBox" class="barcodeBox" style="display:none">
@@ -100,7 +101,7 @@ th{background:#0a1f4d;color:#fff}
 <label>Filter by Grade</label>
 </div>
 <div class="grid2">
-<input id="searchLearners" placeholder="Type name or ID..." oninput="renderLearners()">
+<input id="searchLearners" placeholder="Type name or ID e.g. 10A001..." oninput="renderLearners()">
 <select id="filterGrade" onchange="renderLearners()"><option value="ALL">All Grades</option><option value="Grade R">Grade R</option><option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option><option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option></select>
 </div>
 <div class="grid2">
@@ -135,13 +136,40 @@ async function auditLog(action, details){
 }
 function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,4) || 'MK'); }
 function binLabel(d){ if(d===0 || d==='0') return 'OFF — Never auto-delete'; return d+' days'; }
-function nextLearnerId(){
-  const prefix=getPrefix(login.school||'');
-  let max=0;
-  learners.forEach(l=>{ const id=String(l.learnerId||l.barcode||''); if(id.startsWith(prefix)){ const num=parseInt(id.slice(prefix.length),10); if(!isNaN(num) && num>max) max=num; } });
-  const next=String(max+1).padStart(6,'0');
-  return prefix+next;
+// LEARNER ID FORMAT v2.1 — 10A001 = Grade 10 + Class A + 001
+function gradeNumber(grade){
+  if(!grade) return '';
+  const g=String(grade).trim().toUpperCase();
+  if(g==='GRADE R' || g==='R') return 'R';
+  const m=g.match(/(\d+)/);
+  return m ? m[1] : g;
 }
+function classLetter(cls){
+  if(!cls) return 'A';
+  const c=String(cls).trim().toUpperCase();
+  const m=c.match(/[A-Z]/);
+  return m ? m[0] : 'A';
+}
+function classKey(grade, cls){ return gradeNumber(grade) + classLetter(cls); }
+function nextLearnerId(grade, cls){
+  const g = grade || $('newGrade')?.value || '';
+  const c = cls || $('newClass')?.value || 'A';
+  if(!g) return '— Pick Grade + Class —';
+  const key = classKey(g, c);
+  let max = 0;
+  learners.forEach(l=>{
+    const id = String(l.learnerId || l.barcode || '').toUpperCase();
+    if(id.startsWith(key)){
+      const num = parseInt(id.slice(key.length), 10);
+      if(!isNaN(num) && num > max) max = num;
+    }
+  });
+  return key + String(max + 1).padStart(3, '0');
+}
+window.updateNextIdPreview=function(){
+  const el=$('nextIdPreview'); if(!el) return;
+  el.textContent=nextLearnerId();
+};
 async function loadSchoolMeta(){
   try{ const snap=await getDocs(collection(db,'schools')); snap.forEach(ds=>{ if(String(ds.id)==='EMIS_'+login.emis){ const v=ds.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); if(typeof v.binAutoEmptyDays==='number') binDays=v.binAutoEmptyDays; } }); }catch(e){}
 }
@@ -152,11 +180,10 @@ window.loadLearners=async function(){
     const snap=await getDocs(collection(db,'schools',base,'learners'));
     learners=[]; snap.forEach(d=>learners.push({id:d.id,...d.data()}));
     learners.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
-    $('schoolInfo').innerHTML='🏫 <b>'+esc(login.school||'')+'</b> • EMIS: <b>'+esc(login.emis||'')+'</b> • Prefix: <b>'+getPrefix(login.school||'')+'</b><br>💳 Subscription: <b>'+esc(schoolStatus)+'</b> '+(schoolStatus!=='ACTIVE'?'<span class="pill pill-orange">🟠 RETURN ONLY — Add Learner blocked</span>':'<span class="pill pill-green">✅ ACTIVE</span>')+' • ♻️ Bin Auto-Empty: <b>'+binLabel(binDays)+'</b>';
+    $('schoolInfo').innerHTML='🏫 <b>'+esc(login.school||'')+'</b> • EMIS: <b>'+esc(login.emis||'')+'</b> • Prefix: <b>'+getPrefix(login.school||'')+'</b><br>💳 Subscription: <b>'+esc(schoolStatus)+'</b> '+(schoolStatus!=='ACTIVE'?'<span class="pill pill-orange">🟠 RETURN ONLY — Add Learner blocked</span>':'<span class="pill pill-green">✅ ACTIVE</span>')+' • ♻️ Bin Auto-Empty: <b>'+binLabel(binDays)+'</b> • 🆔 ID Format: <b>10A001</b> (Grade + Class + 001)';
     $('binSettingLabel').textContent=binLabel(binDays);
-    $('nextIdPreview').textContent=nextLearnerId();
+    updateNextIdPreview();
     if(schoolStatus!=='ACTIVE'){ $('subBlockedBox').style.display='block'; $('subBlockedBox').innerHTML='🟠 <b>RETURN ONLY / SUSPENDED</b> — Add Learner is BLOCKED for this school. You can still view learners and return books.'; } else $('subBlockedBox').style.display='none';
-    // Auto-empty check
     await autoEmptyCheck();
     renderLearners(); renderBin();
   }catch(e){ $('learnersBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
@@ -176,18 +203,24 @@ async function autoEmptyCheck(){
 }
 window.addLearner=async function(){
   if(schoolStatus!=='ACTIVE'){ $('addMsg').innerHTML='<div class="warn">🟠 Add Learner BLOCKED — School is '+esc(schoolStatus)+' (RETURN ONLY).</div>'; return; }
-  const name=($('newName').value||'').trim(); const grade=$('newGrade').value; const cls=($('newClass').value||'').trim();
+  const name=($('newName').value||'').trim(); const grade=$('newGrade').value; const clsRaw=($('newClass').value||'').trim();
   if(!name){ $('addMsg').innerHTML='<div class="warn">⚠️ Enter Learner Name.</div>'; return; }
   if(!grade){ $('addMsg').innerHTML='<div class="warn">⚠️ Select Grade.</div>'; return; }
-  if(!cls){ $('addMsg').innerHTML='<div class="warn">⚠️ Enter Class (e.g. 5A).</div>'; return; }
-  const learnerId=nextLearnerId();
+  if(!clsRaw){ $('addMsg').innerHTML='<div class="warn">⚠️ Enter Class Letter (e.g. A).</div>'; return; }
+  // Normalize Class to Letter only for storage, but keep display as Grade+Letter e.g. 10A
+  const clsLetter = classLetter(clsRaw);
+  const clsDisplay = gradeNumber(grade) + clsLetter;
+  const learnerId = nextLearnerId(grade, clsLetter);
+  if(!learnerId || learnerId.includes('Pick')){ $('addMsg').innerHTML='<div class="warn">⚠️ Pick Grade + Class first.</div>'; return; }
+  if(learners.some(l=>String(l.learnerId||'').toUpperCase()===learnerId)){
+    $('addMsg').innerHTML='<div class="warn">❌ ID '+esc(learnerId)+' already exists. Try again.</div>'; return;
+  }
   if(!navigator.onLine){ $('addMsg').innerHTML='<div class="warn">🟠 Offline — Add Learner needs internet.</div>'; return; }
   try{
     const id='LEARNER_'+login.emis+'_'+learnerId;
-    await setDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{ name, grade, class:cls, learnerId, barcode:learnerId, archived:false, createdAt:new Date().toISOString(), createdBy:login?.name||'' });
-    // Audit for Add — use LEARNER_EDITED with Added detail so Admin filter still catches it, plus explicit log
-    await auditLog('LEARNER_EDITED','Added learner '+name+' ('+learnerId+') • '+grade+' • '+cls);
-    $('addMsg').innerHTML='<div class="ok">✅ Learner added: <b>'+esc(name)+'</b> • '+esc(grade)+' • '+esc(cls)+' • ID: <b>'+esc(learnerId)+'</b></div>';
+    await setDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{ name, grade, class:clsDisplay, learnerId, barcode:learnerId, archived:false, createdAt:new Date().toISOString(), createdBy:login?.name||'' });
+    await auditLog('LEARNER_EDITED','Added learner '+name+' ('+learnerId+') • '+grade+' • '+clsDisplay);
+    $('addMsg').innerHTML='<div class="ok">✅ Learner added: <b>'+esc(name)+'</b> • '+esc(grade)+' • '+esc(clsDisplay)+' • ID: <b>'+esc(learnerId)+'</b></div>';
     $('newName').value=''; $('newGrade').value=''; $('newClass').value='';
     $('newBarcodeName').textContent=name; $('newBarcodeId').textContent=learnerId; $('newBarcodeBox').style.display='block';
     try{ JsBarcode('#newBarcodeSvg', learnerId, {format:'CODE128', width:2, height:60, displayValue:true, fontSize:16}); }catch(e){}
@@ -219,17 +252,19 @@ window.showBarcode=function(id){
 window.editLearner=function(id){
   const l=learners.find(x=>x.id===id); if(!l) return;
   const newName=prompt('Edit Learner Name:', l.name||''); if(newName===null) return;
-  const newGrade=prompt('Edit Grade (e.g. Grade 5):', l.grade||''); if(newGrade===null) return;
-  const newClass=prompt('Edit Class (e.g. 5A):', l.class||''); if(newClass===null) return;
+  const newGrade=prompt('Edit Grade (e.g. Grade 10):', l.grade||''); if(newGrade===null) return;
+  const newClass=prompt('Edit Class Letter (e.g. A):', l.class||''); if(newClass===null) return;
   if(!newName.trim()){ alert('Name cannot be empty.'); return; }
   saveEditLearner(id, newName.trim(), newGrade.trim(), newClass.trim());
 };
-async function saveEditLearner(id, name, grade, cls){
+async function saveEditLearner(id, name, grade, clsRaw){
   const l=learners.find(x=>x.id===id); if(!l) return;
+  // Keep LearnerID same when editing — do NOT regenerate ID, or issued books will break
+  const clsDisplay = gradeNumber(grade) + classLetter(clsRaw);
   try{
-    await updateDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{name,grade,class:cls,updatedAt:new Date().toISOString(),updatedBy:login?.name||''});
-    await auditLog('LEARNER_EDITED','Edited learner '+l.name+' ('+(l.learnerId||'')+') → '+name+' • '+grade+' • '+cls);
-    await loadLearners(); alert('✅ Learner updated.');
+    await updateDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{name,grade,class:clsDisplay,updatedAt:new Date().toISOString(),updatedBy:login?.name||''});
+    await auditLog('LEARNER_EDITED','Edited learner '+l.name+' ('+(l.learnerId||'')+') → '+name+' • '+grade+' • '+clsDisplay+' • ID kept as '+(l.learnerId||''));
+    await loadLearners(); alert('✅ Learner updated. LearnerID kept as '+(l.learnerId||'')+' so issued books still match.');
   }catch(e){ alert('❌ Edit failed: '+e.message); }
 }
 window.archiveLearner=async function(id){
