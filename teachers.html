@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makhanani LTSM — Teachers v1.0 — Admin Sets Subjects</title>
+<meta name="theme-color" content="#0a1f4d">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
+header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;opacity:.9;font-size:13px}
+.logoRow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.logoRow img{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:2px solid #d4af37}
+main{max-width:1000px;margin:auto;padding:14px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
+label{font-weight:700;font-size:13px;display:block;margin:12px 0 4px}
+input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:15px;background:#fff}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:12px}
+.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-grey{background:#e2e8f0}.btn-red{background:#dc2626;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap;margin:2px}
+.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}
+.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}
+.small{font-size:12px;color:#64748b}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
+.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}
+.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
+.topnav a.safe{background:#dcfce7;color:#166534;border:1.5px solid #059669}
+.tableWrap{overflow-x:auto;margin-top:10px;border:1px solid #e2e8f0;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
+th{background:#0a1f4d;color:#fff}
+.miniBtn{padding:6px 10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;margin:2px;white-space:nowrap}
+.subjectGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+@media(max-width:700px){.subjectGrid{grid-template-columns:repeat(2,1fr)}}
+.subjCheck{display:flex;gap:8px;align-items:center;background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer}
+.subjCheck.checked{background:#dcfce7;border-color:#059669;color:#166534}
+.subjCheck input{width:20px;height:20px;accent-color:#059669;flex-shrink:0}
+.modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;overflow:auto;padding:14px}
+.modalBox{background:#fff;border-radius:12px;max-width:900px;margin:20px auto;padding:16px}
+</style>
+</head>
+<body>
+<div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
+<header>
+<div class="logoRow"><img src="logo.png" alt="Logo"><h1>👩🏾‍🏫 Makhanani LTSM — Teachers v1.0</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Admin Sets Teacher Subjects • Teacher Issues Only Own Subjects • Teacher Returns ANY Book</p>
+</header>
+<main>
+<div class="card">
+<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Issue / Return</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="librarian.html">📚 Librarian</a><a href="barcode-print.html">🖨️ Print Barcodes A4 3x5</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 Profile</a></div>
+<div class="info" id="loginInfo">Checking login...</div>
+<div id="blockedBox" class="warn" style="display:none">🔒 Not logged in. Go to <a href="index.html">Login</a> first.</div>
+<div id="adminInfo"></div>
+</div>
+
+<div id="teacherBody" style="display:none">
+
+<div class="card">
+<h2>⚠️ Important — How Teacher Login Must Match</h2>
+<div class="info">For the subject block to work on the teacher's phone, the teacher's <b>Name</b> below must match <b>exactly</b> the Name they use to Login in `index.html`.<br>Example: If teacher logs in as <b>“Sarah Dube”</b>, add her here as <b>“Sarah Dube”</b> — Not “S. Dube”.<br>Same for Email — If they login with email, use same email here.<br><b>After you save:</b> Teacher must <b>Logout → Login again</b> on their phone, or Refresh Issue page — Then their subjects load from Firebase.</div>
+<div class="goldBox" id="statsBox">Loading...</div>
+</div>
+
+<div class="card" id="addCard">
+<h2>➕ Add Teacher — Tick Subjects</h2>
+<label>Teacher Full Name * — Must match Login Name exactly</label>
+<input id="teacherName" placeholder="e.g. Sarah Dube" autocomplete="off">
+<div class="grid2"><label>Email (Login Email — Optional but best)</label><label>Phone (Optional)</label></div>
+<div class="grid2">
+<input id="teacherEmail" placeholder="e.g. sarah.dube@wordsworth.co.za" autocomplete="off">
+<input id="teacherPhone" placeholder="e.g. 082 123 4567" autocomplete="off">
+</div>
+<label>🎓 Grades This Teacher Teaches (Optional — For info only, Issue rule uses Subjects, not Grades)</label>
+<div class="subjectGrid" id="gradeGrid"></div>
+<label>📚 Subjects This Teacher Can ISSUE — Tick 1 or more *</label>
+<div class="small">Tick ONLY subjects they teach. Unticked = They CANNOT issue that subject. They can still RETURN any book.</div>
+<div class="subjectGrid" id="subjectGrid"></div>
+<div class="grid2">
+<button class="btn btn-green" onclick="addTeacher()">➕ Add Teacher</button>
+<button class="btn btn-grey" onclick="clearAddForm()">🧹 Clear Form</button>
+</div>
+<div id="addMsg"></div>
+</div>
+
+<div class="card">
+<h2>👩🏾‍🏫 Teachers — <span id="teacherCount">0</span> — <span id="schoolNameTitle"></span></h2>
+<div class="grid2"><label>Search Teacher</label><label>Filter By Subject</label></div>
+<div class="grid2">
+<input id="searchBox" placeholder="Sarah, Accounting..." oninput="renderList()">
+<select id="filterSubject" onchange="renderList()"><option value="ALL">All Subjects</option></select>
+</div>
+<div class="grid2">
+<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button>
+<button class="btn btn-gold" onclick="downloadCSV()">📥 Download Teachers CSV</button>
+</div>
+<div id="listBody"></div>
+</div>
+
+<div class="card">
+<h2>🧪 Test Teacher Rule — Before Monday</h2>
+<div class="info">1. Add teacher here with 1 subject, e.g. Accounting.<br>2. On teacher's phone: Logout → Login as that teacher → Open Issue page → Top should show <b>“Your subjects: Accounting”</b>.<br>3. Try issue Maths book → Should block <b>“Teacher Subject — BLOCKED”</b>.<br>4. Try issue Accounting book → Should work.<br>5. Try Return Maths book → Should work — Return is NEVER blocked.</div>
+</div>
+
+</div>
+</main>
+
+<!-- EDIT MODAL -->
+<div class="modalOverlay" id="editModal">
+<div class="modalBox">
+<h2>✏️ Edit Teacher Subjects</h2>
+<div class="info" id="editOriginal">Editing: —</div>
+<label>Teacher Full Name *</label>
+<input id="editName" autocomplete="off">
+<div class="grid2"><label>Email</label><label>Phone</label></div>
+<div class="grid2">
+<input id="editEmail" autocomplete="off">
+<input id="editPhone" autocomplete="off">
+</div>
+<label>🎓 Grades</label>
+<div class="subjectGrid" id="editGradeGrid"></div>
+<label>📚 Subjects — Tick to Allow Issue</label>
+<div class="subjectGrid" id="editSubjectGrid"></div>
+<div class="grid2">
+<button class="btn btn-green" onclick="saveEdit()">💾 Save Changes</button>
+<button class="btn btn-grey" onclick="closeEdit()">❌ Cancel</button>
+</div>
+<div class="grid2">
+<button class="btn btn-red" onclick="deleteFromEdit()">🗑️ Delete Teacher</button>
+<button class="btn btn-blue" onclick="saveEditAndIssue()">💾 Save + Go To Issue Page</button>
+</div>
+<div id="editMsg"></div>
+</div>
+</div>
+
+<script src="offline-queue.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, setDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
+let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
+const $ = id => document.getElementById(id);
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
+let login=getLogin();
+let teachers=[];
+let editingId=null, editingOriginal=null;
+function isAdmin(){ const r=String(login?.role||'').toUpperCase(); return r==='ADMIN'||r==='SUPER_ADMIN'||r==='PRINCIPAL'||r==='SUPERADMIN'; }
+async function auditLog(a,d){ try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action:a, details:String(d||'') }); }catch(e){} }
+const SUBJECTS=["Mathematics","Mathematical Literacy","English HL","English FAL","Afrikaans HL","Afrikaans FAL","Natural Sciences","Physical Sciences","Life Sciences","Geography","History","Life Orientation","Accounting","Business Studies","Economics","Technology","EMS","Social Sciences","Other"];
+const GRADES=["Grade R","Grade 1","Grade 2","Grade 3","Grade 4","Grade 5","Grade 6","Grade 7","Grade 8","Grade 9","Grade 10","Grade 11","Grade 12"];
+function buildChecks(containerId, list, selected, prefix){
+  const el=$(containerId);
+  el.innerHTML='';
+  list.forEach(item=>{
+    const id=prefix+'_'+item.replace(/[^A-Za-z0-9]/g,'_');
+    const checked=selected.includes(item);
+    const div=document.createElement('label');
+    div.className='subjCheck'+(checked?' checked':'');
+    div.innerHTML='<input type="checkbox" id="'+id+'" value="'+esc(item)+'" '+(checked?'checked':'')+' onchange="this.parentElement.classList.toggle(\'checked\', this.checked)"> '+esc(item);
+    el.appendChild(div);
+  });
+}
+function getChecked(containerId){
+  const out=[];
+  document.querySelectorAll('#'+containerId+' input[type="checkbox"]:checked').forEach(c=>out.push(c.value));
+  return out;
+}
+window.loadAll=async function(){
+  if(isAdmin()){
+    $('adminInfo').innerHTML='<div class="ok">👑 <b>Admin Mode ON</b> — '+esc(login.name||'')+' — You can Add + Edit + Delete teachers.</div>';
+    $('addCard').style.display='block';
+  } else {
+    $('adminInfo').innerHTML='<div class="info">👀 <b>View Mode</b> — '+esc(login.name||'')+' ('+esc(login.role||'')+') — View only. Ask Admin to change subjects.</div>';
+    $('addCard').style.display='none';
+  }
+  try{
+    const base='EMIS_'+login.emis;
+    const snap=await getDocs(collection(db,'schools',base,'teachers'));
+    teachers=[]; snap.forEach(d=>teachers.push({id:d.id,...d.data()}));
+    teachers=teachers.filter(t=>t.archived!==true).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
+    $('statsBox').innerHTML='School: <b>'+esc(login.school||'')+'</b> • EMIS <b>'+esc(login.emis||'')+'</b> • Teachers: <b>'+teachers.length+'</b>';
+    $('schoolNameTitle').textContent=login.school||'';
+    // Filter dropdown
+    let opts='<option value="ALL">All Subjects</option>';
+    SUBJECTS.forEach(s=>{ opts+='<option value="'+esc(s)+'">'+esc(s)+'</option>'; });
+    $('filterSubject').innerHTML=opts;
+    buildChecks('gradeGrid', GRADES, [], 'g');
+    buildChecks('subjectGrid', SUBJECTS, [], 's');
+    renderList();
+  }catch(e){ $('listBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
+};
+window.clearAddForm=function(){
+  $('teacherName').value=''; $('teacherEmail').value=''; $('teacherPhone').value='';
+  buildChecks('gradeGrid', GRADES, [], 'g');
+  buildChecks('subjectGrid', SUBJECTS, [], 's');
+  $('addMsg').innerHTML='';
+};
+window.addTeacher=async function(){
+  if(!isAdmin()){ alert('🔒 Admin only.'); return; }
+  const name=($('teacherName').value||'').trim();
+  const email=($('teacherEmail').value||'').trim().toLowerCase();
+  const phone=($('teacherPhone').value||'').trim();
+  const subjects=getChecked('subjectGrid');
+  const grades=getChecked('gradeGrid');
+  if(!name){ $('addMsg').innerHTML='<div class="warn">⚠️ Type teacher full name — Must match Login Name exactly.</div>'; return; }
+  if(!subjects.length){ $('addMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 Subject — That is what they can Issue.</div>'; return; }
+  // Duplicate by name (same school)
+  const dup=teachers.find(t=>String(t.name||'').trim().toLowerCase()===name.toLowerCase());
+  if(dup){ $('addMsg').innerHTML='<div class="warn">❌ Teacher <b>'+esc(name)+'</b> already exists. Tap <b>✏️ Edit</b> on their row to change subjects, don\'t add twice.</div>'; return; }
+  try{
+    const id='TEACHER_'+login.emis+'_'+Date.now();
+    await setDoc(doc(db,'schools','EMIS_'+login.emis,'teachers',id),{ name, email, phone, subjects, grades, role:'TEACHER', archived:false, createdAt:new Date().toISOString(), createdBy:login?.name||'' });
+    await auditLog('TEACHER_ADDED','Added teacher '+name+' • Subjects: '+subjects.join(', ')+' • Grades: '+grades.join(', '));
+    $('addMsg').innerHTML='<div class="ok">✅ Added: <b>'+esc(name)+'</b> • Subjects: <b>'+esc(subjects.join(', '))+'</b><br>Teacher must Logout → Login again on their phone for new subjects to load.</div>';
+    clearAddForm(); await loadAll();
+  }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; }
+};
+window.renderList=function(){
+  const q=($('searchBox').value||'').trim().toLowerCase();
+  const fs=$('filterSubject').value||'ALL';
+  let list=teachers.filter(t=>{
+    if(fs!=='ALL' && !(t.subjects||[]).includes(fs)) return false;
+    if(!q) return true;
+    return (t.name+' '+t.email+' '+(t.subjects||[]).join(' ')+' '+(t.grades||[]).join(' ')).toLowerCase().includes(q);
+  });
+  $('teacherCount').textContent=list.length;
+  if(!list.length){ $('listBody').innerHTML='<div class="info">No teachers found. Add your first teacher above.</div>'; return; }
+  let html='<div class="tableWrap"><table><tr><th>Teacher</th><th>Email / Phone</th><th>Subjects — Can ISSUE</th><th>Grades</th><th>'+(isAdmin()?'Edit / Delete':'Action')+'</th></tr>';
+  list.forEach(t=>{
+    html+='<tr><td><b>'+esc(t.name||'')+'</b><br><span class="small">TEACHER</span></td><td>'+esc(t.email||'—')+'<br><span class="small">'+esc(t.phone||'')+'</span></td><td>'+(t.subjects||[]).map(s=>'<span class="pill pill-purple">'+esc(s)+'</span>').join(' ')+'<br><span class="small">Can Return: ANY book</span></td><td>'+(t.grades||[]).map(g=>'<span class="pill pill-blue">'+esc(g)+'</span>').join(' ')+'</td><td>'+(isAdmin()?'<button class="miniBtn btn-gold" onclick="openEdit(\''+esc(t.id)+'\')">✏️ Edit</button><button class="miniBtn btn-red" onclick="deleteTeacher(\''+esc(t.id)+'\',\''+esc(t.name||'')+'\')">🗑️</button>':'<span class="small">View only</span>')+'</td></tr>';
+  });
+  html+='</table></div>';
+  $('listBody').innerHTML=html;
+};
+window.openEdit=function(id){
+  if(!isAdmin()){ alert('🔒 Admin only.'); return; }
+  const t=teachers.find(x=>x.id===id); if(!t) return;
+  editingId=id; editingOriginal={...t};
+  $('editOriginal').innerHTML='Editing: <b>'+esc(t.name||'')+'</b> • Current Subjects: <b>'+esc((t.subjects||[]).join(', '))+'</b>';
+  $('editName').value=t.name||'';
+  $('editEmail').value=t.email||'';
+  $('editPhone').value=t.phone||'';
+  buildChecks('editGradeGrid', GRADES, t.grades||[], 'eg');
+  buildChecks('editSubjectGrid', SUBJECTS, t.subjects||[], 'es');
+  $('editMsg').innerHTML='';
+  $('editModal').style.display='block';
+};
+window.closeEdit=function(){ editingId=null; editingOriginal=null; $('editModal').style.display='none'; };
+window.saveEdit=async function(){
+  if(!isAdmin() || !editingId) return;
+  const name=($('editName').value||'').trim();
+  const email=($('editEmail').value||'').trim().toLowerCase();
+  const phone=($('editPhone').value||'').trim();
+  const subjects=getChecked('editSubjectGrid');
+  const grades=getChecked('editGradeGrid');
+  if(!name){ $('editMsg').innerHTML='<div class="warn">⚠️ Name is required.</div>'; return; }
+  if(!subjects.length){ $('editMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 Subject.</div>'; return; }
+  const dup=teachers.find(t=>t.id!==editingId && String(t.name||'').trim().toLowerCase()===name.toLowerCase());
+  if(dup){ $('editMsg').innerHTML='<div class="warn">❌ Another teacher already called <b>'+esc(name)+'</b>.</div>'; return; }
+  try{
+    await updateDoc(doc(db,'schools','EMIS_'+login.emis,'teachers',editingId),{ name, email, phone, subjects, grades, updatedAt:new Date().toISOString(), updatedBy:login?.name||'' });
+    await auditLog('TEACHER_EDITED','Edited teacher "'+(editingOriginal?.name||'')+'" → "'+name+'" • Subjects: '+subjects.join(', '));
+    $('editMsg').innerHTML='<div class="ok">✅ Saved! <b>'+esc(name)+'</b> • Subjects: <b>'+esc(subjects.join(', '))+'</b><br>Teacher must Logout → Login again for new subjects to load.</div>';
+    setTimeout(()=>{ closeEdit(); loadAll(); }, 800);
+  }catch(e){ $('editMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; }
+};
+window.saveEditAndIssue=function(){ saveEdit(); setTimeout(()=>{ window.location.href='issue.html'; }, 1000); };
+window.deleteFromEdit=async function(){
+  if(!isAdmin()) return;
+  const t=teachers.find(x=>x.id===editingId); if(!t) return;
+  if(!confirm('🗑️ Delete teacher "'+t.name+'"? They will lose subject access — Issue will allow all subjects until re-added.')) return;
+  try{ await setDoc(doc(db,'schools','EMIS_'+login.emis,'teachers',editingId),{archived:true},{merge:true}); await auditLog('TEACHER_ARCHIVED','Archived teacher '+t.name); closeEdit(); await loadAll(); }catch(e){ alert('❌ Delete failed: '+e.message); }
+};
+window.deleteTeacher=async function(id, name){
+  if(!isAdmin()) return;
+  if(!confirm('🗑️ Delete teacher '+name+'?')) return;
+  try{ await setDoc(doc(db,'schools','EMIS_'+login.emis,'teachers',id),{archived:true},{merge:true}); await auditLog('TEACHER_ARCHIVED','Archived teacher '+name); await loadAll(); }catch(e){ alert('❌ Delete failed: '+e.message); }
+};
+window.downloadCSV=function(){
+  if(!teachers.length){ alert('No teachers'); return; }
+  let csv='Name,Email,Phone,Subjects,Grades,School,EMIS\n';
+  teachers.forEach(t=>{ csv+='"'+String(t.name||'').replace(/"/g,"'")+'","'+String(t.email||'')+'","'+String(t.phone||'')+'","'+(t.subjects||[]).join('; ')+'","'+(t.grades||[]).join('; ')+'","'+login.school+'",'+login.emis+'\n'; });
+  const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Teachers-'+login.emis+'-'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url);
+};
+document.addEventListener('DOMContentLoaded', async ()=>{
+  if(window.OfflineQueue) OfflineQueue.updateBadge();
+  login=getLogin();
+  if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login first</a>.'; $('blockedBox').style.display='block'; return; }
+  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  $('teacherBody').style.display='block';
+  await loadAll();
+});
+</script>
+<script>
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW failed', e)); }); }
+</script>
+</body>
+</html>
