@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makhanani LTSM — Schools v1.0</title>
+<meta name="theme-color" content="#0a1f4d">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:13px}main{max-width:1000px;margin:auto;padding:14px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}label{font-weight:700;font-size:13px;display:block;margin:12px 0 4px}input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:15px;background:#fff}.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:10px}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-grey{background:#e2e8f0}.btn-red{background:#dc2626;color:#fff}.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}.small{font-size:12px;color:#64748b}.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:10px}.kpi div{background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center}.kpi b{font-size:22px;display:block;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b;font-weight:700}
+@media(max-width:600px){.kpi{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><h1>🏫 Makhanani LTSM — Schools v1.0</h1><p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Add / Edit School — No Firebase Console Needed</p></header>
+<main>
+<div class="card">
+<div class="topnav"><a href="index.html">🏠 Home</a><a href="issue.html">📚 Issue / Return</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="csv-upload.html">📥 CSV Upload</a><a href="teachers.html">👩🏾‍🏫 Teachers</a><a href="principal.html">📊 Principal</a><a href="librarian.html">📚 Librarian</a><a href="profile.html">👤 Profile</a></div>
+<div class="info" id="loginInfo">Checking login...</div>
+<div id="blockedBox" class="warn" style="display:none">🔒 Not logged in. <a href="index.html">Login</a> first. Super Admin only can add schools.</div>
+</div>
+<div id="body" style="display:none">
+
+<div class="card">
+<h2>📊 All Schools Overview</h2>
+<div class="kpi">
+<div><b id="kpiSchools">0</b><span>🏫 SCHOOLS</span></div>
+<div><b id="kpiActive">0</b><span>✅ ACTIVE</span></div>
+<div><b id="kpiInactive">0</b><span>🔴 INACTIVE</span></div>
+<div><b id="kpiTotalLearners">0</b><span>🎓 TOTAL LEARNERS</span></div>
+</div>
+</div>
+
+<div class="card" id="addCard">
+<h2>➕ Add New School</h2>
+<div class="info">✅ <b>Rule:</b> EMIS must be 9 digits, unique. Example: <code>911360825</code> for GEORGE SONTO. Prefix = First 3 letters for barcodes, e.g. <code>GEO</code>, <code>SHI</code>, <code>WOR</code>.</div>
+<label>School Name *</label>
+<input type="text" id="fName" placeholder="e.g. GEORGE SONTO PRIMARY SCHOOL">
+<label>EMIS Number * (9 digits)</label>
+<input type="text" id="fEmis" placeholder="e.g. 911360825" maxlength="9" inputmode="numeric">
+<label>Barcode Prefix * (3 letters, e.g. GEO)</label>
+<input type="text" id="fPrefix" placeholder="e.g. GEO" maxlength="3" style="text-transform:uppercase">
+<label>Province</label>
+<select id="fProvince"><option value="">Select Province</option><option>Gauteng</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Free State</option><option>Northern Cape</option></select>
+<label>District / Circuit</label>
+<input type="text" id="fDistrict" placeholder="e.g. Johannesburg East">
+<label>Principal Name</label>
+<input type="text" id="fPrincipal" placeholder="e.g. Mr M. Chauke">
+<label>Principal Phone</label>
+<input type="tel" id="fPhone" placeholder="e.g. 082 123 4567">
+<label>School Email</label>
+<input type="email" id="fEmail" placeholder="e.g. georgesonto@school.co.za">
+<label>Physical Address</label>
+<input type="text" id="fAddress" placeholder="e.g. 123 Main Road, Soweto">
+<label>Status</label>
+<select id="fStatus"><option>ACTIVE</option><option>INACTIVE</option></select>
+<button class="btn btn-green" onclick="addSchool()">➕ Add School</button>
+<div id="addMsg"></div>
+</div>
+
+<div class="card" id="editCard" style="display:none">
+<h2>✏️ Edit School — <span id="editTitle"></span></h2>
+<label>School Name *</label>
+<input type="text" id="eName">
+<label>EMIS (Cannot Change)</label>
+<input type="text" id="eEmis" disabled style="background:#e2e8f0">
+<label>Barcode Prefix *</label>
+<input type="text" id="ePrefix" maxlength="3" style="text-transform:uppercase">
+<label>Province</label>
+<select id="eProvince"><option value="">Select Province</option><option>Gauteng</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Free State</option><option>Northern Cape</option></select>
+<label>District / Circuit</label>
+<input type="text" id="eDistrict">
+<label>Principal Name</label>
+<input type="text" id="ePrincipal">
+<label>Principal Phone</label>
+<input type="tel" id="ePhone">
+<label>School Email</label>
+<input type="email" id="eEmail">
+<label>Physical Address</label>
+<input type="text" id="eAddress">
+<label>Status</label>
+<select id="eStatus"><option>ACTIVE</option><option>INACTIVE</option></select>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<button class="btn btn-blue" onclick="saveEdit()">💾 Save Changes</button>
+<button class="btn btn-grey" onclick="cancelEdit()">Cancel</button>
+</div>
+<div id="editMsg"></div>
+</div>
+
+<div class="card">
+<h2>🏫 All Schools — <span id="countLabel"></span></h2>
+<label>Search School</label>
+<input type="text" id="searchBox" placeholder="Search name / EMIS / district / province..." oninput="renderSchools()">
+<div id="schoolList"></div>
+<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh Schools</button>
+</div>
+
+</div>
+</main>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
+let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){}
+const $ = id => document.getElementById(id);
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
+let login=getLogin();
+let schools=[];
+let editingEmis=null;
+window.go=function(p){ window.location.href=p; };
+window.loadAll=async function(){
+  try{
+    const snap=await getDocs(collection(db,'schools'));
+    schools=[];
+    for(const d of snap.docs){
+      const data=d.data()||{};
+      // Count learners / books quickly (optional, may be slow for many schools - we do best effort)
+      let lc=0, bc=0, ic=0;
+      try{ const [ls, bs, is]=await Promise.all([ getDocs(collection(db,'schools',d.id,'learners')), getDocs(collection(db,'schools',d.id,'textbooks')), getDocs(collection(db,'schools',d.id,'issues')) ]); lc=ls.size; bc=bs.size; ic=is.size; }catch(e){}
+      schools.push({ id:d.id, emis:String(data.emis||d.id.replace('EMIS_','')), school:data.school||data.name||d.id, prefix:data.prefix||'', province:data.province||'', district:data.district||'', principal:data.principal||'', phone:data.phone||'', email:data.email||'', address:data.address||'', status:(data.status||'ACTIVE').toUpperCase(), learners:lc, books:bc, issues:ic, createdAt:data.createdAt||'' });
+    }
+    schools.sort((a,b)=>String(a.school).localeCompare(String(b.school)));
+    $('kpiSchools').textContent=schools.length;
+    $('kpiActive').textContent=schools.filter(s=>s.status==='ACTIVE').length;
+    $('kpiInactive').textContent=schools.filter(s=>s.status!=='ACTIVE').length;
+    $('kpiTotalLearners').textContent=schools.reduce((a,s)=>a+s.learners,0);
+    renderSchools();
+  }catch(e){ $('loginInfo').innerHTML='<div class="warn">Load failed: '+esc(e.message)+'</div>'; }
+};
+window.renderSchools=function(){
+  const q=($('searchBox').value||'').trim().toLowerCase();
+  let list=schools.filter(s=> !q || JSON.stringify(s).toLowerCase().includes(q));
+  $('countLabel').textContent=list.length+' school(s)';
+  if(!list.length){ $('schoolList').innerHTML='<div class="info">No schools found. Add first school above.</div>'; return; }
+  let html='<table><tr><th>School</th><th>EMIS / Prefix</th><th>District</th><th>Data</th><th>Status</th><th>Actions</th></tr>';
+  list.forEach(s=>{
+    const isOwn = login && String(login.emis)===String(s.emis);
+    const canEdit = (login.role||'').toUpperCase()==='SUPER ADMIN' || isOwn;
+    const badge = s.status==='ACTIVE' ? '<span style="color:#059669;font-weight:900">✅ ACTIVE</span>' : '<span style="color:#dc2626;font-weight:900">🔴 '+esc(s.status)+'</span>';
+    html+='<tr><td><b>'+esc(s.school)+'</b><br><span class="small">Principal: '+esc(s.principal||'—')+' • '+esc(s.phone||'')+'</span></td><td>EMIS '+esc(s.emis)+'<br>Prefix <b>'+esc(s.prefix||'—')+'</b></td><td>'+esc(s.district||'—')+'<br><span class="small">'+esc(s.province||'')+'</span></td><td>🎓 '+s.learners+' • 📖 '+s.books+' • 📚 '+s.issues+'</td><td>'+badge+'</td><td style="min-width:140px">'+
+    (canEdit?'<button class="btn btn-blue" style="padding:8px;margin:0 0 6px" onclick="startEdit(\''+esc(s.emis)+'\')">✏️ Edit</button>':'<span class="small">View only</span>')+
+    ((login.role||'').toUpperCase()==='SUPER ADMIN'?'<button class="btn '+(s.status==='ACTIVE'?'btn-red':'btn-green')+'" style="padding:8px;margin:0" onclick="toggleStatus(\''+esc(s.emis)+'\',\''+esc(s.status)+'\')">'+(s.status==='ACTIVE'?'🔴 Deactivate':'✅ Activate')+'</button>':'')+
+    '</td></tr>';
+  });
+  html+='</table><div class="small">INACTIVE school = Issue / Return blocked in all pages. Learners can still be viewed.</div>';
+  $('schoolList').innerHTML=html;
+};
+window.addSchool=async function(){
+  const role=(login.role||'').toUpperCase();
+  if(role!=='SUPER ADMIN'){ $('addMsg').innerHTML='<div class="warn">🔒 Only SUPER ADMIN can add schools. You are '+esc(role)+'.</div>'; return; }
+  const name=($('fName').value||'').trim().toUpperCase();
+  const emis=($('fEmis').value||'').trim();
+  const prefix=($('fPrefix').value||'').trim().toUpperCase();
+  const province=$('fProvince').value;
+  const district=($('fDistrict').value||'').trim();
+  const principal=($('fPrincipal').value||'').trim();
+  const phone=($('fPhone').value||'').trim();
+  const email=($('fEmail').value||'').trim().toLowerCase();
+  const address=($('fAddress').value||'').trim();
+  const status=$('fStatus').value;
+  if(!name){ $('addMsg').innerHTML='<div class="warn">⚠️ Type School Name.</div>'; return; }
+  if(!/^\d{9}$/.test(emis)){ $('addMsg').innerHTML='<div class="warn">⚠️ EMIS must be exactly 9 digits, e.g. 911360825.</div>'; return; }
+  if(!/^[A-Z]{3}$/.test(prefix)){ $('addMsg').innerHTML='<div class="warn">⚠️ Prefix must be 3 letters, e.g. GEO.</div>'; return; }
+  if(schools.some(s=>String(s.emis)===emis)){ $('addMsg').innerHTML='<div class="warn">❌ EMIS '+esc(emis)+' already exists: '+esc(schools.find(s=>String(s.emis)===emis).school)+'</div>'; return; }
+  if(schools.some(s=>String(s.prefix).toUpperCase()===prefix)){ $('addMsg').innerHTML='<div class="warn">⚠️ Prefix '+esc(prefix)+' already used by another school. Use different, e.g. GSO.</div>'; return; }
+  $('addMsg').innerHTML='<div class="info">⏳ Creating school...</div>';
+  try{
+    await setDoc(doc(db,'schools','EMIS_'+emis),{ school:name, emis, prefix, province, district, principal, phone, email, address, status, createdAt:new Date().toISOString(), createdBy:login.email||'' });
+    $('addMsg').innerHTML='<div class="ok">✅ School <b>'+esc(name)+'</b> (EMIS '+esc(emis)+') created! Now add Principal / Admin in Profile → Users for this school, then Login with that email.</div>';
+    ['fName','fEmis','fPrefix','fDistrict','fPrincipal','fPhone','fEmail','fAddress'].forEach(id=>$(id).value=''); $('fProvince').value=''; $('fStatus').value='ACTIVE';
+    await loadAll();
+  }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Failed: '+esc(e.message)+'</div>'; }
+};
+window.startEdit=function(emis){
+  const s=schools.find(x=>String(x.emis)===String(emis)); if(!s) return;
+  editingEmis=emis;
+  $('editTitle').textContent=s.school+' (EMIS '+s.emis+')';
+  $('eName').value=s.school; $('eEmis').value=s.emis; $('ePrefix').value=s.prefix; $('eProvince').value=s.province; $('eDistrict').value=s.district; $('ePrincipal').value=s.principal; $('ePhone').value=s.phone; $('eEmail').value=s.email; $('eAddress').value=s.address; $('eStatus').value=s.status;
+  $('editCard').style.display='block'; $('editCard').scrollIntoView({behavior:'smooth'});
+  $('editMsg').innerHTML='';
+};
+window.cancelEdit=function(){ editingEmis=null; $('editCard').style.display='none'; };
+window.saveEdit=async function(){
+  if(!editingEmis) return;
+  const name=($('eName').value||'').trim().toUpperCase();
+  const prefix=($('ePrefix').value||'').trim().toUpperCase();
+  if(!name){ $('editMsg').innerHTML='<div class="warn">⚠️ School Name cannot be empty.</div>'; return; }
+  if(!/^[A-Z]{3}$/.test(prefix)){ $('editMsg').innerHTML='<div class="warn">⚠️ Prefix must be 3 letters.</div>'; return; }
+  if(schools.some(s=>String(s.emis)!==String(editingEmis) && String(s.prefix).toUpperCase()===prefix)){ $('editMsg').innerHTML='<div class="warn">⚠️ Prefix '+esc(prefix)+' already used by another school.</div>'; return; }
+  try{
+    await updateDoc(doc(db,'schools','EMIS_'+editingEmis),{ school:name, prefix, province:$('eProvince').value, district:$('eDistrict').value.trim(), principal:$('ePrincipal').value.trim(), phone:$('ePhone').value.trim(), email:$('eEmail').value.trim().toLowerCase(), address:$('eAddress').value.trim(), status:$('eStatus').value, updatedAt:new Date().toISOString(), updatedBy:login.email||'' });
+    $('editMsg').innerHTML='<div class="ok">✅ Saved!</div>';
+    // If editing own school, update local login name
+    if(String(login.emis)===String(editingEmis)){ login.school=name; login.prefix=prefix; localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify(login)); }
+    await loadAll(); setTimeout(()=>{ $('editCard').style.display='none'; }, 800);
+  }catch(e){ $('editMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; }
+};
+window.toggleStatus=async function(emis, current){
+  const newStatus = current==='ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+  if(!confirm((newStatus==='INACTIVE'?'Deactivate':'Activate')+' school EMIS '+emis+'? '+(newStatus==='INACTIVE'?'Issue / Return will be BLOCKED.':'Issue / Return will work again.'))) return;
+  try{
+    await updateDoc(doc(db,'schools','EMIS_'+emis),{ status:newStatus });
+    await loadAll();
+  }catch(e){ alert('Failed: '+e.message); }
+};
+document.addEventListener('DOMContentLoaded', ()=>{
+  login=getLogin();
+  if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login first</a>.'; $('blockedBox').style.display='block'; return; }
+  const role=(login.role||'').toUpperCase();
+  if(!['SUPER ADMIN','ADMIN','PRINCIPAL'].includes(role)){
+    $('loginInfo').innerHTML='🔒 <b>'+esc(login.name||'')+'</b> — Role <b>'+esc(role)+'</b> cannot open Schools page.';
+    $('blockedBox').style.display='block'; $('blockedBox').innerHTML='🔒 Teacher / Librarian cannot open Schools page.'; return;
+  }
+  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  if(role!=='SUPER ADMIN'){
+    $('addCard').style.display='none';
+    $('loginInfo').innerHTML+='<br><span class="small">You can edit YOUR school only. Only SUPER ADMIN can add new schools.</span>';
+  }
+  $('body').style.display='block';
+  loadAll();
+});
+</script>
+</body>
+</html>
