@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makhanani LTSM — Stock v1.0 — Per Department → Grade → Subject</title>
+<meta name="theme-color" content="#0a1f4d">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:13px}.logoRow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}.logoRow img{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:2px solid #d4af37}main{max-width:1000px;margin:auto;padding:14px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}h3{margin:14px 0 6px;color:#0a1f4d}label{font-weight:700;font-size:13px;display:block;margin:12px 0 4px}input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:15px;background:#fff}.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:12px}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-grey{background:#e2e8f0}.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap;margin:2px}.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}.pill-orange{background:#ffedd5;color:#9a3412}.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}.small{font-size:12px;color:#64748b}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}.miniBtn{padding:6px 10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;margin:2px}.tabBtn{padding:10px 14px;border:2px solid #0a1f4d;border-radius:20px;font-weight:900;font-size:13px;cursor:pointer;background:#fff;color:#0a1f4d}.tabBtn.active{background:#0a1f4d;color:#fff}.deptCard{border:2px solid #0a1f4d;border-radius:12px;padding:12px;margin-top:12px;background:#fff}.deptCard.open{border-color:#059669;background:#f0fdf4}.gradeRow{border:1.5px solid #cbd5e1;border-radius:10px;padding:10px;margin-top:8px;background:#fff;cursor:pointer}.gradeRow:hover{background:#fef3c7}.subjRow{border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin:8px 0 8px 16px;background:#f8fafc}.bar{height:22px;background:#e2e8f0;border-radius:20px;overflow:hidden}.barFill{height:100%;text-align:center;color:#fff;font-weight:900;font-size:12px;line-height:22px}
+</style>
+</head>
+<body>
+<header>
+<div class="logoRow"><img src="logo.png" alt="Logo"><h1>📦 Makhanani LTSM — Stock v1.0</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Stock Per Department → Per Grade → Per Subject • ALL CAPS • Live Available / OUT / Retrieval %</p>
+</header>
+<main>
+<div class="card">
+<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="teachers.html">👩🏾‍🏫 Teachers</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 Profile</a></div>
+<div class="info" id="loginInfo">Checking login...</div>
+<div id="blockedBox" class="warn" style="display:none">🔒 Not logged in. Go to <a href="index.html">Login</a> first.</div>
+</div>
+<div id="stockBody" style="display:none">
+<div class="card">
+<h2>📦 Stock Overview — <span id="schoolNameTitle"></span> — <span id="todayDate"></span></h2>
+<div class="goldBox" id="statsBox">Loading...</div>
+<div class="info"><b>How to read:</b> Department = Subject Group (e.g. LANGUAGES). Grade = Grade R-12. Subject = e.g. MATHEMATICS.<br><b>Available</b> = In library, not issued. <b>OUT</b> = With learner. <b>Retrieval %</b> = Returned ÷ Issued × 100. Click a Department → Grade → Subject to see every copy.</div>
+<div class="grid3"><button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button><button class="btn btn-gold" onclick="expandAll()">⬇️ Expand All</button><button class="btn btn-grey" onclick="collapseAll()">⬆️ Collapse All</button></div>
+</div>
+<div class="card">
+<h2>🔍 Filter Stock</h2>
+<div class="grid3"><div><label>Department</label><select id="filterDept" onchange="renderStock()"><option value="ALL">All Departments</option></select></div><div><label>Grade</label><select id="filterGrade" onchange="renderStock()"><option value="ALL">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Search Title / Book No / Subject</label><input id="searchStock" placeholder="e.g. MATHEMATICS, WHS000001, Study and Master..." oninput="renderStock()"></div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="tabBtn active" id="viewTreeBtn" onclick="setView('TREE')">🌳 Tree View — Dept → Grade → Subject</button><button class="tabBtn" id="viewTableBtn" onclick="setView('TABLE')">📋 Table View — One Row Per Subject</button><button class="tabBtn" id="viewShortageBtn" onclick="setView('SHORTAGE')">⚠️ Shortage — Low Stock / Low Retrieval</button></div>
+</div>
+<div class="card"><h2>📦 Stock By Department → Grade → Subject — <span id="stockCount">0</span> Books</h2><div id="stockBodyInner"></div></div>
+<div class="card"><h2>📋 All Books — Detail</h2><div class="small">Shows every copy in the filtered view. Green = Available, Blue = OUT with learner.</div><div id="detailBody"></div></div>
+</div>
+</main>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
+let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){}
+const $ = id => document.getElementById(id);
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
+let login=getLogin(); let learners=[], books=[], issues=[], view='TREE'; let openDepts=new Set(), openGrades=new Set();
+// ===== DEPARTMENT MAP — SUBJECT (ALL CAPS) → DEPARTMENT =====
+const DEPT_MAP = {
+  // LANGUAGES
+  'ENGLISH HOME LANGUAGE':'LANGUAGES','ENGLISH FIRST ADDITIONAL LANGUAGE':'LANGUAGES','ENGLISH SECOND ADDITIONAL LANGUAGE':'LANGUAGES',
+  'AFRIKAANS HOME LANGUAGE':'LANGUAGES','AFRIKAANS FIRST ADDITIONAL LANGUAGE':'LANGUAGES','AFRIKAANS SECOND ADDITIONAL LANGUAGE':'LANGUAGES',
+  'ISIZULU HOME LANGUAGE':'LANGUAGES','ISIZULU FIRST ADDITIONAL LANGUAGE':'LANGUAGES','ISIXHOSA HOME LANGUAGE':'LANGUAGES','ISIXHOSA FIRST ADDITIONAL LANGUAGE':'LANGUAGES',
+  'SEPEDI HOME LANGUAGE':'LANGUAGES','SESOTHO HOME LANGUAGE':'LANGUAGES','SETSWANA HOME LANGUAGE':'LANGUAGES','XITSONGA HOME LANGUAGE':'LANGUAGES','TSHIVENDA HOME LANGUAGE':'LANGUAGES','SISWATI HOME LANGUAGE':'LANGUAGES','ISINDEBELE HOME LANGUAGE':'LANGUAGES',
+  // MATHEMATICS
+  'MATHEMATICS':'MATHEMATICS','MATHEMATICAL LITERACY':'MATHEMATICS','TECHNICAL MATHEMATICS':'MATHEMATICS',
+  // SCIENCES
+  'NATURAL SCIENCES':'SCIENCES','PHYSICAL SCIENCES':'SCIENCES','LIFE SCIENCES':'SCIENCES','AGRICULTURAL SCIENCES':'SCIENCES','TECHNICAL SCIENCES':'SCIENCES','COMPUTER APPLICATIONS TECHNOLOGY':'SCIENCES','INFORMATION TECHNOLOGY':'SCIENCES',
+  // HUMANITIES
+  'SOCIAL SCIENCES':'HUMANITIES','GEOGRAPHY':'HUMANITIES','HISTORY':'HUMANITIES','LIFE ORIENTATION':'HUMANITIES','RELIGION STUDIES':'HUMANITIES','LIFE SKILLS':'HUMANITIES',
+  // COMMERCE
+  'ACCOUNTING':'COMMERCE','BUSINESS STUDIES':'COMMERCE','ECONOMICS':'COMMERCE','CONSUMER STUDIES':'COMMERCE','TOURISM':'COMMERCE','ECONOMIC AND MANAGEMENT SCIENCES':'COMMERCE',
+  // ARTS / TECHNOLOGY
+  'CREATIVE ARTS':'ARTS / TECHNOLOGY','VISUAL ARTS':'ARTS / TECHNOLOGY','DRAMATIC ARTS':'ARTS / TECHNOLOGY','MUSIC':'ARTS / TECHNOLOGY','DESIGN':'ARTS / TECHNOLOGY','ENGINEERING GRAPHICS AND DESIGN':'ARTS / TECHNOLOGY','MECHANICAL TECHNOLOGY':'ARTS / TECHNOLOGY','ELECTRICAL TECHNOLOGY':'ARTS / TECHNOLOGY','CIVIL TECHNOLOGY':'ARTS / TECHNOLOGY','AGRICULTURAL TECHNOLOGY':'ARTS / TECHNOLOGY','HOSPITALITY STUDIES':'ARTS / TECHNOLOGY','TECHNOLOGY':'ARTS / TECHNOLOGY','AGRICULTURAL MANAGEMENT PRACTICES':'ARTS / TECHNOLOGY',
+  // OTHER
+  'PHYSICAL EDUCATION':'OTHER','ALL SUBJECTS':'OTHER','FOUNDATION PHASE — ALL SUBJECTS':'OTHER',
+};
+const DEPT_ORDER = ['LANGUAGES','MATHEMATICS','SCIENCES','HUMANITIES','COMMERCE','ARTS / TECHNOLOGY','OTHER'];
+const DEPT_EMOJI = {'LANGUAGES':'📖','MATHEMATICS':'🔢','SCIENCES':'🔬','HUMANITIES':'🌍','COMMERCE':'💼','ARTS / TECHNOLOGY':'🎨','OTHER':'📦'};
+function normalizeSubject(s){
+  let x=String(s||'').trim().toUpperCase();
+  const map={'MATHS':'MATHEMATICS','MATH':'MATHEMATICS','MATHS LITERACY':'MATHEMATICAL LITERACY','MATH LITERACY':'MATHEMATICAL LITERACY','ENGLISH':'ENGLISH HOME LANGUAGE','ENG':'ENGLISH HOME LANGUAGE','AFRIKAANS':'AFRIKAANS HOME LANGUAGE','SCIENCE':'NATURAL SCIENCES','PHYSICAL SCIENCE':'PHYSICAL SCIENCES','LIFE SCIENCE':'LIFE SCIENCES','ACCOUNTANCY':'ACCOUNTING','BUSINESS':'BUSINESS STUDIES','ECON':'ECONOMICS','GEO':'GEOGRAPHY','HIST':'HISTORY','LO':'LIFE ORIENTATION','CAT':'COMPUTER APPLICATIONS TECHNOLOGY','IT':'INFORMATION TECHNOLOGY','EGD':'ENGINEERING GRAPHICS AND DESIGN','EMS':'ECONOMIC AND MANAGEMENT SCIENCES','SS':'SOCIAL SCIENCES','TECH':'TECHNOLOGY','ART':'CREATIVE ARTS','AGRICULTURE':'AGRICULTURAL SCIENCES'};
+  if(map[x]) return map[x];
+  return x;
+}
+function deptOf(subject){
+  const s=normalizeSubject(subject);
+  if(DEPT_MAP[s]) return DEPT_MAP[s];
+  // Fallback: guess by keyword
+  if(s.includes('ENGLISH')||s.includes('AFRIKAANS')||s.includes('ISIZULU')||s.includes('ISIXHOSA')||s.includes('SEPEDI')||s.includes('SESOTHO')||s.includes('SETSWANA')||s.includes('LANGUAGE')) return 'LANGUAGES';
+  if(s.includes('MATH')) return 'MATHEMATICS';
+  if(s.includes('SCIENCE')||s.includes('COMPUTER')||s.includes('INFORMATION')) return 'SCIENCES';
+  if(s.includes('GEOGRAPHY')||s.includes('HISTORY')||s.includes('LIFE ORIENTATION')||s.includes('SOCIAL')) return 'HUMANITIES';
+  if(s.includes('ACCOUNT')||s.includes('BUSINESS')||s.includes('ECONOM')||s.includes('TOURISM')||s.includes('CONSUMER')) return 'COMMERCE';
+  if(s.includes('ART')||s.includes('DESIGN')||s.includes('TECHNOLOGY')||s.includes('MUSIC')||s.includes('HOSPITALITY')) return 'ARTS / TECHNOLOGY';
+  return 'OTHER';
+}
+function normalizeGrade(raw){ let s=String(raw??'').trim().toUpperCase(); if(!s) return ''; if(/\bR\b/.test(s)&&!/\d/.test(s)) return 'R'; const m=s.match(/(\d{1,2})/); if(!m) return s; const n=parseInt(m[1],10); if(n>=1&&n<=12) return String(n); return s; }
+function displayGrade(raw){ const n=normalizeGrade(raw); if(n==='R') return 'Grade R'; if(/^\d+$/.test(n)) return 'Grade '+n; return String(raw||'—'); }
+function gradeSort(a,b){ const na=normalizeGrade(a), nb=normalizeGrade(b); if(na==='R') return -1; if(nb==='R') return 1; return parseInt(na||0)-parseInt(nb||0); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function isOverdue(i){ if(!i||i.status==='RETURNED') return false; if(!i.dueDate) return false; return i.dueDate < todayStr(); }
+function bookStatus(book){
+  const iss=issues.find(i=>String(i.bookNo||'').toUpperCase()===String(book.bookNo||'').toUpperCase() && i.status!=='RETURNED');
+  return iss ? {out:true, issue:iss} : {out:false, issue:null};
+}
+function retrievalStatsForBooks(bookList){
+  // For stock: Retrieval = How many of the books that were EVER issued have been returned? Use issues for those titles
+  // Simpler + accurate for stock page: OUT vs Available
+  const total=bookList.length;
+  const out=bookList.filter(b=>bookStatus(b).out).length;
+  const avail=total-out;
+  return {total,out,avail};
+}
+function retrievalForIssues(issueList){
+  const total=issueList.length; const returned=issueList.filter(i=>i.status==='RETURNED').length; const out=total-returned; const pct=total?Math.round((returned/total)*100):0; return {total,returned,out,pct};
+}
+function bar(pct, label){
+  const c=pct>=90?'#059669':pct>=70?'#d4af37':pct>=50?'#ea580c':'#dc2626';
+  return '<div class="bar"><div class="barFill" style="width:'+pct+'%;background:'+c+'">'+pct+'% '+esc(label||'')+'</div></div>';
+}
+window.setView=function(v){ view=v; $('viewTreeBtn').className='tabBtn'+(v==='TREE'?' active':''); $('viewTableBtn').className='tabBtn'+(v==='TABLE'?' active':''); $('viewShortageBtn').className='tabBtn'+(v==='SHORTAGE'?' active':''); renderStock(); };
+window.expandAll=function(){ DEPT_ORDER.forEach(d=>openDepts.add(d)); books.forEach(b=>openGrades.add(deptOf(b.subject)+'|'+displayGrade(b.grade))); renderStock(); };
+window.collapseAll=function(){ openDepts.clear(); openGrades.clear(); renderStock(); };
+window.toggleDept=function(dept){ if(openDepts.has(dept)) openDepts.delete(dept); else openDepts.add(dept); renderStock(); };
+window.toggleGrade=function(key){ if(openGrades.has(key)) openGrades.delete(key); else openGrades.add(key); renderStock(); };
+function filteredBooks(){
+  const fd=$('filterDept').value||'ALL'; const fg=$('filterGrade').value||'ALL'; const q=($('searchStock').value||'').trim().toLowerCase();
+  let list=books.filter(b=>b.archived!==true);
+  if(fd!=='ALL') list=list.filter(b=>deptOf(b.subject)===fd);
+  if(fg!=='ALL') list=list.filter(b=>displayGrade(b.grade)===fg);
+  if(q) list=list.filter(b=>(b.title+' '+b.bookNo+' '+b.subject+' '+b.grade).toLowerCase().includes(q));
+  return list;
+}
+function renderStock(){
+  const list=filteredBooks();
+  $('stockCount').textContent=list.length;
+  // Detail table — every copy
+  let dh='';
+  if(!list.length) dh='<div class="info">No books match filter.</div>';
+  else {
+    dh='<table><tr><th>Book No</th><th>Title</th><th>Dept → Grade → Subject</th><th>Status</th><th>With Learner</th></tr>';
+    list.slice(0,200).forEach(b=>{
+      const st=bookStatus(b);
+      dh+='<tr><td><b>'+esc(b.bookNo||'')+'</b></td><td><b>'+esc(b.title||'')+'</b></td><td>'+esc(DEPT_EMOJI[deptOf(b.subject)]||'📦')+' <b>'+esc(deptOf(b.subject))+'</b> → <b>'+displayGrade(b.grade)+'</b> → <b>'+esc(normalizeSubject(b.subject))+'</b></td><td>'+(st.out?'<span class="pill pill-blue">📚 OUT</span>':'<span class="pill pill-green">✅ AVAILABLE</span>')+'</td><td>'+(st.out?esc(st.issue.learnerName||'')+' ('+esc(st.issue.learnerId||'')+') • Due '+esc(st.issue.dueDate||''):'—')+'</td></tr>';
+    });
+    dh+='</table><div class="small">Showing first 200. Use filters to narrow.</div>';
+  }
+  $('detailBody').innerHTML=dh;
+  if(view==='TABLE'){ renderTableView(list); return; }
+  if(view==='SHORTAGE'){ renderShortageView(list); return; }
+  renderTreeView(list);
+}
+function renderTreeView(list){
+  // Build: Dept -> Grade -> Subject -> Books
+  const tree={};
+  list.forEach(b=>{
+    const dept=deptOf(b.subject); const grade=displayGrade(b.grade); const subj=normalizeSubject(b.subject);
+    if(!tree[dept]) tree[dept]={};
+    if(!tree[dept][grade]) tree[dept][grade]={};
+    if(!tree[dept][grade][subj]) tree[dept][grade][subj]=[];
+    tree[dept][grade][subj].push(b);
+  });
+  let html='';
+  DEPT_ORDER.forEach(dept=>{
+    if(!tree[dept]) return;
+    const deptBooks=Object.values(tree[dept]).flatMap(g=>Object.values(g).flat());
+    const st=retrievalStatsForBooks(deptBooks);
+    const deptIssues=issues.filter(i=>deptOf(i.bookSubject)===dept);
+    const ret=retrievalForIssues(deptIssues);
+    const open=openDepts.has(dept);
+    html+='<div class="deptCard '+(open?'open':'')+'" onclick="toggleDept(\''+esc(dept)+'\')"><h3>'+esc(DEPT_EMOJI[dept]||'📦')+' '+esc(dept)+' '+(open?'▲':'▼')+'</h3><div>📖 Total: <b>'+st.total+'</b> • ✅ Available: <b>'+st.avail+'</b> • 📚 OUT: <b>'+st.out+'</b> • 📊 Retrieval: <b>'+ret.pct+'%</b> ('+ret.returned+'/'+ret.total+' issued)</div>'+bar(ret.pct,'Retrieved')+'</div>';
+    if(!open) return;
+    Object.keys(tree[dept]).sort(gradeSort).forEach(grade=>{
+      const gradeKey=dept+'|'+grade;
+      const gradeBooks=Object.values(tree[dept][grade]).flat();
+      const gst=retrievalStatsForBooks(gradeBooks);
+      const gradeIssues=issues.filter(i=>deptOf(i.bookSubject)===dept && displayGrade(i.learnerGrade||i.bookGrade)===grade);
+      const gret=retrievalForIssues(gradeIssues);
+      const gopen=openGrades.has(gradeKey);
+      html+='<div class="gradeRow" onclick="event.stopPropagation();toggleGrade(\''+esc(gradeKey)+'\')"><b>📚 '+esc(grade)+'</b> — Total: <b>'+gst.total+'</b> • ✅ Avail: <b>'+gst.avail+'</b> • 📚 OUT: <b>'+gst.out+'</b> • Retrieval: <b>'+gret.pct+'%</b> '+(gopen?'▲':'▼')+'</div>';
+      if(!gopen) return;
+      Object.keys(tree[dept][grade]).sort().forEach(subj=>{
+        const subjBooks=tree[dept][grade][subj];
+        const sst=retrievalStatsForBooks(subjBooks);
+        const subjIssues=issues.filter(i=>deptOf(i.bookSubject)===dept && displayGrade(i.learnerGrade||i.bookGrade)===grade && normalizeSubject(i.bookSubject)===subj);
+        const sret=retrievalForIssues(subjIssues);
+        // Titles in this subject
+        const titles={}; subjBooks.forEach(b=>{ if(!titles[b.title]) titles[b.title]=[]; titles[b.title].push(b); });
+        let titleHtml='';
+        Object.keys(titles).sort().forEach(t=>{
+          const tb=titles[t]; const tst=retrievalStatsForBooks(tb);
+          titleHtml+='<div style="margin:6px 0 6px 12px">📖 <b>'+esc(t)+'</b> — Copies: <b>'+tst.total+'</b> • ✅ Avail: <b>'+tst.avail+'</b> • 📚 OUT: <b>'+tst.out+'</b> • Book Nos: '+tb.slice(0,5).map(b=>esc(b.bookNo)).join(', ')+(tb.length>5?' ... +'+(tb.length-5)+' more':'')+'</div>';
+        });
+        html+='<div class="subjRow"><b>📘 '+esc(subj)+'</b> — Total: <b>'+sst.total+'</b> • ✅ Avail: <b>'+sst.avail+'</b> • 📚 OUT: <b>'+sst.out+'</b> • Retrieval: <b>'+sret.pct+'%</b>'+bar(sret.pct,'')+titleHtml+'</div>';
+      });
+    });
+  });
+  if(!html) html='<div class="info">No stock yet. Add books in <a href="textbook-barcode.html">Textbooks</a>.</div>';
+  $('stockBodyInner').innerHTML=html;
+}
+function renderTableView(list){
+  // One row per Dept + Grade + Subject
+  const map={};
+  list.forEach(b=>{
+    const key=deptOf(b.subject)+'|'+displayGrade(b.grade)+'|'+normalizeSubject(b.subject);
+    if(!map[key]) map[key]=[];
+    map[key].push(b);
+  });
+  let html='<table><tr><th>Department</th><th>Grade</th><th>Subject</th><th>Total</th><th>Available</th><th>OUT</th><th>Retrieval %</th></tr>';
+  Object.keys(map).sort().forEach(key=>{
+    const [dept,grade,subj]=key.split('|');
+    const bl=map[key]; const st=retrievalStatsForBooks(bl);
+    const iss=issues.filter(i=>deptOf(i.bookSubject)===dept && displayGrade(i.learnerGrade||i.bookGrade)===grade && normalizeSubject(i.bookSubject)===subj);
+    const ret=retrievalForIssues(iss);
+    html+='<tr><td><b>'+esc(DEPT_EMOJI[dept]||'📦')+' '+esc(dept)+'</b></td><td><b>'+esc(grade)+'</b></td><td><b>'+esc(subj)+'</b></td><td><b>'+st.total+'</b></td><td>✅ '+st.avail+'</td><td>📚 '+st.out+'</td><td><b>'+ret.pct+'%</b> '+bar(ret.pct,'')+'</td></tr>';
+  });
+  $('stockBodyInner').innerHTML=html+'</table>';
+}
+function renderShortageView(list){
+  // Low Available (<5) OR Low Retrieval (<70%) OR High OUT
+  const map={};
+  list.forEach(b=>{
+    const key=deptOf(b.subject)+'|'+displayGrade(b.grade)+'|'+normalizeSubject(b.subject);
+    if(!map[key]) map[key]=[];
+    map[key].push(b);
+  });
+  let rows=[];
+  Object.keys(map).forEach(key=>{
+    const [dept,grade,subj]=key.split('|');
+    const bl=map[key]; const st=retrievalStatsForBooks(bl);
+    const iss=issues.filter(i=>deptOf(i.bookSubject)===dept && displayGrade(i.learnerGrade||i.bookGrade)===grade && normalizeSubject(i.bookSubject)===subj);
+    const ret=retrievalForIssues(iss);
+    let reason='';
+    if(st.avail<=3) reason+='⚠️ LOW AVAILABLE ('+st.avail+' left) ';
+    if(ret.pct<70 && ret.total>0) reason+='🔴 LOW RETRIEVAL '+ret.pct+'% ';
+    if(st.out>=st.total && st.total>0) reason+='📚 ALL OUT ';
+    if(reason) rows.push({dept,grade,subj,st,ret,reason});
+  });
+  rows.sort((a,b)=>a.st.avail-b.st.avail);
+  if(!rows.length){ $('stockBodyInner').innerHTML='<div class="ok">✅ No shortage — All subjects have enough Available + Retrieval 70%+.</div>'; return; }
+  let html='<div class="warn">⚠️ <b>'+rows.length+' subject(s) need attention</b> — Low Available OR Low Retrieval. Order more / Follow up returns.</div><table><tr><th>Department</th><th>Grade</th><th>Subject</th><th>Total / Avail / OUT</th><th>Retrieval</th><th>Action Needed</th></tr>';
+  rows.forEach(r=>{ html+='<tr><td><b>'+esc(r.dept)+'</b></td><td><b>'+esc(r.grade)+'</b></td><td><b>'+esc(r.subj)+'</b></td><td>'+r.st.total+' / ✅ '+r.st.avail+' / 📚 '+r.st.out+'</td><td><b>'+r.ret.pct+'%</b></td><td>'+esc(r.reason)+'</td></tr>'; });
+  $('stockBodyInner').innerHTML=html+'</table>';
+}
+window.loadAll=async function(){
+  $('todayDate').textContent=new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'});
+  $('schoolNameTitle').textContent=login.school||'';
+  try{
+    const base='EMIS_'+login.emis;
+    const [ls,bs,is]=await Promise.all([ getDocs(collection(db,'schools',base,'learners')), getDocs(collection(db,'schools',base,'textbooks')), getDocs(collection(db,'schools',base,'issues')) ]);
+    learners=[]; ls.forEach(d=>learners.push({id:d.id,...d.data()})); books=[]; bs.forEach(d=>books.push({id:d.id,...d.data()})); issues=[]; is.forEach(d=>issues.push({id:d.id,...d.data()}));
+    // Fill Dept filter
+    $('filterDept').innerHTML='<option value="ALL">All Departments</option>' + DEPT_ORDER.map(d=>'<option value="'+esc(d)+'">'+esc(DEPT_EMOJI[d]||'📦')+' '+esc(d)+'</option>').join('');
+    const total=books.filter(b=>b.archived!==true).length;
+    const out=books.filter(b=>b.archived!==true && bookStatus(b).out).length;
+    const avail=total-out;
+    const ret=retrievalForIssues(issues);
+    $('statsBox').innerHTML='📖 Total Books: <b>'+total+'</b> • ✅ Available: <b>'+avail+'</b> • 📚 OUT: <b>'+out+'</b> • 👩🏾‍🎓 Learners: <b>'+learners.filter(l=>l.archived!==true).length+'</b><br>📊 Overall Retrieval: <b>'+ret.pct+'%</b> ('+ret.returned+'/'+ret.total+' issued) • 📅 Due: <b>30 November</b>';
+    // Auto-open first dept so user sees structure
+    if(openDepts.size===0 && DEPT_ORDER.length) openDepts.add(DEPT_ORDER[0]);
+    renderStock();
+  }catch(e){ $('stockBodyInner').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
+};
+document.addEventListener('DOMContentLoaded', async ()=>{
+  login=getLogin();
+  if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login first</a>.'; $('blockedBox').style.display='block'; return; }
+  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  $('stockBody').style.display='block';
+  await loadAll();
+});
+</script>
+</body>
+</html>
