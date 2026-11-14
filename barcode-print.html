@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Barcode Print v2.18 — Dropdown + Print Preview</title>
+<title>Makhanani LTSM — Barcode Print v2.19 — Camera Scan Real Stickers</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -50,9 +51,11 @@ th{background:#0a1f4d;color:#fff}
 .label .bottomLabel{font-size:9px;color:#64748b;font-weight:700;letter-spacing:1px}
 @media(max-width:700px){.labelGrid{grid-template-columns:repeat(2,1fr)!important}.label{height:165px}}
 .previewBox{border:3px solid #0a1f4d;border-radius:12px;padding:12px;background:#f8fafc;margin-top:10px}
-.previewBox .previewTitle{text-align:center;font-weight:900;color:#0a1f4d;font-size:14px}
-.modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:none;overflow:auto;padding:14px}
+.modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;overflow:auto;padding:14px}
 .modalBox{background:#fff;border-radius:12px;max-width:900px;margin:20px auto;padding:16px}
+#cameraReader{width:100%;max-width:500px;margin:10px auto;border:3px solid #0a1f4d;border-radius:12px;overflow:hidden;background:#000;min-height:260px}
+#cameraReader video{width:100%!important}
+.cameraFrame{border:3px solid #059669;border-radius:12px;padding:10px;text-align:center;background:#f0fdf4}
 @media print{
   @page{size:A4 portrait;margin:10mm}
   body{background:#fff}
@@ -72,8 +75,8 @@ th{background:#0a1f4d;color:#fff}
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🖨️ Makhanani LTSM — Barcode Print v2.18</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Textbook Dropdown + Print Preview • 3 x 5 on A4 (15 per page) • Learner 9E003 • Book WHS000001</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🖨️📷 Makhanani LTSM — Barcode Print v2.19</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Camera Scan Real Stickers • Dropdown + Preview • 3x5 A4 • 9E003 • WHS000001</p>
 </header>
 <main>
 <div class="card noPrint">
@@ -85,26 +88,39 @@ th{background:#0a1f4d;color:#fff}
 <div id="printBody" style="display:none">
 
 <div class="card noPrint">
+<h2>📷 Camera Scan — Scan Real Printed Stickers</h2>
+<div class="info"><b>How to scan a real sticker:</b><br>1. Print labels first → Cut + Stick on book / card<br>2. Tap <b>📷 Open Camera</b> → Allow Camera<br>3. Hold phone 15-20cm away, barcode inside green box, good light<br>4. It <b>BEEPS</b> + Finds learner / book automatically.<br><span class="small">Works on: Phone back camera (best) + Laptop webcam. Needs HTTPS (GitHub Pages is HTTPS ✅) + Camera permission. If camera fails, use USB scanner or type code below.</span></div>
+<div class="grid2">
+<button class="btn btn-green" onclick="openCamera()">📷 Open Camera — Scan Sticker</button>
+<button class="btn btn-gold" onclick="testBeep()">🔊 Test Beep</button>
+</div>
+<div class="grid2">
+<label>📷 Or Type / USB Scan Code Here</label>
+<label>🎯 Camera Mode — What To Do On Scan?</label>
+</div>
+<div class="grid2">
+<input id="scanTest" placeholder="Scan USB scanner or type 9E003 / WHS000001 + Enter..." autocomplete="off">
+<select id="cameraAction"><option value="FIND">🔍 Find Only — Show Learner / Book</option><option value="ADD_QUEUE">➕ Find + Add To Print Queue</option><option value="ISSUE">📚 Find + Go To Issue Page</option></select>
+</div>
+<div id="scanMsg"></div>
+<div id="scanResult"></div>
+</div>
+
+<div class="card noPrint">
 <h2>🖨️ Barcode Print — Dropdown + Preview — 3 x 5 on A4</h2>
 <div class="goldBox" id="schoolInfo">Loading...</div>
-<div class="info"><b>How to use v2.18:</b><br>1. Pick <b>Textbook</b> from dropdown → Pick Qty → Add to Queue<br>2. Or pick <b>Learner</b> from dropdown → Add<br>3. Tap <b>👁️ Print Preview</b> → Check labels look right → Tap <b>🖨️ Print Now</b><br>Print: Paper <b>A4</b>, Margins <b>None</b>, Scale <b>100%</b>, Background <b>ON</b> — Cut on dotted lines.</div>
 <div class="grid2">
 <button class="btn btn-blue" onclick="loadAll()">🔄 Refresh Learners + Books</button>
-<button class="btn btn-gold" onclick="testBeep()">🔊 Test Beep</button>
+<button class="btn btn-gold" onclick="showPreview()">👁️ Print Preview</button>
 </div>
 </div>
 
 <div class="card noPrint">
 <h2>1. 📖 Textbook Dropdown — Pick Book, Pick Qty</h2>
 <label>📖 Select Textbook — Title • Subject • Grade • BookNo *</label>
-<select id="textbookDropdown" onchange="onTextbookPick()">
-<option value="">— Pick a Textbook —</option>
-</select>
+<select id="textbookDropdown" onchange="onTextbookPick()"><option value="">— Pick a Textbook —</option></select>
 <div id="textbookPickedBox"></div>
-<div class="grid2">
-<label>🔢 How Many Copies To Print? *</label>
-<label>📦 Or Print All Books In Grade?</label>
-</div>
+<div class="grid2"><label>🔢 Qty To Print? *</label><label>📦 Or Print All Books In Grade?</label></div>
 <div class="grid2">
 <select id="textbookQty"><option value="1">1 copy</option><option value="2">2 copies</option><option value="3">3 copies</option><option value="5">5 copies</option><option value="10">10 copies</option><option value="15">15 copies — Full Page</option><option value="30">30 copies — 2 Pages</option></select>
 <select id="gradeForBooks"><option value="ALL">All Grades</option><option value="Grade R">Grade R</option><option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option><option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option></select>
@@ -118,14 +134,9 @@ th{background:#0a1f4d;color:#fff}
 <div class="card noPrint">
 <h2>2. 🎓 Learner Dropdown — Pick Learner</h2>
 <label>🎓 Select Learner — Name • Grade • Class • Learner ID *</label>
-<select id="learnerDropdown" onchange="onLearnerPick()">
-<option value="">— Pick a Learner —</option>
-</select>
+<select id="learnerDropdown" onchange="onLearnerPick()"><option value="">— Pick a Learner —</option></select>
 <div id="learnerPickedBox"></div>
-<div class="grid2">
-<label>🔢 Copies</label>
-<label>📦 Or Print All Learners In Grade?</label>
-</div>
+<div class="grid2"><label>🔢 Copies</label><label>📦 Or Print All Learners In Grade?</label></div>
 <div class="grid2">
 <select id="learnerQty"><option value="1">1 copy</option><option value="2">2 copies</option></select>
 <select id="gradeForLearners"><option value="ALL">All Grades</option><option value="Grade R">Grade R</option><option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option><option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option></select>
@@ -138,10 +149,7 @@ th{background:#0a1f4d;color:#fff}
 
 <div class="card noPrint">
 <h2>3. 🔍 Search List — Or Add From Table</h2>
-<div class="grid2">
-<label>What To Show?</label>
-<label>Filter By Grade</label>
-</div>
+<div class="grid2"><label>What To Show?</label><label>Filter By Grade</label></div>
 <div class="grid2">
 <select id="printType" onchange="renderList()"><option value="TEXTBOOKS">📖 Textbooks</option><option value="LEARNERS">🎓 Learners</option><option value="BOTH">🎓📖 Both</option></select>
 <select id="filterGrade" onchange="renderList()"><option value="ALL">All Grades</option><option value="Grade R">Grade R</option><option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option><option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option></select>
@@ -154,7 +162,6 @@ th{background:#0a1f4d;color:#fff}
 
 <div class="card noPrint">
 <h2>4. Print Queue — <span id="queueCount">0</span> labels — <span id="pageCount">0</span> page(s)</h2>
-<div class="small">Each page = 15 labels (3 x 5). Only real labels print — No empty boxes.</div>
 <div class="grid2">
 <button class="btn btn-gold" onclick="showPreview()">👁️ Print Preview — Check Before Print</button>
 <button class="btn btn-blue" onclick="window.print()">🖨️ Print Now — A4 3x5</button>
@@ -169,22 +176,30 @@ th{background:#0a1f4d;color:#fff}
 
 <div class="card noPrint">
 <h2>👁️ Print Preview — How It Will Look On A4</h2>
-<div class="small">This is a live preview. If it looks good here, it will print like this. Tap Preview button above to open full-screen preview.</div>
 <div id="previewArea"></div>
 </div>
 
 </div>
 
 <div id="printArea"></div>
-
-<div class="card noPrint">
-<h2>📷 Scan Test — Does Barcode Scan?</h2>
-<label>📷 Scan Printed Barcode — e.g. 9E003 or WHS000001</label>
-<input id="scanTest" placeholder="Scan here to test..." autocomplete="off">
-<div id="scanMsg"></div>
-</div>
-
 </main>
+
+<div class="modalOverlay" id="cameraModal">
+<div class="modalBox">
+<h2>📷 Camera Scan — Point At Barcode Sticker</h2>
+<div class="info">Hold phone <b>15-20cm</b> away. Keep barcode <b>inside box</b>, flat, good light, no shadow. It will BEEP when found.<br>Tip: If it won't scan, move slowly closer / further, or turn on torch on phone.</div>
+<div class="cameraFrame">
+<div id="cameraReader"></div>
+<div class="small" id="cameraStatus">Starting camera...</div>
+<div id="cameraLastScan"></div>
+</div>
+<div class="grid2 noPrint">
+<button class="btn btn-green" onclick="closeCamera(true)">✅ Done — Close Camera</button>
+<button class="btn btn-grey" onclick="closeCamera(false)">❌ Cancel</button>
+</div>
+<div class="small">Camera Mode: <span id="cameraModeLabel">Find Only</span> • Scanned: <span id="cameraScanCount">0</span></div>
+</div>
+</div>
 
 <div class="modalOverlay" id="previewModal">
 <div class="modalBox">
@@ -219,6 +234,72 @@ function beepSuccess(){ beep(880,0.12,'square',0.25); setTimeout(()=>beep(1320,0
 function beepError(){ beep(220,0.2,'square',0.25); setTimeout(()=>beep(180,0.25,'square',0.25),120); }
 window.testBeep=function(){ beepSuccess(); $('queueMsg').innerHTML='<div class="ok">🔊 Beep played!</div>'; };
 function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,3) || 'WHS'); }
+// ===== CAMERA SCAN — v2.19 =====
+let html5Qr=null, cameraRunning=false, lastCameraCode='', lastCameraTime=0, cameraScanCount=0;
+window.openCamera=function(){
+  if(!window.Html5Qrcode){ alert('❌ Camera library failed to load. Check internet, refresh page.'); return; }
+  $('cameraModal').style.display='block';
+  $('cameraModeLabel').textContent=$('cameraAction').value==='ADD_QUEUE'?'Find + Add To Queue':$('cameraAction').value==='ISSUE'?'Find + Go To Issue':'Find Only';
+  $('cameraStatus').textContent='Starting camera... Allow Camera when asked...';
+  $('cameraLastScan').innerHTML='';
+  if(cameraRunning) return;
+  html5Qr=new Html5Qrcode('cameraReader');
+  const config={fps:10, qrbox:{width:280,height:120}, aspectRatio:1.2, supportedScanTypes:[Html5QrcodeScanType.SCAN_TYPE_CAMERA]};
+  // Try back camera first (phone), fallback to default
+  html5Qr.start({facingMode:'environment'}, config, onCameraScan, (err)=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at barcode sticker...'; }).catch(err=>{
+    // Fallback: try any camera
+    html5Qr.start({facingMode:'user'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at barcode...'; }).catch(e2=>{
+      $('cameraStatus').textContent='❌ Camera failed: '+esc(e2.message||e2)+' — Use USB scanner or type code.';
+      $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? Check: 1) You are on HTTPS (GitHub Pages ✅) 2) Browser → Site Settings → Camera → Allow 3) Close other apps using camera 4) Try Chrome on Android / Safari on iPhone.</div>';
+    });
+  });
+};
+function onCameraScan(decodedText){
+  const code=String(decodedText||'').trim().toUpperCase();
+  if(!code) return;
+  const now=Date.now();
+  // Ignore same code within 2 sec (prevents double-add)
+  if(code===lastCameraCode && now-lastCameraTime<2000) return;
+  lastCameraCode=code; lastCameraTime=now; cameraScanCount++;
+  $('cameraScanCount').textContent=cameraScanCount;
+  $('cameraLastScan').innerHTML='<div class="ok">📷 Scanned: <b>'+esc(code)+'</b></div>';
+  handleScannedCode(code, true);
+}
+window.closeCamera=async function(done){
+  try{ if(html5Qr && cameraRunning){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){}
+  cameraRunning=false; html5Qr=null;
+  $('cameraModal').style.display='none';
+  if(done && lastCameraCode) $('scanTest').value=lastCameraCode;
+};
+function handleScannedCode(code, fromCamera){
+  code=String(code||'').trim().toUpperCase(); if(!code) return;
+  const l=learners.find(x=>String(x.learnerId||'').toUpperCase()===code);
+  const b=books.find(x=>String(x.bookNo||'').toUpperCase()===code);
+  const action=$('cameraAction').value||'FIND';
+  if(l){
+    beepSuccess();
+    const html='<div class="ok">🔊 BEEP! ✅ Learner: <b>'+esc(l.name)+'</b> • ID: <b>'+esc(l.learnerId)+'</b> • '+esc(l.grade)+' • '+esc(l.class)+'<br>Top: '+esc(login.school||'')+' • MAKHANANI LTSM • LEARNER • Bottom: '+esc(l.learnerId)+'</div>';
+    $('scanMsg').innerHTML=html; $('scanResult').innerHTML=html;
+    if(action==='ADD_QUEUE'){ selected.push({kind:'LEARNER', code:String(l.learnerId||''), name:l.name||'', sub:(l.grade||'')+' • '+(l.class||''), grade:l.grade||''}); renderQueue(); renderPreview(); $('queueMsg').innerHTML='<div class="ok">✅ Added learner '+esc(l.name)+' to print queue.</div>'; }
+    if(action==='ISSUE'){ setTimeout(()=>{ window.location.href='issue.html'; }, 800); }
+    if(fromCamera) $('cameraLastScan').innerHTML=html;
+    return;
+  }
+  if(b){
+    beepSuccess();
+    const html='<div class="ok">🔊 BEEP! ✅ Book: <b>'+esc(b.title)+'</b> • BookNo: <b>'+esc(b.bookNo)+'</b> • '+esc(b.subject)+' • '+esc(b.grade)+'<br>Top: '+esc(login.school||'')+' • MAKHANANI LTSM • TEXTBOOK • Bottom: '+esc(b.bookNo)+'</div>';
+    $('scanMsg').innerHTML=html; $('scanResult').innerHTML=html;
+    if(action==='ADD_QUEUE'){ selected.push({kind:'TEXTBOOK', code:String(b.bookNo||''), name:b.title||'', sub:(b.subject||'')+' • '+(b.grade||''), grade:b.grade||''}); renderQueue(); renderPreview(); $('queueMsg').innerHTML='<div class="ok">✅ Added book '+esc(b.title)+' to print queue.</div>'; }
+    if(action==='ISSUE'){ setTimeout(()=>{ window.location.href='issue.html'; }, 800); }
+    if(fromCamera) $('cameraLastScan').innerHTML=html;
+    return;
+  }
+  beepError();
+  const html='<div class="warn">🔊 BEEP-BEEP! ❌ Not found: <b>'+esc(code)+'</b><br>Check code is 9E003 (Learner) or WHS000001 (Book), or Add it in Learners / Textbooks.</div>';
+  $('scanMsg').innerHTML=html; $('scanResult').innerHTML='';
+  if(fromCamera) $('cameraLastScan').innerHTML=html;
+}
+// ===== DROPDOWN + QUEUE + PREVIEW — v2.18 kept =====
 window.loadAll=async function(){
   try{
     const base='EMIS_'+login.emis;
@@ -227,165 +308,42 @@ window.loadAll=async function(){
     books=[]; bs.forEach(d=>books.push({id:d.id,...d.data()}));
     learners=learners.filter(l=>l.archived!==true).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
     books=books.filter(b=>b.archived!==true).sort((a,b)=>String(a.title||'').localeCompare(String(b.title||'')));
-    $('schoolInfo').innerHTML='School: <b>'+esc(login.school||'')+'</b> • EMIS <b>'+esc(login.emis||'')+'</b> • Learners: <b>'+learners.length+'</b> • Books: <b>'+books.length+'</b> • Prefix: <b>'+getPrefix(login.school||'')+'</b> (e.g. '+getPrefix(login.school||'')+'000001)';
+    $('schoolInfo').innerHTML='School: <b>'+esc(login.school||'')+'</b> • EMIS <b>'+esc(login.emis||'')+'</b> • Learners: <b>'+learners.length+'</b> • Books: <b>'+books.length+'</b> • Prefix: <b>'+getPrefix(login.school||'')+'</b>';
     fillDropdowns(); renderList();
   }catch(e){ $('listBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
 };
 function fillDropdowns(){
-  // v2.18 — TEXTBOOK DROPDOWN — Title • Subject • Grade • BookNo
   let tHtml='<option value="">— Pick a Textbook — '+books.length+' books —</option>';
   books.forEach((b,i)=>{ tHtml+='<option value="'+i+'">'+esc(b.title||'')+' • '+(b.subject||'')+' • '+(b.grade||'')+' • '+esc(b.bookNo||'')+'</option>'; });
   $('textbookDropdown').innerHTML=tHtml;
-  // LEARNER DROPDOWN — Name • Grade • Class • ID
   let lHtml='<option value="">— Pick a Learner — '+learners.length+' learners —</option>';
   learners.forEach((l,i)=>{ lHtml+='<option value="'+i+'">'+esc(l.name||'')+' • '+(l.grade||'')+' • '+(l.class||'')+' • '+esc(l.learnerId||'')+'</option>'; });
   $('learnerDropdown').innerHTML=lHtml;
 }
-window.onTextbookPick=function(){
-  const idx=$('textbookDropdown').value; if(idx===''||idx===null){ $('textbookPickedBox').innerHTML=''; return; }
-  const b=books[Number(idx)];
-  $('textbookPickedBox').innerHTML='<div class="goldBox">📖 Selected: <b>'+esc(b.title||'')+'</b> • '+(b.subject||'')+' • '+(b.grade||'')+'<br>BookNo: <b>'+esc(b.bookNo||'')+'</b> • Publisher: '+(b.publisher||'—')+'<br>Label TOP: '+esc(login.school||'')+' / MAKHANANI LTSM • TEXTBOOK • BOTTOM: '+esc(b.bookNo||'')+'</div>';
-};
-window.onLearnerPick=function(){
-  const idx=$('learnerDropdown').value; if(idx===''||idx===null){ $('learnerPickedBox').innerHTML=''; return; }
-  const l=learners[Number(idx)];
-  $('learnerPickedBox').innerHTML='<div class="goldBox">🎓 Selected: <b>'+esc(l.name||'')+'</b> • '+(l.grade||'')+' • '+(l.class||'')+'<br>Learner ID: <b>'+esc(l.learnerId||'')+'</b><br>Label TOP: '+esc(login.school||'')+' / MAKHANANI LTSM • LEARNER • BOTTOM: '+esc(l.learnerId||'')+'</div>';
-};
-window.addTextbookFromDropdown=function(){
-  const idx=$('textbookDropdown').value;
-  if(idx===''||idx===null){ $('queueMsg').innerHTML='<div class="warn">⚠️ Pick a textbook from dropdown first.</div>'; beepError(); return; }
-  const b=books[Number(idx)]; const qty=Number($('textbookQty').value||1);
-  for(let i=0;i<qty;i++) selected.push({kind:'TEXTBOOK', code:String(b.bookNo||''), name:b.title||'', sub:(b.subject||'')+' • '+(b.grade||''), grade:b.grade||''});
-  beepSuccess(); $('queueMsg').innerHTML='<div class="ok">✅ Added '+qty+'x <b>'+esc(b.title||'')+'</b> ('+esc(b.bookNo||'')+') — Total: '+selected.length+' labels.</div>';
-  renderQueue(); renderPreview();
-};
-window.addLearnerFromDropdown=function(){
-  const idx=$('learnerDropdown').value;
-  if(idx===''||idx===null){ $('queueMsg').innerHTML='<div class="warn">⚠️ Pick a learner from dropdown first.</div>'; beepError(); return; }
-  const l=learners[Number(idx)]; const qty=Number($('learnerQty').value||1);
-  for(let i=0;i<qty;i++) selected.push({kind:'LEARNER', code:String(l.learnerId||''), name:l.name||'', sub:(l.grade||'')+' • '+(l.class||''), grade:l.grade||''});
-  beepSuccess(); $('queueMsg').innerHTML='<div class="ok">✅ Added '+qty+'x <b>'+esc(l.name||'')+'</b> ('+esc(l.learnerId||'')+') — Total: '+selected.length+' labels.</div>';
-  renderQueue(); renderPreview();
-};
-window.addAllBooksInGrade=function(){
-  const g=$('gradeForBooks').value||'ALL';
-  const list=books.filter(b=>g==='ALL'||b.grade===g);
-  if(!list.length){ $('queueMsg').innerHTML='<div class="warn">No books in '+esc(g)+'</div>'; return; }
-  list.forEach(b=>selected.push({kind:'TEXTBOOK', code:String(b.bookNo||''), name:b.title||'', sub:(b.subject||'')+' • '+(b.grade||''), grade:b.grade||''}));
-  beepSuccess(); $('queueMsg').innerHTML='<div class="ok">✅ Added '+list.length+' books in '+esc(g)+' — Total: '+selected.length+' labels.</div>';
-  renderQueue(); renderPreview();
-};
-window.addAllLearnersInGrade=function(){
-  const g=$('gradeForLearners').value||'ALL';
-  const list=learners.filter(l=>g==='ALL'||l.grade===g);
-  if(!list.length){ $('queueMsg').innerHTML='<div class="warn">No learners in '+esc(g)+'</div>'; return; }
-  list.forEach(l=>selected.push({kind:'LEARNER', code:String(l.learnerId||''), name:l.name||'', sub:(l.grade||'')+' • '+(l.class||''), grade:l.grade||''}));
-  beepSuccess(); $('queueMsg').innerHTML='<div class="ok">✅ Added '+list.length+' learners in '+esc(g)+' — Total: '+selected.length+' labels.</div>';
-  renderQueue(); renderPreview();
-};
+window.onTextbookPick=function(){ const idx=$('textbookDropdown').value; if(idx===''||idx===null){ $('textbookPickedBox').innerHTML=''; return; } const b=books[Number(idx)]; $('textbookPickedBox').innerHTML='<div class="goldBox">📖 Selected: <b>'+esc(b.title||'')+'</b> • '+(b.subject||'')+' • '+(b.grade||'')+'<br>BookNo: <b>'+esc(b.bookNo||'')+'</b></div>'; };
+window.onLearnerPick=function(){ const idx=$('learnerDropdown').value; if(idx===''||idx===null){ $('learnerPickedBox').innerHTML=''; return; } const l=learners[Number(idx)]; $('learnerPickedBox').innerHTML='<div class="goldBox">🎓 Selected: <b>'+esc(l.name||'')+'</b> • '+(l.grade||'')+' • '+(l.class||'')+'<br>Learner ID: <b>'+esc(l.learnerId||'')+'</b></div>'; };
+window.addTextbookFromDropdown=function(){ const idx=$('textbookDropdown').value; if(idx===''||idx===null){ $('queueMsg').innerHTML='<div class="warn">⚠️ Pick a textbook first.</div>'; beepError(); return; } const b=books[Number(idx)]; const qty=Number($('textbookQty').value||1); for(let i=0;i<qty;i++) selected.push({kind:'TEXTBOOK', code:String(b.bookNo||''), name:b.title||'', sub:(b.subject||'')+' • '+(b.grade||''), grade:b.grade||''}); beepSuccess(); $('queueMsg').innerHTML='<div class="ok">✅ Added '+qty+'x <b>'+esc(b.title||'')+'</b> — Total: '+selected.length+'</div>'; renderQueue(); renderPreview(); };
+window.addLearnerFromDropdown=function(){ const idx=$('learnerDropdown').value; if(idx===''||idx===null){ $('queueMsg').innerHTML='<div class="warn">⚠️ Pick a learner first.</div>'; beepError(); return; } const l=learners[Number(idx)]; const qty=Number($('learnerQty').value||1); for(let i=0;i<qty;i++) selected.push({kind:'LEARNER', code:String(l.learnerId||''), name:l.name||'', sub:(l.grade||'')+' • '+(l.class||''), grade:l.grade||''}); beepSuccess(); $('queueMsg').innerHTML='<div class="ok">✅ Added '+qty+'x <b>'+esc(l.name||'')+'</b> — Total: '+selected.length+'</div>'; renderQueue(); renderPreview(); };
+window.addAllBooksInGrade=function(){ const g=$('gradeForBooks').value||'ALL'; const list=books.filter(b=>g==='ALL'||b.grade===g); if(!list.length){ $('queueMsg').innerHTML='<div class="warn">No books in '+esc(g)+'</div>'; return; } list.forEach(b=>selected.push({kind:'TEXTBOOK', code:String(b.bookNo||''), name:b.title||'', sub:(b.subject||'')+' • '+(b.grade||''), grade:b.grade||''})); beepSuccess(); $('queueMsg').innerHTML='<div class="ok">✅ Added '+list.length+' books — Total: '+selected.length+'</div>'; renderQueue(); renderPreview(); };
+window.addAllLearnersInGrade=function(){ const g=$('gradeForLearners').value||'ALL'; const list=learners.filter(l=>g==='ALL'||l.grade===g); if(!list.length){ $('queueMsg').innerHTML='<div class="warn">No learners in '+esc(g)+'</div>'; return; } list.forEach(l=>selected.push({kind:'LEARNER', code:String(l.learnerId||''), name:l.name||'', sub:(l.grade||'')+' • '+(l.class||''), grade:l.grade||''})); beepSuccess(); $('queueMsg').innerHTML='<div class="ok">✅ Added '+list.length+' learners — Total: '+selected.length+'</div>'; renderQueue(); renderPreview(); };
 function getFiltered(){
-  const type=$('printType').value||'TEXTBOOKS';
-  const gf=$('filterGrade').value||'ALL';
-  const q=($('searchBox').value||'').trim().toLowerCase();
-  let out=[];
-  if(type==='LEARNERS' || type==='BOTH'){
-    let list=learners.filter(l=>{ if(gf!=='ALL' && l.grade!==gf) return false; if(!q) return true; return (l.name+' '+l.learnerId+' '+l.grade+' '+l.class).toLowerCase().includes(q); });
-    list.forEach(l=>out.push({kind:'LEARNER', code:String(l.learnerId||''), name:l.name||'', sub:(l.grade||'')+' • '+(l.class||''), grade:l.grade||''}));
-  }
-  if(type==='TEXTBOOKS' || type==='BOTH'){
-    let list=books.filter(b=>{ if(gf!=='ALL' && b.grade!==gf) return false; if(!q) return true; return (b.title+' '+b.bookNo+' '+b.subject+' '+b.grade).toLowerCase().includes(q); });
-    list.forEach(b=>out.push({kind:'TEXTBOOK', code:String(b.bookNo||''), name:b.title||'', sub:(b.subject||'')+' • '+(b.grade||''), grade:b.grade||''}));
-  }
+  const type=$('printType').value||'TEXTBOOKS'; const gf=$('filterGrade').value||'ALL'; const q=($('searchBox').value||'').trim().toLowerCase(); let out=[];
+  if(type==='LEARNERS' || type==='BOTH'){ let list=learners.filter(l=>{ if(gf!=='ALL' && l.grade!==gf) return false; if(!q) return true; return (l.name+' '+l.learnerId+' '+l.grade+' '+l.class).toLowerCase().includes(q); }); list.forEach(l=>out.push({kind:'LEARNER', code:String(l.learnerId||''), name:l.name||'', sub:(l.grade||'')+' • '+(l.class||''), grade:l.grade||''})); }
+  if(type==='TEXTBOOKS' || type==='BOTH'){ let list=books.filter(b=>{ if(gf!=='ALL' && b.grade!==gf) return false; if(!q) return true; return (b.title+' '+b.bookNo+' '+b.subject+' '+b.grade).toLowerCase().includes(q); }); list.forEach(b=>out.push({kind:'TEXTBOOK', code:String(b.bookNo||''), name:b.title||'', sub:(b.subject||'')+' • '+(b.grade||''), grade:b.grade||''})); }
   return out;
 }
-window.renderList=function(){
-  const list=getFiltered(); $('filteredCount').textContent=list.length;
-  if(!list.length){ $('listBody').innerHTML='<div class="info">No items match filter.</div>'; return; }
-  let html='<table><tr><th>Type</th><th>Name / Title</th><th>Code</th><th>Add</th></tr>';
-  list.slice(0,80).forEach((it,idx)=>{
-    html+='<tr><td>'+(it.kind==='LEARNER'?'🎓 LEARNER':'📖 TEXTBOOK')+'</td><td><b>'+esc(it.name)+'</b><br><span class="small">'+esc(it.sub)+'</span></td><td><b>'+esc(it.code)+'</b></td><td><button class="miniBtn btn-blue" onclick="addOne('+idx+')">➕ Add</button></td></tr>';
-  });
-  html+='</table><div class="small">Showing first 80. Use Search / Grade filter to narrow.</div>';
-  $('listBody').innerHTML=html; window._currentFiltered=list;
-};
-window.addOne=function(idx){
-  const it=window._currentFiltered?.[idx]; if(!it) return;
-  selected.push(it); beepSuccess(); renderQueue(); renderPreview();
-};
-window.addAllFiltered=function(){
-  const list=getFiltered(); list.forEach(it=>selected.push(it)); beepSuccess();
-  $('queueMsg').innerHTML='<div class="ok">✅ Added '+list.length+' — Total: '+selected.length+' labels.</div>';
-  renderQueue(); renderPreview();
-};
-window.clearSelected=function(){
-  if(!selected.length) return;
-  if(!confirm('🧹 Clear all '+selected.length+' labels?')) return;
-  selected=[]; renderQueue(); renderPreview();
-};
-window.downloadCSV=function(){
-  if(!selected.length){ $('queueMsg').innerHTML='<div class="warn">Queue is empty.</div>'; return; }
-  let csv='Type,Code,Name,Sub,School,EMIS\n';
-  selected.forEach(s=>{ csv+=s.kind+','+s.code+',"'+String(s.name).replace(/"/g,"'")+'","'+String(s.sub).replace(/"/g,"'")+'","'+login.school+'",'+login.emis+'\n'; });
-  const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Print-List-'+login.emis+'-'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url);
-};
-function labelHTML(item, idx, prefix){
-  const isLearner=item.kind==='LEARNER';
-  const brand=isLearner?'MAKHANANI LTSM • LEARNER':'MAKHANANI LTSM • TEXTBOOK';
-  const bottomLabel=isLearner?'LEARNER ID':'BOOK NUMBER';
-  return '<div class="label"><div><div class="topSchool">'+esc(login.school||'')+'</div><div class="brand">'+brand+'</div><div class="name">'+esc(item.name)+'</div><div class="sub">'+esc(item.sub)+'</div></div><svg class="barcodeSvg" id="'+prefix+'_'+idx+'"></svg><div><div class="bottomCode">'+esc(item.code)+'</div><div class="bottomLabel">'+bottomLabel+'</div></div></div>';
-}
-function buildPages(containerId, prefix){
-  const el=$(containerId);
-  if(!selected.length){ el.innerHTML='<div class="info">Queue is empty. Add from dropdown above.</div>'; return; }
-  let html='';
-  for(let p=0;p<Math.ceil(selected.length/15);p++){
-    const chunk=selected.slice(p*15, (p+1)*15);
-    html+='<div class="pageTitle">'+esc(login.school||'')+' • Page '+(p+1)+' of '+Math.ceil(selected.length/15)+' • '+chunk.length+' labels</div>';
-    html+='<div class="labelGrid">';
-    chunk.forEach((it,i)=>{ html+=labelHTML(it, p*15+i, prefix); });
-    html+='</div>';
-    if(p<Math.ceil(selected.length/15)-1) html+='<div class="pageBreak"></div>';
-  }
-  el.innerHTML=html;
-  setTimeout(()=>{ selected.forEach((it,idx)=>{ try{ JsBarcode('#'+prefix+'_'+idx, String(it.code||''), {format:'CODE128', lineColor:'#000', background:'#fff', width:1.6, height:48, displayValue:false, margin:0}); }catch(e){} }); },60);
-}
-function renderQueue(){
-  $('queueCount').textContent=selected.length;
-  $('pageCount').textContent=Math.max(1, Math.ceil(selected.length/15));
-  if(!selected.length){ $('queueListBody').innerHTML=''; }
-  else {
-    let html='<table><tr><th>#</th><th>Type</th><th>Name</th><th>Code</th><th>Remove</th></tr>';
-    selected.forEach((s,i)=>{ html+='<tr><td>'+(i+1)+'</td><td>'+(s.kind==='LEARNER'?'🎓':'📖')+'</td><td><b>'+esc(s.name)+'</b><br><span class="small">'+esc(s.sub)+'</span></td><td><b>'+esc(s.code)+'</b></td><td><button class="miniBtn btn-red" onclick="removeOne('+i+')">✖️</button></td></tr>'; });
-    html+='</table>';
-    $('queueListBody').innerHTML=html;
-  }
-  buildPages('printArea','bc');
-}
+window.renderList=function(){ const list=getFiltered(); $('filteredCount').textContent=list.length; if(!list.length){ $('listBody').innerHTML='<div class="info">No items match filter.</div>'; return; } let html='<table><tr><th>Type</th><th>Name / Title</th><th>Code</th><th>Add</th></tr>'; list.slice(0,80).forEach((it,idx)=>{ html+='<tr><td>'+(it.kind==='LEARNER'?'🎓 LEARNER':'📖 TEXTBOOK')+'</td><td><b>'+esc(it.name)+'</b><br><span class="small">'+esc(it.sub)+'</span></td><td><b>'+esc(it.code)+'</b></td><td><button class="miniBtn btn-blue" onclick="addOne('+idx+')">➕ Add</button></td></tr>'; }); html+='</table><div class="small">Showing first 80.</div>'; $('listBody').innerHTML=html; window._currentFiltered=list; };
+window.addOne=function(idx){ const it=window._currentFiltered?.[idx]; if(!it) return; selected.push(it); beepSuccess(); renderQueue(); renderPreview(); };
+window.addAllFiltered=function(){ const list=getFiltered(); list.forEach(it=>selected.push(it)); beepSuccess(); $('queueMsg').innerHTML='<div class="ok">✅ Added '+list.length+' — Total: '+selected.length+'</div>'; renderQueue(); renderPreview(); };
+window.clearSelected=function(){ if(!selected.length) return; if(!confirm('🧹 Clear all '+selected.length+' labels?')) return; selected=[]; renderQueue(); renderPreview(); };
+window.downloadCSV=function(){ if(!selected.length){ $('queueMsg').innerHTML='<div class="warn">Queue is empty.</div>'; return; } let csv='Type,Code,Name,Sub,School,EMIS\n'; selected.forEach(s=>{ csv+=s.kind+','+s.code+',"'+String(s.name).replace(/"/g,"'")+'","'+String(s.sub).replace(/"/g,"'")+'","'+login.school+'",'+login.emis+'\n'; }); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Print-List-'+login.emis+'-'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url); };
+function labelHTML(item, idx, prefix){ const isLearner=item.kind==='LEARNER'; const brand=isLearner?'MAKHANANI LTSM • LEARNER':'MAKHANANI LTSM • TEXTBOOK'; const bottomLabel=isLearner?'LEARNER ID':'BOOK NUMBER'; return '<div class="label"><div><div class="topSchool">'+esc(login.school||'')+'</div><div class="brand">'+brand+'</div><div class="name">'+esc(item.name)+'</div><div class="sub">'+esc(item.sub)+'</div></div><svg class="barcodeSvg" id="'+prefix+'_'+idx+'"></svg><div><div class="bottomCode">'+esc(item.code)+'</div><div class="bottomLabel">'+bottomLabel+'</div></div></div>'; }
+function buildPages(containerId, prefix){ const el=$(containerId); if(!selected.length){ el.innerHTML='<div class="info">Queue is empty. Add from dropdown / camera above.</div>'; return; } let html=''; for(let p=0;p<Math.ceil(selected.length/15);p++){ const chunk=selected.slice(p*15, (p+1)*15); html+='<div class="pageTitle">'+esc(login.school||'')+' • Page '+(p+1)+' of '+Math.ceil(selected.length/15)+' • '+chunk.length+' labels</div>'; html+='<div class="labelGrid">'; chunk.forEach((it,i)=>{ html+=labelHTML(it, p*15+i, prefix); }); html+='</div>'; if(p<Math.ceil(selected.length/15)-1) html+='<div class="pageBreak"></div>'; } el.innerHTML=html; setTimeout(()=>{ selected.forEach((it,idx)=>{ try{ JsBarcode('#'+prefix+'_'+idx, String(it.code||''), {format:'CODE128', lineColor:'#000', background:'#fff', width:1.6, height:48, displayValue:false, margin:0}); }catch(e){} }); },60); }
+function renderQueue(){ $('queueCount').textContent=selected.length; $('pageCount').textContent=Math.max(1, Math.ceil(selected.length/15)); if(!selected.length){ $('queueListBody').innerHTML=''; } else { let html='<table><tr><th>#</th><th>Type</th><th>Name</th><th>Code</th><th>Remove</th></tr>'; selected.forEach((s,i)=>{ html+='<tr><td>'+(i+1)+'</td><td>'+(s.kind==='LEARNER'?'🎓':'📖')+'</td><td><b>'+esc(s.name)+'</b><br><span class="small">'+esc(s.sub)+'</span></td><td><b>'+esc(s.code)+'</b></td><td><button class="miniBtn btn-red" onclick="removeOne('+i+')">✖️</button></td></tr>'; }); html+='</table>'; $('queueListBody').innerHTML=html; } buildPages('printArea','bc'); }
 window.removeOne=function(i){ selected.splice(i,1); renderQueue(); renderPreview(); };
-window.renderPreview=function(){
-  buildPages('previewArea','pv');
-  $('modalQueueCount').textContent=selected.length;
-  $('modalPageCount').textContent=Math.max(1, Math.ceil(selected.length/15));
-};
-window.showPreview=function(){
-  if(!selected.length){ $('queueMsg').innerHTML='<div class="warn">Queue is empty. Add from dropdown first.</div>'; beepError(); return; }
-  renderPreview();
-  // Modal shows same pages — copy preview into modal
-  $('modalPreviewBody').innerHTML=$('previewArea').innerHTML;
-  // Re-draw barcodes in modal (duplicate IDs need new draw)
-  setTimeout(()=>{ selected.forEach((it,idx)=>{ const els=document.querySelectorAll('#modalPreviewBody #pv_'+idx); els.forEach(el=>{ try{ JsBarcode(el, String(it.code||''), {format:'CODE128', lineColor:'#000', background:'#fff', width:1.6, height:48, displayValue:false, margin:0}); }catch(e){} }); }); },80);
-  $('previewModal').style.display='block';
-  window.scrollTo(0,0);
-};
+window.renderPreview=function(){ buildPages('previewArea','pv'); $('modalQueueCount').textContent=selected.length; $('modalPageCount').textContent=Math.max(1, Math.ceil(selected.length/15)); };
+window.showPreview=function(){ if(!selected.length){ $('queueMsg').innerHTML='<div class="warn">Queue is empty. Add from dropdown / camera first.</div>'; beepError(); return; } renderPreview(); $('modalPreviewBody').innerHTML=$('previewArea').innerHTML; setTimeout(()=>{ selected.forEach((it,idx)=>{ const els=document.querySelectorAll('#modalPreviewBody #pv_'+idx); els.forEach(el=>{ try{ JsBarcode(el, String(it.code||''), {format:'CODE128', lineColor:'#000', background:'#fff', width:1.6, height:48, displayValue:false, margin:0}); }catch(e){} }); }); },80); $('previewModal').style.display='block'; window.scrollTo(0,0); };
 window.closePreview=function(){ $('previewModal').style.display='none'; };
-function onScanTest(code){
-  code=String(code||'').trim().toUpperCase(); if(!code) return;
-  const l=learners.find(x=>String(x.learnerId||'').toUpperCase()===code);
-  const b=books.find(x=>String(x.bookNo||'').toUpperCase()===code);
-  if(l){ beepSuccess(); $('scanMsg').innerHTML='<div class="ok">🔊 BEEP! ✅ Learner: <b>'+esc(l.name)+'</b> • '+esc(l.learnerId)+' • '+esc(l.grade)+' • '+esc(l.class)+'</div>'; return; }
-  if(b){ beepSuccess(); $('scanMsg').innerHTML='<div class="ok">🔊 BEEP! ✅ Book: <b>'+esc(b.title)+'</b> • '+esc(b.bookNo)+' • '+esc(b.subject)+' • '+esc(b.grade)+'</div>'; return; }
-  beepError(); $('scanMsg').innerHTML='<div class="warn">🔊 BEEP-BEEP! ❌ Not found: <b>'+esc(code)+'</b></div>';
-}
 document.addEventListener('DOMContentLoaded', async ()=>{
   if(window.OfflineQueue) OfflineQueue.updateBadge();
   login=getLogin();
@@ -394,7 +352,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
   $('printBody').style.display='block';
   await loadAll(); renderQueue(); renderPreview();
-  $('scanTest').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); onScanTest($('scanTest').value); $('scanTest').value=''; } });
+  $('scanTest').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); handleScannedCode($('scanTest').value, false); $('scanTest').value=''; } });
   document.addEventListener('click', e=>{ if(e.target.id==='previewModal') closePreview(); });
 });
 </script>
