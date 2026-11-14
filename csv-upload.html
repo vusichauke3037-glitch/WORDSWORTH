@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makhanani LTSM — CSV Upload v1.0</title>
+<meta name="theme-color" content="#0a1f4d">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:13px}main{max-width:900px;margin:auto;padding:14px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}label{font-weight:700;font-size:13px;display:block;margin:12px 0 4px}input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:15px;background:#fff}.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:12px}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-grey{background:#e2e8f0}.btn-red{background:#dc2626;color:#fff}.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}.small{font-size:12px;color:#64748b}.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}.tabBtn{padding:10px 14px;border:2px solid #0a1f4d;border-radius:20px;font-weight:900;font-size:13px;cursor:pointer;background:#fff;color:#0a1f4d}.tabBtn.active{background:#0a1f4d;color:#fff}textarea{width:100%;min-height:120px;padding:10px;border:1.5px solid #cbd5e1;border-radius:8px;font-family:monospace;font-size:13px}
+</style>
+</head>
+<body>
+<header><h1>📥 Makhanani LTSM — CSV Upload v1.0</h1><p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Upload 500 Learners / Books In 1 Minute — No Firebase Console</p></header>
+<main>
+<div class="card">
+<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="issue.html">📚 Issue / Return</a><a href="teachers.html">👩🏾‍🏫 Teachers</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 Profile</a></div>
+<div class="info" id="loginInfo">Checking login...</div>
+<div id="blockedBox" class="warn" style="display:none">🔒 Not logged in. Go to <a href="index.html">Login</a> first.</div>
+</div>
+<div id="body" style="display:none">
+<div class="card">
+<h2>📥 Step 1 — Pick What To Upload</h2>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="tabBtn active" id="tabLearners" onclick="setType('LEARNERS')">🎓 Learners CSV</button><button class="tabBtn" id="tabBooks" onclick="setType('BOOKS')">📖 Textbooks CSV</button></div>
+<div class="info" id="typeInfo"></div>
+<div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<button class="btn btn-gold" onclick="downloadTemplate()">📥 Download Template CSV</button>
+<button class="btn btn-blue" onclick="downloadExample()">📋 Download Example With 5 Rows</button>
+</div>
+<div class="goldBox" id="templateHelp"></div>
+</div>
+<div class="card">
+<h2>📋 Step 2 — Paste OR Choose File</h2>
+<label>Option A — Paste CSV Text Here (Copy from Excel → Paste)</label>
+<textarea id="pasteBox" placeholder="Paste CSV here...&#10;name,grade,class,gender,learnerNo&#10;Thabo Mokoena,Grade 10,10A,Male,"></textarea>
+<label>Option B — Choose .csv File</label>
+<input type="file" id="fileInput" accept=".csv,text/csv">
+<button class="btn btn-blue" onclick="previewCSV()">👀 Preview — Check For Errors</button>
+<div id="previewMsg"></div>
+<div id="previewTable"></div>
+</div>
+<div class="card" id="uploadCard" style="display:none">
+<h2>🚀 Step 3 — Upload To Firebase</h2>
+<div class="goldBox" id="uploadSummary"></div>
+<button class="btn btn-green" onclick="uploadAll()">🚀 Upload All <span id="uploadCount"></span> To Firebase</button>
+<div id="uploadMsg"></div>
+<div id="uploadProgress"></div>
+</div>
+</div>
+</main>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, setDoc, doc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
+let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){}
+const $ = id => document.getElementById(id);
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
+let login=getLogin(); let uploadType='LEARNERS'; let parsedRows=[], existingLearners=[], existingBooks=[];
+function normalizeSubject(s){ let x=String(s||'').trim().toUpperCase(); const map={'MATHS':'MATHEMATICS','MATH':'MATHEMATICS','MATHS LITERACY':'MATHEMATICAL LITERACY','MATH LITERACY':'MATHEMATICAL LITERACY','ENGLISH':'ENGLISH HOME LANGUAGE','ENG':'ENGLISH HOME LANGUAGE','AFRIKAANS':'AFRIKAANS HOME LANGUAGE','SCIENCE':'NATURAL SCIENCES','PHYSICAL SCIENCE':'PHYSICAL SCIENCES','LIFE SCIENCE':'LIFE SCIENCES','ACCOUNTANCY':'ACCOUNTING','BUSINESS':'BUSINESS STUDIES','ECON':'ECONOMICS','GEO':'GEOGRAPHY','HIST':'HISTORY','LO':'LIFE ORIENTATION','CAT':'COMPUTER APPLICATIONS TECHNOLOGY','IT':'INFORMATION TECHNOLOGY','EGD':'ENGINEERING GRAPHICS AND DESIGN','EMS':'ECONOMIC AND MANAGEMENT SCIENCES','SS':'SOCIAL SCIENCES','TECH':'TECHNOLOGY','ART':'CREATIVE ARTS'}; if(map[x]) return map[x]; return x; }
+function deptOf(subject){
+  const s=normalizeSubject(subject);
+  if(s.includes('ENGLISH')||s.includes('AFRIKAANS')||s.includes('LANGUAGE')||s.includes('ISIZULU')||s.includes('ISIXHOSA')||s.includes('SEPEDI')||s.includes('SESOTHO')||s.includes('SETSWANA')) return 'LANGUAGES';
+  if(s.includes('MATH')) return 'MATHEMATICS';
+  if(s.includes('SCIENCE')||s.includes('COMPUTER')||s.includes('INFORMATION')) return 'SCIENCES';
+  if(s.includes('GEOGRAPHY')||s.includes('HISTORY')||s.includes('LIFE ORIENTATION')||s.includes('SOCIAL')||s.includes('RELIGION')) return 'HUMANITIES';
+  if(s.includes('ACCOUNT')||s.includes('BUSINESS')||s.includes('ECONOM')||s.includes('TOURISM')||s.includes('CONSUMER')) return 'COMMERCE';
+  if(s.includes('ART')||s.includes('DESIGN')||s.includes('TECHNOLOGY')||s.includes('MUSIC')||s.includes('HOSPITALITY')) return 'ARTS / TECHNOLOGY';
+  return 'OTHER';
+}
+function normalizeGrade(raw){ let s=String(raw??'').trim().toUpperCase(); if(!s) return ''; if(/\bR\b/.test(s)&&!/\d/.test(s)) return 'R'; const m=s.match(/(\d{1,2})/); if(!m) return s; const n=parseInt(m[1],10); if(n>=1&&n<=12) return String(n); return s; }
+function displayGrade(raw){ const n=normalizeGrade(raw); if(n==='R') return 'Grade R'; if(/^\d+$/.test(n)) return 'Grade '+n; return String(raw||'—'); }
+function getPrefix(s){ const w=String(s||'').trim().split(/\s+/).filter(Boolean); return (w.map(x=>x[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,3)||'WHS'); }
+function parseCSV(text){
+  const lines=String(text||'').replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(l=>l.trim().length>0);
+  if(!lines.length) return {header:[], rows:[]};
+  function splitLine(line){
+    const out=[]; let cur='', inQ=false;
+    for(let i=0;i<line.length;i++){ const c=line[i]; if(c==='"'){ if(inQ && line[i+1]==='"'){ cur+='"'; i++; } else inQ=!inQ; } else if(c===',' && !inQ){ out.push(cur); cur=''; } else cur+=c; }
+    out.push(cur); return out.map(x=>x.trim().replace(/^"|"$/g,''));
+  }
+  const header=splitLine(lines[0]).map(h=>h.toLowerCase().trim());
+  const rows=lines.slice(1).map(line=>{
+    const vals=splitLine(line); const obj={};
+    header.forEach((h,i)=>{ obj[h]=vals[i]||''; });
+    obj._raw=line; return obj;
+  });
+  return {header, rows};
+}
+window.setType=function(t){
+  uploadType=t;
+  $('tabLearners').className='tabBtn'+(t==='LEARNERS'?' active':'');
+  $('tabBooks').className='tabBtn'+(t==='BOOKS'?' active':'');
+  updateTypeInfo(); $('previewTable').innerHTML=''; $('previewMsg').innerHTML=''; $('uploadCard').style.display='none'; parsedRows=[];
+};
+function updateTypeInfo(){
+  if(uploadType==='LEARNERS'){
+    $('typeInfo').innerHTML='<b>🎓 Learners CSV</b> — Columns: <b>name, grade, class, gender, learnerNo</b><br>Example: <code>Thabo Mokoena,Grade 10,10A,Male,</code> — Leave learnerNo blank for auto-number.';
+    $('templateHelp').innerHTML='<b>Learners Template:</b><br><code>name,grade,class,gender,learnerNo</code><br>• Name is required<br>• Grade can be <code>10</code> or <code>Grade 10</code> — Auto-fixes<br>• Class can be <code>10A</code> — If blank, uses Grade<br>• LearnerNo blank = Auto <code>SHS000001</code>';
+  } else {
+    $('typeInfo').innerHTML='<b>📖 Textbooks CSV</b> — Columns: <b>title, subject, grade, copies, publisher</b><br>Example: <code>Study and Master Accounting Grade 10,ACCOUNTING,Grade 10,10,Pearson</code>';
+    $('templateHelp').innerHTML='<b>Textbooks Template:</b><br><code>title,subject,grade,copies,publisher</code><br>• Title + Subject + Grade are required<br>• Subject MUST be ALL CAPS — <code>maths</code> auto-fixes to <code>MATHEMATICS</code><br>• Copies = How many copies to create — e.g. <code>10</code> creates SHS000001 to SHS000010<br>• Department auto-fills from Subject — You do NOT type Department';
+  }
+}
+window.downloadTemplate=function(){
+  const csv = uploadType==='LEARNERS' ? 'name,grade,class,gender,learnerNo\n' : 'title,subject,grade,copies,publisher\n';
+  const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=uploadType==='LEARNERS' ? 'learners-template.csv' : 'textbooks-template.csv'; a.click();
+};
+window.downloadExample=function(){
+  const csv = uploadType==='LEARNERS'
+    ? 'name,grade,class,gender,learnerNo\nThabo Mokoena,Grade 10,10A,Male,\nNaledi Khumalo,Grade 10,10A,Female,\nSipho Nkosi,Grade 11,11B,Male,\nLerato Molefe,Grade 9,9C,Female,\nKabelo Dube,Grade 12,12A,Male,\n'
+    : 'title,subject,grade,copies,publisher\nStudy and Master Accounting Grade 10,ACCOUNTING,Grade 10,10,Pearson\nStudy and Master Mathematics Grade 10,MATHEMATICS,Grade 10,15,Pearson\nEnglish Home Language Grade 10,ENGLISH HOME LANGUAGE,Grade 10,20,Oxford\nPhysical Sciences Grade 11,PHYSICAL SCIENCES,Grade 11,12,Pearson\nGeography Grade 12,GEOGRAPHY,Grade 12,8,Oxford\n';
+  const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=uploadType==='LEARNERS' ? 'learners-example.csv' : 'textbooks-example.csv'; a.click();
+};
+window.previewCSV=async function(){
+  let text=$('pasteBox').value||'';
+  const file=$('fileInput').files[0];
+  if(file){ text=await file.text(); $('pasteBox').value=text; }
+  if(!text.trim()){ $('previewMsg').innerHTML='<div class="warn">⚠️ Paste CSV or Choose File first.</div>'; return; }
+  const {header, rows}=parseCSV(text);
+  // Validate header
+  const need = uploadType==='LEARNERS' ? ['name','grade'] : ['title','subject','grade'];
+  const missing=need.filter(n=>!header.includes(n));
+  if(missing.length){ $('previewMsg').innerHTML='<div class="warn">❌ Wrong header. Missing: <b>'+missing.join(', ')+'</b><br>Your header: <code>'+esc(header.join(', '))+'</code><br>Expected: <code>'+esc(uploadType==='LEARNERS'?'name,grade,class,gender,learnerNo':'title,subject,grade,copies,publisher')+'</code><br>Click <b>Download Template</b> to get correct header.</div>'; return; }
+  // Validate rows + load existing for duplicate check
+  try{
+    const base='EMIS_'+login.emis;
+    const [ls, bs]=await Promise.all([ getDocs(collection(db,'schools',base,'learners')), getDocs(collection(db,'schools',base,'textbooks')) ]);
+    existingLearners=[]; ls.forEach(d=>existingLearners.push({id:d.id,...d.data()}));
+    existingBooks=[]; bs.forEach(d=>existingBooks.push({id:d.id,...d.data()}));
+  }catch(e){}
+  parsedRows=[]; let errors=[], warnings=[];
+  rows.forEach((r, idx)=>{
+    const lineNo=idx+2;
+    if(uploadType==='LEARNERS'){
+      const name=(r.name||'').trim(); const gradeRaw=(r.grade||'').trim();
+      if(!name) errors.push('Row '+lineNo+': Missing name');
+      if(!gradeRaw) errors.push('Row '+lineNo+': Missing grade for '+name);
+      const dup=existingLearners.find(x=>String(x.name||'').trim().toLowerCase()===name.toLowerCase() && displayGrade(x.grade)===displayGrade(gradeRaw));
+      if(dup) warnings.push('Row '+lineNo+': Duplicate? <b>'+esc(name)+'</b> already exists in '+displayGrade(gradeRaw)+' — Will still upload, will create duplicate. Delete duplicate row if not wanted.');
+      parsedRows.push({name, grade:displayGrade(gradeRaw), className:(r.class||'').trim()||displayGrade(gradeRaw), gender:(r.gender||'').trim(), learnerNo:(r.learnerNo||'').trim(), _line:lineNo});
+    } else {
+      const title=(r.title||'').trim(); const subjectRaw=(r.subject||'').trim(); const gradeRaw=(r.grade||'').trim(); const copies=parseInt(r.copies||'1',10);
+      if(!title) errors.push('Row '+lineNo+': Missing title');
+      if(!subjectRaw) errors.push('Row '+lineNo+': Missing subject for '+title);
+      if(!gradeRaw) errors.push('Row '+lineNo+': Missing grade for '+title);
+      if(!copies||copies<1) errors.push('Row '+lineNo+': Copies must be 1+ for '+title);
+      const subject=normalizeSubject(subjectRaw);
+      parsedRows.push({title, subject, department:deptOf(subject), grade:displayGrade(gradeRaw), copies:copies||1, publisher:(r.publisher||'').trim(), _line:lineNo});
+    }
+  });
+  let msg='';
+  if(errors.length) msg+='<div class="warn">❌ <b>'+errors.length+' error(s) — Fix before upload:</b><br>'+errors.slice(0,20).join('<br>')+(errors.length>20?'<br>... +'+(errors.length-20)+' more':'')+'</div>';
+  if(warnings.length) msg+='<div class="goldBox">⚠️ <b>'+warnings.length+' warning(s):</b><br>'+warnings.slice(0,10).join('<br>')+'</div>';
+  if(!errors.length) msg+='<div class="ok">✅ <b>'+parsedRows.length+' row(s) ready.</b> No errors. Check preview below, then Upload.</div>';
+  $('previewMsg').innerHTML=msg;
+  // Preview table first 20
+  let html='<table><tr>'+(uploadType==='LEARNERS'?'<th>#</th><th>Name</th><th>Grade</th><th>Class</th><th>Gender</th><th>Learner No</th>':'<th>#</th><th>Title</th><th>Subject → Dept</th><th>Grade</th><th>Copies</th><th>Publisher</th>')+'</tr>';
+  parsedRows.slice(0,20).forEach((r,i)=>{
+    if(uploadType==='LEARNERS') html+='<tr><td>'+r._line+'</td><td><b>'+esc(r.name)+'</b></td><td>'+esc(r.grade)+'</td><td>'+esc(r.className)+'</td><td>'+esc(r.gender||'—')+'</td><td>'+esc(r.learnerNo||'(auto)')+'</td></tr>';
+    else html+='<tr><td>'+r._line+'</td><td><b>'+esc(r.title)+'</b></td><td><b>'+esc(r.subject)+'</b> → '+esc(r.department)+'</td><td>'+esc(r.grade)+'</td><td><b>'+r.copies+'</b></td><td>'+esc(r.publisher||'—')+'</td></tr>';
+  });
+  html+='</table><div class="small">Showing first 20 of '+parsedRows.length+'. Total copies for books: '+(uploadType==='BOOKS'?parsedRows.reduce((a,b)=>a+b.copies,0):'—')+'</div>';
+  $('previewTable').innerHTML=html;
+  if(!errors.length && parsedRows.length){
+    $('uploadCard').style.display='block';
+    $('uploadSummary').innerHTML = uploadType==='LEARNERS' ? '🎓 Ready to upload <b>'+parsedRows.length+' learners</b> to <b>'+esc(login.school)+'</b> (EMIS '+esc(login.emis)+')' : '📖 Ready to upload <b>'+parsedRows.length+' titles</b> = <b>'+parsedRows.reduce((a,b)=>a+b.copies,0)+' book copies</b> to <b>'+esc(login.school)+'</b> (EMIS '+esc(login.emis)+')';
+    $('uploadCount').textContent = uploadType==='LEARNERS' ? parsedRows.length+' Learners' : parsedRows.reduce((a,b)=>a+b.copies,0)+' Books';
+    $('uploadMsg').innerHTML='';
+  } else $('uploadCard').style.display='none';
+};
+window.uploadAll=async function(){
+  if(!parsedRows.length){ $('uploadMsg').innerHTML='<div class="warn">No rows to upload. Preview first.</div>'; return; }
+  const total = uploadType==='LEARNERS' ? parsedRows.length : parsedRows.reduce((a,b)=>a+b.copies,0);
+  if(!confirm('🚀 Upload '+total+' '+(uploadType==='LEARNERS'?'learners':'book copies')+' to '+login.school+' (EMIS '+login.emis+')?')) return;
+  $('uploadMsg').innerHTML='<div class="info">⏳ Uploading... Do NOT close page.</div>';
+  try{
+    const base='EMIS_'+login.emis; const prefix=getPrefix(login.school);
+    if(uploadType==='LEARNERS'){
+      let maxNum=0; existingLearners.forEach(b=>{ const m=String(b.learnerNo||'').match(/(\d+)/); if(m) maxNum=Math.max(maxNum, parseInt(m[1],10)); });
+      // Also check barcode field
+      existingLearners.forEach(b=>{ const m=String(b.barcode||'').match(/(\d+)/); if(m) maxNum=Math.max(maxNum, parseInt(m[1],10)); });
+      let count=0;
+      for(const r of parsedRows){
+        let learnerNo=r.learnerNo||'';
+        if(!learnerNo){ maxNum++; learnerNo=prefix+String(maxNum).padStart(6,'0'); }
+        const id='LEARNER_'+login.emis+'_'+learnerNo+'_'+Date.now()+'_'+count;
+        await setDoc(doc(db,'schools',base,'learners',id),{ name:r.name, grade:r.grade, class:r.className, gender:r.gender, learnerNo, barcode:learnerNo, createdAt:new Date().toISOString(), createdBy:login?.name||'', archived:false });
+        count++; $('uploadProgress').innerHTML='<div class="info">⏳ '+count+' / '+parsedRows.length+' learners uploaded...</div>';
+      }
+      await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action:'LEARNERS_CSV_UPLOAD', details:'CSV uploaded '+parsedRows.length+' learners' });
+      $('uploadMsg').innerHTML='<div class="ok">✅ Uploaded <b>'+parsedRows.length+' learners</b> to '+esc(login.school)+'.<br>Learner Nos: '+esc(prefix+String(maxNum-parsedRows.length+1).padStart(6,'0'))+' to '+esc(prefix+String(maxNum).padStart(6,'0'))+'<br><a href="learner-barcode.html">Go to Learners →</a> | <a href="issue.html">Go to Issue →</a></div>';
+    } else {
+      let maxNum=0; existingBooks.forEach(b=>{ const m=String(b.bookNo||'').match(/(\d+)/); if(m) maxNum=Math.max(maxNum, parseInt(m[1],10)); });
+      let totalCopies=0;
+      for(const r of parsedRows){
+        for(let i=0;i<r.copies;i++){
+          maxNum++; totalCopies++;
+          const bookNo=prefix+String(maxNum).padStart(6,'0');
+          const id='BOOK_'+login.emis+'_'+bookNo+'_'+Date.now()+'_'+totalCopies;
+          await setDoc(doc(db,'schools',base,'textbooks',id),{ title:r.title, subject:r.subject, department:r.department, grade:r.grade, bookNo, barcode:bookNo, publisher:r.publisher, createdAt:new Date().toISOString(), createdBy:login?.name||'', archived:false });
+        }
+        $('uploadProgress').innerHTML='<div class="info">⏳ '+totalCopies+' book copies uploaded...</div>';
+      }
+      await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action:'BOOKS_CSV_UPLOAD', details:'CSV uploaded '+totalCopies+' book copies from '+parsedRows.length+' titles' });
+      $('uploadMsg').innerHTML='<div class="ok">✅ Uploaded <b>'+totalCopies+' book copies</b> from <b>'+parsedRows.length+' titles</b> to '+esc(login.school)+'.<br><a href="textbook-barcode.html">Go to Textbooks →</a> | <a href="barcode-print.html">Print Barcodes →</a></div>';
+    }
+    $('uploadProgress').innerHTML='';
+  }catch(e){ $('uploadMsg').innerHTML='<div class="warn">❌ Upload failed at some row: '+esc(e.message)+'<br>Some rows may have already uploaded. Check Learners / Textbooks page, fix CSV, re-upload remaining rows only.</div>'; }
+};
+document.addEventListener('DOMContentLoaded', ()=>{
+  login=getLogin();
+  if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login first</a>.'; $('blockedBox').style.display='block'; return; }
+  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  $('body').style.display='block';
+  updateTypeInfo();
+});
+</script>
+</body>
+</html>
