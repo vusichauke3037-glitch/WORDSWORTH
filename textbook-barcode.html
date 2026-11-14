@@ -3,621 +3,303 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v2.7 — Edit Per Book + Per Title + All</title>
+<title>Makhanani LTSM — Textbooks v2.8 — Subject Dropdown + Department Auto</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js"></script>
 <style>
-*{box-sizing:border-box}
-body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
-header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}
-header h1{margin:0;font-size:22px}
-header p{margin:6px 0 0;opacity:.9;font-size:13px}
-.logoRow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
-.logoRow img{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:2px solid #d4af37}
-main{max-width:1000px;margin:auto;padding:14px}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
-label{font-weight:700;font-size:13px;display:block;margin:12px 0 4px}
-input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:15px;background:#fff}
-.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:12px}
-.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-grey{background:#e2e8f0}.btn-red{background:#dc2626;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
-.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
-.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}
-.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}
-.small{font-size:12px;color:#64748b}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
-.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}
-.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
-.topnav a.safe{background:#dcfce7;color:#166534;border:1.5px solid #059669}
-.tableWrap{overflow-x:auto;margin-top:10px;border:1px solid #e2e8f0;border-radius:8px}
-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
-th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:middle;word-wrap:break-word}
-th{background:#0a1f4d;color:#fff}
-th:nth-child(1),td:nth-child(1){width:22%}
-th:nth-child(2),td:nth-child(2){width:15%}
-th:nth-child(3),td:nth-child(3){width:12%}
-th:nth-child(4),td:nth-child(4){width:19%}
-th:nth-child(5),td:nth-child(5){width:8%}
-th:nth-child(6),td:nth-child(6){width:24%}
-tr{height:52px}
-tr.selectedRow{background:#fef3c7!important}
-.barcodeCell svg{width:100%;max-width:150px;height:28px!important;display:block}
-.barcodeCell .noBarcode{font-size:11px;color:#dc2626;font-weight:700}
-.miniBtn{padding:6px 8px;border:none;border-radius:20px;font-weight:900;font-size:11px;cursor:pointer;margin:1px;white-space:nowrap}
-.modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;overflow:auto;padding:14px}
-.modalBox{background:#fff;border-radius:12px;max-width:900px;margin:20px auto;padding:16px}
-#cameraReader{width:100%;max-width:500px;margin:10px auto;border:3px solid #0a1f4d;border-radius:12px;overflow:hidden;background:#000;min-height:260px}
-#cameraReader video{width:100%!important}
-.cameraFrame{border:3px solid #059669;border-radius:12px;padding:10px;text-align:center;background:#f0fdf4}
-.editBox{border:3px solid #d4af37;border-radius:12px;padding:14px;background:#fef3c7;margin-top:10px}
-.bulkBox{border:3px solid #7c3aed;border-radius:12px;padding:14px;background:#ede9fe;margin-top:10px}
-.checkRow{display:flex;gap:8px;align-items:center;margin-top:8px}
-.checkRow input[type="checkbox"]{width:20px;height:20px;accent-color:#059669}
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:13px}.logoRow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}.logoRow img{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:2px solid #d4af37}main{max-width:900px;margin:auto;padding:14px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}label{font-weight:700;font-size:13px;display:block;margin:12px 0 4px}input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:15px;background:#fff}.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:12px}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-grey{background:#e2e8f0}.btn-red{background:#dc2626;color:#fff}.btn-orange{background:#ea580c;color:#fff}.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap;margin:2px}.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-purple{background:#ede9fe;color:#5b21b6}.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}.small{font-size:12px;color:#64748b}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}.miniBtn{padding:6px 10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;margin:2px}.dropdown{position:relative}.dropdownBtn{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:15px;background:#fff;text-align:left;cursor:pointer;font-weight:700}.dropdownBtn.open{border-color:#0a1f4d;border-width:2px}.dropdownPanel{position:absolute;left:0;right:0;top:100%;z-index:50;background:#fff;border:2px solid #0a1f4d;border-radius:8px;max-height:320px;overflow:auto;display:none;box-shadow:0 8px 20px rgba(0,0,0,.2)}.dropdownPanel.show{display:block}.ddSearch{position:sticky;top:0;background:#fff;padding:8px;border-bottom:1px solid #e2e8f0}.ddSearch input{padding:10px}.ddItem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #f1f5f9;cursor:pointer;font-weight:700;font-size:14px}.ddItem:hover{background:#fef3c7}.ddItem.selected{background:#dcfce7}.ddGroup{background:#0a1f4d;color:#fff;padding:8px 12px;font-weight:900;font-size:12px;position:sticky;top:52px}.tabBtn{padding:10px 14px;border:2px solid #0a1f4d;border-radius:20px;font-weight:900;font-size:13px;cursor:pointer;background:#fff;color:#0a1f4d}.tabBtn.active{background:#0a1f4d;color:#fff}.modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;overflow:auto;padding:14px}.modalBox{background:#fff;border-radius:12px;max-width:900px;margin:20px auto;padding:16px}#cameraReader{width:100%;max-width:500px;margin:10px auto;border:3px solid #0a1f4d;border-radius:12px;overflow:hidden;background:#000;min-height:260px}#cameraReader video{width:100%!important}.cameraFrame{border:3px solid #059669;border-radius:12px;padding:10px;text-align:center;background:#f0fdf4}
 </style>
 </head>
 <body>
-<div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>📖✏️ Makhanani LTSM — Textbooks v2.7</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Admin Edit: Per Book + Per Title + All Books • Auto-Repair • Camera Fixed • WHS000001 • My School Only</p>
+<div class="logoRow"><img src="logo.png" alt="Logo"><h1>📖 Makhanani LTSM — Textbooks v2.8</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Subject Dropdown ALL CAPS • Department Auto-Fills • Stock Grouped Dept → Grade → Subject</p>
 </header>
 <main>
 <div class="card">
-<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Issue / Return</a><a href="learner-barcode.html">🎓 Learners</a><a href="librarian.html">📚 Librarian</a><a href="barcode-print.html">🖨️ Print Barcodes A4 3x5</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 Profile</a></div>
+<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="learner-barcode.html">🎓 Learners</a><a href="stock.html">📦 Stock By Dept / Grade / Subject</a><a href="barcode-print.html">🖨️ Print Barcodes A4 3x5</a><a href="teachers.html">👩🏾‍🏫 Teachers</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 Profile</a></div>
 <div class="info" id="loginInfo">Checking login...</div>
 <div id="blockedBox" class="warn" style="display:none">🔒 Not logged in. Go to <a href="index.html">Login</a> first.</div>
-<div id="subBlockedBox" class="warn" style="display:none"></div>
-<div id="repairMsg"></div>
-<div id="adminInfo"></div>
 </div>
-
 <div id="bookBody" style="display:none">
 <div class="card">
-<h2>📷 Camera Verify — Scan Printed Book Sticker</h2>
-<div class="info"><b>Use after printing:</b> Print sticker → Stick → Tap <b>📷 Scan Sticker To Verify</b> → BEEP = Works ✅</div>
+<h2>📊 Stock Summary — <span id="schoolNameTitle"></span></h2>
+<div class="goldBox" id="statsBox">Loading...</div>
+<div class="grid3"><button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button><button class="btn btn-gold" onclick="window.location.href='stock.html'">📦 Open Stock By Dept / Grade / Subject</button><button class="btn btn-green" onclick="openCamera('BOOK')">📷 Camera — Scan Book</button></div>
+</div>
+<div class="card">
+<h2>➕ Add Book(s) — One Title, Many Copies</h2>
+<div class="info"><b>How:</b> 1) Type Title → 2) Click <b>Subject Dropdown</b> → Pick 1 subject → Department auto-fills → 3) Pick Grade → 4) Set Copies → Save.<br>Example: Title <b>Study and Master Accounting Grade 10</b> → Subject <b>ACCOUNTING</b> → Dept auto <b>💼 COMMERCE</b> → Grade <b>Grade 10</b> → Copies <b>10</b> → Creates WHS000001 to WHS000010.</div>
+<label>Book Title *</label>
+<input id="bTitle" placeholder="e.g. Study and Master Accounting Grade 10" autocomplete="off">
+<label>📚 Subject — Click Dropdown → Pick 1 Subject (ALL CAPS) *</label>
+<div class="dropdown" id="subjectDropdown">
+<button type="button" class="dropdownBtn" id="dropdownBtn" onclick="toggleDropdown()">📚 Click To Select Subject — None selected ▼</button>
+<div class="dropdownPanel" id="dropdownPanel">
+<div class="ddSearch"><input id="ddSearchInput" placeholder="🔍 Type to filter — e.g. MAT, ACC, ENG..." oninput="renderDropdown()" autocomplete="off"></div>
+<div id="dropdownList"></div>
+</div>
+</div>
+<div id="selectedSubjectBox"></div>
 <div class="grid2">
-<button class="btn btn-green" onclick="openCamera()">📷 Scan Sticker To Verify</button>
-<button class="btn btn-gold" onclick="testBeep()">🔊 Test Beep</button>
+<div><label>🏢 Department — Auto-Fills From Subject (Do NOT Type)</label><input id="bDept" placeholder="Auto — Pick Subject first" readonly style="background:#fef3c7;font-weight:900"></div>
+<div><label>Grade *</label><select id="bGrade"><option value="">— Select Grade —</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
 </div>
-<label>📷 Or Type / USB Scan Book No To Verify</label>
-<input id="scanVerify" placeholder="Scan WHS000001 here + Enter..." autocomplete="off">
-<div id="verifyMsg"></div>
-</div>
-
-<div class="card" id="addCard">
-<h2>➕ Add New Textbook — Auto Book No — Admin Only</h2>
-<div class="goldBox" id="schoolInfo">Loading...</div>
-<div class="info"><b>Book No:</b> WORDSWORTH = <b>WHS</b> + 000001 = <b>WHS000001</b> • Pick Title + Subject + Grade, we auto-make Book No.</div>
-<label>Textbook Title *</label>
-<input id="bookTitle" placeholder="e.g. Platinum Mathematical Literacy Grade 12" autocomplete="off">
-<div class="grid2"><label>Subject *</label><label>Grade *</label></div>
 <div class="grid2">
-<select id="subject"><option value="">Select Subject</option><option>Mathematics</option><option>Mathematical Literacy</option><option>English HL</option><option>English FAL</option><option>Afrikaans HL</option><option>Afrikaans FAL</option><option>Natural Sciences</option><option>Physical Sciences</option><option>Life Sciences</option><option>Geography</option><option>History</option><option>Life Orientation</option><option>Accounting</option><option>Business Studies</option><option>Economics</option><option>Technology</option><option>EMS</option><option>Social Sciences</option><option>Other</option></select>
-<select id="grade"><option value="">Select Grade</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
+<div><label>Number of Copies *</label><input id="bCopies" type="number" min="1" max="500" value="1"></div>
+<div><label>Publisher / Author (Optional)</label><input id="bPublisher" placeholder="e.g. Pearson / Study and Master"></div>
 </div>
-<label>Publisher (Optional)</label>
-<input id="publisher" placeholder="e.g. Platinum, Study and Master, Oxford..." autocomplete="off">
-<label>🔢 Auto Book No — Preview</label>
-<input id="bookNoPreview" placeholder="Add books to preview next Book No" readonly style="background:#fef3c7;font-weight:900;font-size:18px;text-align:center">
+<div class="grid2"><button class="btn btn-green" onclick="addBooks()">💾 Save Book(s)</button><button class="btn btn-grey" onclick="clearForm()">🧹 Clear Form</button></div>
+<div id="formMsg"></div>
+</div>
+<div class="card">
+<h2>✏️ Bulk Edit — Fix Many Books At Once</h2>
+<div class="info"><b>Use this to fix old books</b> that were typed as `Maths` / `maths` / wrong Grade. Pick a Title → Change Subject / Grade → Department auto-updates for all copies.</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><button class="tabBtn active" id="bulkTitleBtn" onclick="setBulkMode('TITLE')">🟣 Per Title — All Copies With Same Title</button><button class="tabBtn" id="bulkAllBtn" onclick="setBulkMode('ALL')">🔴 All Books — Every Book</button></div>
+<div id="bulkTitleBox">
+<label>Select Title To Fix</label><select id="bulkTitleSelect" onchange="loadBulkTitlePreview()"><option value="">— Select Title —</option></select>
+<div id="bulkTitlePreview"></div>
+</div>
+<div id="bulkAllBox" style="display:none"><div class="warn">⚠️ <b>ALL Books</b> will be changed. Use only if ALL books really have same Subject / Grade. Usually use Per Title instead.</div></div>
 <div class="grid2">
-<button class="btn btn-green" onclick="addBook()">➕ Add Textbook</button>
-<button class="btn btn-gold" onclick="addBookAndVerify()">➕ Add + 📷 Verify Sticker</button>
+<div><label>New Subject — Dropdown ALL CAPS</label><select id="bulkSubject"><option value="">— Keep Existing —</option></select></div>
+<div><label>New Grade</label><select id="bulkGrade"><option value="">— Keep Existing —</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
 </div>
-<div id="addMsg"></div>
-</div>
-
-<div class="card" id="bulkCard">
-<h2>🟣 Bulk Edit — Per Title + All Books — Admin Only</h2>
-<div class="info"><b>Use when many books have same mistake:</b><br>• <b>Per Title:</b> All books called <i>“Platinum grade 10”</i> have wrong Subject → Fix once, updates all of them.<br>• <b>All Books:</b> All books in school have wrong Publisher → Fix once, updates every book.<br>• <b>Book No is NEVER bulk-changed</b> — Each book keeps its own WHS number. Only Title / Subject / Grade / Publisher are bulk-changed.</div>
-<div class="grid2"><label>1️⃣ Bulk Scope — What To Update?</label><label>2️⃣ Which Title? (Only for Per Title)</label></div>
-<div class="grid2">
-<select id="bulkScope" onchange="onBulkScope()"><option value="TITLE">🟣 Per Title — All books with same Title</option><option value="ALL">🌍 All Books — Every book in school</option><option value="GRADE">🎓 Per Grade — All books in one Grade</option></select>
-<select id="bulkTitle" onchange="updateBulkPreview()"><option value="">— Pick Title —</option></select>
-</div>
-<div id="bulkGradeRow" style="display:none">
-<label>Which Grade? (Only for Per Grade)</label>
-<select id="bulkGrade" onchange="updateBulkPreview()"><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
-</div>
-<div class="goldBox" id="bulkPreview">Pick a Title above to see how many books will change.</div>
-<label>Tick ONLY the fields you want to change — Unticked fields stay as they are</label>
-<div class="checkRow"><input type="checkbox" id="bulkChangeTitle" onchange="toggleBulkField('Title')"><b>Change Title to:</b></div>
-<input id="bulkTitleNew" placeholder="e.g. Platinum Accounting Grade 10" disabled>
-<div class="checkRow"><input type="checkbox" id="bulkChangeSubject" onchange="toggleBulkField('Subject')"><b>Change Subject to:</b></div>
-<select id="bulkSubjectNew" disabled><option value="">Select Subject</option><option>Mathematics</option><option>Mathematical Literacy</option><option>English HL</option><option>English FAL</option><option>Afrikaans HL</option><option>Afrikaans FAL</option><option>Natural Sciences</option><option>Physical Sciences</option><option>Life Sciences</option><option>Geography</option><option>History</option><option>Life Orientation</option><option>Accounting</option><option>Business Studies</option><option>Economics</option><option>Technology</option><option>EMS</option><option>Social Sciences</option><option>Other</option></select>
-<div class="checkRow"><input type="checkbox" id="bulkChangeGrade" onchange="toggleBulkField('Grade')"><b>Change Grade to:</b></div>
-<select id="bulkGradeNew" disabled><option value="">Select Grade</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
-<div class="checkRow"><input type="checkbox" id="bulkChangePublisher" onchange="toggleBulkField('Publisher')"><b>Change Publisher to:</b></div>
-<input id="bulkPublisherNew" placeholder="e.g. Platinum, Study and Master..." disabled>
-<div class="grid2">
-<button class="btn btn-purple" onclick="doBulkEdit()">🟣 Apply Bulk Edit To <span id="bulkCountBtn">0</span> Books</button>
-<button class="btn btn-grey" onclick="clearBulk()">🧹 Clear Bulk Form</button>
-</div>
+<div id="bulkDeptPreview" class="info" style="display:none"></div>
+<button class="btn btn-orange" onclick="applyBulkEdit()">✏️ Apply Bulk Edit</button>
 <div id="bulkMsg"></div>
 </div>
-
 <div class="card">
-<h2>📖 Textbooks — <span id="bookCount">0</span> — <span id="schoolNameTitle"></span></h2>
-<div class="info" id="editHint">Admin: <b>✏️ Edit</b> = 1 book • <b>🟣 Title</b> = All books with same title • <b>🌍 All</b> in Bulk box above = Every book. Librarian: View + Verify only.</div>
-<div class="grid2"><label>Search Book</label><label>Filter Grade</label></div>
-<div class="grid2">
-<input id="searchBox" placeholder="Maths, WHS000001, Platinum..." oninput="renderList()">
-<select id="filterGrade" onchange="renderList()"><option value="ALL">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
-</div>
-<div class="grid2">
-<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button>
-<button class="btn btn-gold" onclick="window.location.href='barcode-print.html'">🖨️ Print All Stickers A4 3x5</button>
-</div>
-<div class="grid2">
-<button class="btn btn-green" onclick="repairAllBooks()">🛠️ Fix All Blank Book No Now</button>
-<button class="btn btn-grey" onclick="downloadCSV()">📥 Download Book List CSV</button>
-</div>
-<div id="listBody"></div>
+<h2>📖 Books — <span id="bookCount">0</span></h2>
+<div class="grid3"><div><label>Search</label><input id="searchBooks" placeholder="Title, WHS000001, Subject..." oninput="renderBooks()"></div><div><label>Filter Department</label><select id="filterDept" onchange="renderBooks()"><option value="ALL">All Departments</option></select></div><div><label>Filter Grade</label><select id="filterGrade" onchange="renderBooks()"><option value="ALL">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div></div>
+<div class="grid2"><div><label>Filter Subject</label><select id="filterSubject" onchange="renderBooks()"><option value="ALL">All Subjects</option></select></div><div><label>Sort By</label><select id="sortBy" onchange="renderBooks()"><option value="DEPT_GRADE_SUBJ">Department → Grade → Subject</option><option value="TITLE">Title A-Z</option><option value="BOOKNO">Book No</option><option value="GRADE">Grade</option></select></div></div>
+<div id="booksBody"></div>
 </div>
 </div>
 </main>
-
-<!-- EDIT MODAL — Per Book -->
-<div class="modalOverlay" id="editModal">
-<div class="modalBox">
-<h2>✏️ Edit 1 Book — Per Book</h2>
-<div class="info" id="editOriginal">Editing: —</div>
-<div class="editBox">
-<label>Textbook Title *</label>
-<input id="editTitle" placeholder="e.g. Platinum Mathematical Literacy Grade 12" autocomplete="off">
-<div class="grid2"><label>Subject *</label><label>Grade *</label></div>
-<div class="grid2">
-<select id="editSubject"><option value="">Select Subject</option><option>Mathematics</option><option>Mathematical Literacy</option><option>English HL</option><option>English FAL</option><option>Afrikaans HL</option><option>Afrikaans FAL</option><option>Natural Sciences</option><option>Physical Sciences</option><option>Life Sciences</option><option>Geography</option><option>History</option><option>Life Orientation</option><option>Accounting</option><option>Business Studies</option><option>Economics</option><option>Technology</option><option>EMS</option><option>Social Sciences</option><option>Other</option></select>
-<select id="editGrade"><option value="">Select Grade</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
-</div>
-<label>Publisher</label>
-<input id="editPublisher" placeholder="e.g. Platinum, Study and Master..." autocomplete="off">
-<label>🔢 Book No * — e.g. WHS000214 — Must be unique</label>
-<input id="editBookNo" placeholder="e.g. WHS000214" autocomplete="off" style="font-weight:900;font-size:18px;text-align:center;text-transform:uppercase">
-<div class="warn">⚠️ <b>Changing Book No?</b> If book is <b>ISSUED</b>, changing Book No breaks that Issue. Return it first. If book is IN, safe to change.</div>
-<div id="editStatus"></div>
-</div>
-<div class="info"><b>Want to update ALL books with this same Title too?</b> Use the 2 buttons below — Or use Bulk box on main page.</div>
-<div class="grid2">
-<button class="btn btn-green" onclick="saveEdit()">💾 Save This 1 Book Only</button>
-<button class="btn btn-purple" onclick="saveEditPerTitle()">🟣 Save This + All With Same Title</button>
-</div>
-<div class="grid2">
-<button class="btn btn-blue" onclick="saveEditAndPrint()">💾 Save + 🖨️ Go To Print</button>
-<button class="btn btn-grey" onclick="closeEdit()">❌ Cancel</button>
-</div>
-<div class="grid2">
-<button class="btn btn-red" onclick="deleteFromEdit()">🗑️ Delete This Book</button>
-<button class="btn btn-orange" onclick="deletePerTitle()">🗑️ Delete All With Same Title</button>
-</div>
-<div id="editMsg"></div>
-</div>
-</div>
-
-<div class="modalOverlay" id="cameraModal">
-<div class="modalBox">
-<h2>📷 Scan Book Sticker — Point At Barcode</h2>
-<div class="info">Hold phone <b>15-20cm</b> from book sticker. Barcode inside box, flat, good light. BEEP = Verified ✅</div>
-<div class="cameraFrame"><div id="cameraReader"></div><div class="small" id="cameraStatus">Starting camera...</div><div id="cameraLastScan"></div></div>
-<div class="grid2"><button class="btn btn-green" onclick="closeCamera(true)">✅ Done — Close</button><button class="btn btn-grey" onclick="closeCamera(false)">❌ Cancel</button></div>
-<div class="small">Scanned: <span id="cameraScanCount">0</span></div>
-</div>
-</div>
-
+<div class="modalOverlay" id="cameraModal"><div class="modalBox"><h2>📷 Camera Scan</h2><div class="info">Hold phone 15-20cm away. Barcode inside box. BEEP = Found.</div><div class="cameraFrame"><div id="cameraReader"></div><div class="small" id="cameraStatus">Starting camera...</div><div id="cameraLastScan"></div></div><div class="grid2"><button class="btn btn-green" onclick="closeCamera(true)">✅ Done</button><button class="btn btn-grey" onclick="closeCamera(false)">❌ Cancel</button></div></div></div>
+<div class="modalOverlay" id="editModal"><div class="modalBox"><h2>✏️ Edit Book — <span id="editBookNo"></span></h2><label>Title</label><input id="eTitle"><label>Subject — Dropdown ALL CAPS</label><select id="eSubject"></select><label>Department — Auto</label><input id="eDept" readonly style="background:#fef3c7;font-weight:900"><label>Grade</label><select id="eGrade"><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><label>Publisher</label><input id="ePublisher"><div class="grid2"><button class="btn btn-green" onclick="saveEditBook()">💾 Save Changes</button><button class="btn btn-grey" onclick="closeEdit()">❌ Cancel</button></div><div id="editMsg"></div><input type="hidden" id="editId"></div></div>
 <script src="offline-queue.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, setDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, setDoc, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
-let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
+let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){}
 const $ = id => document.getElementById(id);
 function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
-let login=getLogin();
-let books=[], issues=[], schoolStatus='ACTIVE';
-let editingId=null, editingOriginal=null;
-function isAdmin(){ const r=String(login?.role||'').toUpperCase(); return r==='ADMIN' || r==='SUPER_ADMIN' || r==='PRINCIPAL' || r==='SUPERADMIN'; }
-let audioCtx=null;
-function beep(freq=880, dur=0.12, type='square', vol=0.25){ try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=vol; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur); }catch(e){} }
-function beepSuccess(){ beep(880,0.12,'square',0.25); setTimeout(()=>beep(1320,0.15,'square',0.25),80); }
-function beepError(){ beep(220,0.2,'square',0.25); setTimeout(()=>beep(180,0.25,'square',0.25),120); }
-window.testBeep=function(){ beepSuccess(); $('verifyMsg').innerHTML='<div class="ok">🔊 Beep played!</div>'; };
-async function auditLog(action, details){ try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){} }
-function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,3) || 'WHS'); }
-async function loadSchoolMeta(){ try{ const snap=await getDocs(collection(db,'schools')); snap.forEach(ds=>{ if(String(ds.id)==='EMIS_'+login.emis){ const v=ds.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); } }); }catch(e){} }
-// ===== CAMERA v2.7 =====
-let html5Qr=null, cameraRunning=false, nativeStream=null, nativeRaf=null, nativeDetector=null, lastCameraCode='', lastCameraTime=0, cameraScanCount=0;
-window.openCamera=function(){
-  $('cameraModal').style.display='block';
-  $('cameraStatus').textContent='Starting camera... Allow Camera when asked...';
-  $('cameraLastScan').innerHTML='';
-  if('BarcodeDetector' in window){ startNativeCamera(); return; }
-  if(window.Html5Qrcode){ startHtml5Camera(); return; }
-  $('cameraStatus').textContent='Loading camera library from jsDelivr...';
-  const s=document.createElement('script');
-  s.src='https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js';
-  s.onload=()=>{ if(window.Html5Qrcode) startHtml5Camera(); else $('cameraStatus').textContent='❌ Camera library still failed — Use Type / USB below.'; };
-  s.onerror=()=>{ $('cameraStatus').textContent='❌ No internet for camera library — Use Type / USB below.'; $('cameraLastScan').innerHTML='<div class="warn">No internet. Fix: Turn WiFi ON, Open in Chrome (not WhatsApp), Refresh. Or type WHS000001 + Enter.</div>'; };
-  document.head.appendChild(s);
-};
-async function startNativeCamera(){
-  try{
-    $('cameraStatus').textContent='✅ Using phone built-in scanner — Point at sticker...';
-    let reader=$('cameraReader');
-    reader.innerHTML='<video id="nativeVideo" autoplay playsinline muted style="width:100%;height:auto;background:#000;border-radius:8px"></video><div style="border:2px dashed #059669;margin:8px;padding:6px;text-align:center;color:#059669;font-weight:900">⬜ Put Barcode Inside Here ⬜</div>';
-    const video=document.getElementById('nativeVideo');
-    nativeStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
-    video.srcObject=nativeStream; await video.play(); cameraRunning=true;
-    nativeDetector=new BarcodeDetector({formats:['code_128','code_39','ean_13','ean_8','upc_a','upc_e','qr_code']});
-    const loop=async()=>{ if(!cameraRunning) return; try{ const codes=await nativeDetector.detect(video); if(codes && codes.length) onCameraScan(codes[0].rawValue); }catch(e){} nativeRaf=requestAnimationFrame(loop); };
-    loop();
-  }catch(e){ $('cameraStatus').textContent='❌ Camera failed: '+e.message; $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? 1) Use Chrome / Safari (not WhatsApp) 2) Padlock → Camera → Allow 3) HTTPS only 4) Close Zoom.</div>'; }
+let login=getLogin(); let books=[], issues=[], bulkMode='TITLE';
+let audioCtx=null; function beep(f=880,d=0.12){ try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='square'; o.frequency.value=f; g.gain.value=0.25; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+d); }catch(e){} }
+// ===== SUBJECTS + DEPARTMENTS — SAME AS teachers.html + stock.html =====
+const SUBJECT_GROUPS = [
+  { group:'⭐ SPECIAL', items:['ALL SUBJECTS','FOUNDATION PHASE — ALL SUBJECTS'] },
+  { group:'📖 LANGUAGES', items:['ENGLISH HOME LANGUAGE','ENGLISH FIRST ADDITIONAL LANGUAGE','ENGLISH SECOND ADDITIONAL LANGUAGE','AFRIKAANS HOME LANGUAGE','AFRIKAANS FIRST ADDITIONAL LANGUAGE','AFRIKAANS SECOND ADDITIONAL LANGUAGE','ISIZULU HOME LANGUAGE','ISIZULU FIRST ADDITIONAL LANGUAGE','ISIXHOSA HOME LANGUAGE','ISIXHOSA FIRST ADDITIONAL LANGUAGE','SEPEDI HOME LANGUAGE','SESOTHO HOME LANGUAGE','SETSWANA HOME LANGUAGE','XITSONGA HOME LANGUAGE','TSHIVENDA HOME LANGUAGE','SISWATI HOME LANGUAGE','ISINDEBELE HOME LANGUAGE'] },
+  { group:'🔢 MATHEMATICS', items:['MATHEMATICS','MATHEMATICAL LITERACY','TECHNICAL MATHEMATICS'] },
+  { group:'🔬 SCIENCES', items:['NATURAL SCIENCES','PHYSICAL SCIENCES','LIFE SCIENCES','AGRICULTURAL SCIENCES','TECHNICAL SCIENCES','COMPUTER APPLICATIONS TECHNOLOGY','INFORMATION TECHNOLOGY'] },
+  { group:'🌍 HUMANITIES / SOCIAL', items:['SOCIAL SCIENCES','GEOGRAPHY','HISTORY','LIFE ORIENTATION','RELIGION STUDIES'] },
+  { group:'💼 COMMERCE', items:['ACCOUNTING','BUSINESS STUDIES','ECONOMICS','CONSUMER STUDIES','TOURISM'] },
+  { group:'🎨 ARTS / TECHNOLOGY', items:['CREATIVE ARTS','VISUAL ARTS','DRAMATIC ARTS','MUSIC','DESIGN','ENGINEERING GRAPHICS AND DESIGN','MECHANICAL TECHNOLOGY','ELECTRICAL TECHNOLOGY','CIVIL TECHNOLOGY','AGRICULTURAL TECHNOLOGY','HOSPITALITY STUDIES'] },
+  { group:'🏃 OTHER', items:['PHYSICAL EDUCATION','LIFE SKILLS','TECHNOLOGY','ECONOMIC AND MANAGEMENT SCIENCES','AGRICULTURAL MANAGEMENT PRACTICES'] },
+];
+const ALL_SUBJECTS = SUBJECT_GROUPS.flatMap(g=>g.items);
+const DEPT_MAP = {};
+SUBJECT_GROUPS.forEach(g=>{
+  let dept = g.group.includes('LANGUAGES') ? 'LANGUAGES' : g.group.includes('MATHEMATICS') ? 'MATHEMATICS' : g.group.includes('SCIENCES') ? 'SCIENCES' : g.group.includes('HUMANITIES') ? 'HUMANITIES' : g.group.includes('COMMERCE') ? 'COMMERCE' : g.group.includes('ARTS') ? 'ARTS / TECHNOLOGY' : g.group.includes('SPECIAL') ? 'OTHER' : 'OTHER';
+  g.items.forEach(s=> DEPT_MAP[s]=dept);
+});
+DEPT_MAP['ALL SUBJECTS']='OTHER'; DEPT_MAP['FOUNDATION PHASE — ALL SUBJECTS']='OTHER'; DEPT_MAP['LIFE SKILLS']='HUMANITIES'; DEPT_MAP['TECHNOLOGY']='ARTS / TECHNOLOGY'; DEPT_MAP['ECONOMIC AND MANAGEMENT SCIENCES']='COMMERCE'; DEPT_MAP['AGRICULTURAL MANAGEMENT PRACTICES']='ARTS / TECHNOLOGY';
+const DEPT_ORDER=['LANGUAGES','MATHEMATICS','SCIENCES','HUMANITIES','COMMERCE','ARTS / TECHNOLOGY','OTHER'];
+const DEPT_EMOJI={'LANGUAGES':'📖','MATHEMATICS':'🔢','SCIENCES':'🔬','HUMANITIES':'🌍','COMMERCE':'💼','ARTS / TECHNOLOGY':'🎨','OTHER':'📦'};
+function normalizeSubject(s){ let x=String(s||'').trim().toUpperCase(); const map={'MATHS':'MATHEMATICS','MATH':'MATHEMATICS','MATHS LITERACY':'MATHEMATICAL LITERACY','MATH LITERACY':'MATHEMATICAL LITERACY','ENGLISH':'ENGLISH HOME LANGUAGE','ENG':'ENGLISH HOME LANGUAGE','AFRIKAANS':'AFRIKAANS HOME LANGUAGE','SCIENCE':'NATURAL SCIENCES','PHYSICAL SCIENCE':'PHYSICAL SCIENCES','LIFE SCIENCE':'LIFE SCIENCES','ACCOUNTANCY':'ACCOUNTING','BUSINESS':'BUSINESS STUDIES','ECON':'ECONOMICS','GEO':'GEOGRAPHY','HIST':'HISTORY','LO':'LIFE ORIENTATION','CAT':'COMPUTER APPLICATIONS TECHNOLOGY','IT':'INFORMATION TECHNOLOGY','EGD':'ENGINEERING GRAPHICS AND DESIGN','EMS':'ECONOMIC AND MANAGEMENT SCIENCES','SS':'SOCIAL SCIENCES','TECH':'TECHNOLOGY','ART':'CREATIVE ARTS','AGRICULTURE':'AGRICULTURAL SCIENCES'}; if(map[x]) return map[x]; return x; }
+function deptOf(subject){
+  const s=normalizeSubject(subject);
+  if(DEPT_MAP[s]) return DEPT_MAP[s];
+  if(s.includes('ENGLISH')||s.includes('AFRIKAANS')||s.includes('LANGUAGE')) return 'LANGUAGES';
+  if(s.includes('MATH')) return 'MATHEMATICS';
+  if(s.includes('SCIENCE')||s.includes('COMPUTER')||s.includes('INFORMATION')) return 'SCIENCES';
+  if(s.includes('GEOGRAPHY')||s.includes('HISTORY')||s.includes('LIFE ORIENTATION')||s.includes('SOCIAL')) return 'HUMANITIES';
+  if(s.includes('ACCOUNT')||s.includes('BUSINESS')||s.includes('ECONOM')||s.includes('TOURISM')) return 'COMMERCE';
+  if(s.includes('ART')||s.includes('DESIGN')||s.includes('TECHNOLOGY')||s.includes('MUSIC')) return 'ARTS / TECHNOLOGY';
+  return 'OTHER';
 }
-function startHtml5Camera(){
-  if(cameraRunning) return;
-  html5Qr=new Html5Qrcode('cameraReader');
-  const config={fps:10, qrbox:{width:280,height:120}, aspectRatio:1.2, supportedScanTypes:[Html5QrcodeScanType.SCAN_TYPE_CAMERA]};
-  html5Qr.start({facingMode:'environment'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at book sticker...'; }).catch(()=>{
-    html5Qr.start({facingMode:'user'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at sticker...'; }).catch(e2=>{ $('cameraStatus').textContent='❌ Camera failed: '+esc(e2.message||e2); $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? Use Chrome, Allow Camera, HTTPS only.</div>'; });
+function normalizeGrade(raw){ let s=String(raw??'').trim().toUpperCase(); if(!s) return ''; if(/\bR\b/.test(s)&&!/\d/.test(s)) return 'R'; const m=s.match(/(\d{1,2})/); if(!m) return s; const n=parseInt(m[1],10); if(n>=1&&n<=12) return String(n); return s; }
+function displayGrade(raw){ const n=normalizeGrade(raw); if(n==='R') return 'Grade R'; if(/^\d+$/.test(n)) return 'Grade '+n; return String(raw||'—'); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+async function auditLog(a,d){ try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action:a, details:String(d||'') }); }catch(e){} }
+// ===== SUBJECT DROPDOWN — SINGLE SELECT =====
+let selectedSubject='';
+function updateDropdownBtn(){
+  $('dropdownBtn').textContent = !selectedSubject ? '📚 Click To Select Subject — None selected ▼' : '📚 Selected: ' + selectedSubject + ' → Dept: ' + deptOf(selectedSubject) + ' ▼';
+  $('dropdownBtn').classList.toggle('open', $('dropdownPanel').classList.contains('show'));
+  if(selectedSubject){
+    $('selectedSubjectBox').innerHTML='<div class="ok">✅ Subject: <b>'+esc(selectedSubject)+'</b> • Department: <b>'+esc(DEPT_EMOJI[deptOf(selectedSubject)]||'📦')+' '+esc(deptOf(selectedSubject))+'</b></div>';
+    $('bDept').value = (DEPT_EMOJI[deptOf(selectedSubject)]||'📦')+' '+deptOf(selectedSubject);
+  } else { $('selectedSubjectBox').innerHTML=''; $('bDept').value=''; }
+}
+function renderDropdown(){
+  const q=($('ddSearchInput').value||'').trim().toUpperCase();
+  let html='';
+  SUBJECT_GROUPS.forEach(g=>{
+    const items=g.items.filter(it=>!q || it.includes(q) || it.split(' ').some(w=>w.startsWith(q)));
+    if(!items.length) return;
+    html+='<div class="ddGroup">'+esc(g.group)+'</div>';
+    items.forEach(it=>{
+      html+='<div class="ddItem '+(selectedSubject===it?'selected':'')+'" onclick="pickSubject(\''+esc(it)+'\')">'+esc(it)+' → '+(DEPT_EMOJI[deptOf(it)]||'📦')+' '+esc(deptOf(it))+(selectedSubject===it?' ✅':'' )+'</div>';
+    });
   });
+  if(!html) html='<div style="padding:14px;text-align:center">No subject found for “'+esc(q)+'”.</div>';
+  $('dropdownList').innerHTML=html;
 }
-function onCameraScan(decodedText){
-  const code=String(decodedText||'').trim().toUpperCase(); if(!code) return;
-  const now=Date.now(); if(code===lastCameraCode && now-lastCameraTime<2000) return;
-  lastCameraCode=code; lastCameraTime=now; cameraScanCount++; $('cameraScanCount').textContent=cameraScanCount;
-  handleVerify(code, true);
+window.pickSubject=function(sub){ selectedSubject=normalizeSubject(sub); $('dropdownPanel').classList.remove('show'); updateDropdownBtn(); renderDropdown(); };
+window.toggleDropdown=function(){ $('dropdownPanel').classList.toggle('show'); updateDropdownBtn(); if($('dropdownPanel').classList.contains('show')) setTimeout(()=>$('ddSearchInput').focus(),50); };
+window.renderDropdown=renderDropdown;
+document.addEventListener('click', e=>{ const dd=$('subjectDropdown'); if(dd && !dd.contains(e.target)){ $('dropdownPanel').classList.remove('show'); updateDropdownBtn(); } });
+window.setBulkMode=function(m){ bulkMode=m; $('bulkTitleBtn').className='tabBtn'+(m==='TITLE'?' active':''); $('bulkAllBtn').className='tabBtn'+(m==='ALL'?' active':''); $('bulkTitleBox').style.display=m==='TITLE'?'block':'none'; $('bulkAllBox').style.display=m==='ALL'?'block':'none'; };
+function getPrefix(s){ const w=String(s||'').trim().split(/\s+/).filter(Boolean); return (w.map(x=>x[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,3)||'WHS'); }
+function nextBookNo(){
+  let max=0; books.forEach(b=>{ const m=String(b.bookNo||'').match(/(\d+)/); if(m) max=Math.max(max, parseInt(m[1],10)); });
+  return getPrefix(login.school)+(String(max+1).padStart(6,'0'));
 }
-async function closeCameraSilent(){ cameraRunning=false; if(nativeRaf) cancelAnimationFrame(nativeRaf); if(nativeStream){ nativeStream.getTracks().forEach(t=>t.stop()); nativeStream=null; } try{ if(html5Qr){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){} html5Qr=null; $('cameraModal').style.display='none'; }
-window.closeCamera=async function(done){ await closeCameraSilent(); };
-function handleVerify(code, fromCamera){
-  code=String(code||'').trim().toUpperCase(); if(!code) return;
-  const b=books.find(x=>String(x.bookNo||'').toUpperCase()===code && x.archived!==true);
-  if(b){
-    beepSuccess();
-    const html='<div class="ok">🔊 BEEP! ✅ VERIFIED! Sticker works!<br><b>'+esc(b.title)+'</b> • Book No: <b>'+esc(b.bookNo)+'</b> • '+(b.subject||'')+' • '+(b.grade||'')+'</div>';
-    $('verifyMsg').innerHTML=html;
-    if(fromCamera) $('cameraLastScan').innerHTML=html;
-    return;
-  }
-  beepError();
-  const html='<div class="warn">🔊 BEEP-BEEP! ❌ NOT FOUND: <b>'+esc(code)+'</b></div>';
-  $('verifyMsg').innerHTML=html;
-  if(fromCamera) $('cameraLastScan').innerHTML=html;
-}
-function makeBookNo(){
-  const prefix=getPrefix(login.school||'');
-  let max=0;
-  books.forEach(b=>{ const n=parseInt(String(b.bookNo||'').replace(prefix,''),10); if(!isNaN(n) && n>max) max=n; });
-  return prefix+String(max+1).padStart(6,'0');
-}
-function updatePreview(){ $('bookNoPreview').value=makeBookNo(); }
-// ===== PER BOOK EDIT v2.7 =====
-window.openEdit=function(id){
-  if(!isAdmin()){ alert('🔒 Only Admin / Principal can edit books.'); return; }
-  const b=books.find(x=>x.id===id); if(!b) return;
-  editingId=id; editingOriginal={...b};
-  const sameTitle=books.filter(x=>x.archived!==true && String(x.title||'').trim().toLowerCase()===String(b.title||'').trim().toLowerCase());
-  $('editOriginal').innerHTML='Editing: <b>'+esc(b.title||'')+'</b> • Book No: <b>'+esc(b.bookNo||'(blank)')+'</b><br>Same Title in school: <b>'+sameTitle.length+'</b> book(s) — Use 🟣 button below to update all '+sameTitle.length+' at once.';
-  $('editTitle').value=b.title||'';
-  $('editSubject').value=b.subject||'';
-  $('editGrade').value=b.grade||'';
-  $('editPublisher').value=b.publisher||'';
-  $('editBookNo').value=b.bookNo||'';
-  const issued=issues.find(i=>String(i.bookNo||'').toUpperCase()===String(b.bookNo||'').toUpperCase() && i.status!=='RETURNED');
-  $('editStatus').innerHTML=issued ? '<div class="warn">🔴 <b>THIS BOOK IS CURRENTLY OUT</b> — With <b>'+esc(issued.learnerName||'')+'</b> ('+esc(issued.learnerId||'')+') • Due '+esc(issued.dueDate||'')+'<br>Do NOT change Book No now. Return it first. You CAN still fix Title / Subject / Grade / Publisher.</div>' : '<div class="ok">🟢 Book is IN — Safe to change anything, including Book No.</div>';
-  $('editMsg').innerHTML='';
-  $('editModal').style.display='block';
-  $('editTitle').focus();
-};
-window.closeEdit=function(){ editingId=null; editingOriginal=null; $('editModal').style.display='none'; };
-function validateEditForm(){
-  const title=($('editTitle').value||'').trim();
-  const subject=$('editSubject').value||'';
-  const grade=$('editGrade').value||'';
-  let newBookNo=($('editBookNo').value||'').trim().toUpperCase();
-  if(!title){ $('editMsg').innerHTML='<div class="warn">⚠️ Title is required.</div>'; beepError(); return null; }
-  if(!subject){ $('editMsg').innerHTML='<div class="warn">⚠️ Subject is required.</div>'; beepError(); return null; }
-  if(!grade){ $('editMsg').innerHTML='<div class="warn">⚠️ Grade is required.</div>'; beepError(); return null; }
-  if(!newBookNo){ $('editMsg').innerHTML='<div class="warn">⚠️ Book No is required — e.g. WHS000214.</div>'; beepError(); return null; }
-  return {title, subject, grade, publisher:($('editPublisher').value||'').trim(), newBookNo};
-}
-window.saveEdit=async function(){
-  if(!isAdmin() || !editingId) return;
-  const v=validateEditForm(); if(!v) return;
-  const dup=books.find(b=>b.id!==editingId && String(b.bookNo||'').toUpperCase()===v.newBookNo && b.archived!==true);
-  if(dup){ $('editMsg').innerHTML='<div class="warn">❌ Book No <b>'+esc(v.newBookNo)+'</b> already used by <b>'+esc(dup.title||'')+'</b>. Pick different.</div>'; beepError(); return; }
-  const oldBookNo=String(editingOriginal?.bookNo||'').toUpperCase();
-  const issued=issues.find(i=>String(i.bookNo||'').toUpperCase()===oldBookNo && i.status!=='RETURNED');
-  if(issued && v.newBookNo!==oldBookNo){ $('editMsg').innerHTML='<div class="warn">🔴 Cannot change Book No while OUT with '+esc(issued.learnerName||'')+'. Keep old Book No '+esc(oldBookNo)+' to save other changes.</div>'; beepError(); return; }
+window.clearForm=function(){ $('bTitle').value=''; selectedSubject=''; $('bGrade').value=''; $('bCopies').value='1'; $('bPublisher').value=''; $('formMsg').innerHTML=''; updateDropdownBtn(); renderDropdown(); };
+window.addBooks=async function(){
+  const title=($('bTitle').value||'').trim();
+  const grade=$('bGrade').value||'';
+  const copies=parseInt($('bCopies').value||'1',10);
+  const publisher=($('bPublisher').value||'').trim();
+  if(!title){ $('formMsg').innerHTML='<div class="warn">⚠️ Type Book Title first.</div>'; return; }
+  if(!selectedSubject){ $('formMsg').innerHTML='<div class="warn">⚠️ Pick Subject from dropdown — Click dropdown → Pick 1 subject.</div>'; toggleDropdown(); return; }
+  if(!grade){ $('formMsg').innerHTML='<div class="warn">⚠️ Pick Grade.</div>'; return; }
+  if(!copies||copies<1){ $('formMsg').innerHTML='<div class="warn">⚠️ Copies must be 1 or more.</div>'; return; }
+  const subject=normalizeSubject(selectedSubject); const dept=deptOf(subject);
   try{
-    await updateDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',editingId),{ title:v.title, subject:v.subject, grade:v.grade, publisher:v.publisher, bookNo:v.newBookNo, barcode:v.newBookNo, updatedAt:new Date().toISOString(), updatedBy:login?.name||'' });
-    await auditLog('BOOK_EDITED','Edited 1 book: "'+(editingOriginal?.title||'')+'" ('+(editingOriginal?.bookNo||'')+') → "'+v.title+'" ('+v.newBookNo+')');
-    beepSuccess();
-    $('editMsg').innerHTML='<div class="ok">✅ Saved 1 book! <b>'+esc(v.title)+'</b> • <b>'+esc(v.newBookNo)+'</b></div>';
-    setTimeout(()=>{ closeEdit(); loadAll(); }, 700);
-  }catch(e){ $('editMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; beepError(); }
-};
-window.saveEditPerTitle=async function(){
-  if(!isAdmin() || !editingId) return;
-  const v=validateEditForm(); if(!v) return;
-  const oldTitle=String(editingOriginal?.title||'').trim().toLowerCase();
-  const targets=books.filter(b=>b.archived!==true && String(b.title||'').trim().toLowerCase()===oldTitle);
-  if(!confirm('🟣 Update ALL '+targets.length+' books called "'+editingOriginal?.title+'" to:\nTitle: '+v.title+'\nSubject: '+v.subject+'\nGrade: '+v.grade+'\nPublisher: '+v.publisher+'\n\nBook No for each book will STAY the same (not changed).\n\nContinue?')) return;
-  // If Book No changed, only apply it to the 1 book being edited, others keep theirs
-  let count=0;
-  for(const b of targets){
-    const isMain=b.id===editingId;
-    const patch={ title:v.title, subject:v.subject, grade:v.grade, publisher:v.publisher, updatedAt:new Date().toISOString(), updatedBy:login?.name||'' };
-    if(isMain){
-      const dup=books.find(x=>x.id!==editingId && String(x.bookNo||'').toUpperCase()===v.newBookNo && x.archived!==true);
-      if(dup){ $('editMsg').innerHTML='<div class="warn">❌ Book No '+esc(v.newBookNo)+' already used. Per-Title update stopped.</div>'; beepError(); return; }
-      const oldBookNo=String(editingOriginal?.bookNo||'').toUpperCase();
-      const issued=issues.find(i=>String(i.bookNo||'').toUpperCase()===oldBookNo && i.status!=='RETURNED');
-      if(issued && v.newBookNo!==oldBookNo){ $('editMsg').innerHTML='<div class="warn">🔴 Main book is OUT — Cannot change its Book No. Keep old Book No to continue Per-Title update.</div>'; beepError(); return; }
-      patch.bookNo=v.newBookNo; patch.barcode=v.newBookNo;
+    let startNum=0; books.forEach(b=>{ const m=String(b.bookNo||'').match(/(\d+)/); if(m) startNum=Math.max(startNum, parseInt(m[1],10)); });
+    const prefix=getPrefix(login.school);
+    for(let i=0;i<copies;i++){
+      const num=startNum+i+1; const bookNo=prefix+String(num).padStart(6,'0');
+      const id='BOOK_'+login.emis+'_'+bookNo+'_'+Date.now()+'_'+i;
+      await setDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',id),{ title, subject, department:dept, grade, bookNo, barcode:bookNo, publisher, createdAt:new Date().toISOString(), createdBy:login?.name||'', archived:false });
     }
-    try{ await updateDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',b.id),patch); count++; }catch(e){}
-  }
-  await auditLog('BOOKS_EDITED_PER_TITLE','Per-Title edit: "'+(editingOriginal?.title||'')+'" → "'+v.title+'" • '+count+' books • Subject '+v.subject+' • Grade '+v.grade);
-  beepSuccess();
-  $('editMsg').innerHTML='<div class="ok">✅ Updated <b>'+count+'</b> books with Title "'+esc(editingOriginal?.title||'')+'" → "'+esc(v.title)+'"<br>Each kept its own Book No.</div>';
-  setTimeout(()=>{ closeEdit(); loadAll(); }, 900);
+    await auditLog('BOOKS_ADDED','Added '+copies+' copies of "'+title+'" • Subject '+subject+' • Dept '+dept+' • Grade '+grade);
+    $('formMsg').innerHTML='<div class="ok">✅ Added <b>'+copies+'</b> copies of <b>'+esc(title)+'</b><br>Subject: <b>'+esc(subject)+'</b> • Department: <b>'+esc(dept)+'</b> • Grade: <b>'+esc(grade)+'</b><br>Book Nos: '+esc(prefix+String(startNum+1).padStart(6,'0'))+' to '+esc(prefix+String(startNum+copies).padStart(6,'0'))+'</div>';
+    clearForm(); await loadAll();
+  }catch(e){ $('formMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; }
 };
-window.saveEditAndPrint=async function(){ await saveEdit(); setTimeout(()=>{ window.location.href='barcode-print.html'; }, 900); };
-window.deleteFromEdit=async function(){
-  if(!isAdmin()) return;
-  const b=books.find(x=>x.id===editingId); if(!b) return;
-  if(!confirm('🗑️ Delete 1 book "'+b.title+'" ('+b.bookNo+')?')) return;
-  try{ await setDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',editingId),{archived:true},{merge:true}); await auditLog('BOOK_ARCHIVED','Archived book '+b.title+' ('+b.bookNo+') via Edit'); beepSuccess(); closeEdit(); await loadAll(); }catch(e){ alert('❌ Delete failed: '+e.message); }
-};
-window.deletePerTitle=async function(){
-  if(!isAdmin() || !editingId) return;
-  const oldTitle=String(editingOriginal?.title||'').trim().toLowerCase();
-  const targets=books.filter(b=>b.archived!==true && String(b.title||'').trim().toLowerCase()===oldTitle);
-  const outCount=targets.filter(b=>issues.some(i=>String(i.bookNo||'').toUpperCase()===String(b.bookNo||'').toUpperCase() && i.status!=='RETURNED')).length;
-  if(!confirm('🗑️ Delete ALL '+targets.length+' books called "'+editingOriginal?.title+'"?\n'+(outCount?outCount+' of them are currently OUT — They will NOT be deleted, only IN books will be archived.\n':'')+'Continue?')) return;
-  let count=0;
-  for(const b of targets){
-    const issued=issues.some(i=>String(i.bookNo||'').toUpperCase()===String(b.bookNo||'').toUpperCase() && i.status!=='RETURNED');
-    if(issued) continue;
-    try{ await setDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',b.id),{archived:true},{merge:true}); count++; }catch(e){}
-  }
-  await auditLog('BOOKS_DELETED_PER_TITLE','Deleted '+count+' books with Title "'+(editingOriginal?.title||'')+'"');
-  beepSuccess();
-  $('editMsg').innerHTML='<div class="ok">✅ Deleted '+count+' book(s) with Title "'+esc(editingOriginal?.title||'')+'" (OUT books skipped).</div>';
-  setTimeout(()=>{ closeEdit(); loadAll(); }, 900);
-};
-// ===== BULK EDIT — Per Title + All + Per Grade v2.7 =====
-function getUniqueTitles(){
-  const map={};
-  books.forEach(b=>{ if(b.archived!==true){ const k=String(b.title||'').trim(); if(k && !map[k.toLowerCase()]) map[k.toLowerCase()]=k; } });
-  return Object.values(map).sort((a,b)=>a.localeCompare(b));
+function loadBulkSubjectOptions(){
+  $('bulkSubject').innerHTML='<option value="">— Keep Existing —</option>' + ALL_SUBJECTS.map(s=>'<option value="'+esc(s)+'">'+esc(s)+' → '+esc(deptOf(s))+'</option>').join('');
+  $('eSubject').innerHTML=ALL_SUBJECTS.map(s=>'<option value="'+esc(s)+'">'+esc(s)+' → '+esc(deptOf(s))+'</option>').join('');
 }
-function fillBulkTitles(){
-  const titles=getUniqueTitles();
-  let html='<option value="">— Pick Title — '+titles.length+' titles —</option>';
-  titles.forEach(t=>{ const c=books.filter(b=>b.archived!==true && String(b.title||'').trim()===t).length; html+='<option value="'+esc(t)+'">'+esc(t)+' — '+c+' book(s)</option>'; });
-  $('bulkTitle').innerHTML=html;
-}
-function getBulkTargets(){
-  const scope=$('bulkScope').value||'TITLE';
-  if(scope==='ALL') return books.filter(b=>b.archived!==true);
-  if(scope==='GRADE'){ const g=$('bulkGrade').value||'Grade 10'; return books.filter(b=>b.archived!==true && b.grade===g); }
-  const t=$('bulkTitle').value||''; if(!t) return [];
-  return books.filter(b=>b.archived!==true && String(b.title||'').trim()===t);
-}
-window.onBulkScope=function(){
-  const scope=$('bulkScope').value||'TITLE';
-  $('bulkGradeRow').style.display=scope==='GRADE'?'block':'none';
-  updateBulkPreview();
+window.loadBulkTitlePreview=function(){
+  const t=$('bulkTitleSelect').value||'';
+  if(!t){ $('bulkTitlePreview').innerHTML=''; return; }
+  const list=books.filter(b=>b.title===t && b.archived!==true);
+  $('bulkTitlePreview').innerHTML='<div class="info">📖 Title: <b>'+esc(t)+'</b> • Copies: <b>'+list.length+'</b><br>Current: Subject <b>'+esc(list[0]?.subject||'')+'</b> • Dept <b>'+esc(deptOf(list[0]?.subject||''))+'</b> • Grade <b>'+esc(list[0]?.grade||'')+'</b><br>Book Nos: '+list.slice(0,5).map(b=>esc(b.bookNo)).join(', ')+(list.length>5?' ... +'+(list.length-5)+' more':'')+'</div>';
+  $('bulkDeptPreview').style.display='none';
 };
-window.toggleBulkField=function(field){
-  const chk=$('bulkChange'+field);
-  const input=$('bulk'+field+'New');
-  if(input) input.disabled=!chk.checked;
-  if(!chk.checked && input) input.value='';
-};
-window.updateBulkPreview=function(){
-  const targets=getBulkTargets();
-  $('bulkCountBtn').textContent=targets.length;
-  const scope=$('bulkScope').value||'TITLE';
-  let label=scope==='ALL'?'🌍 All Books':scope==='GRADE'?'🎓 Grade '+($('bulkGrade').value||''):'🟣 Title "'+($('bulkTitle').value||'—')+'"';
-  if(!targets.length){ $('bulkPreview').innerHTML=scope==='TITLE' ? 'Pick a Title above to see how many books will change.' : 'No books in this scope.'; return; }
-  const outCount=targets.filter(b=>issues.some(i=>String(i.bookNo||'').toUpperCase()===String(b.bookNo||'').toUpperCase() && i.status!=='RETURNED')).length;
-  let html='Will update <b>'+targets.length+'</b> book(s) — '+label+'<br>';
-  html+='Book Nos: '+targets.slice(0,5).map(b=>esc(b.bookNo||'')).join(', ')+(targets.length>5?' ... +'+(targets.length-5)+' more':'')+'<br>';
-  html+='Each keeps its own Book No. Only ticked fields change.<br>';
-  if(outCount) html+='⚠️ '+outCount+' book(s) are currently OUT — Their Title / Subject / Grade / Publisher can still change, but Book No is not touched in Bulk.';
-  $('bulkPreview').innerHTML=html;
-};
-window.clearBulk=function(){
-  ['bulkChangeTitle','bulkChangeSubject','bulkChangeGrade','bulkChangePublisher'].forEach(id=>{ $(id).checked=false; });
-  ['bulkTitleNew','bulkSubjectNew','bulkGradeNew','bulkPublisherNew'].forEach(id=>{ $(id).value=''; $(id).disabled=true; });
-  $('bulkTitle').value=''; $('bulkMsg').innerHTML=''; updateBulkPreview();
-};
-window.doBulkEdit=async function(){
-  if(!isAdmin()){ alert('🔒 Admin only.'); return; }
-  const targets=getBulkTargets();
-  if(!targets.length){ $('bulkMsg').innerHTML='<div class="warn">⚠️ No books in this scope. Pick a Title / Grade first.</div>'; beepError(); return; }
-  const changeTitle=$('bulkChangeTitle').checked;
-  const changeSubject=$('bulkChangeSubject').checked;
-  const changeGrade=$('bulkChangeGrade').checked;
-  const changePublisher=$('bulkChangePublisher').checked;
-  if(!changeTitle && !changeSubject && !changeGrade && !changePublisher){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Tick at least 1 field to change (Title / Subject / Grade / Publisher).</div>'; beepError(); return; }
-  const newTitle=($('bulkTitleNew').value||'').trim();
-  const newSubject=$('bulkSubjectNew').value||'';
-  const newGrade=$('bulkGradeNew').value||'';
-  const newPublisher=($('bulkPublisherNew').value||'').trim();
-  if(changeTitle && !newTitle){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Type new Title.</div>'; beepError(); return; }
-  if(changeSubject && !newSubject){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Pick new Subject.</div>'; beepError(); return; }
-  if(changeGrade && !newGrade){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Pick new Grade.</div>'; beepError(); return; }
-  if(changePublisher && !newPublisher){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Type new Publisher.</div>'; beepError(); return; }
-  const scope=$('bulkScope').value||'TITLE';
-  const scopeLabel=scope==='ALL'?'ALL '+targets.length+' books':scope==='GRADE'?'Grade '+($('bulkGrade').value||''): 'Title "'+($('bulkTitle').value||'')+'" — '+targets.length+' books';
-  let summary='Bulk Edit — '+scopeLabel+'\n\nChange:\n';
-  if(changeTitle) summary+='• Title → '+newTitle+'\n';
-  if(changeSubject) summary+='• Subject → '+newSubject+'\n';
-  if(changeGrade) summary+='• Grade → '+newGrade+'\n';
-  if(changePublisher) summary+='• Publisher → '+newPublisher+'\n';
-  summary+='\nBook No for each book STAYS the same.\n\nContinue?';
-  if(!confirm(summary)) return;
-  let count=0;
-  for(const b of targets){
-    const patch={ updatedAt:new Date().toISOString(), updatedBy:login?.name||'' };
-    if(changeTitle) patch.title=newTitle;
-    if(changeSubject) patch.subject=newSubject;
-    if(changeGrade) patch.grade=newGrade;
-    if(changePublisher) patch.publisher=newPublisher;
-    try{ await updateDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',b.id),patch); count++; }catch(e){}
-  }
-  await auditLog('BOOKS_BULK_EDITED','Bulk edit '+scope+' — '+count+' books — '+(changeTitle?'Title→'+newTitle+' ':'')+(changeSubject?'Subject→'+newSubject+' ':'')+(changeGrade?'Grade→'+newGrade+' ':'')+(changePublisher?'Publisher→'+newPublisher:''));
-  beepSuccess();
-  $('bulkMsg').innerHTML='<div class="ok">✅ Bulk Updated <b>'+count+'</b> book(s)!<br>'+(changeTitle?'Title → <b>'+esc(newTitle)+'</b><br>':'')+(changeSubject?'Subject → <b>'+esc(newSubject)+'</b><br>':'')+(changeGrade?'Grade → <b>'+esc(newGrade)+'</b><br>':'')+(changePublisher?'Publisher → <b>'+esc(newPublisher)+'</b><br>':'')+'Each kept its own Book No.</div>';
-  clearBulk(); await loadAll();
-};
-// ===== AUTO-REPAIR =====
-async function repairBlankBookNos(){
-  const prefix=getPrefix(login.school||'');
-  let max=0;
-  books.forEach(b=>{ const n=parseInt(String(b.bookNo||'').replace(prefix,''),10); if(!isNaN(n) && n>max) max=n; });
-  let repaired=[];
-  for(const b of books){
-    const hasNo=!(b.bookNo && String(b.bookNo).trim());
-    const hasBarcodeField = b.barcode && String(b.barcode).trim();
-    if(hasNo){
-      max++;
-      const newNo=prefix+String(max).padStart(6,'0');
-      b.bookNo=newNo;
-      if(!hasBarcodeField) b.barcode=newNo;
-      repaired.push({title:b.title||'', new:newNo, id:b.id});
-      try{ await updateDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',b.id),{bookNo:newNo, barcode:newNo}); }catch(e){}
-    } else if(!hasBarcodeField){
-      b.barcode=b.bookNo;
-      try{ await updateDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',b.id),{barcode:b.bookNo}); }catch(e){}
+document.getElementById('bulkSubject')?.addEventListener('change', ()=>{
+  const s=$('bulkSubject').value||'';
+  if(s){ $('bulkDeptPreview').style.display='block'; $('bulkDeptPreview').innerHTML='🏢 New Department will be: <b>'+esc(DEPT_EMOJI[deptOf(s)]||'📦')+' '+esc(deptOf(s))+'</b> (auto from Subject <b>'+esc(s)+'</b>)'; }
+  else $('bulkDeptPreview').style.display='none';
+});
+window.applyBulkEdit=async function(){
+  const newSubj=$('bulkSubject').value||''; const newGrade=$('bulkGrade').value||'';
+  if(!newSubj && !newGrade){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Pick New Subject and/or New Grade first.</div>'; return; }
+  let targets=[];
+  if(bulkMode==='TITLE'){ const t=$('bulkTitleSelect').value||''; if(!t){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Select Title first.</div>'; return; } targets=books.filter(b=>b.title===t && b.archived!==true); }
+  else { targets=books.filter(b=>b.archived!==true); }
+  if(!targets.length){ $('bulkMsg').innerHTML='<div class="warn">No books found.</div>'; return; }
+  if(!confirm('✏️ Change '+targets.length+' book(s)?'+(newSubj?'\nNew Subject: '+normalizeSubject(newSubj)+' → Dept '+deptOf(newSubj):'')+(newGrade?'\nNew Grade: '+newGrade:''))) return;
+  try{
+    for(const b of targets){
+      const upd={};
+      if(newSubj){ upd.subject=normalizeSubject(newSubj); upd.department=deptOf(newSubj); }
+      if(newGrade) upd.grade=newGrade;
+      await updateDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',b.id), upd);
     }
-  }
-  return repaired;
-}
-window.repairAllBooks=async function(){
-  $('repairMsg').innerHTML='<div class="info">🛠️ Repairing blank Book Nos... Please wait...</div>';
-  const repaired=await repairBlankBookNos();
-  if(!repaired.length){ $('repairMsg').innerHTML='<div class="ok">✅ No blank Book Nos found.</div>'; }
-  else{
-    let html='<div class="ok">✅ Repaired <b>'+repaired.length+'</b> book(s):<br>';
-    repaired.forEach(r=>{ html+='• <b>'+esc(r.title)+'</b> → <b>'+esc(r.new)+'</b><br>'; });
-    html+='</div>';
-    $('repairMsg').innerHTML=html;
-  }
-  updatePreview(); renderList();
+    await auditLog('BOOKS_BULK_EDIT','Bulk edited '+targets.length+' books • New Subject '+(newSubj||'—')+' • New Grade '+(newGrade||'—'));
+    $('bulkMsg').innerHTML='<div class="ok">✅ Updated <b>'+targets.length+'</b> book(s). Department auto-updated.</div>';
+    await loadAll();
+  }catch(e){ $('bulkMsg').innerHTML='<div class="warn">❌ Bulk edit failed: '+esc(e.message)+'</div>'; }
 };
+window.renderBooks=function(){
+  const q=($('searchBooks').value||'').trim().toLowerCase(); const fd=$('filterDept').value||'ALL'; const fg=$('filterGrade').value||'ALL'; const fs=$('filterSubject').value||'ALL'; const sort=$('sortBy').value||'DEPT_GRADE_SUBJ';
+  let list=books.filter(b=>b.archived!==true);
+  if(fd!=='ALL') list=list.filter(b=>deptOf(b.subject)===fd);
+  if(fg!=='ALL') list=list.filter(b=>displayGrade(b.grade)===fg);
+  if(fs!=='ALL') list=list.filter(b=>normalizeSubject(b.subject)===fs);
+  if(q) list=list.filter(b=>(b.title+' '+b.bookNo+' '+b.subject+' '+b.grade).toLowerCase().includes(q));
+  // Sort
+  if(sort==='DEPT_GRADE_SUBJ') list.sort((a,b)=> (DEPT_ORDER.indexOf(deptOf(a.subject))-DEPT_ORDER.indexOf(deptOf(b.subject))) || (parseInt(normalizeGrade(a.grade)||0)-parseInt(normalizeGrade(b.grade)||0)) || String(normalizeSubject(a.subject)).localeCompare(String(normalizeSubject(b.subject))) || String(a.title).localeCompare(String(b.title)) || String(a.bookNo).localeCompare(String(b.bookNo)));
+  else if(sort==='TITLE') list.sort((a,b)=>String(a.title).localeCompare(String(b.title))||String(a.bookNo).localeCompare(String(b.bookNo)));
+  else if(sort==='BOOKNO') list.sort((a,b)=>String(a.bookNo).localeCompare(String(b.bookNo)));
+  else if(sort==='GRADE') list.sort((a,b)=>parseInt(normalizeGrade(a.grade)||0)-parseInt(normalizeGrade(b.grade)||0));
+  $('bookCount').textContent=list.length;
+  if(!list.length){ $('booksBody').innerHTML='<div class="info">No books found. Add one above.</div>'; return; }
+  let html='<table><tr><th>Book No</th><th>Title</th><th>Department → Grade → Subject</th><th>Status</th><th>Action</th></tr>';
+  list.slice(0,200).forEach(b=>{
+    const iss=issues.find(i=>String(i.bookNo||'').toUpperCase()===String(b.bookNo||'').toUpperCase() && i.status!=='RETURNED');
+    html+='<tr><td><b>'+esc(b.bookNo||'')+'</b></td><td><b>'+esc(b.title||'')+'</b><br><span class="small">'+esc(b.publisher||'')+'</span></td><td>'+esc(DEPT_EMOJI[deptOf(b.subject)]||'📦')+' <b>'+esc(deptOf(b.subject))+'</b><br>→ <b>'+displayGrade(b.grade)+'</b> → <b>'+esc(normalizeSubject(b.subject))+'</b></td><td>'+(iss?'<span class="pill pill-blue">📚 OUT — '+esc(iss.learnerName||'')+'</span>':'<span class="pill pill-green">✅ AVAILABLE</span>')+'</td><td><button class="miniBtn btn-blue" onclick="openEdit(\''+esc(b.id)+'\')">✏️ Edit</button><button class="miniBtn btn-red" onclick="deleteBook(\''+esc(b.id)+'\')">🗑️ Delete</button></td></tr>';
+  });
+  $('booksBody').innerHTML=html+'</table><div class="small">Showing first 200. Use filters to narrow.</div>';
+};
+window.openEdit=function(id){
+  const b=books.find(x=>x.id===id); if(!b) return;
+  $('editId').value=b.id; $('editBookNo').textContent=b.bookNo||''; $('eTitle').value=b.title||''; $('eSubject').value=normalizeSubject(b.subject||''); $('eDept').value=(DEPT_EMOJI[deptOf(b.subject)]||'📦')+' '+deptOf(b.subject); $('eGrade').value=displayGrade(b.grade); $('ePublisher').value=b.publisher||''; $('editMsg').innerHTML='';
+  $('editModal').style.display='block';
+};
+window.closeEdit=function(){ $('editModal').style.display='none'; };
+document.getElementById('eSubject')?.addEventListener('change', ()=>{ const s=$('eSubject').value||''; $('eDept').value=(DEPT_EMOJI[deptOf(s)]||'📦')+' '+deptOf(s); });
+window.saveEditBook=async function(){
+  const id=$('editId').value||''; if(!id) return;
+  const title=($('eTitle').value||'').trim(); const subject=normalizeSubject($('eSubject').value||''); const grade=$('eGrade').value||''; const publisher=($('ePublisher').value||'').trim();
+  if(!title||!subject||!grade){ $('editMsg').innerHTML='<div class="warn">⚠️ Title, Subject and Grade are required.</div>'; return; }
+  try{ await updateDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',id),{title, subject, department:deptOf(subject), grade, publisher}); await auditLog('BOOK_EDITED','Edited book '+title+' • Subject '+subject+' • Dept '+deptOf(subject)+' • Grade '+grade); $('editMsg').innerHTML='<div class="ok">✅ Saved — Department auto-updated to <b>'+esc(deptOf(subject))+'</b></div>'; setTimeout(()=>{ closeEdit(); loadAll(); },600); }catch(e){ $('editMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; }
+};
+window.deleteBook=async function(id){
+  const b=books.find(x=>x.id===id); if(!b) return;
+  if(!confirm('🗑️ Delete book '+b.title+' ('+b.bookNo+')?')) return;
+  try{ await updateDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',id),{archived:true}); await loadAll(); }catch(e){ alert('❌ Delete failed: '+e.message); }
+};
+// ===== CAMERA =====
+let html5Qr=null,cameraRunning=false,nativeStream=null,nativeRaf=null,nativeDetector=null;
+window.openCamera=function(what){ $('cameraModal').style.display='block'; $('cameraStatus').textContent='Starting camera...'; if('BarcodeDetector' in window){ startNativeCamera(); return; } if(window.Html5Qrcode){ startHtml5Camera(); return; } const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js'; s.onload=()=>{ if(window.Html5Qrcode) startHtml5Camera(); }; document.head.appendChild(s); };
+async function startNativeCamera(){ try{ $('cameraStatus').textContent='✅ Using phone built-in scanner...'; let r=$('cameraReader'); r.innerHTML='<video id="nativeVideo" autoplay playsinline muted style="width:100%;height:auto;background:#000;border-radius:8px"></video>'; const v=document.getElementById('nativeVideo'); nativeStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false}); v.srcObject=nativeStream; await v.play(); cameraRunning=true; nativeDetector=new BarcodeDetector({formats:['code_128','code_39','ean_13','ean_8','upc_a','upc_e','qr_code']}); const loop=async()=>{ if(!cameraRunning) return; try{ const c=await nativeDetector.detect(v); if(c&&c.length) onCameraScan(c[0].rawValue); }catch(e){} nativeRaf=requestAnimationFrame(loop); }; loop(); }catch(e){ $('cameraStatus').textContent='❌ Camera failed: '+e.message; } }
+function startHtml5Camera(){ if(cameraRunning) return; html5Qr=new Html5Qrcode('cameraReader'); const cfg={fps:10,qrbox:{width:280,height:120},aspectRatio:1.2,supportedScanTypes:[Html5QrcodeScanType.SCAN_TYPE_CAMERA]}; html5Qr.start({facingMode:'environment'},cfg,onCameraScan,()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON...'; }).catch(e=>{ $('cameraStatus').textContent='❌ Camera failed: '+esc(e.message||e); }); }
+async function onCameraScan(code){ code=String(code||'').trim().toUpperCase(); if(!code) return; const b=books.find(x=>String(x.bookNo||'').toUpperCase()===code && x.archived!==true); if(b){ beep(880); $('cameraLastScan').innerHTML='<div class="ok">🔊 BEEP! ✅ Book: <b>'+esc(b.title)+'</b> • '+esc(b.bookNo)+' • '+esc(deptOf(b.subject))+' → '+displayGrade(b.grade)+' → '+esc(normalizeSubject(b.subject))+'</div>'; setTimeout(()=>closeCamera(true),800); } else { beep(220); $('cameraLastScan').innerHTML='<div class="warn">❌ Book NOT found: <b>'+esc(code)+'</b></div>'; } }
+async function closeCameraSilent(){ cameraRunning=false; if(nativeRaf) cancelAnimationFrame(nativeRaf); if(nativeStream){ nativeStream.getTracks().forEach(t=>t.stop()); nativeStream=null; } try{ if(html5Qr){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){} html5Qr=null; $('cameraModal').style.display='none'; }
+window.closeCamera=async function(){ await closeCameraSilent(); };
 window.loadAll=async function(){
-  await loadSchoolMeta();
-  if(schoolStatus!=='ACTIVE'){ $('subBlockedBox').style.display='block'; $('subBlockedBox').innerHTML='🟠 <b>'+esc(login.school||'')+'</b> is <b>'+esc(schoolStatus)+'</b> — Adding / Editing BLOCKED. Viewing still works.'; } else $('subBlockedBox').style.display='none';
-  if(isAdmin()){
-    $('adminInfo').innerHTML='<div class="ok">👑 <b>Admin Mode ON</b> — '+esc(login.name||'')+' ('+esc(login.role||'')+') — You can Add + Edit Per Book / Per Title / All.</div>';
-    $('addCard').style.display='block'; $('bulkCard').style.display='block';
-  } else {
-    $('adminInfo').innerHTML='<div class="info">👀 <b>View Mode</b> — '+esc(login.name||'')+' ('+esc(login.role||'')+') — View + Verify only.</div>';
-    $('addCard').style.display='none'; $('bulkCard').style.display='none';
-  }
+  $('schoolNameTitle').textContent=login.school||'';
   try{
     const base='EMIS_'+login.emis;
-    const [bs, is]=await Promise.all([ getDocs(collection(db,'schools',base,'textbooks')), getDocs(collection(db,'schools',base,'issues')) ]);
-    books=[]; bs.forEach(d=>books.push({id:d.id,...d.data()}));
-    issues=[]; is.forEach(d=>issues.push({id:d.id,...d.data()}));
-    books=books.filter(b=>b.archived!==true).sort((a,b)=>String(a.title||'').localeCompare(String(b.title||'')));
-    const repaired=await repairBlankBookNos();
-    if(repaired.length){
-      let html='<div class="ok">🛠️ <b>Auto-Repaired '+repaired.length+' book(s):</b><br>';
-      repaired.forEach(r=>{ html+='• <b>'+esc(r.title)+'</b> → <b>'+esc(r.new)+'</b><br>'; });
-      html+='</div>';
-      $('repairMsg').innerHTML=html;
-    } else { $('repairMsg').innerHTML=''; }
-    $('schoolInfo').innerHTML='School: <b>'+esc(login.school||'')+'</b> • EMIS <b>'+esc(login.emis||'')+'</b> • Books: <b>'+books.length+'</b> • Prefix: <b>'+getPrefix(login.school)+'</b>';
-    $('schoolNameTitle').textContent=login.school||'';
-    updatePreview(); fillBulkTitles(); updateBulkPreview(); renderList();
-  }catch(e){ $('listBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
-};
-window.addBook=async function(){
-  if(!isAdmin()){ alert('🔒 Only Admin can add books.'); return; }
-  const title=($('bookTitle').value||'').trim();
-  const subject=$('subject').value||''; const grade=$('grade').value||''; const publisher=($('publisher').value||'').trim();
-  if(!title){ $('addMsg').innerHTML='<div class="warn">⚠️ Type textbook title.</div>'; beepError(); return; }
-  if(!subject){ $('addMsg').innerHTML='<div class="warn">⚠️ Pick Subject.</div>'; beepError(); return; }
-  if(!grade){ $('addMsg').innerHTML='<div class="warn">⚠️ Pick Grade.</div>'; beepError(); return; }
-  if(schoolStatus!=='ACTIVE'){ $('addMsg').innerHTML='<div class="warn">🟠 Adding BLOCKED — School is '+esc(schoolStatus)+'</div>'; beepError(); return; }
-  const bookNo=makeBookNo();
-  try{
-    const id='BOOK_'+login.emis+'_'+bookNo;
-    await setDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',id),{ title, subject, grade, publisher, bookNo, barcode:bookNo, archived:false, createdAt:new Date().toISOString(), createdBy:login?.name||'' });
-    await auditLog('BOOK_ADDED','Added book '+title+' ('+bookNo+') • '+subject+' • '+grade);
-    beepSuccess();
-    $('addMsg').innerHTML='<div class="ok">✅ Added: <b>'+esc(title)+'</b> • Book No: <b>'+esc(bookNo)+'</b></div>';
-    $('bookTitle').value=''; $('publisher').value=''; await loadAll();
-  }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; beepError(); }
-};
-window.addBookAndVerify=async function(){
-  const before=books.length;
-  await addBook();
-  setTimeout(()=>{ if(books.length>before){ $('verifyMsg').innerHTML='<div class="info">✅ Book added. Go to <b>Print Barcodes</b> → Print sticker → Stick → Come back → <b>📷 Scan Sticker To Verify</b>.</div>'; } }, 600);
-};
-window.renderList=function(){
-  const q=($('searchBox').value||'').trim().toLowerCase(); const gf=$('filterGrade').value||'ALL';
-  let list=books.filter(b=>{ if(gf!=='ALL' && b.grade!==gf) return false; if(!q) return true; return (b.title+' '+b.bookNo+' '+b.subject+' '+b.grade).toLowerCase().includes(q); });
-  $('bookCount').textContent=list.length;
-  if(!list.length){ $('listBody').innerHTML='<div class="info">No books found.</div>'; return; }
-  let html='<div class="tableWrap"><table><tr><th>Title</th><th>Subject • Grade</th><th>Book No</th><th>Barcode</th><th>Verify</th><th>'+(isAdmin()?'Edit / Delete':'Action')+'</th></tr>';
-  list.slice(0,100).forEach((b,idx)=>{
-    const code=String(b.bookNo||b.barcode||'').trim();
-    const issued=issues.some(i=>String(i.bookNo||'').toUpperCase()===code.toUpperCase() && i.status!=='RETURNED');
-    const sameTitleCount=books.filter(x=>x.archived!==true && String(x.title||'').trim().toLowerCase()===String(b.title||'').trim().toLowerCase()).length;
-    html+='<tr><td><b>'+esc(b.title||'')+'</b><br><span class="small">'+esc(b.publisher||'')+'</span>'+(issued?' <span class="pill pill-red">OUT</span>':' <span class="pill pill-green">IN</span>')+(sameTitleCount>1?' <span class="pill pill-purple">x'+sameTitleCount+' same title</span>':'')+'</td><td>'+esc(b.subject||'')+' • '+esc(b.grade||'')+'</td><td><b>'+esc(code||'—')+'</b></td><td class="barcodeCell">'+(code?'<svg id="bb_'+idx+'"></svg>':'<span class="noBarcode">❌ No Book No</span>')+'</td><td><button class="miniBtn btn-green" onclick="verifyOne(\''+esc(code)+'\')">📷 Verify</button></td><td>'+(isAdmin()?'<button class="miniBtn btn-gold" onclick="openEdit(\''+esc(b.id)+'\')">✏️ Edit 1</button><button class="miniBtn btn-purple" onclick="openBulkForTitle(\''+esc(String(b.title||'').replace(/'/g,"\\'"))+'\')">🟣 Title</button><button class="miniBtn btn-red" onclick="deleteBook(\''+esc(b.id)+'\',\''+esc(b.title||'')+'\')">🗑️</button>':'<span class="small">View only</span>')+'</td></tr>';
-  });
-  html+='</table></div><div class="small">Showing first 100. ✏️ Edit 1 = 1 book • 🟣 Title = All with same title • Bulk box = All books.</div>'; $('listBody').innerHTML=html;
-  setTimeout(()=>{ list.slice(0,100).forEach((b,idx)=>{ const code=String(b.bookNo||b.barcode||'').trim(); if(!code) return; try{ JsBarcode('#bb_'+idx, code, {format:'CODE128', lineColor:'#000', background:'#fff', width:1.4, height:28, displayValue:false, margin:0}); }catch(e){ const el=document.getElementById('bb_'+idx); if(el) el.outerHTML='<span class="noBarcode">❌ Barcode failed</span>'; } }); },60);
-};
-window.openBulkForTitle=function(title){
-  if(!isAdmin()) return;
-  $('bulkScope').value='TITLE';
-  onBulkScope();
-  fillBulkTitles();
-  // Find exact title in dropdown (case-insensitive)
-  const opts=[...$('bulkTitle').options];
-  const found=opts.find(o=>o.value.trim().toLowerCase()===String(title||'').trim().toLowerCase());
-  if(found) $('bulkTitle').value=found.value;
-  updateBulkPreview();
-  document.getElementById('bulkCard').scrollIntoView({behavior:'smooth'});
-  $('bulkMsg').innerHTML='<div class="info">🟣 Bulk ready for Title: <b>'+esc(title)+'</b> — Tick fields you want to change, then Apply.</div>';
-};
-window.verifyOne=function(code){ if(!code){ alert('❌ No Book No yet — Tap Refresh.'); return; } $('scanVerify').value=code; handleVerify(code, false); $('scanVerify').focus(); };
-window.deleteBook=async function(id, title){
-  if(!isAdmin()){ alert('🔒 Admin only.'); return; }
-  if(!confirm('🗑️ Delete book '+title+'? This archives it.')) return;
-  try{ await setDoc(doc(db,'schools','EMIS_'+login.emis,'textbooks',id),{archived:true},{merge:true}); await auditLog('BOOK_ARCHIVED','Archived book '+title); await loadAll(); }catch(e){ alert('❌ Delete failed: '+e.message); }
-};
-window.downloadCSV=function(){
-  if(!books.length){ alert('No books to download'); return; }
-  let csv='Title,Subject,Grade,Publisher,BookNo,School,EMIS\n';
-  books.forEach(b=>{ csv+='"'+String(b.title||'').replace(/"/g,"'")+'","'+String(b.subject||'').replace(/"/g,"'")+'","'+String(b.grade||'')+'","'+String(b.publisher||'').replace(/"/g,"'")+'","'+String(b.bookNo||'')+'","'+login.school+'",'+login.emis+'\n'; });
-  const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Books-'+login.emis+'-'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url);
+    const [bs,is]=await Promise.all([ getDocs(collection(db,'schools',base,'textbooks')), getDocs(collection(db,'schools',base,'issues')) ]);
+    books=[]; bs.forEach(d=>books.push({id:d.id,...d.data()})); issues=[]; is.forEach(d=>issues.push({id:d.id,...d.data()}));
+    // Fill filters
+    $('filterDept').innerHTML='<option value="ALL">All Departments</option>' + DEPT_ORDER.map(d=>'<option value="'+esc(d)+'">'+esc(DEPT_EMOJI[d]||'📦')+' '+esc(d)+'</option>').join('');
+    $('filterSubject').innerHTML='<option value="ALL">All Subjects</option>' + ALL_SUBJECTS.map(s=>'<option value="'+esc(s)+'">'+esc(s)+'</option>').join('');
+    // Bulk title select
+    const titles=[...new Set(books.filter(b=>b.archived!==true).map(b=>b.title))].sort();
+    $('bulkTitleSelect').innerHTML='<option value="">— Select Title —</option>' + titles.map(t=>'<option value="'+esc(t)+'">'+esc(t)+'</option>').join('');
+    loadBulkSubjectOptions();
+    // Stats by Dept
+    let statsHtml='📖 Total Books: <b>'+books.filter(b=>b.archived!==true).length+'</b><br>';
+    DEPT_ORDER.forEach(dept=>{
+      const list=books.filter(b=>b.archived!==true && deptOf(b.subject)===dept);
+      if(list.length) statsHtml+=esc(DEPT_EMOJI[dept]||'📦')+' <b>'+esc(dept)+'</b>: <b>'+list.length+'</b> books • ';
+    });
+    $('statsBox').innerHTML=statsHtml;
+    renderBooks(); renderDropdown(); updateDropdownBtn();
+  }catch(e){ $('booksBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
 };
 document.addEventListener('DOMContentLoaded', async ()=>{
-  if(window.OfflineQueue) OfflineQueue.updateBadge();
   login=getLogin();
   if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login first</a>.'; $('blockedBox').style.display='block'; return; }
   $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
   $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
   $('bookBody').style.display='block';
+  renderDropdown(); updateDropdownBtn(); loadBulkSubjectOptions();
   await loadAll();
-  $('scanVerify').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); handleVerify($('scanVerify').value, false); $('scanVerify').value=''; } });
-  document.addEventListener('click', e=>{ if(e.target.id==='editModal') closeEdit(); });
 });
 </script>
 <script>
