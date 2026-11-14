@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Principal v2.0 — Dashboard + SGB Pack</title>
+<title>Makhanani LTSM — Principal v2.2 — Dashboard + Overdue + SGB Pack</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
@@ -39,111 +39,116 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .miniBtn{padding:6px 10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;margin:2px}
-.statGrid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:10px}
-@media(max-width:700px){.statGrid{grid-template-columns:1fr 1fr}}
-.statBox{background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center}
-.statBox b{font-size:26px;display:block;color:#0a1f4d}
-.statBox span{font-size:12px;color:#64748b}
-@media print{
-  body{background:#fff}
-  header, .topnav, #offlineBanner, button, input, select, .card:nth-child(1){display:none!important}
-  main{max-width:100%;padding:0}
-  .card{display:block!important;box-shadow:none;border:none;padding:0;margin:0}
-  #principalBody > .card:not(#sgbCard){display:none!important}
-  #sgbCard{display:block!important}
-  table{font-size:11px}
-  th{background:#0a1f4d!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .noPrint{display:none!important}
-  body.sgb-printing header, body.sgb-printing main, body.sgb-printing #offlineBanner{display:none!important}
-  body.sgb-printing #sgbPrintArea{display:block!important;max-width:100%;padding:10px;font-family:Arial,sans-serif;color:#111}
-  #sgbPrintArea h1{font-size:24px;color:#0a1f4d;margin:4px 0}
-  #sgbPrintArea h2{font-size:16px;color:#0a1f4d;border-bottom:2px solid #d4af37;padding-bottom:4px;margin:14px 0 8px}
-  #sgbPrintArea table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
-  #sgbPrintArea th, #sgbPrintArea td{border:1px solid #999;padding:7px;text-align:left}
-  #sgbPrintArea th{background:#0a1f4d!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #sgbPrintArea .barBg{background:#e2e8f0;height:18px;border-radius:10px;overflow:hidden}
-  #sgbPrintArea .barFill{background:#059669;height:100%;color:#fff;font-size:11px;font-weight:900;text-align:center;line-height:18px}
-  #sgbPrintArea .signRow{display:flex;gap:20px;margin-top:26px}
-  #sgbPrintArea .signBox{flex:1;border-top:2px solid #111;padding-top:6px;font-size:12px;text-align:center}
-  #sgbPrintArea .footer{font-size:11px;color:#64748b;text-align:center;margin-top:14px;border-top:1px solid #ccc;padding-top:6px}
-}
+.statBox{border:2px solid #0a1f4d;border-radius:12px;padding:12px;text-align:center;background:#fff}
+.statBox .num{font-size:28px;font-weight:900;color:#0a1f4d}
+.statBox .lbl{font-size:12px;font-weight:700;color:#64748b}
+.statBox.red{border-color:#dc2626}.statBox.red .num{color:#dc2626}
+.statBox.green{border-color:#059669}.statBox.green .num{color:#059669}
 </style>
 </head>
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>👩🏾‍🏫 Makhanani LTSM — Principal v2.0</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Principal Dashboard — My School Only • SGB Pack</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>👩🏾‍🏫 Makhanani LTSM — Principal v2.2</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Dashboard + Overdue + SGB Pack • My School Only • Learner 10A001 • Book WHS000001</p>
 </header>
 <main>
 <div class="card">
-<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Issue / Return</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="librarian.html">📚 Librarian</a><a href="profile.html">👤 Profile</a></div>
-<div class="info" id="loginInfo">Checking principal login...</div>
-<div id="blockedBox" class="warn" style="display:none">🚫 Principal ONLY. You are not logged in as Principal.<br>Go to <a href="index.html">Login</a> and login as Principal. Admin can also view this page.</div>
+<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Issue / Return</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="librarian.html">📚 Librarian</a><a href="barcode-print.html">🖨️ Print Barcodes A4 3x5</a><a href="profile.html">👤 Profile</a></div>
+<div class="info" id="loginInfo">Checking login...</div>
+<div id="blockedBox" class="warn" style="display:none">🔒 Not logged in. Go to <a href="index.html">Login</a> first. Principal / Admin only.</div>
+<div id="subBlockedBox" class="warn" style="display:none"></div>
 </div>
 
 <div id="principalBody" style="display:none">
 
 <div class="card">
-<h2>🏫 My School — <span id="mySchoolName">—</span></h2>
+<h2>📊 Dashboard — <span id="schoolNameTitle"></span> — <span id="todayDate"></span></h2>
 <div class="goldBox" id="schoolInfo"></div>
-<button class="btn btn-blue" onclick="loadDashboard()">🔄 Refresh Dashboard</button>
-<div class="statGrid">
-<div class="statBox"><b id="statLearners">—</b><span>👩🏾‍🎓 Learners</span></div>
-<div class="statBox"><b id="statBooks">—</b><span>📖 Textbooks</span></div>
-<div class="statBox"><b id="statIssued">—</b><span>📕 Issued (Out)</span></div>
-<div class="statBox"><b id="statReturned">—</b><span>✅ Returned</span></div>
-<div class="statBox"><b id="statOverdue">—</b><span>⏰ Overdue</span></div>
-<div class="statBox"><b id="statReturnRate">—</b><span>📊 Return Rate</span></div>
-<div class="statBox"><b id="statBin">—</b><span>♻️ In Bin</span></div>
-<div class="statBox"><b id="statAudit">—</b><span>📜 Audit (My School)</span></div>
+<div class="grid3">
+<div class="statBox"><div class="num" id="statLearners">0</div><div class="lbl">👩🏾‍🎓 Learners</div></div>
+<div class="statBox"><div class="num" id="statBooks">0</div><div class="lbl">📖 Textbooks</div></div>
+<div class="statBox"><div class="num" id="statIssued">0</div><div class="lbl">📚 Currently Out</div></div>
 </div>
-<div id="dashboardMsg"></div>
+<div class="grid3" style="margin-top:12px">
+<div class="statBox green"><div class="num" id="statReturned">0</div><div class="lbl">✅ Returned (All Time)</div></div>
+<div class="statBox red"><div class="num" id="statOverdue">0</div><div class="lbl">🔴 Overdue Now</div></div>
+<div class="statBox"><div class="num" id="statToday">0</div><div class="lbl">📚 Issued Today</div></div>
+</div>
+<div class="grid2">
+<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh Dashboard</button>
+<button class="btn btn-gold" onclick="testBeep()">🔊 Test Beep</button>
+</div>
 </div>
 
 <div class="card">
-<h2>⏰ Overdue Books — Follow Up First — <span id="overdueCount">0</span></h2>
-<label>Search Overdue — Learner / Book / Grade</label>
-<input id="searchOverdue" placeholder="Type learner or book..." oninput="renderOverdue()">
+<h2>📷 Scan — Real Beep — Find Learner / Book Fast</h2>
+<div class="info">Plug USB scanner → Click Scan box → Scan `10A001` or `WHS000001` → <b>BEEP</b> + Shows learner / book + Their books.</div>
+<label>📷 Scan Learner ID (10A001) or Book No (WHS000001)</label>
+<input id="scanInput" placeholder="Click here, then scan..." autocomplete="off" autofocus>
+<div id="scanMsg"></div>
+<div id="scanResult"></div>
+</div>
+
+<div class="card">
+<h2>🔴 Overdue Books — <span id="overdueCount">0</span> — Follow Up Now</h2>
+<div class="small">Due Date passed, not returned. Call learner / parent. Every Book Must Come Back!</div>
+<div class="grid2">
+<label>Search Overdue — Learner / Book / ID</label>
+<label>Filter by Grade</label>
+</div>
+<div class="grid2">
+<input id="searchOverdue" placeholder="Type name, 10A001, WHS000001..." oninput="renderOverdue()">
+<select id="filterOverdueGrade" onchange="renderOverdue()"><option value="ALL">All Grades</option><option value="Grade R">Grade R</option><option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option><option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option></select>
+</div>
 <div id="overdueBody"></div>
 </div>
 
-<div class="card" id="sgbCard">
-<h2>📦 SGB Pack — My School Only — One-Click</h2>
-<div class="info" id="sgbInfo">Downloads 5 CSVs + Summary for YOUR school only.</div>
-<button class="btn btn-gold" id="sgbBtn" onclick="downloadSGBPack()">📦 Download SGB Pack — 5 CSVs + Summary</button>
+<div class="card">
+<h2>📚 All Issues — My School — <span id="issueCount">0</span></h2>
 <div class="grid2">
-<button class="btn btn-blue" id="sgbPrintBtn" onclick="printSGBSummary()">🖨️ Print Summary PDF — 1 Page for SGB</button>
-<button class="btn btn-grey" onclick="previewSGBSummary()">👁️ Preview Summary Before Print</button>
+<label>Search Issues</label>
+<label>Filter by Status</label>
 </div>
-<div id="sgbMsg"></div>
-<div id="sgbPreview" style="display:none"></div>
-<div class="small" style="margin-top:8px">Files download one-by-one (browser may ask “Download multiple files?” → Tap <b>Allow</b>).</div>
+<div class="grid2">
+<input id="searchIssues" placeholder="Type name, 10A001, WHS000001..." oninput="renderIssues()">
+<select id="filterStatus" onchange="renderIssues()"><option value="ALL">All</option><option value="ISSUED">📚 ISSUED — Not Returned</option><option value="RETURNED">✅ RETURNED</option><option value="OVERDUE">🔴 OVERDUE</option></select>
+</div>
+<div id="issuesBody"></div>
 </div>
 
 <div class="card">
-<h2>📜 Audit — My School Only — <span id="auditCount">0</span> entries</h2>
-<div class="small">Shows only actions for YOUR school (EMIS <span id="myEmisLabel"></span>). You cannot see other schools.</div>
+<h2>📦 SGB Pack — My School — 1 Click = 5 CSVs</h2>
+<div class="small">Downloads: Learners + Textbooks + Issues + Audit (My School) + School Info — For SGB / District / Audit meeting.</div>
+<div class="grid2">
+<button class="btn btn-blue" onclick="downloadSGBPack()">📦 Download SGB Pack (My School)</button>
+<button class="btn btn-gold" onclick="printSGBSummary()">🖨️ Print SGB Summary</button>
+</div>
+<div id="sgbMsg"></div>
+</div>
+
+<div class="card">
+<h2>📜 Audit Log — My School — <span id="auditCount">0</span></h2>
 <div class="grid2">
 <label>Search Audit</label>
 <label>Filter by Action</label>
 </div>
 <div class="grid2">
-<input id="searchAudit" placeholder="e.g. Thandi, BOOK_ISSUED..." oninput="renderAudit()">
-<select id="filterAuditAction" onchange="renderAudit()"><option value="ALL">All Actions</option><option value="BOOK_ISSUED">Book Issued</option><option value="BOOK_RETURNED">Book Returned</option><option value="BOOK_EDITED">Book Edited</option><option value="BOOK_ARCHIVED">Book Archived</option><option value="BOOK_RESTORED">Book Restored</option><option value="BOOK_PERMANENT_DELETED">Book Permanent Deleted</option><option value="LEARNER_EDITED">Learner Edited</option><option value="LEARNER_ARCHIVED">Learner Archived</option><option value="LEARNER_RESTORED">Learner Restored</option><option value="LEARNER_PERMANENT_DELETED">Learner Permanent Deleted</option><option value="USER_ADDED">User Added</option><option value="USER_ROLE_SCHOOL_CHANGED">User Role Changed</option><option value="USER_BLOCKED">User Blocked</option><option value="MY_PIN_CHANGED">My PIN Changed</option><option value="SGB_PACK_DOWNLOADED">SGB Pack Downloaded</option><option value="SGB_SUMMARY_PRINTED">SGB Summary Printed</option></select>
+<input id="searchAudit" placeholder="e.g. BOOK_ISSUED, Thandi..." oninput="renderAudit()">
+<select id="filterAuditAction" onchange="renderAudit()"><option value="ALL">All Actions</option><option value="BOOK_ISSUED">Book Issued</option><option value="BOOK_RETURNED">Book Returned</option><option value="BOOK_ADDED">Book Added</option><option value="BOOK_EDITED">Book Edited</option><option value="BOOK_ARCHIVED">Book Archived</option><option value="LEARNER_EDITED">Learner Edited</option><option value="LEARNER_ARCHIVED">Learner Archived</option><option value="SGB_PACK_DOWNLOADED">SGB Pack Downloaded</option><option value="SGB_SUMMARY_PRINTED">SGB Summary Printed</option></select>
 </div>
-<button class="btn btn-blue" onclick="loadAudit()">🔄 Refresh Audit (My School)</button>
+<button class="btn btn-blue" onclick="loadAudit()">🔄 Refresh Audit</button>
 <div id="auditBody"></div>
 </div>
 
 <div class="card">
-<h2>📜 My Activity — Last 20 Actions</h2>
-<button class="btn btn-blue" onclick="loadMyActivity()">🔄 Refresh My Activity</button>
-<div id="myActivityBody"></div>
+<h2>👥 Users — My School — <span id="userCount">0</span></h2>
+<div class="small">Manage users in <a href="profile.html">Profile page</a> — View only here.</div>
+<button class="btn btn-blue" onclick="loadUsers()">🔄 Refresh Users</button>
+<div id="usersBody"></div>
 </div>
 
 </div>
-<div id="sgbPrintArea" style="display:none"></div>
 </main>
 <script src="offline-queue.js"></script>
 <script type="module">
@@ -155,182 +160,181 @@ const $ = id => document.getElementById(id);
 function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 let login=getLogin();
-let dashboardData=null; let auditEntries=[]; let overdueList=[];
+let learners=[], books=[], issues=[], auditEntries=[], users=[], schoolStatus='ACTIVE', binDays=30, schoolTier='STANDARD';
+// REAL BEEP
+let audioCtx=null;
+function beep(freq=880, dur=0.12, type='square', vol=0.25){
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
+    o.type=type; o.frequency.value=freq; g.gain.value=vol;
+    o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur);
+  }catch(e){}
+}
+function beepSuccess(){ beep(880,0.12,'square',0.25); setTimeout(()=>beep(1320,0.15,'square',0.25),80); }
+function beepError(){ beep(220,0.2,'square',0.25); setTimeout(()=>beep(180,0.25,'square',0.25),120); }
+window.testBeep=function(){ beepSuccess(); $('scanMsg').innerHTML='<div class="ok">🔊 Beep played! If no sound, turn sound ON and tap again.</div>'; };
 async function auditLog(action, details){
   try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){}
 }
-function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,4) || 'MK'); }
-function binLabel(days){ if(days===0 || days==='0') return 'OFF — Never auto-delete'; return days+' days'; }
-async function loadSGBData(){
-  const school={ school: login?.school||'', emis: String(login?.emis||''), status:'ACTIVE', binAutoEmptyDays:30 };
-  // Try to get real status / bin from schools doc
-  try{
-    const snap=await getDocs(collection(db,'schools'));
-    snap.forEach(d=>{ if(String(d.id)==='EMIS_'+school.emis){ const v=d.data(); school.status=(v.status||v.subscription||'ACTIVE').toUpperCase(); if(typeof v.binAutoEmptyDays==='number') school.binAutoEmptyDays=v.binAutoEmptyDays; } });
-  }catch(e){}
-  if(!school.emis) throw new Error('No EMIS — login again');
-  const base='EMIS_'+school.emis;
-  const [lSnap,bSnap,iSnap,aSnap]=await Promise.all([ getDocs(collection(db,'schools',base,'learners')), getDocs(collection(db,'schools',base,'textbooks')), getDocs(collection(db,'schools',base,'issues')), getDocs(collection(db,'auditLog')), ]);
-  const learners=[]; lSnap.forEach(d=>learners.push({id:d.id,...d.data()})); const books=[]; bSnap.forEach(d=>books.push({id:d.id,...d.data()})); const issues=[]; iSnap.forEach(d=>issues.push({id:d.id,...d.data()})); const auditAll=[]; aSnap.forEach(d=>auditAll.push({id:d.id,...d.data()}));
-  const activeLearners=learners.filter(l=>l.archived!==true); const activeBooks=books.filter(b=>b.archived!==true);
-  const issued=issues.filter(i=>String(i.status||'').toUpperCase()==='ISSUED'); const returned=issues.filter(i=>String(i.status||'').toUpperCase()==='RETURNED');
-  const now=new Date(); now.setHours(0,0,0,0); let overdue=[];
-  issued.forEach(i=>{ if(i.dueDate && new Date(i.dueDate) < now){ overdue.push({...i, daysOver:Math.floor((now-new Date(i.dueDate))/(24*60*60*1000))}); } });
-  overdue.sort((a,b)=>b.daysOver-a.daysOver);
-  const totalIssuedEver=issues.length; const returnRate=totalIssuedEver?Math.round((returned.length/totalIssuedEver)*100):100;
-  const byTitle={}; issues.forEach(i=>{ const t=i.bookTitle||i.title||'Unknown'; byTitle[t]=(byTitle[t]||0)+1; }); const topBooks=Object.entries(byTitle).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  return { school, learners, books, issues, auditAll, activeLearners, activeBooks, issued, returned, overdueList:overdue, totalIssuedEver, returnRate, topBooks, archivedLearners: learners.filter(l=>l.archived===true).length, archivedBooks: books.filter(b=>b.archived===true).length, auditForSchool: auditAll.filter(a=>String(a.emis||'')===String(school.emis)).length };
+function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,3) || 'WHS'); }
+function binLabel(d){ if(d===0 || d==='0') return 'OFF'; return d+' days'; }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function isOverdue(iss){ if(!iss || iss.status==='RETURNED') return false; if(!iss.dueDate) return false; return iss.dueDate < todayStr(); }
+async function loadSchoolMeta(){
+  try{ const snap=await getDocs(collection(db,'schools')); snap.forEach(ds=>{ if(String(ds.id)==='EMIS_'+login.emis){ const v=ds.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); if(typeof v.binAutoEmptyDays==='number') binDays=v.binAutoEmptyDays; schoolTier=(v.tier||'STANDARD').toUpperCase(); } }); }catch(e){}
 }
-window.loadDashboard=async function(){
+window.loadAll=async function(){
+  $('todayDate').textContent=new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'});
+  $('schoolNameTitle').textContent=login.school||'';
+  await loadSchoolMeta();
+  $('schoolInfo').innerHTML='🏫 <b>'+esc(login.school||'')+'</b> • EMIS: <b>'+esc(login.emis||'')+'</b> • Prefix: <b>'+getPrefix(login.school||'')+'</b> (e.g. '+getPrefix(login.school||'')+'000001)<br>💳 Subscription: <b>'+esc(schoolStatus)+'</b> '+(schoolStatus!=='ACTIVE'?'<span class="pill pill-orange">🟠 RETURN ONLY — Issue blocked, Return allowed</span>':'<span class="pill pill-green">✅ ACTIVE</span>')+' • Tier: <b>'+esc(schoolTier)+'</b> • ♻️ Bin: <b>'+binLabel(binDays)+'</b> • Principal: <b>'+esc(login.name||'')+'</b>';
+  if(schoolStatus!=='ACTIVE'){ $('subBlockedBox').style.display='block'; $('subBlockedBox').innerHTML='🟠 <b>'+esc(login.school||'')+'</b> is <b>'+esc(schoolStatus)+'</b> — Issue + Add blocked. Return is NEVER blocked.'; } else $('subBlockedBox').style.display='none';
   try{
-    $('dashboardMsg').innerHTML='<div class="info">⏳ Loading dashboard...</div>';
-    const d=await loadSGBData(); dashboardData=d; overdueList=d.overdueList;
-    $('mySchoolName').textContent=d.school.school+' (EMIS '+d.school.emis+')';
-    $('schoolInfo').innerHTML='🏫 <b>'+esc(d.school.school)+'</b> • EMIS: <b>'+esc(d.school.emis)+'</b> • Prefix: <b>'+getPrefix(d.school.school)+'</b><br>💳 Subscription: <b>'+esc(d.school.status||'ACTIVE')+'</b> • ♻️ Bin Auto-Empty: <b>'+binLabel(d.school.binAutoEmptyDays)+'</b> • Principal: <b>'+esc(login?.name||'')+'</b>';
-    $('statLearners').textContent=d.activeLearners.length;
-    $('statBooks').textContent=d.activeBooks.length;
-    $('statIssued').textContent=d.issued.length;
-    $('statReturned').textContent=d.returned.length;
-    $('statOverdue').textContent=d.overdueList.length;
-    $('statReturnRate').textContent=d.returnRate+'%';
-    $('statBin').textContent=(d.archivedLearners+d.archivedBooks);
-    $('statAudit').textContent=d.auditForSchool;
-    $('dashboardMsg').innerHTML='<div class="ok">✅ Dashboard loaded — '+new Date().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})+'</div>';
-    renderOverdue();
-    $('sgbInfo').innerHTML='Ready for: <b>'+esc(d.school.school)+'</b> (EMIS '+esc(d.school.emis)+') • Tap Download SGB Pack below.';
-  }catch(e){ $('dashboardMsg').innerHTML='<div class="warn">❌ Dashboard failed: '+esc(e.message)+'</div>'; }
+    const base='EMIS_'+login.emis;
+    const [ls,bs,is]=await Promise.all([ getDocs(collection(db,'schools',base,'learners')), getDocs(collection(db,'schools',base,'textbooks')), getDocs(collection(db,'schools',base,'issues')) ]);
+    learners=[]; ls.forEach(d=>learners.push({id:d.id,...d.data()}));
+    books=[]; bs.forEach(d=>books.push({id:d.id,...d.data()}));
+    issues=[]; is.forEach(d=>issues.push({id:d.id,...d.data()}));
+    issues.sort((a,b)=>String(b.issueDate||'').localeCompare(String(a.issueDate||'')));
+    const today=todayStr();
+    const activeLearners=learners.filter(l=>l.archived!==true).length;
+    const activeBooks=books.filter(b=>b.archived!==true).length;
+    const outNow=issues.filter(i=>i.status!=='RETURNED').length;
+    const returnedAll=issues.filter(i=>i.status==='RETURNED').length;
+    const overdue=issues.filter(isOverdue).length;
+    const todayIssues=issues.filter(i=>String(i.issueDate||'').slice(0,10)===today).length;
+    $('statLearners').textContent=activeLearners; $('statBooks').textContent=activeBooks; $('statIssued').textContent=outNow;
+    $('statReturned').textContent=returnedAll; $('statOverdue').textContent=overdue; $('statToday').textContent=todayIssues;
+    renderIssues(); renderOverdue();
+  }catch(e){ $('issuesBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
+};
+window.renderIssues=function(){
+  const q=($('searchIssues').value||'').trim().toLowerCase(); const f=$('filterStatus').value||'ALL';
+  let list=issues.filter(i=>{
+    if(f==='ISSUED' && i.status==='RETURNED') return false;
+    if(f==='RETURNED' && i.status!=='RETURNED') return false;
+    if(f==='OVERDUE' && !isOverdue(i)) return false;
+    if(!q) return true;
+    return (i.learnerName+' '+i.learnerId+' '+i.bookTitle+' '+i.bookNo).toLowerCase().includes(q);
+  });
+  $('issueCount').textContent=list.length;
+  if(!list.length){ $('issuesBody').innerHTML='<div class="info">No issues found.</div>'; return; }
+  let html='<table><tr><th>Learner</th><th>Book</th><th>Issue / Due</th><th>Status</th></tr>';
+  list.slice(0,60).forEach(i=>{
+    const overdue=isOverdue(i);
+    html+='<tr><td><b>'+esc(i.learnerName||'')+'</b><br><span class="small">'+esc(i.learnerId||'')+'</span></td><td><b>'+esc(i.bookTitle||'')+'</b><br><span class="small">'+esc(i.bookNo||'')+'</span></td><td>'+esc(i.issueDate||'')+' → <b style="color:'+(overdue?'#dc2626':'#111')+'">'+esc(i.dueDate||'')+'</b>'+(overdue?' <span class="pill pill-red">OVERDUE</span>':'')+'</td><td>'+(i.status==='RETURNED'?'<span class="pill pill-green">✅ RETURNED '+esc(i.returnDate||'')+'</span>':'<span class="pill pill-blue">📚 ISSUED</span>')+'</td></tr>';
+  });
+  html+='</table><div class="small">Showing latest 60.</div>'; $('issuesBody').innerHTML=html;
 };
 window.renderOverdue=function(){
-  const q=($('searchOverdue').value||'').trim().toLowerCase();
-  let list=overdueList.filter(o=>{ if(!q) return true; return (o.learnerName+' '+o.bookTitle+' '+o.grade+' '+o.class+' '+o.learnerId).toLowerCase().includes(q); });
-  $('overdueCount').textContent=overdueList.length;
-  if(!list.length){ $('overdueBody').innerHTML='<div class="info">✅ No overdue books'+(q?' for this search.':' — All issued books are within due date!')+'</div>'; return; }
-  let html='<table><tr><th>Learner</th><th>Book</th><th>Due Date</th><th>Overdue</th></tr>';
-  list.slice(0,20).forEach(o=>{ html+='<tr><td><b>'+esc(o.learnerName||'')+'</b><br><span class="small">'+esc(o.grade||'')+' • '+esc(o.class||'')+' • '+esc(o.learnerId||'')+'</span></td><td>'+esc(o.bookTitle||o.title||'')+'<br><span class="small">'+esc(o.bookNo||'')+'</span></td><td>'+esc(o.dueDate||'')+'</td><td><b style="color:#dc2626">'+o.daysOver+' days</b></td></tr>'; });
-  html+='</table><div class="small">Showing top 20. Total overdue: '+overdueList.length+'. Use SGB Pack → Issued CSV to see all.</div>';
-  $('overdueBody').innerHTML=html;
+  const q=($('searchOverdue').value||'').trim().toLowerCase(); const gf=$('filterOverdueGrade').value||'ALL';
+  let list=issues.filter(i=>isOverdue(i));
+  // Attach grade from learner record for filter
+  list=list.map(i=>{ const l=learners.find(x=>String(x.learnerId||'')===String(i.learnerId||'')); return {...i, learnerGrade:l?.grade||''}; });
+  list=list.filter(i=>{ if(gf!=='ALL' && i.learnerGrade!==gf) return false; if(!q) return true; return (i.learnerName+' '+i.learnerId+' '+i.bookTitle+' '+i.bookNo).toLowerCase().includes(q); });
+  $('overdueCount').textContent=list.length; $('statOverdue').textContent=issues.filter(isOverdue).length;
+  if(!list.length){ $('overdueBody').innerHTML='<div class="info">✅ No overdue books — All on time!</div>'; return; }
+  let html='<table><tr><th>Learner</th><th>Book</th><th>Due Date</th><th>Days Overdue</th></tr>';
+  list.forEach(i=>{
+    const days=Math.ceil((new Date(todayStr()) - new Date(i.dueDate))/(24*60*60*1000));
+    html+='<tr><td><b>'+esc(i.learnerName||'')+'</b><br><span class="small">'+esc(i.learnerId||'')+' • '+esc(i.learnerGrade||'')+'</span></td><td><b>'+esc(i.bookTitle||'')+'</b><br><span class="small">'+esc(i.bookNo||'')+'</span></td><td><b style="color:#dc2626">'+esc(i.dueDate||'')+'</b></td><td><b style="color:#dc2626">'+days+' days</b></td></tr>';
+  });
+  html+='</table>'; $('overdueBody').innerHTML=html;
 };
-// AUDIT — OWN SCHOOL ONLY
-window.loadAudit=async function(){
+// SGB PACK — My School Only
+function downloadCSV(filename, csv){ const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+window.downloadSGBPack=async function(){
   try{
-    const snap=await getDocs(collection(db,'auditLog'));
-    auditEntries=[];
-    snap.forEach(d=>{ const v=d.data(); if(String(v.emis||'')===String(login.emis||'')) auditEntries.push({id:d.id,...v}); });
-    auditEntries.sort((a,b)=>String(b.when||'').localeCompare(String(a.when||'')));
-  }catch(e){ auditEntries=[]; }
+    $('sgbMsg').innerHTML='<div class="info">⏳ Building SGB Pack — My School...</div>';
+    const base='EMIS_'+login.emis;
+    let learnersCsv='School,EMIS,Learner Name,Grade,Class,LearnerID,Archived\n';
+    learners.forEach(v=>{ learnersCsv+='"'+login.school+'",'+login.emis+',"'+(v.name||'')+'","'+(v.grade||'')+'","'+(v.class||'')+'","'+(v.learnerId||'')+'",'+(v.archived?'Yes':'No')+'\n'; });
+    downloadCSV('SGB-MySchool-1-Learners-'+login.emis+'-'+new Date().toISOString().slice(0,10)+'.csv', learnersCsv);
+    let booksCsv='School,EMIS,Title,Subject,Grade,BookNo,Publisher,Archived\n';
+    books.forEach(v=>{ booksCsv+='"'+login.school+'",'+login.emis+',"'+(v.title||'')+'","'+(v.subject||'')+'","'+(v.grade||'')+'","'+(v.bookNo||'')+'","'+(v.publisher||'')+'",'+(v.archived?'Yes':'No')+'\n'; });
+    downloadCSV('SGB-MySchool-2-Textbooks-'+login.emis+'-'+new Date().toISOString().slice(0,10)+'.csv', booksCsv);
+    let issuesCsv='School,EMIS,Learner,LearnerID,Book Title,BookNo,Issue Date,Due Date,Return Date,Status,Issued By\n';
+    issues.forEach(v=>{ issuesCsv+='"'+login.school+'",'+login.emis+',"'+(v.learnerName||'')+'","'+(v.learnerId||'')+'","'+(v.bookTitle||'')+'","'+(v.bookNo||'')+'","'+(v.issueDate||'')+'","'+(v.dueDate||'')+'","'+(v.returnDate||'')+'","'+(v.status||'')+'","'+(v.issuedBy||'')+'"\n'; });
+    downloadCSV('SGB-MySchool-3-Issues-'+login.emis+'-'+new Date().toISOString().slice(0,10)+'.csv', issuesCsv);
+    let auditCsv='When,Who,Role,School,EMIS,Action,Details\n';
+    auditEntries.forEach(a=>{ auditCsv+='"'+(a.when||'')+'","'+(a.who||'')+'","'+(a.role||'')+'","'+(a.school||'')+'","'+(a.emis||'')+'","'+(a.action||'')+'","'+String(a.details||'').replace(/"/g,"'")+'"\n'; });
+    downloadCSV('SGB-MySchool-4-Audit-'+login.emis+'-'+new Date().toISOString().slice(0,10)+'.csv', auditCsv);
+    let schoolCsv='School,EMIS,Status,Tier,Bin Days,Principal\n"'+login.school+'",'+login.emis+','+schoolStatus+','+schoolTier+','+binDays+',"'+login.name+'"\n';
+    downloadCSV('SGB-MySchool-5-SchoolInfo-'+login.emis+'-'+new Date().toISOString().slice(0,10)+'.csv', schoolCsv);
+    await auditLog('SGB_PACK_DOWNLOADED','Downloaded SGB Pack — My School — 5 CSVs — '+login.school);
+    $('sgbMsg').innerHTML='<div class="ok">✅ SGB Pack downloaded — 5 CSVs: Learners, Textbooks, Issues, Audit, School Info. Check Downloads folder.</div>';
+  }catch(e){ $('sgbMsg').innerHTML='<div class="warn">❌ SGB Pack failed: '+esc(e.message)+'</div>'; }
+};
+window.printSGBSummary=function(){
+  const outNow=issues.filter(i=>i.status!=='RETURNED').length;
+  const overdue=issues.filter(isOverdue).length;
+  const html='<h1 style="color:#0a1f4d">Xintimani Group — Makhanani LTSM — SGB Summary — '+esc(login.school||'')+'</h1><p>Date: '+new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'})+' • Generated by: '+esc(login?.name||'')+' • Principal</p><p>School: <b>'+esc(login.school||'')+'</b> • EMIS: <b>'+esc(login.emis||'')+'</b> • Status: <b>'+esc(schoolStatus)+'</b> • Tier: <b>'+esc(schoolTier)+'</b></p><p>Learners: <b>'+learners.filter(l=>l.archived!==true).length+'</b> • Textbooks: <b>'+books.filter(b=>b.archived!==true).length+'</b> • Currently Out: <b>'+outNow+'</b> • Overdue: <b>'+overdue+'</b></p><h3>Overdue Books</h3>'+$('overdueBody').innerHTML+'<h3>All Issues</h3>'+$('issuesBody').innerHTML;
+  const win=window.open('','_blank'); win.document.write('<html><head><title>SGB Summary — '+esc(login.school||'')+'</title><style>body{font-family:Arial}table{width:100%;border-collapse:collapse}th,td{border:1px solid #999;padding:8px}th{background:#0a1f4d;color:#fff}</style></head><body>'+html+'</body></html>'); win.document.close(); win.focus(); win.print();
+  auditLog('SGB_SUMMARY_PRINTED','Printed SGB Summary — My School — '+login.school);
+};
+// AUDIT — My School Only
+window.loadAudit=async function(){
+  try{ const snap=await getDocs(collection(db,'auditLog')); auditEntries=[]; snap.forEach(d=>{ const v=d.data()||{}; if(String(v.emis||'')===String(login.emis)) auditEntries.push({id:d.id,...v}); }); auditEntries.sort((a,b)=>String(b.when||'').localeCompare(String(a.when||''))); }catch(e){ auditEntries=[]; }
   renderAudit();
 };
 window.renderAudit=function(){
   const q=($('searchAudit').value||'').trim().toLowerCase(); const f=$('filterAuditAction').value||'ALL';
   let list=auditEntries.filter(a=>{ if(f!=='ALL' && a.action!==f) return false; if(!q) return true; return (a.who+' '+a.action+' '+a.details+' '+a.school).toLowerCase().includes(q); });
   $('auditCount').textContent=auditEntries.length;
-  if(!list.length){ $('auditBody').innerHTML='<div class="info">No audit entries for your school yet.</div>'; return; }
+  if(!list.length){ $('auditBody').innerHTML='<div class="info">No audit entries for My School.</div>'; return; }
   let html='<table><tr><th>When</th><th>Who</th><th>Action</th><th>Details</th></tr>';
-  list.slice(0,50).forEach(a=>{ html+='<tr><td>'+esc(String(a.when||'').slice(0,16).replace('T',' '))+'</td><td><b>'+esc(a.who||'')+'</b><br><span class="small">'+esc(a.role||'')+'</span></td><td><span class="pill pill-blue">'+esc(a.action||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>'; });
-  html+='</table><div class="small">Showing latest 50 for your school. Total: '+auditEntries.length+'</div>';
-  $('auditBody').innerHTML=html;
+  list.slice(0,60).forEach(a=>{ html+='<tr><td>'+esc(String(a.when||'').slice(0,16).replace('T',' '))+'</td><td><b>'+esc(a.who||'')+'</b><br><span class="small">'+esc(a.role||'')+'</span></td><td><span class="pill pill-blue">'+esc(a.action||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>'; });
+  html+='</table><div class="small">Showing latest 60. Total: '+auditEntries.length+'</div>'; $('auditBody').innerHTML=html;
 };
-window.loadMyActivity=async function(){
-  try{
-    const snap=await getDocs(collection(db,'auditLog')); let mine=[];
-    snap.forEach(d=>{ const v=d.data(); if(String(v.who||'').toLowerCase()===String(login.name||'').toLowerCase() && String(v.emis||'')===String(login.emis||'')) mine.push({id:d.id,...v}); });
-    mine.sort((a,b)=>String(b.when||'').localeCompare(String(a.when||''))); mine=mine.slice(0,20);
-    if(!mine.length){ $('myActivityBody').innerHTML='<div class="info">No activity yet.</div>'; return; }
-    let html='<table><tr><th>When</th><th>Action</th><th>Details</th></tr>';
-    mine.forEach(a=>{ html+='<tr><td>'+esc(String(a.when||'').slice(0,16).replace('T',' '))+'</td><td><span class="pill pill-blue">'+esc(a.action||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>'; });
-    html+='</table>'; $('myActivityBody').innerHTML=html;
-  }catch(e){ $('myActivityBody').innerHTML='<div class="warn">❌ Activity failed: '+esc(e.message)+'</div>'; }
+// USERS — My School Only
+window.loadUsers=async function(){
+  try{ const snap=await getDocs(collection(db,'users')); users=[]; snap.forEach(d=>{ const v=d.data()||{}; if(String(v.emis||'')===String(login.emis)) users.push({id:d.id, name:v.name||'', role:(v.role||'TEACHER').toUpperCase(), school:v.school||'', emis:String(v.emis||''), email:v.email||'', status:(v.status||'ACTIVE').toUpperCase()}); }); }catch(e){ users=[]; }
+  $('userCount').textContent=users.length;
+  if(!users.length){ $('usersBody').innerHTML='<div class="info">No users found for My School.</div>'; return; }
+  let html='<table><tr><th>Name</th><th>Role</th><th>Email</th><th>Status</th></tr>';
+  users.forEach(u=>{ html+='<tr><td><b>'+esc(u.name||'')+'</b></td><td>'+esc(u.role||'')+'</td><td>'+esc(u.email||'—')+'</td><td>'+(u.status==='BLOCKED'?'<span class="pill pill-red">🔴 BLOCKED</span>':'<span class="pill pill-green">✅ ACTIVE</span>')+'</td></tr>'; });
+  html+='</table>'; $('usersBody').innerHTML=html;
 };
-// SGB PRINT
-function buildSGBPrintHTML(d){
-  const s=d.school; const dateStr=new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'}); const binTxt=binLabel(typeof s.binAutoEmptyDays==='number'?s.binAutoEmptyDays:30);
-  let overdueRows=d.overdueList.slice(0,10).map((o,i)=>'<tr><td>'+(i+1)+'</td><td><b>'+esc(o.learnerName||'')+'</b><br><span style="font-size:11px">'+esc(o.grade||'')+' • '+esc(o.class||'')+' • '+esc(o.learnerId||'')+'</span></td><td>'+esc(o.bookTitle||o.title||'')+'<br><span style="font-size:11px">'+esc(o.bookNo||'')+'</span></td><td>'+esc(o.dueDate||'')+'</td><td><b style="color:#dc2626">'+o.daysOver+' days</b></td></tr>').join('');
-  if(!overdueRows) overdueRows='<tr><td colspan="5" style="text-align:center;color:#059669">✅ No overdue books — All issued books are within due date!</td></tr>';
-  let topRows=d.topBooks.map(([t,c],i)=>'<tr><td>'+(i+1)+'</td><td>'+esc(t)+'</td><td><b>'+c+'</b> times issued</td></tr>').join('') || '<tr><td colspan="3">No issues yet</td></tr>';
-  return `
-  <div style="text-align:center;border-bottom:3px solid #0a1f4d;padding-bottom:10px">
-    <img src="logo.png" style="width:64px;height:64px;object-fit:contain">
-    <h1>Makhanani LTSM — SGB Report</h1>
-    <p style="margin:2px 0;font-size:14px"><b>${esc(s.school)}</b> • EMIS ${esc(s.emis)}</p>
-    <p style="margin:2px 0;font-size:12px;color:#64748b">Xintimani Group (Pty) Ltd • Date: ${dateStr} • Generated by: ${esc(login?.name||'')} (${esc(login?.role||'')})</p>
-  </div>
-  <h2>📊 Summary — Totals</h2>
-  <table><tr><th>Category</th><th>Count</th><th>Note</th></tr>
-    <tr><td>👩🏾‍🎓 Learners (Active)</td><td><b>${d.activeLearners.length}</b></td><td>Archived in Bin: ${d.archivedLearners}</td></tr>
-    <tr><td>📖 Textbooks (Active)</td><td><b>${d.activeBooks.length}</b></td><td>Archived in Bin: ${d.archivedBooks}</td></tr>
-    <tr><td>📚 Total Issues Ever</td><td><b>${d.totalIssuedEver}</b></td><td>All time for this school</td></tr>
-    <tr><td>📕 Currently ISSUED (Books Out)</td><td><b>${d.issued.length}</b></td><td>Books not yet returned</td></tr>
-    <tr><td>✅ Returned</td><td><b>${d.returned.length}</b></td><td>Books returned</td></tr>
-    <tr><td>⏰ Overdue</td><td><b style="color:#dc2626">${d.overdueList.length}</b></td><td>Due date passed, still out</td></tr>
-    <tr><td>📜 Audit Entries</td><td><b>${d.auditForSchool}</b></td><td>Who did what, when</td></tr>
-    <tr><td>💳 Subscription</td><td><b>${esc(s.status||'ACTIVE')}</b></td><td>Bin Auto-Empty: ${esc(binTxt)}</td></tr>
-  </table>
-  <h2>✅ Return Rate — ${d.returnRate}%</h2>
-  <div class="barBg"><div class="barFill" style="width:${d.returnRate}%">${d.returnRate}% Returned</div></div>
-  <p style="font-size:12px;color:#64748b">Target: 95%+ by 30 November. ${d.returnRate>=95?'✅ Target met!':d.returnRate>=80?'🟠 Close — follow up overdue below.':'🔴 Below target — urgent follow-up needed.'}</p>
-  <h2>⏰ Top 10 Overdue — Follow Up First</h2>
-  <table><tr><th>#</th><th>Learner</th><th>Book</th><th>Due Date</th><th>Overdue</th></tr>${overdueRows}</table>
-  <h2>🏆 Top 5 Most Issued Books</h2>
-  <table><tr><th>#</th><th>Book Title</th><th>Issued</th></tr>${topRows}</table>
-  <h2>📋 SGB Action Items</h2>
-  <ol style="font-size:13px;line-height:1.6"><li>Follow up <b>${d.overdueList.length} overdue</b> learners above — return books this week.</li><li>Improve Return Rate from <b>${d.returnRate}%</b> to <b>95%+</b> by 30 November.</li><li>Confirm Bin items (${d.archivedLearners} learners + ${d.archivedBooks} books) are restored or deleted before auto-empty (${esc(binTxt)}).</li><li>Note: Every Book Must Come Back — no book lost.</li></ol>
-  <div class="signRow"><div class="signBox">Principal<br><br>__________________<br>Date: ___________</div><div class="signBox">SGB Chairperson<br><br>__________________<br>Date: ___________</div><div class="signBox">Librarian / HOD<br><br>__________________<br>Date: ___________</div></div>
-  <div class="footer">Makhanani LTSM • Xintimani Group (Pty) Ltd • Generated from Makhanani LTSM App • ${dateStr} • Page 1 of 1</div>
-  `;
+// SCAN — Learner 10A001 or Book WHS000001
+function onScan(code){
+  code=String(code||'').trim().toUpperCase(); if(!code) return;
+  const l=learners.find(x=>String(x.learnerId||x.barcode||'').toUpperCase()===code && x.archived!==true);
+  const b=books.find(x=>String(x.bookNo||x.barcode||'').toUpperCase()===code && x.archived!==true);
+  if(l){
+    beepSuccess();
+    const myIssues=issues.filter(i=>String(i.learnerId||'')===String(l.learnerId||''));
+    const out=myIssues.filter(i=>i.status!=='RETURNED');
+    $('scanMsg').innerHTML='<div class="ok">🔊 BEEP! ✅ Learner: <b>'+esc(l.name||'')+'</b> • ID: <b>'+esc(l.learnerId||'')+'</b> • '+esc(l.grade||'')+' • '+esc(l.class||'')+'<br>Top: '+esc(login.school||'')+' • Makhanani LTSM • LEARNER • Bottom: '+esc(l.learnerId||'')+'</div>';
+    let html='<div class="goldBox">📚 Books for '+esc(l.name)+' — Out Now: <b>'+out.length+'</b> • Total Issues: <b>'+myIssues.length+'</b><br>';
+    if(out.length){ out.forEach(i=>{ html+='• <b>'+esc(i.bookTitle||'')+'</b> ('+esc(i.bookNo||'')+') • Due '+esc(i.dueDate||'')+(isOverdue(i)?' <span class="pill pill-red">OVERDUE</span>':'')+'<br>'; }); }
+    else html+='✅ No books out — All returned.';
+    html+='</div>'; $('scanResult').innerHTML=html;
+    return;
+  }
+  if(b){
+    beepSuccess();
+    const iss=issues.find(i=>String(i.bookNo||'').toUpperCase()===code && i.status!=='RETURNED');
+    $('scanMsg').innerHTML='<div class="ok">🔊 BEEP! ✅ Book: <b>'+esc(b.title||'')+'</b> • BookNo: <b>'+esc(b.bookNo||'')+'</b> • '+esc(b.subject||'')+' • '+esc(b.grade||'')+'<br>Top: '+esc(login.school||'')+' • Makhanani LTSM • TEXTBOOK • Bottom: '+esc(b.bookNo||'')+'</div>';
+    $('scanResult').innerHTML='<div class="goldBox">📖 Status: '+(iss?'<b style="color:#dc2626">OUT</b> — With <b>'+esc(iss.learnerName||'')+'</b> ('+esc(iss.learnerId||'')+') • Due '+esc(iss.dueDate||'')+(isOverdue(iss)?' <span class="pill pill-red">OVERDUE</span>':''):'<b style="color:#059669">IN — Available</b>')+'</div>';
+    return;
+  }
+  beepError();
+  $('scanMsg').innerHTML='<div class="warn">🔊 BEEP-BEEP! ❌ Not found: <b>'+esc(code)+'</b><br>Check format is 10A001 (Learner) or WHS000001 (Book).</div>';
+  $('scanResult').innerHTML='';
 }
-window.previewSGBSummary=async function(){
-  try{ $('sgbMsg').innerHTML='<div class="info">⏳ Loading preview...</div>'; const d=await loadSGBData(); $('sgbPreview').innerHTML='<div style="border:2px dashed #0a1f4d;border-radius:12px;padding:12px;background:#f8fafc">'+buildSGBPrintHTML(d)+'</div>'; $('sgbPreview').style.display='block'; $('sgbMsg').innerHTML='<div class="ok">✅ Preview ready — scroll down to see.</div>'; }catch(e){ $('sgbMsg').innerHTML='<div class="warn">❌ Preview failed: '+esc(e.message)+'</div>'; }
-};
-window.printSGBSummary=async function(){
-  try{
-    $('sgbPrintBtn').disabled=true; $('sgbPrintBtn').textContent='⏳ Loading...';
-    const d=await loadSGBData(); $('sgbPrintArea').innerHTML=buildSGBPrintHTML(d); document.body.classList.add('sgb-printing'); $('sgbPreview').style.display='none'; window.print();
-    setTimeout(()=>{ document.body.classList.remove('sgb-printing'); $('sgbPrintArea').innerHTML=''; $('sgbPrintBtn').disabled=false; $('sgbPrintBtn').textContent='🖨️ Print Summary PDF — 1 Page for SGB'; },600);
-    await auditLog('SGB_SUMMARY_PRINTED','Printed SGB Summary PDF for '+d.school.school+' (EMIS '+d.school.emis+') — Return Rate '+d.returnRate+'% • Issued '+d.issued.length+' • Overdue '+d.overdueList.length);
-    $('sgbMsg').innerHTML='<div class="ok">✅ SGB Summary sent to Print — Choose <b>Save as PDF</b>.</div>';
-  }catch(e){ document.body.classList.remove('sgb-printing'); $('sgbPrintBtn').disabled=false; $('sgbPrintBtn').textContent='🖨️ Print Summary PDF — 1 Page for SGB'; $('sgbMsg').innerHTML='<div class="warn">❌ Print failed: '+esc(e.message)+'</div>'; }
-};
-function sgbCsvEsc(v){ v=String(v??'').replace(/"/g,'""'); return '"'+v+'"'; }
-function sgbDownload(filename, csvText){ const blob=new Blob([csvText],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); }
-function sgbWait(ms){ return new Promise(r=>setTimeout(r,ms)); }
-window.downloadSGBPack=async function(){
-  const school={ school: login?.school||'', emis: String(login?.emis||'') };
-  if(!school.emis){ $('sgbMsg').innerHTML='<div class="warn">⚠️ No school in login — login again.</div>'; return; }
-  $('sgbBtn').disabled=true; $('sgbBtn').textContent='⏳ Downloading SGB Pack... Please Allow multiple downloads';
-  $('sgbMsg').innerHTML='<div class="info">⏳ Loading '+esc(school.school)+'... Please tap <b>Allow</b> if browser asks to download multiple files.</div>';
-  try{
-    const d=await loadSGBData();
-    const today=new Date().toISOString().slice(0,10); const safeSchool=String(d.school.school||'').replace(/[^A-Za-z0-9]/g,'') || 'School'; const prefix='SGB-Pack-'+safeSchool+'-'+today;
-    const auditForSchool=d.auditAll.filter(a=>String(a.emis||'')===String(d.school.emis)).sort((a,b)=>String(b.when||'').localeCompare(String(a.when||'')));
-    let csv='When,Who,Role,School,EMIS,Action,Details\n'; auditForSchool.forEach(a=>{ csv+=sgbCsvEsc(String(a.when||'').slice(0,16).replace('T',' '))+','+sgbCsvEsc(a.who||'')+','+sgbCsvEsc(a.role||'')+','+sgbCsvEsc(a.school||'')+','+sgbCsvEsc(a.emis||'')+','+sgbCsvEsc(a.action||'')+','+sgbCsvEsc(a.details||'')+'\n'; });
-    let csvL='Name,Grade,Class,LearnerID,Barcode\n'; d.activeLearners.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''))).forEach(l=>{ csvL+=sgbCsvEsc(l.name||'')+','+sgbCsvEsc(l.grade||'')+','+sgbCsvEsc(l.class||'')+','+sgbCsvEsc(l.learnerId||l.barcode||'')+','+sgbCsvEsc(l.barcode||l.learnerId||'')+'\n'; });
-    let csvB='Title,Subject,Grade,BookNo,Barcode,Status,Publisher\n'; d.activeBooks.sort((a,b)=>String(a.title||'').localeCompare(String(b.title||''))).forEach(b=>{ csvB+=sgbCsvEsc(b.title||'')+','+sgbCsvEsc(b.subject||'')+','+sgbCsvEsc(b.grade||'')+','+sgbCsvEsc(b.bookNo||b.barcode||'')+','+sgbCsvEsc(b.barcode||b.bookNo||'')+','+sgbCsvEsc(b.status||'')+','+sgbCsvEsc(b.publisher||'')+'\n'; });
-    const now=new Date(); now.setHours(0,0,0,0);
-    let csvI='LearnerName,LearnerID,Grade,Class,BookTitle,BookNo,IssueDate,DueDate,DaysOverdue,Status\n'; d.issued.sort((a,b)=>String(a.dueDate||'').localeCompare(String(b.dueDate||''))).forEach(i=>{ const due=i.dueDate?new Date(i.dueDate):null; const daysOver=due?Math.max(0,Math.floor((now-due)/(24*60*60*1000))):0; csvI+=sgbCsvEsc(i.learnerName||'')+','+sgbCsvEsc(i.learnerId||'')+','+sgbCsvEsc(i.grade||'')+','+sgbCsvEsc(i.class||'')+','+sgbCsvEsc(i.bookTitle||i.title||'')+','+sgbCsvEsc(i.bookNo||'')+','+sgbCsvEsc(i.issueDate||i.issuedAt||'')+','+sgbCsvEsc(i.dueDate||'')+','+sgbCsvEsc(daysOver)+','+sgbCsvEsc(i.status||'')+'\n'; });
-    let csvR='LearnerName,LearnerID,BookTitle,BookNo,IssueDate,ReturnDate,DueDate,Status\n'; d.returned.sort((a,b)=>String(b.returnDate||b.returnedAt||'').localeCompare(String(a.returnDate||a.returnedAt||''))).forEach(i=>{ csvR+=sgbCsvEsc(i.learnerName||'')+','+sgbCsvEsc(i.learnerId||'')+','+sgbCsvEsc(i.bookTitle||i.title||'')+','+sgbCsvEsc(i.bookNo||'')+','+sgbCsvEsc(i.issueDate||i.issuedAt||'')+','+sgbCsvEsc(i.returnDate||i.returnedAt||'')+','+sgbCsvEsc(i.dueDate||'')+','+sgbCsvEsc(i.status||'')+'\n'; });
-    const summary=[ 'MAKHANANI LTSM — SGB PACK SUMMARY','Xintimani Group (Pty) Ltd','========================================','School: '+d.school.school,'EMIS: '+d.school.emis,'Date: '+new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'}),'Generated by: '+(login?.name||'')+' ('+(login?.role||'')+')','','TOTALS','------','Learners: '+d.activeLearners.length,'Textbooks: '+d.activeBooks.length,'Total Issues Ever: '+d.totalIssuedEver,'Currently ISSUED: '+d.issued.length,'Returned: '+d.returned.length,'Return Rate: '+d.returnRate+'%','Overdue: '+d.overdueList.length,'','Makhanani LTSM — Every Book Must Come Back!', ].join('\n');
-    sgbDownload(prefix+'-Summary.txt', summary); await sgbWait(600);
-    sgbDownload(prefix+'-Audit.csv', csv); await sgbWait(600);
-    sgbDownload(prefix+'-Learners.csv', csvL); await sgbWait(600);
-    sgbDownload(prefix+'-Textbooks.csv', csvB); await sgbWait(600);
-    sgbDownload(prefix+'-Issued.csv', csvI); await sgbWait(600);
-    sgbDownload(prefix+'-Returned.csv', csvR);
-    $('sgbMsg').innerHTML='<div class="ok">✅ SGB Pack downloaded — 6 files for <b>'+esc(d.school.school)+'</b><br>Learners <b>'+d.activeLearners.length+'</b> • Books <b>'+d.activeBooks.length+'</b> • Issued <b>'+d.issued.length+'</b> • Returned <b>'+d.returned.length+'</b> • Return Rate <b>'+d.returnRate+'%</b> • Overdue <b>'+d.overdueList.length+'</b></div>';
-    await auditLog('SGB_PACK_DOWNLOADED','Downloaded SGB Pack for '+d.school.school+' (EMIS '+d.school.emis+') — Learners '+d.activeLearners.length+' • Books '+d.activeBooks.length+' • Issued '+d.issued.length+' • Returned '+d.returned.length+' • Return Rate '+d.returnRate+'%');
-  }catch(e){ $('sgbMsg').innerHTML='<div class="warn">❌ SGB Pack failed: '+esc(e.message)+'</div>'; }
-  $('sgbBtn').disabled=false; $('sgbBtn').textContent='📦 Download SGB Pack — 5 CSVs + Summary';
-};
 document.addEventListener('DOMContentLoaded', async ()=>{
   if(window.OfflineQueue) OfflineQueue.updateBadge();
   login=getLogin();
   if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login first</a>.'; $('blockedBox').style.display='block'; return; }
   const role=(login.role||'').toUpperCase();
+  if(role!=='PRINCIPAL' && role!=='ADMIN'){ $('loginInfo').innerHTML='🚫 Logged in as <b>'+role+'</b> — Principal / Admin ONLY. <a href="index.html">Switch login</a>.'; $('blockedBox').style.display='block'; return; }
   $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
-  if(role!=='PRINCIPAL' && role!=='ADMIN'){ $('loginInfo').innerHTML='🚫 Logged in as <b>'+role+'</b> — Principal ONLY. <a href="index.html">Switch to Principal login</a>.'; $('blockedBox').style.display='block'; return; }
-  $('loginInfo').innerHTML='✅ Principal: <b>'+esc(login.name||'')+'</b> • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
-  $('myEmisLabel').textContent=login.emis||'';
+  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
   $('principalBody').style.display='block';
-  await loadDashboard(); await loadAudit(); await loadMyActivity();
+  await loadAll(); await loadAudit(); await loadUsers();
+  $('scanInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); onScan($('scanInput').value); $('scanInput').value=''; $('scanInput').focus(); } });
 });
 </script>
 <script>
