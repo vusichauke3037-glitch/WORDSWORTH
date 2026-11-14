@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.2 — Camera Verify Card</title>
+<title>Makhanani LTSM — Learners v2.3 — Camera Fixed — No unpkg</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -51,8 +51,8 @@ th{background:#0a1f4d;color:#fff}
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🎓📷 Makhanani LTSM — Learners v2.2</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Camera Verify Learner Card • Learner ID 9E003 / 10A001 • My School Only</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🎓📷 Makhanani LTSM — Learners v2.3</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Camera Fixed — No unpkg — Built-in Scanner • Learner ID 9E003 / 10A001 • My School Only</p>
 </header>
 <main>
 <div class="card">
@@ -64,8 +64,8 @@ th{background:#0a1f4d;color:#fff}
 
 <div id="learnerBody" style="display:none">
 <div class="card">
-<h2>📷 Camera Verify — Scan Printed Learner Card</h2>
-<div class="info"><b>Use after printing:</b> Print card in Barcode Print → Cut → Tap <b>📷 Scan Card To Verify</b> → Point at card → BEEP + Finds learner = Card works ✅<br>If it says NOT found, re-print that card — barcode too light / wrinkled.</div>
+<h2>📷 Camera Verify — Scan Printed Learner Card — FIXED v2.3</h2>
+<div class="info"><b>Use after printing:</b> Print card in Barcode Print → Cut → Tap <b>📷 Scan Card To Verify</b> → Point at card → BEEP + Finds learner = Card works ✅<br>If NOT found, re-print that card — barcode too light / wrinkled.<br><b>v2.3 Fix:</b> Uses phone's built-in scanner — No unpkg error. Use <b>Chrome / Safari</b>, NOT WhatsApp browser.</div>
 <div class="grid2">
 <button class="btn btn-green" onclick="openCamera()">📷 Scan Card To Verify</button>
 <button class="btn btn-gold" onclick="testBeep()">🔊 Test Beep</button>
@@ -145,30 +145,49 @@ function beepError(){ beep(220,0.2,'square',0.25); setTimeout(()=>beep(180,0.25,
 window.testBeep=function(){ beepSuccess(); $('verifyMsg').innerHTML='<div class="ok">🔊 Beep played!</div>'; };
 async function auditLog(action, details){ try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){} }
 async function loadSchoolMeta(){ try{ const snap=await getDocs(collection(db,'schools')); snap.forEach(ds=>{ if(String(ds.id)==='EMIS_'+login.emis){ const v=ds.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); } }); }catch(e){} }
-// ===== CAMERA VERIFY v2.2 =====
-let html5Qr=null, cameraRunning=false, lastCameraCode='', lastCameraTime=0, cameraScanCount=0;
+// ===== CAMERA VERIFY v2.3 — FIX: No unpkg, Native + jsDelivr =====
+let html5Qr=null, cameraRunning=false, nativeStream=null, nativeRaf=null, nativeDetector=null, lastCameraCode='', lastCameraTime=0, cameraScanCount=0;
 window.openCamera=function(){
-  if(!window.Html5Qrcode){ alert('❌ Camera library failed. Check internet, refresh.'); return; }
   $('cameraModal').style.display='block';
   $('cameraStatus').textContent='Starting camera... Allow Camera when asked...';
   $('cameraLastScan').innerHTML='';
+  if('BarcodeDetector' in window){ startNativeCamera(); return; }
+  if(window.Html5Qrcode){ startHtml5Camera(); return; }
+  $('cameraStatus').textContent='Loading camera library from jsDelivr...';
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js';
+  s.onload=()=>{ if(window.Html5Qrcode) startHtml5Camera(); else $('cameraStatus').textContent='❌ Camera library still failed — Use Type / USB below.'; };
+  s.onerror=()=>{ $('cameraStatus').textContent='❌ No internet for camera library — Use Type / USB below.'; $('cameraLastScan').innerHTML='<div class="warn">No internet. Fix: Turn WiFi ON, Open in Chrome (not WhatsApp), Refresh. Or type 9E003 + Enter — That still works.</div>'; };
+  document.head.appendChild(s);
+};
+async function startNativeCamera(){
+  try{
+    $('cameraStatus').textContent='✅ Using phone built-in scanner — Point at card...';
+    let reader=$('cameraReader');
+    reader.innerHTML='<video id="nativeVideo" autoplay playsinline muted style="width:100%;height:auto;background:#000;border-radius:8px"></video><div style="border:2px dashed #059669;margin:8px;padding:6px;text-align:center;color:#059669;font-weight:900">⬜ Put Barcode Inside Here ⬜</div>';
+    const video=document.getElementById('nativeVideo');
+    nativeStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
+    video.srcObject=nativeStream; await video.play(); cameraRunning=true;
+    nativeDetector=new BarcodeDetector({formats:['code_128','code_39','ean_13','ean_8','upc_a','upc_e','qr_code']});
+    const loop=async()=>{ if(!cameraRunning) return; try{ const codes=await nativeDetector.detect(video); if(codes && codes.length) onCameraScan(codes[0].rawValue); }catch(e){} nativeRaf=requestAnimationFrame(loop); };
+    loop();
+  }catch(e){ $('cameraStatus').textContent='❌ Camera failed: '+e.message; $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? 1) Use Chrome / Safari (not WhatsApp) 2) Padlock → Camera → Allow 3) HTTPS only 4) Close Zoom.</div>'; }
+}
+function startHtml5Camera(){
   if(cameraRunning) return;
   html5Qr=new Html5Qrcode('cameraReader');
   const config={fps:10, qrbox:{width:280,height:120}, aspectRatio:1.2, supportedScanTypes:[Html5QrcodeScanType.SCAN_TYPE_CAMERA]};
   html5Qr.start({facingMode:'environment'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at learner card...'; }).catch(()=>{
-    html5Qr.start({facingMode:'user'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at card...'; }).catch(e2=>{
-      $('cameraStatus').textContent='❌ Camera failed: '+esc(e2.message||e2);
-      $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? 1) Use Chrome / Safari (not WhatsApp) 2) Padlock → Camera → Allow 3) HTTPS only 4) Close Zoom.</div>';
-    });
+    html5Qr.start({facingMode:'user'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at card...'; }).catch(e2=>{ $('cameraStatus').textContent='❌ Camera failed: '+esc(e2.message||e2); $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? Use Chrome, Allow Camera, HTTPS only.</div>'; });
   });
-};
+}
 function onCameraScan(decodedText){
   const code=String(decodedText||'').trim().toUpperCase(); if(!code) return;
   const now=Date.now(); if(code===lastCameraCode && now-lastCameraTime<2000) return;
   lastCameraCode=code; lastCameraTime=now; cameraScanCount++; $('cameraScanCount').textContent=cameraScanCount;
   handleVerify(code, true);
 }
-async function closeCameraSilent(){ try{ if(html5Qr && cameraRunning){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){} cameraRunning=false; html5Qr=null; $('cameraModal').style.display='none'; }
+async function closeCameraSilent(){ cameraRunning=false; if(nativeRaf) cancelAnimationFrame(nativeRaf); if(nativeStream){ nativeStream.getTracks().forEach(t=>t.stop()); nativeStream=null; } try{ if(html5Qr){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){} html5Qr=null; $('cameraModal').style.display='none'; }
 window.closeCamera=async function(done){ await closeCameraSilent(); };
 // ===== END CAMERA =====
 function handleVerify(code, fromCamera){
@@ -230,7 +249,6 @@ window.addLearner=async function(){
 window.addLearnerAndVerify=async function(){
   const before=learners.length;
   await addLearner();
-  // If added, open camera to verify printed card after print
   setTimeout(()=>{ if(learners.length>before){ $('verifyMsg').innerHTML='<div class="info">✅ Learner added. Now go to <b>Print Barcodes</b> → Print card → Come back here → <b>📷 Scan Card To Verify</b>.</div>'; } }, 600);
 };
 window.renderList=function(){
