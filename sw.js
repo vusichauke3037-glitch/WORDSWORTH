@@ -1,109 +1,51 @@
-// Makhanani LTSM — Service Worker v2.06
-// Caches all pages + logo.png so App works OFFLINE
-// Update CACHE_NAME every time you update any page
-
-const CACHE_NAME = 'makhanani-ltsm-v2.06';
-
-const FILES = [
+// Makhanani LTSM — Service Worker v1.0 — Offline Mode
+// Caches app shell so Home + Issue + Learners + Textbooks + Barcodes open offline.
+// Firebase data is NOT cached — Issue / Return offline uses local queue (see offline-queue.js).
+const CACHE = 'makhanani-v1-0';
+const CORE = [
   './',
-  'index.html',
-  'admin.html',
-  'issue.html',
-  'learner-barcode.html',
-  'textbook-barcode.html',
-  'librarian.html',
-  'principal.html',
-  'manifest.json',
-  'logo.png'
+  './index.html',
+  './issue.html',
+  './learner-barcode.html',
+  './textbook-barcode.html',
+  './barcode-print.html',
+  './librarian.html',
+  './principal.html',
+  './profile.html',
+  './checklist-principal.html',
+  './summary.html',
+  './master-checklist.html',
+  './company-profile.html',
+  './terms-and-conditions.html',
+  './logo.png',
+  './manifest.json'
 ];
 
-// Install — Download all files + logo.png for offline
-self.addEventListener('install', event => {
-  console.log('[Makhanani SW] Installing v2.06 — Caching pages + logo.png');
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[Makhanani SW] Caching:', FILES);
-        return cache.addAll(FILES);
-      })
-      .then(() => {
-        console.log('[Makhanani SW] ✅ All files cached — App works offline');
-        return self.skipWaiting();
-      })
-      .catch(err => {
-        console.log('[Makhanani SW] ⚠️ Cache failed for some files (maybe logo.png missing?):', err);
-        // Still activate even if logo.png missing — don't block app
-        return self.skipWaiting();
-      })
-  );
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
 });
 
-// Activate — Delete old caches (old versions)
-self.addEventListener('activate', event => {
-  console.log('[Makhanani SW] Activating v2.06 — Cleaning old caches');
-  event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            console.log('[Makhanani SW] Deleting old cache:', key);
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => {
-      return self.clients.claim();
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+});
+
+self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+  // Never cache Firebase / Google APIs — they need live internet
+  if (url.hostname.includes('firestore') || url.hostname.includes('firebase') || url.hostname.includes('googleapis') || url.hostname.includes('gstatic')) {
+    return; // let browser handle it (will fail offline, queue handles it)
+  }
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      if (cached) return cached;
+      return fetch(e.request).then(res => {
+        // Cache same-origin HTML/CSS/JS/images on the fly
+        if (e.request.method === 'GET' && url.origin === self.location.origin && res.status === 200) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, copy));
+        }
+        return res;
+      }).catch(() => caches.match('./index.html'));
     })
   );
-});
-
-// Fetch — Serve from cache if offline, else from network
-self.addEventListener('fetch', event => {
-  // Only handle GET requests, same origin
-  if (event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
-  // Don't cache Firebase / Google APIs — always go to network
-  if (url.hostname.includes('firebase') || url.hostname.includes('googleapis') || url.hostname.includes('gstatic')) {
-    return;
-  }
-
-  event.respondWith(
-    // Try network first, fall back to cache
-    fetch(event.request)
-      .then(response => {
-        // If network works, update cache in background
-        if (response && response.status === 200 && url.origin === self.location.origin) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return response;
-      })
-      .catch(() => {
-        // Network failed = OFFLINE — serve from cache
-        return caches.match(event.request).then(cached => {
-          if (cached) {
-            console.log('[Makhanani SW] 📴 OFFLINE — Serving from cache:', event.request.url);
-            return cached;
-          }
-          // If logo.png not cached and offline, return empty — page will show 📚 fallback
-          if (event.request.url.includes('logo.png')) {
-            console.log('[Makhanani SW] ⚠️ logo.png not in cache — check WORDSWORTH/logo.png exists');
-          }
-          // If navigating to a page and offline, serve index.html
-          if (event.request.mode === 'navigate') {
-            return caches.match('index.html');
-          }
-          throw new Error('Offline and not cached: ' + event.request.url);
-        });
-      })
-  );
-});
-
-// Listen for message from page — Skip waiting when new version found
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
 });
