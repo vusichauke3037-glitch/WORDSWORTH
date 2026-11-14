@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Admin v3.0 — Schools + Subscription + Bin + Audit + SGB Pack</title>
+<title>Makhanani LTSM — Admin v3.2 — Schools + Subscription + SGB + Finance</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
@@ -35,165 +35,137 @@ input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8p
 .topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}
 .topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
 .topnav a.safe{background:#dcfce7;color:#166534;border:1.5px solid #059669}
-.schoolList{border:1.5px solid #cbd5e1;border-radius:8px;max-height:220px;overflow-y:auto;display:none;background:#fff}
-.schoolList button{width:100%;text-align:left;background:#fff;border:none;border-bottom:1px solid #e2e8f0;padding:11px 12px;cursor:pointer;font-size:14px}
-.schoolList button:hover{background:#dbeafe}
-.schoolList button b{display:block}
-.schoolList button span{font-size:12px;color:#64748b}
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .miniBtn{padding:6px 10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;margin:2px}
-@media print{
-  body{background:#fff}
-  header, .topnav, #offlineBanner, button, input, select, .card:nth-child(1){display:none!important}
-  main{max-width:100%;padding:0}
-  .card{display:block!important;box-shadow:none;border:none;padding:0;margin:0}
-  #adminBody > .card:not(#auditCard){display:none!important}
-  #auditCard{display:block!important}
-  table{font-size:11px}
-  th{background:#0a1f4d!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .noPrint{display:none!important}
-  body.sgb-printing header, body.sgb-printing main, body.sgb-printing #offlineBanner{display:none!important}
-  body.sgb-printing #sgbPrintArea{display:block!important;max-width:100%;padding:10px;font-family:Arial,sans-serif;color:#111}
-  #sgbPrintArea h1{font-size:24px;color:#0a1f4d;margin:4px 0}
-  #sgbPrintArea h2{font-size:16px;color:#0a1f4d;border-bottom:2px solid #d4af37;padding-bottom:4px;margin:14px 0 8px}
-  #sgbPrintArea table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
-  #sgbPrintArea th, #sgbPrintArea td{border:1px solid #999;padding:7px;text-align:left}
-  #sgbPrintArea th{background:#0a1f4d!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #sgbPrintArea .barBg{background:#e2e8f0;height:18px;border-radius:10px;overflow:hidden}
-  #sgbPrintArea .barFill{background:#059669;height:100%;color:#fff;font-size:11px;font-weight:900;text-align:center;line-height:18px}
-  #sgbPrintArea .signRow{display:flex;gap:20px;margin-top:26px}
-  #sgbPrintArea .signBox{flex:1;border-top:2px solid #111;padding-top:6px;font-size:12px;text-align:center}
-  #sgbPrintArea .footer{font-size:11px;color:#64748b;text-align:center;margin-top:14px;border-top:1px solid #ccc;padding-top:6px}
-}
+.tierBox{border:2px solid #0a1f4d;border-radius:12px;padding:12px;text-align:center;background:#fff}
+.tierBox h3{margin:0 0 6px;color:#0a1f4d}
+.tierBox .price{font-size:22px;font-weight:900;color:#059669}
 </style>
 </head>
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>⚙️ Makhanani LTSM — Admin v3.0</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Admin ONLY • Schools + Subscription + Bin + Audit + SGB Pack • Return is NEVER blocked</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>⚙️ Makhanani LTSM — Admin v3.2</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Admin Only • Schools + Subscription + Bin + Audit + SGB + Finance</p>
 </header>
 <main>
 <div class="card">
 <div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Issue / Return</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 Profile</a></div>
 <div class="info" id="loginInfo">Checking admin login...</div>
-<div id="blockedBox" class="warn" style="display:none">🚫 You are NOT Admin. Only Admin (Xintimani Group) can open this page.<br>Go to <a href="index.html">Login</a> and login as Admin.</div>
+<div id="blockedBox" class="warn" style="display:none">🚫 Admin ONLY. You are not logged in as Admin.<br>Go to <a href="index.html">Login</a> and login as Admin.</div>
 </div>
+
 <div id="adminBody" style="display:none">
 
 <div class="card">
-<h2>🏫 1️⃣ Pick School to Manage — Dropdown</h2>
-<label>🏫 School * — Type to search, then tap school</label>
-<input id="schoolSearch" placeholder="Type school name... e.g. Makhanani" autocomplete="off" oninput="filterSchools()" onfocus="showSchoolList()">
-<div id="schoolList" class="schoolList"></div>
-<div id="schoolPicked" class="info" style="display:none"></div>
-<div class="grid2">
-<button class="btn btn-blue" onclick="loadSchoolStats()">🔄 Load Stats for Picked School</button>
-<button class="btn btn-grey" onclick="clearPicked()">🧹 Clear Picked School</button>
-</div>
-<div id="statsBox"></div>
+<h2>📊 Overview — <span id="totalSchools">0</span> Schools • <span id="totalActive">0</span> Active • <span id="totalReturnOnly">0</span> Return Only • <span id="totalSuspended">0</span> Suspended</h2>
+<div class="goldBox" id="overviewBox"></div>
+<button class="btn btn-blue" onclick="loadSchools()">🔄 Refresh All</button>
 </div>
 
 <div class="card">
-<h2>➕ 2️⃣ Add New School — Appears in Login Dropdown for Everyone</h2>
-<div class="goldBox"><b>How it works:</b> Add here once → Saved to Firestore `schools` → Login page auto-loads it. No code edit needed.<br><b>EMIS must be correct</b> — it is the key: `EMIS_924140123`. Wrong EMIS = learners / books won't load.<br>New schools start with Bin Auto-Empty = <b>30 days</b>. Change it in Section 5 below.</div>
-<label>🏫 New School Name *</label>
+<h2>🏫 1. Add School — Appears in Login Dropdown Automatically</h2>
+<label>School Name *</label>
 <input id="newSchoolName" placeholder="e.g. Bokamoso Primary School">
-<label>🆔 EMIS Number *</label>
-<input id="newEmis" placeholder="e.g. 924140123" inputmode="numeric">
-<label>📍 District / Circuit (Optional)</label>
-<input id="newDistrict" placeholder="e.g. Johannesburg East">
-<label>👤 Principal Name (Optional)</label>
+<label>EMIS Number * — 9 digits</label>
+<input id="newEmis" placeholder="e.g. 123456789" inputmode="numeric" maxlength="9">
+<div class="grid2">
+<label>Subscription *</label>
+<label>Bin Auto-Empty *</label>
+</div>
+<div class="grid2">
+<select id="newStatus"><option value="ACTIVE">✅ ACTIVE — Issue + Return + Add</option><option value="RETURN_ONLY">🟠 RETURN_ONLY — Return Only</option><option value="SUSPENDED">🔴 SUSPENDED — Return Only</option></select>
+<select id="newBinDays"><option value="30">♻️ 30 days (Default)</option><option value="7">♻️ 7 days</option><option value="14">♻️ 14 days</option><option value="60">♻️ 60 days</option><option value="90">♻️ 90 days</option><option value="0">♻️ OFF — Never auto-delete</option></select>
+</div>
+<div class="grid2">
+<label>Pricing Tier *</label>
+<label>Principal Name (Optional)</label>
+</div>
+<div class="grid2">
+<select id="newTier"><option value="STANDARD">🔵 STANDARD — R4,500 / R500 / R7,500</option><option value="STARTER">🟢 STARTER — R3,000 / R350 / R4,500</option><option value="PREMIUM">🟣 PREMIUM — R5,500 / R600 / R9,000</option><option value="DEMO">🆓 DEMO — FREE 7 days</option></select>
 <input id="newPrincipal" placeholder="e.g. Mrs Mokoena">
-<label>📞 Principal Phone (Optional)</label>
-<input id="newPhone" placeholder="e.g. 082 123 4567">
-<label>💳 Subscription Status *</label>
-<select id="newStatus"><option value="ACTIVE">✅ ACTIVE — Can Issue + Return + Add</option><option value="RETURN_ONLY">🟠 RETURN ONLY — Can ONLY Return</option><option value="SUSPENDED">🔴 SUSPENDED — Can ONLY Return (same as Return Only)</option></select>
-<label>♻️ Bin Auto-Empty *</label>
-<select id="newBinDays"><option value="0">♾️ OFF — Never auto-delete</option><option value="7">7 days</option><option value="14">14 days</option><option value="30" selected>30 days (Recommended)</option><option value="60">60 days</option><option value="90">90 days</option></select>
-<button class="btn btn-green" id="addSchoolBtn" onclick="addSchool()">➕ Add School</button>
-<div id="addMsg"></div>
+</div>
+<button class="btn btn-green" onclick="addSchool()">➕ Add School</button>
+<div id="addSchoolMsg"></div>
 </div>
 
 <div class="card">
-<h2>📋 3️⃣ All Schools — <span id="schoolCount">0</span> schools</h2>
-<label>Search Schools</label>
-<input id="searchSchools" placeholder="Type to filter schools..." oninput="renderSchools()">
+<h2>🏫 2. All Schools — Tap to Change Subscription / Bin / Tier</h2>
+<label>Search Schools — Name / EMIS</label>
+<input id="searchSchools" placeholder="Type school name or EMIS..." oninput="renderSchools()">
 <div id="schoolsBody"></div>
 </div>
 
 <div class="card">
-<h2>💳 4️⃣ Subscription — Set for Picked School</h2>
-<div class="info" id="subInfo">Pick a school above first, then set subscription here.</div>
-<div class="grid3">
-<button class="btn btn-green" onclick="setSub('ACTIVE')">✅ Set ACTIVE</button>
-<button class="btn btn-orange" onclick="setSub('RETURN_ONLY')">🟠 Set RETURN ONLY</button>
-<button class="btn btn-red" onclick="setSub('SUSPENDED')">🔴 Set SUSPENDED</button>
+<h2>💰 3. Pricing Tiers — From Photo — Locked</h2>
+<div class="grid2">
+<div class="tierBox"><h3>🆓 DEMO</h3><div class="small">7 days free trial</div><div class="price">Setup: FREE</div><div>Monthly: <b>FREE</b></div><div>Once-off: <b>FREE</b></div></div>
+<div class="tierBox"><h3>🟢 STARTER</h3><div class="small">Starter — 1 school</div><div class="price">Setup: R3,000</div><div>Monthly: <b>R350 / month</b></div><div>Once-off: <b>R4,500 once-off / year</b></div></div>
+<div class="tierBox"><h3>🔵 STANDARD</h3><div class="small">Most popular</div><div class="price">Setup: R4,500</div><div>Monthly: <b>R500 / month</b></div><div>Once-off: <b>R7,500 once-off / year</b></div></div>
+<div class="tierBox"><h3>🟣 PREMIUM</h3><div class="small">Premium</div><div class="price">Setup: R5,500</div><div>Monthly: <b>R600 / month</b></div><div>Once-off: <b>R9,000 once-off / year</b></div></div>
 </div>
-<div id="subMsg"></div>
-<div class="small" style="margin-top:8px">ACTIVE = Issue + Return + Add allowed.<br>RETURN ONLY / SUSPENDED = Return ONLY. Issue + Add blocked. Return is NEVER blocked.</div>
+<div class="small" style="text-align:center;margin-top:8px">Setup = Once, when school joins • Monthly = Every month • Once-off = Once per year, at renewal (Month 12, 24...)</div>
+</div>
+
+<div class="card" id="financeCard">
+<h2>💰 4. Financial Projection — Xintimani Revenue — Your Tiers</h2>
+<div class="info" id="finInfo">Enter how many schools you have in EACH tier. Projection auto-calculates Setup + Monthly + Annual Once-off.</div>
+<div class="grid3">
+<div><label>🆓 DEMO Schools — R0</label><input id="finDemo" type="number" value="2" min="0" oninput="calcFinanceTiered()"><div class="small">Setup FREE • Monthly FREE • Once-off FREE</div></div>
+<div><label>🟢 STARTER Schools</label><input id="finStarter" type="number" value="3" min="0" oninput="calcFinanceTiered()"><div class="small">Setup R3,000 • R350/mo • R4,500/yr</div></div>
+<div><label>🔵 STANDARD Schools</label><input id="finStandard" type="number" value="5" min="0" oninput="calcFinanceTiered()"><div class="small">Setup R4,500 • R500/mo • R7,500/yr</div></div>
+</div>
+<div class="grid3">
+<div><label>🟣 PREMIUM Schools</label><input id="finPremium" type="number" value="1" min="0" oninput="calcFinanceTiered()"><div class="small">Setup R5,500 • R600/mo • R9,000/yr</div></div>
+<div><label>📈 New Paying Schools / Month (as STANDARD)</label><input id="finGrowth" type="number" value="2" min="0" oninput="calcFinanceTiered()"></div>
+<div><label>📅 Months to Project</label><select id="finMonths" onchange="calcFinanceTiered()"><option value="6">6 Months</option><option value="12" selected>12 Months</option><option value="24">24 Months</option></select></div>
+</div>
+<div class="goldBox" id="finSummary" style="font-size:15px"></div>
+<div style="margin-top:12px"><canvas id="finChart" width="800" height="280" style="width:100%;height:280px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px"></canvas><div class="small" style="text-align:center">Navy Bar = Monthly Total (Monthly + Setup + Annual when due) • Gold Line = Cumulative</div></div>
+<div class="grid2"><button class="btn btn-green" onclick="exportFinanceCSV()">📥 Export Projection CSV</button><button class="btn btn-gold" onclick="printFinance()">🖨️ Print / Save PDF</button></div>
+<div id="finTable"></div>
+<div id="finMsg"></div>
 </div>
 
 <div class="card">
-<h2>♻️ 5️⃣ Bin Auto-Empty — Set for Picked School</h2>
-<div class="info" id="binSettingInfo">Pick a school above first, then set auto-empty here.</div>
-<label>🗓️ Auto-delete archived items after:</label>
-<select id="binDays"><option value="0">♾️ OFF — Never auto-delete (Bin keeps forever)</option><option value="7">7 days</option><option value="14">14 days</option><option value="30" selected>30 days (Recommended)</option><option value="60">60 days</option><option value="90">90 days</option></select>
-<button class="btn btn-blue" onclick="saveBinSetting()">💾 Save Bin Setting</button>
-<div id="binSettingMsg"></div>
-<div class="small" style="margin-top:8px">Example: 30 days = Learner archived on 1 Nov → auto-deleted on 1 Dec if not restored.<br>Restore anytime before that date to save it. Applies to BOTH Textbooks + Learners Bin for that school.</div>
+<h2>📦 5. SGB Pack — All Schools — 1 Click = 5 CSVs</h2>
+<div class="small">Downloads: Schools + Learners + Textbooks + Issues + Audit — For SGB / District / Audit meeting.</div>
+<div class="grid2"><button class="btn btn-blue" onclick="downloadSGBPack()">📦 Download SGB Pack (All Schools)</button><button class="btn btn-gold" onclick="printSGBSummary()">🖨️ Print SGB Summary</button></div>
+<div id="sgbMsg"></div>
 </div>
 
-<div class="card" id="auditCard">
-<h2>📜 6️⃣ Audit Log — Who Did What, When — <span id="auditCount">0</span> entries</h2>
-<div id="printHeader" style="display:none;text-align:center;border-bottom:3px solid #0a1f4d;padding-bottom:8px;margin-bottom:10px">
-<img src="logo.png" style="width:60px;height:60px;object-fit:contain">
-<h1 style="margin:4px 0 0;color:#0a1f4d;font-size:22px">Makhanani LTSM — Audit Log Report</h1>
-<p style="margin:4px 0">Xintimani Group (Pty) Ltd • <span id="printSchoolLine">All Schools</span><br><span id="printDateLine"></span> • Printed by: <span id="printByLine"></span></p>
-</div>
-<div class="info">Admin ONLY. Shows every important action. Cannot be edited from app.</div>
+<div class="card">
+<h2>📜 6. Audit Log — All Schools — <span id="auditCount">0</span> entries</h2>
+<div class="grid2"><label>Search Audit</label><label>Filter by Action</label></div>
 <div class="grid2">
-<label>Search Audit — Name / Action / Details</label>
-<label>Filter by Action</label>
+<input id="searchAudit" placeholder="e.g. BOOK_ISSUED, Thandi..." oninput="renderAudit()">
+<select id="filterAuditAction" onchange="renderAudit()"><option value="ALL">All Actions</option><option value="BOOK_ISSUED">Book Issued</option><option value="BOOK_RETURNED">Book Returned</option><option value="BOOK_EDITED">Book Edited</option><option value="BOOK_ARCHIVED">Book Archived</option><option value="BOOK_RESTORED">Book Restored</option><option value="LEARNER_EDITED">Learner Edited</option><option value="LEARNER_ARCHIVED">Learner Archived</option><option value="LEARNER_RESTORED">Learner Restored</option><option value="SCHOOL_ADDED">School Added</option><option value="SCHOOL_EDITED">School Edited</option><option value="SCHOOL_DELETED">School Deleted</option><option value="MY_PIN_CHANGED">My PIN Changed</option><option value="FINANCIAL_PROJECTION_EXPORTED">Financial Projection Exported</option><option value="FINANCIAL_PROJECTION_PRINTED">Financial Projection Printed</option><option value="SGB_PACK_DOWNLOADED">SGB Pack Downloaded</option><option value="SGB_SUMMARY_PRINTED">SGB Summary Printed</option></select>
 </div>
-<div class="grid2">
-<input id="searchAudit" placeholder="e.g. Thandi, ROLE_CHANGED, MPS000001..." oninput="renderAudit()">
-<select id="filterAuditAction" onchange="renderAudit()"><option value="ALL">All Actions</option><option value="SCHOOL_ADDED">School Added</option><option value="SCHOOL_DELETED">School Deleted</option><option value="SUBSCRIPTION_CHANGED">Subscription Changed</option><option value="BIN_SETTING_CHANGED">Bin Setting Changed</option><option value="USER_ADDED">User Added</option><option value="USER_ROLE_SCHOOL_CHANGED">User Role / School Changed</option><option value="USER_BLOCKED">User Blocked</option><option value="USER_UNBLOCKED">User Unblocked</option><option value="USER_PIN_RESET">User PIN Reset</option><option value="USER_DELETED">User Deleted</option><option value="MY_PROFILE_UPDATED">My Profile Updated</option><option value="MY_PIN_CHANGED">My PIN Changed</option><option value="BOOK_EDITED">Book Edited</option><option value="BOOK_ARCHIVED">Book Archived</option><option value="BOOK_RESTORED">Book Restored</option><option value="BOOK_PERMANENT_DELETED">Book Permanent Deleted</option><option value="BOOK_AUTO_EMPTIED">Book Auto-Emptied</option><option value="LEARNER_EDITED">Learner Edited</option><option value="LEARNER_ARCHIVED">Learner Archived</option><option value="LEARNER_RESTORED">Learner Restored</option><option value="LEARNER_PERMANENT_DELETED">Learner Permanent Deleted</option><option value="LEARNER_AUTO_EMPTIED">Learner Auto-Emptied</option><option value="BOOK_ISSUED">Book Issued</option><option value="BOOK_RETURNED">Book Returned</option><option value="AUDIT_EXPORTED">Audit Exported to CSV</option><option value="AUDIT_PRINTED">Audit Printed / PDF</option><option value="SGB_PACK_DOWNLOADED">SGB Pack Downloaded</option><option value="SGB_SUMMARY_PRINTED">SGB Summary Printed</option></select>
-</div>
-<button class="btn btn-blue" onclick="loadAudit()">🔄 Refresh Audit Log</button>
-<div class="grid2">
-<button class="btn btn-green" onclick="exportAuditCSV()">📥 Export CSV (Excel) — Current Filter</button>
-<button class="btn btn-gold" onclick="printAudit()">🖨️ Print / Save PDF — Audit Report</button>
-</div>
-<button class="btn btn-red" onclick="clearOldAudit()">🧹 Clear Logs Older Than 90 Days</button>
-<div id="auditSummary" class="goldBox" style="display:none"></div>
+<div class="grid2"><label>Filter by School EMIS (Optional)</label><label>Filter by User</label></div>
+<div class="grid2"><input id="filterAuditEmis" placeholder="e.g. 123456789 or leave blank" oninput="renderAudit()"><input id="filterAuditUser" placeholder="e.g. Thandi or leave blank" oninput="renderAudit()"></div>
+<button class="btn btn-blue" onclick="loadAudit()">🔄 Refresh Audit (All Schools)</button>
 <div id="auditBody"></div>
 </div>
 
-<div class="card" id="sgbCard">
-<h2>📦 7️⃣ SGB Pack — One-Click — All CSVs + Summary for SGB Meeting</h2>
-<div class="info" id="sgbInfo">Pick a school in Section 1 first, then tap Download SGB Pack. It will download 5 CSVs + 1 Summary for that school.</div>
-<button class="btn btn-gold" id="sgbBtn" onclick="downloadSGBPack()">📦 Download SGB Pack — 5 CSVs + Summary</button>
-<div class="grid2">
-<button class="btn btn-blue" id="sgbPrintBtn" onclick="printSGBSummary()">🖨️ Print Summary PDF — 1 Page for SGB</button>
-<button class="btn btn-grey" onclick="previewSGBSummary()">👁️ Preview Summary Before Print</button>
-</div>
-<div id="sgbMsg"></div>
-<div id="sgbPreview" style="display:none"></div>
-<div class="small" style="margin-top:8px">Files download one-by-one (browser may ask “Download multiple files?” → Tap <b>Allow</b>).<br>Summary PDF is 1 page: Logo + Totals + Return Rate Bar + Top 10 Overdue + Signatures.</div>
+<div class="card">
+<h2>👥 7. All Users — Quick View</h2>
+<div class="small">Manage users in <a href="profile.html">Profile page</a> — Add / Block / Reset PIN. This is view-only here.</div>
+<button class="btn btn-blue" onclick="loadUsers()">🔄 Refresh Users</button>
+<div id="usersBody"></div>
 </div>
 
 <div class="card">
-<h2>🧹 8️⃣ Danger Zone</h2>
-<div class="warn">Delete School removes the school record from `schools` list only. It does NOT delete learners / books / issues under `EMIS_xxx` — those stay in Firestore until you delete them manually in Firebase Console.</div>
-<button class="btn btn-red" onclick="deletePickedSchool()">🗑️ Delete Picked School from List</button>
+<h2>🧹 8. Danger Zone</h2>
+<div class="warn">⚠️ Deleting a school deletes the school record only. Learners / Textbooks / Issues under that EMIS stay in Firestore until you delete them manually. Use with care.</div>
+<label>Type EMIS to Delete School — Must match exactly</label>
+<input id="deleteEmisInput" placeholder="Type EMIS e.g. 123456789">
+<button class="btn btn-red" onclick="deleteSchoolByEmis()">🗑️ Delete School by EMIS</button>
 <div id="dangerMsg"></div>
 </div>
 
 </div>
-<div id="sgbPrintArea" style="display:none"></div>
 </main>
 <script src="offline-queue.js"></script>
 <script type="module">
@@ -205,292 +177,206 @@ const $ = id => document.getElementById(id);
 function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 let login=getLogin();
-let schools=[]; let selectedSchool=null; let auditEntries=[];
+let schools=[], auditEntries=[], allUsers=[];
 async function auditLog(action, details){
   try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){}
 }
 function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,4) || 'MK'); }
-function binLabel(days){ if(days===0 || days==='0') return 'OFF — Never auto-delete'; return days+' days'; }
-async function loadSchools(){
-  let fallback=[
-    { school:'Makhanani Primary School', emis:'123456789', status:'ACTIVE', district:'', principal:'', phone:'', binAutoEmptyDays:30 },
-    { school:'Makhanani Secondary School', emis:'123456790', status:'ACTIVE', district:'', principal:'', phone:'', binAutoEmptyDays:30 },
-    { school:'Thabo Secondary School', emis:'987654321', status:'ACTIVE', district:'', principal:'', phone:'', binAutoEmptyDays:30 },
-  ];
+function binLabel(d){ if(d===0 || d==='0') return 'OFF — Never auto-delete'; return d+' days'; }
+function statusPill(st){ st=(st||'ACTIVE').toUpperCase(); if(st==='ACTIVE') return '<span class="pill pill-green">✅ ACTIVE</span>'; if(st==='RETURN_ONLY') return '<span class="pill pill-orange">🟠 RETURN ONLY</span>'; return '<span class="pill pill-red">🔴 SUSPENDED</span>'; }
+function tierLabel(t){ t=(t||'STANDARD').toUpperCase(); if(t==='DEMO') return '🆓 DEMO'; if(t==='STARTER') return '🟢 STARTER'; if(t==='PREMIUM') return '🟣 PREMIUM'; return '🔵 STANDARD'; }
+function tierPrice(t){ t=(t||'STANDARD').toUpperCase(); if(t==='DEMO') return 'FREE'; if(t==='STARTER') return 'R3,000 / R350 / R4,500'; if(t==='PREMIUM') return 'R5,500 / R600 / R9,000'; return 'R4,500 / R500 / R7,500'; }
+window.loadSchools=async function(){
   try{
     const snap=await getDocs(collection(db,'schools'));
-    const fromDb=[];
-    snap.forEach(d=>{ const data=d.data()||{}; const emis=data.emis || String(d.id||'').replace('EMIS_',''); const name=data.school || data.name || data.schoolName || ''; if(name && emis) fromDb.push({ id:d.id, school:name, emis:String(emis), status:(data.status||data.subscription||'ACTIVE').toUpperCase(), district:data.district||'', principal:data.principal||data.principalName||'', phone:data.phone||data.principalPhone||'', createdAt:data.createdAt||'', binAutoEmptyDays:(typeof data.binAutoEmptyDays==='number'?data.binAutoEmptyDays:30) }); });
-    if(fromDb.length) schools=fromDb; else schools=fallback;
-  }catch(e){ schools=fallback; }
-  schools.sort((a,b)=>a.school.localeCompare(b.school));
-  renderSchools(); renderSchoolList('');
-}
-function renderSchoolList(filter){
-  const q=(filter||'').trim().toLowerCase();
-  const list=schools.filter(s=>!q || s.school.toLowerCase().includes(q) || String(s.emis).includes(q));
-  const box=$('schoolList');
-  if(!list.length){ box.innerHTML='<div style="padding:12px;font-size:13px">No school found.</div>'; box.style.display='block'; return; }
-  box.innerHTML=list.map(s=>'<button type="button" onclick="pickSchoolByEmis(\''+esc(s.emis)+'\')"><b>'+esc(s.school)+'</b><span>EMIS: '+esc(s.emis)+' • '+(s.status||'ACTIVE')+' • Bin: '+binLabel(s.binAutoEmptyDays)+'</span></button>').join('');
-  box.style.display='block';
-}
-window.filterSchools=function(){ renderSchoolList($('schoolSearch').value); };
-window.showSchoolList=function(){ renderSchoolList($('schoolSearch').value); };
-window.pickSchoolByEmis=function(emis){
-  selectedSchool=schools.find(s=>String(s.emis)===String(emis));
-  if(!selectedSchool) return;
-  $('schoolSearch').value=selectedSchool.school; $('schoolList').style.display='none'; $('schoolPicked').style.display='block';
-  const prefix=getPrefix(selectedSchool.school);
-  const binDays=(typeof selectedSchool.binAutoEmptyDays==='number'?selectedSchool.binAutoEmptyDays:30);
-  $('schoolPicked').innerHTML='✅ Picked: <b>'+esc(selectedSchool.school)+'</b> • EMIS: <b>'+esc(selectedSchool.emis)+'</b> • Status: <b>'+esc(selectedSchool.status||'ACTIVE')+'</b><br>Textbook Prefix: <b>'+prefix+'</b> • Next Book No. starts with: <b>'+prefix+'000001</b><br>♻️ Bin Auto-Empty: <b>'+binLabel(binDays)+'</b>';
-  $('subInfo').innerHTML='Picked: <b>'+esc(selectedSchool.school)+'</b> (EMIS '+esc(selectedSchool.emis)+') • Current: <b>'+esc(selectedSchool.status||'ACTIVE')+'</b>';
-  $('binDays').value=String(binDays);
-  $('binSettingInfo').innerHTML='Picked: <b>'+esc(selectedSchool.school)+'</b> • Current Bin setting: <b>'+binLabel(binDays)+'</b>';
-  $('sgbInfo').innerHTML='Ready for: <b>'+esc(selectedSchool.school)+'</b> (EMIS '+esc(selectedSchool.emis)+') • Tap Download SGB Pack below.';
-  loadSchoolStats();
+    schools=[]; snap.forEach(d=>{ const v=d.data()||{}; schools.push({id:d.id, school:v.school||v.name||'', emis:String(v.emis||String(d.id||'').replace('EMIS_','')), status:(v.status||v.subscription||'ACTIVE').toUpperCase(), binAutoEmptyDays:(typeof v.binAutoEmptyDays==='number'?v.binAutoEmptyDays:30), tier:(v.tier||'STANDARD').toUpperCase(), principal:v.principal||'', createdAt:v.createdAt||''}); });
+    schools.sort((a,b)=>String(a.school||'').localeCompare(String(b.school||'')));
+    const active=schools.filter(s=>s.status==='ACTIVE').length;
+    const retOnly=schools.filter(s=>s.status==='RETURN_ONLY').length;
+    const susp=schools.filter(s=>s.status==='SUSPENDED').length;
+    $('totalSchools').textContent=schools.length; $('totalActive').textContent=active; $('totalReturnOnly').textContent=retOnly; $('totalSuspended').textContent=susp;
+    $('overviewBox').innerHTML='🏫 Total: <b>'+schools.length+'</b> • ✅ ACTIVE: <b>'+active+'</b> • 🟠 RETURN ONLY: <b>'+retOnly+'</b> • 🔴 SUSPENDED: <b>'+susp+'</b><br>💡 RETURN ONLY / SUSPENDED = Issue + Add blocked, Return NEVER blocked.<br>♻️ Bin: Per-school setting, controls auto-empty of Recycle Bin in Learners / Textbooks.';
+    renderSchools();
+    if($('finInfo')) $('finInfo').innerHTML='Tiers loaded: DEMO FREE • STARTER R3,000 / R350 / R4,500 • STANDARD R4,500 / R500 / R7,500 • PREMIUM R5,500 / R600 / R9,000. Enter your real school counts below.';
+    calcFinanceTiered();
+  }catch(e){ $('schoolsBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
 };
-window.clearPicked=function(){ selectedSchool=null; $('schoolSearch').value=''; $('schoolPicked').style.display='none'; $('statsBox').innerHTML=''; $('subInfo').innerHTML='Pick a school above first, then set subscription here.'; $('binSettingInfo').innerHTML='Pick a school above first, then set auto-empty here.'; $('binDays').value='30'; $('sgbInfo').innerHTML='Pick a school in Section 1 first, then tap Download SGB Pack.'; };
-document.addEventListener('click',(e)=>{ if(!e.target.closest('#schoolSearch') && !e.target.closest('#schoolList')) $('schoolList').style.display='none'; });
-window.loadSchoolStats=async function(){
-  if(!selectedSchool){ $('statsBox').innerHTML='<div class="warn">⚠️ Pick a school first.</div>'; return; }
-  $('statsBox').innerHTML='<div class="info">⏳ Loading stats for '+esc(selectedSchool.school)+'...</div>';
-  try{
-    const base='EMIS_'+selectedSchool.emis;
-    const l=await getDocs(collection(db,'schools',base,'learners'));
-    const b=await getDocs(collection(db,'schools',base,'textbooks'));
-    const iss=await getDocs(collection(db,'schools',base,'issues'));
-    let issued=0, returned=0, archivedLearners=0, archivedBooks=0;
-    iss.forEach(d=>{ const s=(d.data().status||'').toUpperCase(); if(s==='ISSUED') issued++; if(s==='RETURNED') returned++; });
-    l.forEach(d=>{ if(d.data().archived===true) archivedLearners++; });
-    b.forEach(d=>{ if(d.data().archived===true) archivedBooks++; });
-    const prefix=getPrefix(selectedSchool.school);
-    const binDays=(typeof selectedSchool.binAutoEmptyDays==='number'?selectedSchool.binAutoEmptyDays:30);
-    $('statsBox').innerHTML='<div class="goldBox">📊 <b>'+esc(selectedSchool.school)+'</b> (EMIS '+esc(selectedSchool.emis)+')<br>👩🏾‍🎓 Learners (active): <b>'+(l.size-archivedLearners)+'</b> • 📖 Textbooks (active): <b>'+(b.size-archivedBooks)+'</b> • 📚 Currently ISSUED: <b>'+issued+'</b> • ✅ Returned: <b>'+returned+'</b><br>♻️ In Bin: Learners <b>'+archivedLearners+'</b> • Books <b>'+archivedBooks+'</b> • Bin Auto-Empty: <b>'+binLabel(binDays)+'</b><br>Status: <b>'+esc(selectedSchool.status||'ACTIVE')+'</b> • Prefix: <b>'+prefix+'</b></div>';
-  }catch(e){ $('statsBox').innerHTML='<div class="warn">❌ Stats failed: '+esc(e.message)+'</div>'; }
-};
-window.addSchool=async function(){
-  const school=($('newSchoolName').value||'').trim(); const emis=($('newEmis').value||'').trim(); const district=($('newDistrict').value||'').trim(); const principal=($('newPrincipal').value||'').trim(); const phone=($('newPhone').value||'').trim(); const status=$('newStatus').value||'ACTIVE'; const binDays=parseInt($('newBinDays').value||'30',10);
-  if(!school){ $('addMsg').innerHTML='<div class="warn">⚠️ Enter School Name.</div>'; return; }
-  if(!emis){ $('addMsg').innerHTML='<div class="warn">⚠️ Enter EMIS Number.</div>'; return; }
-  if(schools.some(s=>String(s.emis)===String(emis))){ $('addMsg').innerHTML='<div class="warn">❌ EMIS '+esc(emis)+' already exists — pick it from dropdown instead.</div>'; return; }
-  if(schools.some(s=>s.school.toLowerCase()===school.toLowerCase())){ $('addMsg').innerHTML='<div class="warn">❌ School name already exists.</div>'; return; }
-  if(!navigator.onLine){ $('addMsg').innerHTML='<div class="warn">🟠 Offline — Add School needs internet.</div>'; return; }
-  $('addSchoolBtn').disabled=true; $('addSchoolBtn').textContent='⏳ Adding...';
-  try{
-    await setDoc(doc(db,'schools','EMIS_'+emis), { school, emis, district, principal, phone, status, subscription:status, binAutoEmptyDays:binDays, createdAt:new Date().toISOString(), createdBy:login?.name||login?.email||'' });
-    await auditLog('SCHOOL_ADDED','Added school '+school+' (EMIS '+emis+') • Status '+status+' • Bin '+binDays+' days');
-    $('addMsg').innerHTML='<div class="ok">✅ School added: <b>'+esc(school)+'</b> • EMIS '+esc(emis)+' • Status '+esc(status)+' • Bin: '+binLabel(binDays)+'<br>It will now appear in Login dropdown for everyone. Prefix: <b>'+getPrefix(school)+'</b></div>';
-    $('newSchoolName').value=''; $('newEmis').value=''; $('newDistrict').value=''; $('newPrincipal').value=''; $('newPhone').value='';
-    await loadSchools(); pickSchoolByEmis(emis);
-  }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; }
-  $('addSchoolBtn').disabled=false; $('addSchoolBtn').textContent='➕ Add School';
-};
-function statusPill(st){ st=(st||'ACTIVE').toUpperCase(); if(st==='ACTIVE') return '<span class="pill pill-green">✅ ACTIVE</span>'; if(st==='RETURN_ONLY') return '<span class="pill pill-orange">🟠 RETURN ONLY</span>'; return '<span class="pill pill-red">🔴 SUSPENDED</span>'; }
 window.renderSchools=function(){
   const q=($('searchSchools').value||'').trim().toLowerCase();
-  const list=schools.filter(s=>!q || s.school.toLowerCase().includes(q) || String(s.emis).includes(q));
-  $('schoolCount').textContent=schools.length;
-  if(!list.length){ $('schoolsBody').innerHTML='<div class="info">No schools found.</div>'; return; }
-  let html='<table><tr><th>School</th><th>EMIS / Prefix</th><th>Status</th><th>Bin</th><th>Action</th></tr>';
+  let list=schools.filter(s=>{ if(!q) return true; return (s.school+' '+s.emis).toLowerCase().includes(q); });
+  if(!list.length){ $('schoolsBody').innerHTML='<div class="info">No schools found. Add one above.</div>'; return; }
+  let html='<table><tr><th>School</th><th>EMIS / Prefix</th><th>Status</th><th>Tier</th><th>Bin</th><th>Action</th></tr>';
   list.forEach(s=>{
-    const prefix=getPrefix(s.school); const binDays=(typeof s.binAutoEmptyDays==='number'?s.binAutoEmptyDays:30);
-    html+='<tr><td><b>'+esc(s.school)+'</b><br><span class="small">'+esc(s.district||'')+' • Principal: '+esc(s.principal||'-')+'</span></td><td>EMIS: <b>'+esc(s.emis)+'</b><br>Prefix: <b>'+prefix+'</b></td><td>'+statusPill(s.status)+'</td><td><span class="pill pill-gold">♻️ '+binLabel(binDays)+'</span></td><td><button class="miniBtn btn-blue" onclick="pickSchoolByEmis(\''+esc(s.emis)+'\')">👉 Pick / Manage</button><br><button class="miniBtn btn-green" onclick="setSubFor(\''+esc(s.emis)+'\',\'ACTIVE\')">✅ Active</button><button class="miniBtn btn-orange" onclick="setSubFor(\''+esc(s.emis)+'\',\'RETURN_ONLY\')">🟠 Return Only</button><button class="miniBtn btn-red" onclick="setSubFor(\''+esc(s.emis)+'\',\'SUSPENDED\')">🔴 Suspend</button><br><button class="miniBtn btn-red" onclick="deleteSchool(\''+esc(s.emis)+'\')">🗑️ Delete</button></td></tr>';
+    html+='<tr><td><b>'+esc(s.school||'')+'</b><br><span class="small">Principal: '+esc(s.principal||'—')+'</span></td><td>EMIS: <b>'+esc(s.emis||'')+'</b><br>Prefix: <b>'+getPrefix(s.school||'')+'</b></td><td>'+statusPill(s.status)+'</td><td>'+tierLabel(s.tier)+'<br><span class="small">'+tierPrice(s.tier)+'</span></td><td>'+binLabel(s.binAutoEmptyDays)+'</td><td>'
+    +'<button class="miniBtn btn-blue" onclick="editSchool(\''+esc(s.emis)+'\')">✏️ Edit</button>'
+    +'<button class="miniBtn btn-green" onclick="quickStatus(\''+esc(s.emis)+'\',\'ACTIVE\')">✅ Active</button>'
+    +'<button class="miniBtn btn-orange" onclick="quickStatus(\''+esc(s.emis)+'\',\'RETURN_ONLY\')">🟠 Return Only</button>'
+    +'<button class="miniBtn btn-red" onclick="quickStatus(\''+esc(s.emis)+'\',\'SUSPENDED\')">🔴 Suspend</button>'
+    +'</td></tr>';
   });
   html+='</table>'; $('schoolsBody').innerHTML=html;
 };
-window.setSub=async function(status){ if(!selectedSchool){ $('subMsg').innerHTML='<div class="warn">⚠️ Pick a school first.</div>'; return; } await setSubFor(selectedSchool.emis, status); };
-window.setSubFor=async function(emis, status){
+window.addSchool=async function(){
+  const name=($('newSchoolName').value||'').trim(); const emis=($('newEmis').value||'').trim(); const status=$('newStatus').value; const binDays=parseInt($('newBinDays').value||'30',10); const tier=$('newTier').value; const principal=($('newPrincipal').value||'').trim();
+  if(!name){ $('addSchoolMsg').innerHTML='<div class="warn">⚠️ Enter School Name.</div>'; return; }
+  if(!/^\d{9}$/.test(emis)){ $('addSchoolMsg').innerHTML='<div class="warn">⚠️ EMIS must be 9 digits.</div>'; return; }
+  if(schools.some(s=>String(s.emis)===emis)){ $('addSchoolMsg').innerHTML='<div class="warn">❌ EMIS '+esc(emis)+' already exists.</div>'; return; }
   try{
-    await updateDoc(doc(db,'schools','EMIS_'+emis), { status, subscription:status, updatedAt:new Date().toISOString(), updatedBy:login?.name||'' });
-    await auditLog('SUBSCRIPTION_CHANGED','School EMIS '+emis+' → '+status);
-    const s=schools.find(x=>String(x.emis)===String(emis)); if(s) s.status=status;
-    $('subMsg').innerHTML='<div class="ok">✅ Subscription set to <b>'+esc(status)+'</b> for EMIS '+esc(emis)+'</div>';
-    if(selectedSchool && String(selectedSchool.emis)===String(emis)){ selectedSchool.status=status; $('subInfo').innerHTML='Picked: <b>'+esc(selectedSchool.school)+'</b> • Current: <b>'+esc(status)+'</b>'; }
-    renderSchools();
-  }catch(e){ $('subMsg').innerHTML='<div class="warn">❌ Failed: '+esc(e.message)+'</div>'; }
+    await setDoc(doc(db,'schools','EMIS_'+emis),{ school:name, emis, status, subscription:status, binAutoEmptyDays:binDays, tier, principal, createdAt:new Date().toISOString(), createdBy:login?.name||'' });
+    await auditLog('SCHOOL_ADDED','Added school '+name+' (EMIS '+emis+') • '+status+' • Tier '+tier+' • Bin '+binLabel(binDays));
+    $('addSchoolMsg').innerHTML='<div class="ok">✅ School added: <b>'+esc(name)+'</b> (EMIS '+esc(emis)+') • Prefix <b>'+getPrefix(name)+'</b> • '+statusPill(status)+' • '+tierLabel(tier)+'<br>It now appears in Login dropdown automatically.</div>';
+    $('newSchoolName').value=''; $('newEmis').value=''; $('newPrincipal').value='';
+    await loadSchools();
+  }catch(e){ $('addSchoolMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; }
 };
-window.saveBinSetting=async function(){
-  if(!selectedSchool){ $('binSettingMsg').innerHTML='<div class="warn">⚠️ Pick a school first.</div>'; return; }
-  const days=parseInt($('binDays').value||'30',10);
-  try{
-    await updateDoc(doc(db,'schools','EMIS_'+selectedSchool.emis),{binAutoEmptyDays:days,updatedAt:new Date().toISOString(),updatedBy:login?.name||''});
-    await auditLog('BIN_SETTING_CHANGED','School '+selectedSchool.school+' (EMIS '+selectedSchool.emis+') Bin → '+binLabel(days));
-    selectedSchool.binAutoEmptyDays=days;
-    const s=schools.find(x=>String(x.emis)===String(selectedSchool.emis)); if(s) s.binAutoEmptyDays=days;
-    $('binSettingMsg').innerHTML='<div class="ok">✅ Saved — Bin will auto-empty after <b>'+binLabel(days)+'</b> for '+esc(selectedSchool.school)+'</div>';
-    $('binSettingInfo').innerHTML='Picked: <b>'+esc(selectedSchool.school)+'</b> • Current Bin setting: <b>'+binLabel(days)+'</b>';
-    $('schoolPicked').innerHTML='✅ Picked: <b>'+esc(selectedSchool.school)+'</b> • EMIS: <b>'+esc(selectedSchool.emis)+'</b> • Status: <b>'+esc(selectedSchool.status||'ACTIVE')+'</b><br>Textbook Prefix: <b>'+getPrefix(selectedSchool.school)+'</b> • Next Book No. starts with: <b>'+getPrefix(selectedSchool.school)+'000001</b><br>♻️ Bin Auto-Empty: <b>'+binLabel(days)+'</b>';
-    renderSchools();
-  }catch(e){ $('binSettingMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; }
-};
-window.deleteSchool=async function(emis){
+window.editSchool=function(emis){
   const s=schools.find(x=>String(x.emis)===String(emis)); if(!s) return;
-  if(!confirm('Delete school "'+s.school+'" (EMIS '+s.emis+') from list?\n\nLearners / books under EMIS_'+s.emis+' will NOT be deleted — only the school list entry.')) return;
-  try{
-    await deleteDoc(doc(db,'schools','EMIS_'+emis));
-    await auditLog('SCHOOL_DELETED','Deleted school '+s.school+' (EMIS '+s.emis+') from list');
-    schools=schools.filter(x=>String(x.emis)!==String(emis));
-    if(selectedSchool && String(selectedSchool.emis)===String(emis)) clearPicked();
-    $('dangerMsg').innerHTML='<div class="ok">✅ Deleted: '+esc(s.school)+'</div>';
-    renderSchools(); renderSchoolList('');
-  }catch(e){ $('dangerMsg').innerHTML='<div class="warn">❌ Delete failed: '+esc(e.message)+'</div>'; }
+  const newName=prompt('Edit School Name:', s.school||''); if(newName===null) return;
+  const newStatus=prompt('Edit Status (ACTIVE / RETURN_ONLY / SUSPENDED):', s.status||'ACTIVE'); if(newStatus===null) return;
+  const newBin=prompt('Edit Bin Auto-Empty Days (0=OFF, 7,14,30,60,90):', String(s.binAutoEmptyDays??30)); if(newBin===null) return;
+  const newTier=prompt('Edit Tier (DEMO / STARTER / STANDARD / PREMIUM):', s.tier||'STANDARD'); if(newTier===null) return;
+  const newPrincipal=prompt('Edit Principal Name:', s.principal||''); if(newPrincipal===null) return;
+  saveEditSchool(emis, newName.trim(), newStatus.trim().toUpperCase(), parseInt(newBin,10)||0, newTier.trim().toUpperCase(), newPrincipal.trim());
 };
-window.deletePickedSchool=function(){ if(!selectedSchool){ $('dangerMsg').innerHTML='<div class="warn">⚠️ Pick a school first.</div>'; return; } deleteSchool(selectedSchool.emis); };
+async function saveEditSchool(emis, name, status, binDays, tier, principal){
+  if(!['ACTIVE','RETURN_ONLY','SUSPENDED'].includes(status)){ alert('Status must be ACTIVE, RETURN_ONLY or SUSPENDED.'); return; }
+  if(!['DEMO','STARTER','STANDARD','PREMIUM'].includes(tier)){ alert('Tier must be DEMO, STARTER, STANDARD or PREMIUM.'); return; }
+  try{
+    await updateDoc(doc(db,'schools','EMIS_'+emis),{ school:name, status, subscription:status, binAutoEmptyDays:binDays, tier, principal, updatedAt:new Date().toISOString(), updatedBy:login?.name||'' });
+    await auditLog('SCHOOL_EDITED','Edited school '+name+' (EMIS '+emis+') → '+status+' • Tier '+tier+' • Bin '+binLabel(binDays));
+    await loadSchools(); alert('✅ School updated.');
+  }catch(e){ alert('❌ Edit failed: '+e.message); }
+}
+window.quickStatus=async function(emis, newStatus){
+  const s=schools.find(x=>String(x.emis)===String(emis)); if(!s) return;
+  if(!confirm('Change '+s.school+' (EMIS '+emis+') to '+newStatus+'?')) return;
+  try{ await updateDoc(doc(db,'schools','EMIS_'+emis),{ status:newStatus, subscription:newStatus, updatedAt:new Date().toISOString(), updatedBy:login?.name||'' }); await auditLog('SCHOOL_EDITED','Changed status for '+s.school+' (EMIS '+emis+') → '+newStatus); await loadSchools(); }catch(e){ alert('❌ Status change failed: '+e.message); }
+};
+window.deleteSchoolByEmis=async function(){
+  const emis=($('deleteEmisInput').value||'').trim();
+  if(!emis){ $('dangerMsg').innerHTML='<div class="warn">⚠️ Type EMIS to delete.</div>'; return; }
+  const s=schools.find(x=>String(x.emis)===emis);
+  if(!s){ $('dangerMsg').innerHTML='<div class="warn">❌ School with EMIS '+esc(emis)+' not found.</div>'; return; }
+  if(!confirm('🗑️ DELETE SCHOOL '+s.school+' (EMIS '+emis+')?\n\nThis deletes the school record. It CANNOT be undone.')) return;
+  const confirm2=prompt('Type DELETE to confirm deleting '+s.school+':'); if(confirm2!=='DELETE'){ $('dangerMsg').innerHTML='<div class="warn">Cancelled — You must type DELETE exactly.</div>'; return; }
+  try{ await deleteDoc(doc(db,'schools','EMIS_'+emis)); await auditLog('SCHOOL_DELETED','Deleted school '+s.school+' (EMIS '+emis+')'); $('dangerMsg').innerHTML='<div class="ok">✅ School deleted: '+esc(s.school)+' (EMIS '+esc(emis)+')</div>'; $('deleteEmisInput').value=''; await loadSchools(); }catch(e){ $('dangerMsg').innerHTML='<div class="warn">❌ Delete failed: '+esc(e.message)+'</div>'; }
+};
+// FINANCIAL PROJECTION v3.2 — YOUR 4 TIERS
+const TIERS={ DEMO:{setup:0,monthly:0,annual:0}, STARTER:{setup:3000,monthly:350,annual:4500}, STANDARD:{setup:4500,monthly:500,annual:7500}, PREMIUM:{setup:5500,monthly:600,annual:9000} };
+let finData=[];
+function finMonthLabel(startDate, offset){ const d=new Date(startDate); d.setMonth(d.getMonth()+offset); return d.toLocaleDateString('en-ZA',{month:'long', year:'numeric'}); }
+window.calcFinanceTiered=function(){
+  const demo0=parseInt($('finDemo').value||'0',10)||0; const starter0=parseInt($('finStarter').value||'0',10)||0; const standard0=parseInt($('finStandard').value||'0',10)||0; const premium0=parseInt($('finPremium').value||'0',10)||0;
+  const growth=parseInt($('finGrowth').value||'0',10)||0; const months=parseInt($('finMonths').value||'12',10)||12; const startDate=new Date();
+  let counts={DEMO:demo0,STARTER:starter0,STANDARD:standard0,PREMIUM:premium0};
+  let startSetup=starter0*TIERS.STARTER.setup + standard0*TIERS.STANDARD.setup + premium0*TIERS.PREMIUM.setup;
+  finData=[]; let cum=0;
+  for(let i=0;i<months;i++){
+    let newSchools=0;
+    if(i>0 && growth>0){ counts.STANDARD+=growth; newSchools=growth; }
+    let monthlyRev=counts.STARTER*TIERS.STARTER.monthly + counts.STANDARD*TIERS.STANDARD.monthly + counts.PREMIUM*TIERS.PREMIUM.monthly;
+    let setupRev=0; if(i===0) setupRev=startSetup; else setupRev=newSchools*TIERS.STANDARD.setup;
+    let annualRev=0; if((i+1)%12===0){ annualRev=counts.STARTER*TIERS.STARTER.annual + counts.STANDARD*TIERS.STANDARD.annual + counts.PREMIUM*TIERS.PREMIUM.annual; }
+    let totalMonth=monthlyRev+setupRev+annualRev; cum+=totalMonth;
+    const paying=counts.STARTER+counts.STANDARD+counts.PREMIUM;
+    finData.push({ monthLabel:finMonthLabel(startDate,i), demo:counts.DEMO, starter:counts.STARTER, standard:counts.STANDARD, premium:counts.PREMIUM, paying, monthly:monthlyRev, setup:setupRev, annual:annualRev, revenue:totalMonth, cumulative:cum });
+  }
+  const total=cum; const last=finData[finData.length-1]||{paying:0,revenue:0,cumulative:0}; const first=finData[0]||{paying:0}; const avg=months?Math.round(total/months):0;
+  const totalMonthlyOnly=finData.reduce((s,r)=>s+r.monthly,0); const totalSetup=finData.reduce((s,r)=>s+r.setup,0); const totalAnnual=finData.reduce((s,r)=>s+r.annual,0);
+  $('finSummary').innerHTML='💰 <b>Total '+months+' Months: R'+total.toLocaleString('en-ZA')+'</b> • Avg / Month: <b>R'+avg.toLocaleString('en-ZA')+'</b><br>🏫 Paying: <b>'+first.paying+' → '+last.paying+' schools</b> • DEMO: '+demo0+' (R0)<br>📊 Breakdown: Monthly R'+totalMonthlyOnly.toLocaleString('en-ZA')+' + Setup R'+totalSetup.toLocaleString('en-ZA')+' + Annual Once-off R'+totalAnnual.toLocaleString('en-ZA')+' = R'+total.toLocaleString('en-ZA');
+  let html='<table><tr><th>Month</th><th>Paying</th><th>Monthly</th><th>Setup</th><th>Annual</th><th>Total Month</th><th>Cumulative</th></tr>';
+  finData.forEach(r=>{ html+='<tr><td>'+esc(r.monthLabel)+'</td><td><b>'+r.paying+'</b><br><span class="small">'+r.starter+' Sta • '+r.standard+' Std • '+r.premium+' Pre</span></td><td>R'+r.monthly.toLocaleString('en-ZA')+'</td><td>R'+r.setup.toLocaleString('en-ZA')+'</td><td>R'+r.annual.toLocaleString('en-ZA')+'</td><td><b>R'+r.revenue.toLocaleString('en-ZA')+'</b></td><td>R'+r.cumulative.toLocaleString('en-ZA')+'</td></tr>'; });
+  html+='<tr style="background:#fef3c7"><td><b>TOTAL</b></td><td><b>'+last.paying+'</b></td><td><b>R'+totalMonthlyOnly.toLocaleString('en-ZA')+'</b></td><td><b>R'+totalSetup.toLocaleString('en-ZA')+'</b></td><td><b>R'+totalAnnual.toLocaleString('en-ZA')+'</b></td><td><b>R'+avg.toLocaleString('en-ZA')+' avg</b></td><td><b>R'+total.toLocaleString('en-ZA')+'</b></td></tr></table>';
+  $('finTable').innerHTML=html; drawFinChart();
+};
+function drawFinChart(){
+  const canvas=$('finChart'); if(!canvas) return; const ctx=canvas.getContext('2d'); const W=canvas.width, H=canvas.height; ctx.clearRect(0,0,W,H); if(!finData.length) return;
+  const maxRev=Math.max(...finData.map(d=>d.revenue),1); const maxCum=Math.max(...finData.map(d=>d.cumulative),1);
+  const padL=70, padR=20, padT=20, padB=40; const chartW=W-padL-padR, chartH=H-padT-padB; const barW=chartW/finData.length*0.6;
+  ctx.font='12px Arial'; ctx.fillStyle='#64748b'; ctx.textAlign='right';
+  for(let i=0;i<=4;i++){ const y=padT+chartH-(chartH*i/4); const val=Math.round(maxRev*i/4); ctx.fillText('R'+val.toLocaleString('en-ZA'), padL-8, y+4); ctx.strokeStyle='#e2e8f0'; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke(); }
+  ctx.textAlign='center';
+  finData.forEach((d,i)=>{ const x=padL + (chartW/finData.length)*i + (chartW/finData.length-barW)/2; const bh=chartH*(d.revenue/maxRev); const y=padT+chartH-bh; ctx.fillStyle='#0a1f4d'; ctx.fillRect(x,y,barW,bh); ctx.fillStyle='#0a1f4d'; ctx.fillText('R'+d.revenue.toLocaleString('en-ZA'), x+barW/2, y-6); ctx.fillStyle='#64748b'; ctx.fillText(d.monthLabel.split(' ')[0].slice(0,3), x+barW/2, H-14); const cy=padT+chartH - (chartH*(d.cumulative/maxCum)); ctx.fillStyle='#d4af37'; ctx.beginPath(); ctx.arc(x+barW/2, cy, 5, 0, Math.PI*2); ctx.fill(); if(i>0){ const prev=finData[i-1]; const px=padL + (chartW/finData.length)*(i-1) + (chartW/finData.length)/2; const py=padT+chartH - (chartH*(prev.cumulative/maxCum)); ctx.strokeStyle='#d4af37'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(x+barW/2,cy); ctx.stroke(); } });
+  ctx.fillStyle='#0a1f4d'; ctx.fillRect(padL,8,14,10); ctx.fillStyle='#111'; ctx.textAlign='left'; ctx.fillText('Monthly Total', padL+20, 18); ctx.fillStyle='#d4af37'; ctx.beginPath(); ctx.arc(padL+140,13,5,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#111'; ctx.fillText('Cumulative', padL+150, 18);
+}
+window.exportFinanceCSV=function(){
+  if(!finData.length){ alert('No projection.'); return; }
+  let csv='Month,Paying Schools,Starter,Standard,Premium,Monthly (R),Setup (R),Annual Once-off (R),Total Month (R),Cumulative (R)\n';
+  finData.forEach(r=>{ csv+='"'+r.monthLabel+'",'+r.paying+','+r.starter+','+r.standard+','+r.premium+','+r.monthly+','+r.setup+','+r.annual+','+r.revenue+','+r.cumulative+'\n'; });
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Xintimani-Projection-Tiers-'+new Date().toISOString().slice(0,10)+'.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  auditLog('FINANCIAL_PROJECTION_EXPORTED','Exported Tier Projection — Total R'+(finData[finData.length-1]?.cumulative||0));
+};
+window.printFinance=function(){
+  if(!finData.length){ alert('No projection.'); return; }
+  const win=window.open('','_blank');
+  win.document.write('<html><head><title>Financial Projection</title><style>body{font-family:Arial}table{width:100%;border-collapse:collapse}th,td{border:1px solid #999;padding:8px}th{background:#0a1f4d;color:#fff}</style></head><body><h1 style="color:#0a1f4d">Xintimani Group — Financial Projection — Tiers</h1><p>Date: '+new Date().toLocaleDateString('en-ZA')+' • DEMO FREE • STARTER R3,000 / R350 / R4,500 • STANDARD R4,500 / R500 / R7,500 • PREMIUM R5,500 / R600 / R9,000</p>'+$('finSummary').innerHTML+'<br>'+$('finTable').innerHTML+'</body></html>');
+  win.document.close(); win.focus(); win.print();
+  auditLog('FINANCIAL_PROJECTION_PRINTED','Printed Tier Projection — Total R'+(finData[finData.length-1]?.cumulative||0));
+};
+// SGB PACK
+function downloadCSV(filename, csv){ const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+window.downloadSGBPack=async function(){
+  try{
+    $('sgbMsg').innerHTML='<div class="info">⏳ Building SGB Pack — All Schools...</div>';
+    let schoolsCsv='School,EMIS,Status,Tier,Bin Days,Principal\n'; schools.forEach(s=>{ schoolsCsv+='"'+(s.school||'')+'",'+(s.emis||'')+','+(s.status||'')+','+(s.tier||'')+','+(s.binAutoEmptyDays??'')+',"'+(s.principal||'')+'"\n'; });
+    downloadCSV('SGB-1-Schools-'+new Date().toISOString().slice(0,10)+'.csv', schoolsCsv);
+    let learnersCsv='School,EMIS,Learner Name,Grade,Class,LearnerID,Archived\n';
+    let booksCsv='School,EMIS,Title,Subject,Grade,BookNo,Publisher,Archived\n';
+    let issuesCsv='School,EMIS,Learner,LearnerID,Book Title,BookNo,Issue Date,Due Date,Return Date,Status,Issued By\n';
+    for(const s of schools){
+      const base='EMIS_'+s.emis;
+      try{ const ls=await getDocs(collection(db,'schools',base,'learners')); ls.forEach(d=>{ const v=d.data()||{}; learnersCsv+='"'+s.school+'",'+s.emis+',"'+(v.name||'')+'","'+(v.grade||'')+'","'+(v.class||'')+'","'+(v.learnerId||v.barcode||'')+'",'+(v.archived?'Yes':'No')+'\n'; }); }catch(e){}
+      try{ const bs=await getDocs(collection(db,'schools',base,'textbooks')); bs.forEach(d=>{ const v=d.data()||{}; booksCsv+='"'+s.school+'",'+s.emis+',"'+(v.title||'')+'","'+(v.subject||'')+'","'+(v.grade||'')+'","'+(v.bookNo||v.barcode||'')+'","'+(v.publisher||'')+'",'+(v.archived?'Yes':'No')+'\n'; }); }catch(e){}
+      try{ const is=await getDocs(collection(db,'schools',base,'issues')); is.forEach(d=>{ const v=d.data()||{}; issuesCsv+='"'+s.school+'",'+s.emis+',"'+(v.learnerName||'')+'","'+(v.learnerId||'')+'","'+(v.bookTitle||v.title||'')+'","'+(v.bookNo||'')+'","'+(v.issueDate||'')+'","'+(v.dueDate||'')+'","'+(v.returnDate||'')+'","'+(v.status||'')+'","'+(v.issuedBy||'')+'"\n'; }); }catch(e){}
+    }
+    downloadCSV('SGB-2-Learners-'+new Date().toISOString().slice(0,10)+'.csv', learnersCsv);
+    downloadCSV('SGB-3-Textbooks-'+new Date().toISOString().slice(0,10)+'.csv', booksCsv);
+    downloadCSV('SGB-4-Issues-'+new Date().toISOString().slice(0,10)+'.csv', issuesCsv);
+    let auditCsv='When,Who,Role,School,EMIS,Action,Details\n';
+    auditEntries.forEach(a=>{ auditCsv+='"'+(a.when||'')+'","'+(a.who||'')+'","'+(a.role||'')+'","'+(a.school||'')+'","'+(a.emis||'')+'","'+(a.action||'')+'","'+String(a.details||'').replace(/"/g,"'")+'"\n'; });
+    downloadCSV('SGB-5-Audit-'+new Date().toISOString().slice(0,10)+'.csv', auditCsv);
+    await auditLog('SGB_PACK_DOWNLOADED','Downloaded SGB Pack — All Schools — 5 CSVs');
+    $('sgbMsg').innerHTML='<div class="ok">✅ SGB Pack downloaded — 5 CSVs: Schools, Learners, Textbooks, Issues, Audit. Check Downloads folder.</div>';
+  }catch(e){ $('sgbMsg').innerHTML='<div class="warn">❌ SGB Pack failed: '+esc(e.message)+'</div>'; }
+};
+window.printSGBSummary=function(){
+  const active=schools.filter(s=>s.status==='ACTIVE').length;
+  const html='<h1 style="color:#0a1f4d">Xintimani Group — Makhanani LTSM — SGB Summary — All Schools</h1><p>Date: '+new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'})+' • Generated by: '+esc(login?.name||'')+'</p><p>Total Schools: <b>'+schools.length+'</b> • ACTIVE: <b>'+active+'</b></p>'+$('schoolsBody').innerHTML;
+  const win=window.open('','_blank'); win.document.write('<html><head><title>SGB Summary</title><style>body{font-family:Arial}table{width:100%;border-collapse:collapse}th,td{border:1px solid #999;padding:8px}th{background:#0a1f4d;color:#fff}</style></head><body>'+html+'</body></html>'); win.document.close(); win.focus(); win.print();
+  auditLog('SGB_SUMMARY_PRINTED','Printed SGB Summary — All Schools — '+schools.length+' schools');
+};
 // AUDIT
 window.loadAudit=async function(){
   try{ const snap=await getDocs(collection(db,'auditLog')); auditEntries=[]; snap.forEach(d=>auditEntries.push({id:d.id,...d.data()})); auditEntries.sort((a,b)=>String(b.when||'').localeCompare(String(a.when||''))); }catch(e){ auditEntries=[]; }
   renderAudit();
 };
 window.renderAudit=function(){
-  const q=($('searchAudit').value||'').trim().toLowerCase(); const f=$('filterAuditAction').value||'ALL';
-  let list=auditEntries.filter(a=>{ if(f!=='ALL' && a.action!==f) return false; if(!q) return true; return (a.who+' '+a.action+' '+a.details+' '+a.school+' '+a.emis).toLowerCase().includes(q); });
+  const q=($('searchAudit').value||'').trim().toLowerCase(); const f=$('filterAuditAction').value||'ALL'; const fe=($('filterAuditEmis').value||'').trim(); const fu=($('filterAuditUser').value||'').trim().toLowerCase();
+  let list=auditEntries.filter(a=>{ if(f!=='ALL' && a.action!==f) return false; if(fe && String(a.emis||'')!==fe) return false; if(fu && !String(a.who||'').toLowerCase().includes(fu)) return false; if(!q) return true; return (a.who+' '+a.action+' '+a.details+' '+a.school).toLowerCase().includes(q); });
   $('auditCount').textContent=auditEntries.length;
   if(!list.length){ $('auditBody').innerHTML='<div class="info">No audit entries found.</div>'; return; }
-  list=list.slice(0,100);
-  let html='<table><tr><th>When</th><th>Who</th><th>Action</th><th>Details</th></tr>';
-  list.forEach(a=>{ const when=String(a.when||'').slice(0,16).replace('T',' '); html+='<tr><td>'+esc(when)+'</td><td><b>'+esc(a.who||'')+'</b><br><span class="small">'+esc(a.role||'')+' • '+esc(a.school||'')+'</span></td><td><span class="pill pill-blue">'+esc(a.action||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>'; });
-  html+='</table><div class="small">Showing latest 100. Total: '+auditEntries.length+'. Use Search / Filter to find older.</div>';
-  $('auditBody').innerHTML=html;
+  let html='<table><tr><th>When</th><th>Who / School</th><th>Action</th><th>Details</th></tr>';
+  list.slice(0,80).forEach(a=>{ html+='<tr><td>'+esc(String(a.when||'').slice(0,16).replace('T',' '))+'</td><td><b>'+esc(a.who||'')+'</b><br><span class="small">'+esc(a.role||'')+' • '+esc(a.school||'')+' ('+esc(a.emis||'')+')</span></td><td><span class="pill pill-blue">'+esc(a.action||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>'; });
+  html+='</table><div class="small">Showing latest 80. Total: '+auditEntries.length+'</div>'; $('auditBody').innerHTML=html;
 };
-function getFilteredAudit(){
-  const q=($('searchAudit').value||'').trim().toLowerCase(); const f=$('filterAuditAction').value||'ALL';
-  return auditEntries.filter(a=>{ if(f!=='ALL' && a.action!==f) return false; if(!q) return true; return (a.who+' '+a.action+' '+a.details+' '+a.school+' '+a.emis).toLowerCase().includes(q); });
-}
-function csvEsc(v){ v=String(v??'').replace(/"/g,'""'); return '"'+v+'"'; }
-window.exportAuditCSV=function(){
-  const list=getFilteredAudit(); if(!list.length){ alert('No audit entries to export for current filter.'); return; }
-  let csv='When,Who,Role,School,EMIS,Action,Details\n';
-  list.forEach(a=>{ csv+=csvEsc(String(a.when||'').slice(0,16).replace('T',' '))+','+csvEsc(a.who||'')+','+csvEsc(a.role||'')+','+csvEsc(a.school||'')+','+csvEsc(a.emis||'')+','+csvEsc(a.action||'')+','+csvEsc(a.details||'')+'\n'; });
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani-Audit-Log-'+new Date().toISOString().slice(0,10)+'.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-  auditLog('AUDIT_EXPORTED','Exported Audit Log to CSV — '+list.length+' entries • Filter: '+($('filterAuditAction').value||'ALL')+' • Search: '+($('searchAudit').value||'(none)'));
-};
-window.printAudit=function(){
-  const list=getFilteredAudit(); if(!list.length){ alert('No audit entries to print for current filter.'); return; }
-  const counts={}; list.forEach(a=>{ counts[a.action]=(counts[a.action]||0)+1; });
-  let summary='<b>📊 Summary — '+list.length+' entries (current filter)</b><br>'; Object.keys(counts).sort().forEach(k=>{ summary+=k+': <b>'+counts[k]+'</b> &nbsp;•&nbsp; '; }); summary+='<br><span class="small">Filter: '+( $('filterAuditAction').value||'ALL')+' • Search: '+esc($('searchAudit').value||'(none)')+'</span>';
-  $('auditSummary').innerHTML=summary; $('auditSummary').style.display='block';
-  $('printHeader').style.display='block'; $('printSchoolLine').textContent=selectedSchool ? selectedSchool.school+' (EMIS '+selectedSchool.emis+')' : 'All Schools'; $('printDateLine').textContent='Date: '+new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'})+' • Time: '+new Date().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'}); $('printByLine').textContent=(login?.name||'')+' ('+(login?.role||'')+')';
-  let html='<table><tr><th>When</th><th>Who</th><th>Action</th><th>Details</th></tr>';
-  list.forEach(a=>{ const when=String(a.when||'').slice(0,16).replace('T',' '); html+='<tr><td>'+esc(when)+'</td><td><b>'+esc(a.who||'')+'</b><br><span class="small">'+esc(a.role||'')+' • '+esc(a.school||'')+'</span></td><td>'+esc(a.action||'')+'</td><td>'+esc(a.details||'')+'</td></tr>'; });
-  html+='</table>'; $('auditBody').innerHTML=html;
-  document.querySelectorAll('#auditCard button, #auditCard input, #auditCard select').forEach(el=>el.classList.add('noPrint')); $('auditSummary').classList.remove('noPrint');
-  window.print();
-  setTimeout(()=>{ document.querySelectorAll('#auditCard button, #auditCard input, #auditCard select').forEach(el=>el.classList.remove('noPrint')); $('printHeader').style.display='none'; renderAudit(); $('auditSummary').style.display='none'; },500);
-  auditLog('AUDIT_PRINTED','Printed / Saved PDF Audit Report — '+list.length+' entries • Filter: '+($('filterAuditAction').value||'ALL'));
-};
-window.clearOldAudit=async function(){
-  if(!confirm('🧹 Clear audit logs older than 90 days?\n\nRecent logs (last 90 days) will stay. Old logs will be permanently deleted.')) return;
-  try{ const cutoff=Date.now()-90*24*60*60*1000; let deleted=0; for(const a of auditEntries){ if(a.when && new Date(a.when).getTime() < cutoff){ try{ await deleteDoc(doc(db,'auditLog',a.id)); deleted++; }catch(e){} } } alert('✅ Cleared '+deleted+' old audit entries.'); await loadAudit(); }catch(e){ alert('❌ Clear failed: '+e.message); }
-};
-// SGB PACK
-function sgbCsvEsc(v){ v=String(v??'').replace(/"/g,'""'); return '"'+v+'"'; }
-function sgbDownload(filename, csvText){ const blob=new Blob([csvText],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); }
-function sgbWait(ms){ return new Promise(r=>setTimeout(r,ms)); }
-async function loadSGBData(){
-  const school=selectedSchool || { school: login?.school||'', emis: String(login?.emis||''), status:'ACTIVE', binAutoEmptyDays:30 };
-  if(!school.emis) throw new Error('Pick a school first');
-  const base='EMIS_'+school.emis;
-  const [lSnap,bSnap,iSnap,aSnap]=await Promise.all([ getDocs(collection(db,'schools',base,'learners')), getDocs(collection(db,'schools',base,'textbooks')), getDocs(collection(db,'schools',base,'issues')), getDocs(collection(db,'auditLog')), ]);
-  const learners=[]; lSnap.forEach(d=>learners.push({id:d.id,...d.data()})); const books=[]; bSnap.forEach(d=>books.push({id:d.id,...d.data()})); const issues=[]; iSnap.forEach(d=>issues.push({id:d.id,...d.data()})); const auditAll=[]; aSnap.forEach(d=>auditAll.push({id:d.id,...d.data()}));
-  const activeLearners=learners.filter(l=>l.archived!==true); const activeBooks=books.filter(b=>b.archived!==true);
-  const issued=issues.filter(i=>String(i.status||'').toUpperCase()==='ISSUED'); const returned=issues.filter(i=>String(i.status||'').toUpperCase()==='RETURNED');
-  const now=new Date(); now.setHours(0,0,0,0); let overdueList=[];
-  issued.forEach(i=>{ if(i.dueDate && new Date(i.dueDate) < now){ const daysOver=Math.floor((now-new Date(i.dueDate))/(24*60*60*1000)); overdueList.push({...i, daysOver}); } });
-  overdueList.sort((a,b)=>b.daysOver-a.daysOver);
-  const totalIssuedEver=issues.length; const returnRate=totalIssuedEver?Math.round((returned.length/totalIssuedEver)*100):100;
-  const byTitle={}; issues.forEach(i=>{ const t=i.bookTitle||i.title||'Unknown'; byTitle[t]=(byTitle[t]||0)+1; }); const topBooks=Object.entries(byTitle).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  return { school, learners, books, issues, auditAll, activeLearners, activeBooks, issued, returned, overdueList, totalIssuedEver, returnRate, topBooks, archivedLearners: learners.filter(l=>l.archived===true).length, archivedBooks: books.filter(b=>b.archived===true).length, auditForSchool: auditAll.filter(a=>String(a.emis||'')===String(school.emis)).length };
-}
-function buildSGBPrintHTML(d){
-  const s=d.school; const dateStr=new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'}); const binTxt=binLabel(typeof s.binAutoEmptyDays==='number'?s.binAutoEmptyDays:30);
-  let overdueRows=d.overdueList.slice(0,10).map((o,i)=>'<tr><td>'+(i+1)+'</td><td><b>'+esc(o.learnerName||'')+'</b><br><span style="font-size:11px">'+esc(o.grade||'')+' • '+esc(o.class||'')+' • '+esc(o.learnerId||'')+'</span></td><td>'+esc(o.bookTitle||o.title||'')+'<br><span style="font-size:11px">'+esc(o.bookNo||'')+'</span></td><td>'+esc(o.dueDate||'')+'</td><td><b style="color:#dc2626">'+o.daysOver+' days</b></td></tr>').join('');
-  if(!overdueRows) overdueRows='<tr><td colspan="5" style="text-align:center;color:#059669">✅ No overdue books — All issued books are within due date!</td></tr>';
-  let topRows=d.topBooks.map(([t,c],i)=>'<tr><td>'+(i+1)+'</td><td>'+esc(t)+'</td><td><b>'+c+'</b> times issued</td></tr>').join('') || '<tr><td colspan="3">No issues yet</td></tr>';
-  return `
-  <div style="text-align:center;border-bottom:3px solid #0a1f4d;padding-bottom:10px">
-    <img src="logo.png" style="width:64px;height:64px;object-fit:contain">
-    <h1>Makhanani LTSM — SGB Report</h1>
-    <p style="margin:2px 0;font-size:14px"><b>${esc(s.school)}</b> • EMIS ${esc(s.emis)}</p>
-    <p style="margin:2px 0;font-size:12px;color:#64748b">Xintimani Group (Pty) Ltd • Date: ${dateStr} • Generated by: ${esc(login?.name||'')} (${esc(login?.role||'')})</p>
-  </div>
-  <h2>📊 Summary — Totals</h2>
-  <table><tr><th>Category</th><th>Count</th><th>Note</th></tr>
-    <tr><td>👩🏾‍🎓 Learners (Active)</td><td><b>${d.activeLearners.length}</b></td><td>Archived in Bin: ${d.archivedLearners}</td></tr>
-    <tr><td>📖 Textbooks (Active)</td><td><b>${d.activeBooks.length}</b></td><td>Archived in Bin: ${d.archivedBooks}</td></tr>
-    <tr><td>📚 Total Issues Ever</td><td><b>${d.totalIssuedEver}</b></td><td>All time for this school</td></tr>
-    <tr><td>📕 Currently ISSUED (Books Out)</td><td><b>${d.issued.length}</b></td><td>Books not yet returned</td></tr>
-    <tr><td>✅ Returned</td><td><b>${d.returned.length}</b></td><td>Books returned</td></tr>
-    <tr><td>⏰ Overdue</td><td><b style="color:#dc2626">${d.overdueList.length}</b></td><td>Due date passed, still out</td></tr>
-    <tr><td>📜 Audit Entries</td><td><b>${d.auditForSchool}</b></td><td>Who did what, when</td></tr>
-    <tr><td>💳 Subscription</td><td><b>${esc(s.status||'ACTIVE')}</b></td><td>Bin Auto-Empty: ${esc(binTxt)}</td></tr>
-  </table>
-  <h2>✅ Return Rate — ${d.returnRate}%</h2>
-  <div class="barBg"><div class="barFill" style="width:${d.returnRate}%">${d.returnRate}% Returned</div></div>
-  <p style="font-size:12px;color:#64748b">Target: 95%+ by 30 November. ${d.returnRate>=95?'✅ Target met!':d.returnRate>=80?'🟠 Close — follow up overdue below.':'🔴 Below target — urgent follow-up needed.'}</p>
-  <h2>⏰ Top 10 Overdue — Follow Up First</h2>
-  <table><tr><th>#</th><th>Learner</th><th>Book</th><th>Due Date</th><th>Overdue</th></tr>${overdueRows}</table>
-  <h2>🏆 Top 5 Most Issued Books</h2>
-  <table><tr><th>#</th><th>Book Title</th><th>Issued</th></tr>${topRows}</table>
-  <h2>📋 SGB Action Items</h2>
-  <ol style="font-size:13px;line-height:1.6">
-    <li>Follow up <b>${d.overdueList.length} overdue</b> learners above — return books this week.</li>
-    <li>Improve Return Rate from <b>${d.returnRate}%</b> to <b>95%+</b> by 30 November.</li>
-    <li>Confirm Bin items (${d.archivedLearners} learners + ${d.archivedBooks} books) are restored or deleted before auto-empty (${esc(binTxt)}).</li>
-    <li>Note: Every Book Must Come Back — no book lost.</li>
-  </ol>
-  <div class="signRow"><div class="signBox">Principal<br><br>__________________<br>Date: ___________</div><div class="signBox">SGB Chairperson<br><br>__________________<br>Date: ___________</div><div class="signBox">Librarian / HOD<br><br>__________________<br>Date: ___________</div></div>
-  <div class="footer">Makhanani LTSM • Xintimani Group (Pty) Ltd • Generated from Makhanani LTSM App • ${dateStr} • Page 1 of 1</div>
-  `;
-}
-window.previewSGBSummary=async function(){
-  try{ $('sgbMsg').innerHTML='<div class="info">⏳ Loading preview...</div>'; const d=await loadSGBData(); $('sgbPreview').innerHTML='<div style="border:2px dashed #0a1f4d;border-radius:12px;padding:12px;background:#f8fafc">'+buildSGBPrintHTML(d)+'</div>'; $('sgbPreview').style.display='block'; $('sgbMsg').innerHTML='<div class="ok">✅ Preview ready — scroll down to see. Tap Print to save as PDF.</div>'; }catch(e){ $('sgbMsg').innerHTML='<div class="warn">❌ Preview failed: '+esc(e.message)+'</div>'; }
-};
-window.printSGBSummary=async function(){
-  try{
-    $('sgbPrintBtn').disabled=true; $('sgbPrintBtn').textContent='⏳ Loading...';
-    const d=await loadSGBData(); $('sgbPrintArea').innerHTML=buildSGBPrintHTML(d); document.body.classList.add('sgb-printing'); $('sgbPreview').style.display='none'; window.print();
-    setTimeout(()=>{ document.body.classList.remove('sgb-printing'); $('sgbPrintArea').innerHTML=''; $('sgbPrintBtn').disabled=false; $('sgbPrintBtn').textContent='🖨️ Print Summary PDF — 1 Page for SGB'; },600);
-    await auditLog('SGB_SUMMARY_PRINTED','Printed SGB Summary PDF for '+d.school.school+' (EMIS '+d.school.emis+') — Return Rate '+d.returnRate+'% • Issued '+d.issued.length+' • Overdue '+d.overdueList.length);
-    $('sgbMsg').innerHTML='<div class="ok">✅ SGB Summary sent to Print — Choose <b>Save as PDF</b> in print dialog.</div>';
-  }catch(e){ document.body.classList.remove('sgb-printing'); $('sgbPrintBtn').disabled=false; $('sgbPrintBtn').textContent='🖨️ Print Summary PDF — 1 Page for SGB'; $('sgbMsg').innerHTML='<div class="warn">❌ Print failed: '+esc(e.message)+'</div>'; }
-};
-window.downloadSGBPack=async function(){
-  const school=selectedSchool || { school: login?.school||'', emis: String(login?.emis||''), status:'ACTIVE', binAutoEmptyDays:30 };
-  if(!school.emis){ $('sgbMsg').innerHTML='<div class="warn">⚠️ Pick a school first in Section 1.</div>'; return; }
-  $('sgbBtn').disabled=true; $('sgbBtn').textContent='⏳ Downloading SGB Pack... Please Allow multiple downloads';
-  $('sgbMsg').innerHTML='<div class="info">⏳ Loading '+esc(school.school)+' (EMIS '+esc(school.emis)+')... Please tap <b>Allow</b> if browser asks to download multiple files.</div>';
-  try{
-    const d=await loadSGBData();
-    const today=new Date().toISOString().slice(0,10); const safeSchool=String(school.school||'').replace(/[^A-Za-z0-9]/g,'') || 'School'; const prefix='SGB-Pack-'+safeSchool+'-'+today;
-    const auditForSchool=d.auditAll.filter(a=>String(a.emis||'')===String(school.emis)).sort((a,b)=>String(b.when||'').localeCompare(String(a.when||'')));
-    let csv='When,Who,Role,School,EMIS,Action,Details\n'; auditForSchool.forEach(a=>{ csv+=sgbCsvEsc(String(a.when||'').slice(0,16).replace('T',' '))+','+sgbCsvEsc(a.who||'')+','+sgbCsvEsc(a.role||'')+','+sgbCsvEsc(a.school||'')+','+sgbCsvEsc(a.emis||'')+','+sgbCsvEsc(a.action||'')+','+sgbCsvEsc(a.details||'')+'\n'; });
-    let csvL='Name,Grade,Class,LearnerID,Barcode\n'; d.activeLearners.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''))).forEach(l=>{ csvL+=sgbCsvEsc(l.name||'')+','+sgbCsvEsc(l.grade||'')+','+sgbCsvEsc(l.class||'')+','+sgbCsvEsc(l.learnerId||l.barcode||'')+','+sgbCsvEsc(l.barcode||l.learnerId||'')+'\n'; });
-    let csvB='Title,Subject,Grade,BookNo,Barcode,Status,Publisher\n'; d.activeBooks.sort((a,b)=>String(a.title||'').localeCompare(String(b.title||''))).forEach(b=>{ csvB+=sgbCsvEsc(b.title||'')+','+sgbCsvEsc(b.subject||'')+','+sgbCsvEsc(b.grade||'')+','+sgbCsvEsc(b.bookNo||b.barcode||'')+','+sgbCsvEsc(b.barcode||b.bookNo||'')+','+sgbCsvEsc(b.status||'')+','+sgbCsvEsc(b.publisher||'')+'\n'; });
-    const now=new Date(); now.setHours(0,0,0,0);
-    let csvI='LearnerName,LearnerID,Grade,Class,BookTitle,BookNo,IssueDate,DueDate,DaysOverdue,Status\n'; d.issued.sort((a,b)=>String(a.dueDate||'').localeCompare(String(b.dueDate||''))).forEach(i=>{ const due=i.dueDate?new Date(i.dueDate):null; const daysOver=due?Math.max(0,Math.floor((now-due)/(24*60*60*1000))):0; csvI+=sgbCsvEsc(i.learnerName||'')+','+sgbCsvEsc(i.learnerId||'')+','+sgbCsvEsc(i.grade||'')+','+sgbCsvEsc(i.class||'')+','+sgbCsvEsc(i.bookTitle||i.title||'')+','+sgbCsvEsc(i.bookNo||'')+','+sgbCsvEsc(i.issueDate||i.issuedAt||'')+','+sgbCsvEsc(i.dueDate||'')+','+sgbCsvEsc(daysOver)+','+sgbCsvEsc(i.status||'')+'\n'; });
-    let csvR='LearnerName,LearnerID,BookTitle,BookNo,IssueDate,ReturnDate,DueDate,Status\n'; d.returned.sort((a,b)=>String(b.returnDate||b.returnedAt||'').localeCompare(String(a.returnDate||a.returnedAt||''))).forEach(i=>{ csvR+=sgbCsvEsc(i.learnerName||'')+','+sgbCsvEsc(i.learnerId||'')+','+sgbCsvEsc(i.bookTitle||i.title||'')+','+sgbCsvEsc(i.bookNo||'')+','+sgbCsvEsc(i.issueDate||i.issuedAt||'')+','+sgbCsvEsc(i.returnDate||i.returnedAt||'')+','+sgbCsvEsc(i.dueDate||'')+','+sgbCsvEsc(i.status||'')+'\n'; });
-    const summary=[ 'MAKHANANI LTSM — SGB PACK SUMMARY','Xintimani Group (Pty) Ltd','========================================','School: '+school.school,'EMIS: '+school.emis,'Date: '+new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'}),'Generated by: '+(login?.name||'')+' ('+(login?.role||'')+')','','TOTALS','------','Learners (active): '+d.activeLearners.length+' (Archived in Bin: '+d.archivedLearners+')','Textbooks (active): '+d.activeBooks.length+' (Archived in Bin: '+d.archivedBooks+')','Total Issues Ever: '+d.totalIssuedEver,'Currently ISSUED: '+d.issued.length,'Returned: '+d.returned.length,'Return Rate: '+d.returnRate+'%','Overdue: '+d.overdueList.length,'','SUBSCRIPTION / BIN','----------------','Subscription: '+(school.status||'ACTIVE'),'Bin Auto-Empty: '+binLabel(typeof school.binAutoEmptyDays==='number'?school.binAutoEmptyDays:30),'','AUDIT','-----','Audit entries for this school: '+auditForSchool.length,'','FILES IN THIS PACK','------------------','1. SGB-Pack-Audit-*.csv','2. SGB-Pack-Learners-*.csv','3. SGB-Pack-Textbooks-*.csv','4. SGB-Pack-Issued-*.csv','5. SGB-Pack-Returned-*.csv','','Makhanani LTSM — Every Book Must Come Back!', ].join('\n');
-    sgbDownload(prefix+'-Summary.txt', summary); await sgbWait(600);
-    sgbDownload(prefix+'-Audit.csv', csv); await sgbWait(600);
-    sgbDownload(prefix+'-Learners.csv', csvL); await sgbWait(600);
-    sgbDownload(prefix+'-Textbooks.csv', csvB); await sgbWait(600);
-    sgbDownload(prefix+'-Issued.csv', csvI); await sgbWait(600);
-    sgbDownload(prefix+'-Returned.csv', csvR);
-    $('sgbMsg').innerHTML='<div class="ok">✅ SGB Pack downloaded — 6 files for <b>'+esc(school.school)+'</b><br>📄 Summary: Learners <b>'+d.activeLearners.length+'</b> • Books <b>'+d.activeBooks.length+'</b> • Issued <b>'+d.issued.length+'</b> • Returned <b>'+d.returned.length+'</b> • Return Rate <b>'+d.returnRate+'%</b> • Overdue <b>'+d.overdueList.length+'</b><br>Check Downloads folder. If some files missing, browser blocked multiple downloads — tap Allow and try again.</div>';
-    await auditLog('SGB_PACK_DOWNLOADED','Downloaded SGB Pack for '+school.school+' (EMIS '+school.emis+') — Learners '+d.activeLearners.length+' • Books '+d.activeBooks.length+' • Issued '+d.issued.length+' • Returned '+d.returned.length+' • Return Rate '+d.returnRate+'%');
-  }catch(e){ $('sgbMsg').innerHTML='<div class="warn">❌ SGB Pack failed: '+esc(e.message)+'</div>'; }
-  $('sgbBtn').disabled=false; $('sgbBtn').textContent='📦 Download SGB Pack — 5 CSVs + Summary';
+// USERS
+window.loadUsers=async function(){
+  try{ const snap=await getDocs(collection(db,'users')); allUsers=[]; snap.forEach(d=>{ const v=d.data()||{}; allUsers.push({id:d.id, name:v.name||'', role:(v.role||'TEACHER').toUpperCase(), school:v.school||'', emis:String(v.emis||''), status:(v.status||'ACTIVE').toUpperCase(), phone:v.phone||''}); }); allUsers.sort((a,b)=>String(a.school||'').localeCompare(String(b.school||'')) || String(a.name||'').localeCompare(String(b.name||''))); }catch(e){ allUsers=[]; }
+  if(!allUsers.length){ $('usersBody').innerHTML='<div class="info">No users found. Add users in Profile page.</div>'; return; }
+  let html='<table><tr><th>Name</th><th>Role</th><th>School / EMIS</th><th>Status</th></tr>';
+  allUsers.forEach(u=>{ html+='<tr><td><b>'+esc(u.name||'')+'</b></td><td>'+esc(u.role||'')+'</td><td>'+esc(u.school||'')+' ('+esc(u.emis||'')+')</td><td>'+(u.status==='BLOCKED'?'<span class="pill pill-red">🔴 BLOCKED</span>':'<span class="pill pill-green">✅ Active</span>')+'</td></tr>'; });
+  html+='</table>'; $('usersBody').innerHTML=html;
 };
 document.addEventListener('DOMContentLoaded', async ()=>{
   if(window.OfflineQueue) OfflineQueue.updateBadge();
   login=getLogin();
-  if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login on Home first as Admin</a>.'; $('blockedBox').style.display='block'; return; }
+  if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login first</a>.'; $('blockedBox').style.display='block'; return; }
   const role=(login.role||'').toUpperCase();
   $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
-  if(role!=='ADMIN'){ $('loginInfo').innerHTML='🚫 Logged in as <b>'+role+'</b> — Admin ONLY. <a href="index.html">Switch to Admin login</a>.'; $('blockedBox').style.display='block'; return; }
-  $('loginInfo').innerHTML='✅ Admin: <b>'+esc(login.name||'')+'</b> • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  if(role!=='ADMIN'){ $('loginInfo').innerHTML='🚫 Logged in as <b>'+role+'</b> — Admin ONLY. <a href="index.html">Switch login</a>.'; $('blockedBox').style.display='block'; return; }
+  $('loginInfo').innerHTML='✅ Admin: <b>'+esc(login.name||'')+'</b> • Xintimani Group';
   $('adminBody').style.display='block';
-  await loadSchools(); await loadAudit();
+  await loadSchools(); await loadAudit(); await loadUsers();
 });
 </script>
 <script>
