@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Librarian v2.0 — Dashboard + Issue / Return + Overdue</title>
+<title>Makhanani LTSM — Librarian v2.2 — Quick Issue + Beep + Scan</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
@@ -30,8 +30,7 @@ input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8p
 .goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}
 .small{font-size:12px;color:#64748b}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
 .topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}
 .topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
 .topnav a.safe{background:#dcfce7;color:#166534;border:1.5px solid #059669}
@@ -39,98 +38,95 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .miniBtn{padding:6px 10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;margin:2px}
-.statGrid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:10px}
-@media(max-width:700px){.statGrid{grid-template-columns:1fr 1fr}}
-.statBox{background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center}
-.statBox b{font-size:26px;display:block;color:#0a1f4d}
-.statBox span{font-size:12px;color:#64748b}
-.bigScan{font-size:20px!important;padding:16px!important;text-align:center;letter-spacing:1px;text-transform:uppercase}
+.bigScan{font-size:18px;font-weight:900;text-align:center;border:3px solid #0a1f4d!important;background:#fef3c7!important}
+.scanStep{border:3px solid #0a1f4d;border-radius:12px;padding:12px;margin-top:10px;background:#fff}
+.scanStep.active{border-color:#059669;background:#f0fdf4}
+.scanStep.done{border-color:#059669;background:#dcfce7}
 </style>
 </head>
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>📚 Makhanani LTSM — Librarian v2.0</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Librarian / HOD — My School Only • Issue / Return • Overdue</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>📚 Makhanani LTSM — Librarian v2.2</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Quick Issue + Beep + Scan • Learner 10A001 • Book WHS000001 • My School Only</p>
 </header>
 <main>
 <div class="card">
-<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Full Issue / Return</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 Profile</a></div>
-<div class="info" id="loginInfo">Checking librarian login...</div>
-<div id="blockedBox" class="warn" style="display:none">🚫 Librarian / HOD ONLY. You are not logged in as Librarian.<br>Go to <a href="index.html">Login</a> and login as Librarian / HOD. Admin + Principal can also view this page.</div>
+<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Issue / Return</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="barcode-print.html">🖨️ Print Barcodes A4 3x5</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 Profile</a></div>
+<div class="info" id="loginInfo">Checking login...</div>
+<div id="blockedBox" class="warn" style="display:none">🔒 Not logged in. Go to <a href="index.html">Login</a> first.</div>
 <div id="subBlockedBox" class="warn" style="display:none"></div>
 </div>
 
-<div id="librarianBody" style="display:none">
+<div id="libBody" style="display:none">
 
 <div class="card">
-<h2>🏫 My School — <span id="mySchoolName">—</span></h2>
-<div class="goldBox" id="schoolInfo"></div>
-<button class="btn btn-blue" onclick="loadDashboard()">🔄 Refresh Dashboard</button>
-<div class="statGrid">
-<div class="statBox"><b id="statLearners">—</b><span>👩🏾‍🎓 Learners</span></div>
-<div class="statBox"><b id="statBooks">—</b><span>📖 Textbooks</span></div>
-<div class="statBox"><b id="statIssued">—</b><span>📕 Issued (Out)</span></div>
-<div class="statBox"><b id="statReturned">—</b><span>✅ Returned</span></div>
-<div class="statBox"><b id="statOverdue">—</b><span>⏰ Overdue</span></div>
-<div class="statBox"><b id="statReturnRate">—</b><span>📊 Return Rate</span></div>
-<div class="statBox"><b id="statBin">—</b><span>♻️ In Bin</span></div>
-<div class="statBox"><b id="statToday">—</b><span>📅 Today: Issued + Returned</span></div>
-</div>
-<div id="dashboardMsg"></div>
-</div>
-
-<div class="card">
-<h2>⚡ Quick Issue / Return — Scan or Type</h2>
-<div class="info" id="quickInfo">1. Scan Learner barcode → 2. Scan Book barcode → 3. Tap Issue or Return.<br>Or type IDs manually. Due date = 14 days from today (you can change it).</div>
-<label>🎓 Learner ID / Barcode * — e.g. MPS123456 or scan</label>
-<input id="quickLearner" class="bigScan" placeholder="Scan / Type Learner ID" autocomplete="off" oninput="lookupQuickLearner()">
-<div id="quickLearnerInfo" class="goldBox" style="display:none"></div>
-<label>📖 Book No / Barcode * — e.g. MPS000001 or scan</label>
-<input id="quickBook" class="bigScan" placeholder="Scan / Type Book No" autocomplete="off" oninput="lookupQuickBook()">
-<div id="quickBookInfo" class="goldBox" style="display:none"></div>
-<label>📅 Due Date</label>
-<input id="quickDue" type="date">
+<h2>📊 Today — <span id="todayDate"></span> — <span id="schoolNameTitle"></span></h2>
+<div class="goldBox" id="statsBox">Loading stats...</div>
 <div class="grid2">
-<button class="btn btn-green" id="quickIssueBtn" onclick="quickIssue()">📚 ISSUE Book</button>
-<button class="btn btn-orange" id="quickReturnBtn" onclick="quickReturn()">↩️ RETURN Book</button>
+<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh All</button>
+<button class="btn btn-gold" onclick="testBeep()">🔊 Test Beep</button>
 </div>
-<button class="btn btn-grey" onclick="clearQuick()">🧹 Clear</button>
+</div>
+
+<div class="card">
+<h2>⚡ Quick Issue — Scan Learner → Scan Book → Issue — 2 Seconds</h2>
+<div class="small">Plug USB scanner → Click in Step 1 box → Scan Learner Card → Beep → Scan Book → Beep → Tap Issue. Return is NEVER blocked.</div>
+
+<div class="scanStep active" id="step1Box">
+<label>📷 Step 1 — Scan / Type Learner ID — e.g. 10A001 *</label>
+<input id="scanLearner" class="bigScan" placeholder="Scan Learner Barcode 10A001..." autocomplete="off" autofocus>
+<div id="learnerFoundBox"></div>
+</div>
+
+<div class="scanStep" id="step2Box">
+<label>📷 Step 2 — Scan / Type Book Number — e.g. WHS000001 *</label>
+<input id="scanBook" class="bigScan" placeholder="Scan Book Barcode WHS000001..." autocomplete="off">
+<div id="bookFoundBox"></div>
+</div>
+
+<div class="grid2">
+<button class="btn btn-green" id="issueBtn" onclick="quickIssue()">📚 Issue Book Now</button>
+<button class="btn btn-blue" onclick="quickReturn()">↩️ Return This Book Now</button>
+</div>
+<div class="grid2">
+<button class="btn btn-grey" onclick="clearQuick()">🧹 Clear Quick Issue</button>
+<button class="btn btn-gold" onclick="window.location.href='barcode-print.html'">🖨️ Print Barcodes A4 3x5</button>
+</div>
 <div id="quickMsg"></div>
 </div>
 
 <div class="card">
-<h2>⏰ Overdue Books — <span id="overdueCount">0</span> — Tap Return to Return</h2>
-<label>Search Overdue — Learner / Book / Grade</label>
-<input id="searchOverdue" placeholder="Type learner or book..." oninput="renderOverdue()">
+<h2>📚 Today's Issues — <span id="todayCount">0</span></h2>
+<div class="grid2">
+<label>Search Issues — Learner / Book / ID</label>
+<label>Filter by Status</label>
+</div>
+<div class="grid2">
+<input id="searchIssues" placeholder="Type name, 10A001, WHS000001..." oninput="renderIssues()">
+<select id="filterStatus" onchange="renderIssues()"><option value="ALL">All</option><option value="ISSUED">📚 ISSUED — Not Returned</option><option value="RETURNED">✅ RETURNED</option><option value="OVERDUE">🔴 OVERDUE</option></select>
+</div>
+<div id="issuesBody"></div>
+</div>
+
+<div class="card">
+<h2>🔴 Overdue Books — <span id="overdueCount">0</span></h2>
+<div class="small">Due Date passed and not returned. Follow up with learner.</div>
 <div id="overdueBody"></div>
 </div>
 
 <div class="card">
-<h2>📅 Today's Activity — <span id="todayCount">0</span></h2>
-<button class="btn btn-blue" onclick="loadToday()">🔄 Refresh Today</button>
-<div id="todayBody"></div>
-</div>
-
-<div class="card">
-<h2>📜 Audit — My School Only — <span id="auditCount">0</span> entries</h2>
-<div class="small">Shows only actions for YOUR school (EMIS <span id="myEmisLabel"></span>).</div>
+<h2>🔍 Find Learner / Book — Manual Search</h2>
 <div class="grid2">
-<label>Search Audit</label>
-<label>Filter by Action</label>
+<label>Search Learner by Name / ID</label>
+<label>Search Book by Title / Book No</label>
 </div>
 <div class="grid2">
-<input id="searchAudit" placeholder="e.g. BOOK_ISSUED, Thandi..." oninput="renderAudit()">
-<select id="filterAuditAction" onchange="renderAudit()"><option value="ALL">All Actions</option><option value="BOOK_ISSUED">Book Issued</option><option value="BOOK_RETURNED">Book Returned</option><option value="BOOK_EDITED">Book Edited</option><option value="BOOK_ARCHIVED">Book Archived</option><option value="BOOK_RESTORED">Book Restored</option><option value="LEARNER_EDITED">Learner Edited</option><option value="LEARNER_ARCHIVED">Learner Archived</option><option value="LEARNER_RESTORED">Learner Restored</option><option value="MY_PIN_CHANGED">My PIN Changed</option></select>
+<input id="searchLearnerManual" placeholder="e.g. Thandi or 10A001" oninput="manualLearnerSearch()">
+<input id="searchBookManual" placeholder="e.g. Maths or WHS000001" oninput="manualBookSearch()">
 </div>
-<button class="btn btn-blue" onclick="loadAudit()">🔄 Refresh Audit (My School)</button>
-<div id="auditBody"></div>
-</div>
-
-<div class="card">
-<h2>📜 My Activity — Last 20 Actions</h2>
-<button class="btn btn-blue" onclick="loadMyActivity()">🔄 Refresh My Activity</button>
-<div id="myActivityBody"></div>
+<div id="manualLearnerBody"></div>
+<div id="manualBookBody"></div>
 </div>
 
 </div>
@@ -138,167 +134,197 @@ th{background:#0a1f4d;color:#fff}
 <script src="offline-queue.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, setDoc, updateDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, setDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
 function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 let login=getLogin();
-let learners=[], books=[], issues=[], auditEntries=[], overdueList=[], schoolStatus='ACTIVE', binDays=30;
-let quickLearnerObj=null, quickBookObj=null;
+let learners=[], books=[], issues=[], schoolStatus='ACTIVE', binDays=30;
+let foundLearner=null, foundBook=null;
+// REAL BEEP
+let audioCtx=null;
+function beep(freq=880, dur=0.12, type='square', vol=0.25){
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
+    o.type=type; o.frequency.value=freq; g.gain.value=vol;
+    o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur);
+  }catch(e){}
+}
+function beepSuccess(){ beep(880,0.12,'square',0.25); setTimeout(()=>beep(1320,0.15,'square',0.25),80); }
+function beepError(){ beep(220,0.2,'square',0.25); setTimeout(()=>beep(180,0.25,'square',0.25),120); }
+function beepReturn(){ beep(660,0.18,'square',0.25); }
+window.testBeep=function(){ beepSuccess(); $('quickMsg').innerHTML='<div class="ok">🔊 Beep played! If no sound, turn sound ON and tap again (browser needs 1 tap to unlock).</div>'; };
 async function auditLog(action, details){
   try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){}
 }
-function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,4) || 'MK'); }
-function binLabel(d){ if(d===0 || d==='0') return 'OFF — Never auto-delete'; return d+' days'; }
-function todayISO(){ return new Date().toISOString().slice(0,10); }
-function dueDefault(){ const d=new Date(); d.setDate(d.getDate()+14); return d.toISOString().slice(0,10); }
+function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,3) || 'WHS'); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function isOverdue(iss){ if(!iss || iss.status==='RETURNED') return false; if(!iss.dueDate) return false; return iss.dueDate < todayStr(); }
 async function loadSchoolMeta(){
-  try{
-    const snap=await getDocs(collection(db,'schools'));
-    snap.forEach(docSnap=>{ if(String(docSnap.id)==='EMIS_'+login.emis){ const v=docSnap.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); if(typeof v.binAutoEmptyDays==='number') binDays=v.binAutoEmptyDays; } });
-  }catch(e){}
+  try{ const snap=await getDocs(collection(db,'schools')); snap.forEach(ds=>{ if(String(ds.id)==='EMIS_'+login.emis){ const v=ds.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); if(typeof v.binAutoEmptyDays==='number') binDays=v.binAutoEmptyDays; } }); }catch(e){}
 }
-window.loadDashboard=async function(){
+window.loadAll=async function(){
+  $('todayDate').textContent=new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'});
+  $('schoolNameTitle').textContent=login.school||'';
+  await loadSchoolMeta();
+  if(schoolStatus!=='ACTIVE'){ $('subBlockedBox').style.display='block'; $('subBlockedBox').innerHTML='🟠 <b>'+esc(login.school||'')+'</b> is <b>'+esc(schoolStatus)+'</b> — Issue is BLOCKED. Return is NEVER blocked. You can still Return books below.'; } else $('subBlockedBox').style.display='none';
   try{
-    $('dashboardMsg').innerHTML='<div class="info">⏳ Loading dashboard...</div>';
-    await loadSchoolMeta();
     const base='EMIS_'+login.emis;
-    const [lSnap,bSnap,iSnap]=await Promise.all([ getDocs(collection(db,'schools',base,'learners')), getDocs(collection(db,'schools',base,'textbooks')), getDocs(collection(db,'schools',base,'issues')) ]);
-    learners=[]; lSnap.forEach(d=>learners.push({id:d.id,...d.data()}));
-    books=[]; bSnap.forEach(d=>books.push({id:d.id,...d.data()}));
-    issues=[]; iSnap.forEach(d=>issues.push({id:d.id,...d.data()}));
-    const activeLearners=learners.filter(l=>l.archived!==true); const activeBooks=books.filter(b=>b.archived!==true);
-    const issued=issues.filter(i=>String(i.status||'').toUpperCase()==='ISSUED'); const returned=issues.filter(i=>String(i.status||'').toUpperCase()==='RETURNED');
-    const now=new Date(); now.setHours(0,0,0,0);
-    overdueList=[];
-    issued.forEach(i=>{ if(i.dueDate && new Date(i.dueDate) < now) overdueList.push({...i, daysOver:Math.floor((now-new Date(i.dueDate))/(24*60*60*1000))}); });
-    overdueList.sort((a,b)=>b.daysOver-a.daysOver);
-    const total=issues.length; const rate=total?Math.round((returned.length/total)*100):100;
-    const today=issues.filter(i=>String(i.issueDate||i.issuedAt||'').slice(0,10)===todayISO() || String(i.returnDate||i.returnedAt||'').slice(0,10)===todayISO());
-    $('mySchoolName').textContent=login.school+' (EMIS '+login.emis+')';
-    $('schoolInfo').innerHTML='🏫 <b>'+esc(login.school||'')+'</b> • EMIS: <b>'+esc(login.emis||'')+'</b> • Prefix: <b>'+getPrefix(login.school||'')+'</b><br>💳 Subscription: <b>'+esc(schoolStatus)+'</b> '+(schoolStatus!=='ACTIVE'?'<span class="pill pill-orange">🟠 RETURN ONLY — Issue blocked, Return allowed</span>':'<span class="pill pill-green">✅ ACTIVE — Issue + Return allowed</span>')+' • ♻️ Bin: <b>'+binLabel(binDays)+'</b> • Librarian: <b>'+esc(login.name||'')+'</b>';
-    $('statLearners').textContent=activeLearners.length;
-    $('statBooks').textContent=activeBooks.length;
-    $('statIssued').textContent=issued.length;
-    $('statReturned').textContent=returned.length;
-    $('statOverdue').textContent=overdueList.length;
-    $('statReturnRate').textContent=rate+'%';
-    $('statBin').textContent=(learners.filter(l=>l.archived===true).length + books.filter(b=>b.archived===true).length);
-    $('statToday').textContent=today.length;
-    $('dashboardMsg').innerHTML='<div class="ok">✅ Dashboard loaded — '+new Date().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})+'</div>';
-    renderOverdue(); loadToday();
-    if(schoolStatus!=='ACTIVE'){ $('subBlockedBox').style.display='block'; $('subBlockedBox').innerHTML='🟠 <b>RETURN ONLY / SUSPENDED</b> — Issue is BLOCKED for this school. You can ONLY Return books. Return is NEVER blocked.'; } else { $('subBlockedBox').style.display='none'; }
-  }catch(e){ $('dashboardMsg').innerHTML='<div class="warn">❌ Dashboard failed: '+esc(e.message)+'</div>'; }
+    const [ls,bs,is]=await Promise.all([ getDocs(collection(db,'schools',base,'learners')), getDocs(collection(db,'schools',base,'textbooks')), getDocs(collection(db,'schools',base,'issues')) ]);
+    learners=[]; ls.forEach(d=>learners.push({id:d.id,...d.data()}));
+    books=[]; bs.forEach(d=>books.push({id:d.id,...d.data()}));
+    issues=[]; is.forEach(d=>issues.push({id:d.id,...d.data()}));
+    issues.sort((a,b)=>String(b.issueDate||'').localeCompare(String(a.issueDate||'')));
+    const today=todayStr();
+    const todayIssues=issues.filter(i=>String(i.issueDate||'').slice(0,10)===today);
+    const todayReturned=issues.filter(i=>String(i.returnDate||'').slice(0,10)===today);
+    const overdue=issues.filter(isOverdue);
+    const issuedNow=issues.filter(i=>i.status!=='RETURNED');
+    $('statsBox').innerHTML='📚 Issued Today: <b>'+todayIssues.length+'</b> • ✅ Returned Today: <b>'+todayReturned.length+'</b> • 📚 Currently Out: <b>'+issuedNow.length+'</b> • 🔴 Overdue: <b>'+overdue.length+'</b><br>👩🏾‍🎓 Learners: <b>'+learners.filter(l=>l.archived!==true).length+'</b> • 📖 Books: <b>'+books.filter(b=>b.archived!==true).length+'</b> • 💳 Status: <b>'+esc(schoolStatus)+'</b> • Prefix: <b>'+getPrefix(login.school)+'</b> (e.g. '+getPrefix(login.school)+'000001)';
+    renderIssues(); renderOverdue();
+  }catch(e){ $('issuesBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
 };
-window.lookupQuickLearner=function(){
-  const v=($('quickLearner').value||'').trim().toUpperCase();
-  quickLearnerObj=null; $('quickLearnerInfo').style.display='none';
-  if(!v) return;
-  const found=learners.find(l=>String(l.learnerId||l.barcode||'').toUpperCase()===v || String(l.name||'').toUpperCase()===v);
-  if(found && found.archived!==true){ quickLearnerObj=found; $('quickLearnerInfo').style.display='block'; $('quickLearnerInfo').innerHTML='✅ Learner: <b>'+esc(found.name||'')+'</b> • '+esc(found.grade||'')+' • '+esc(found.class||'')+' • ID: <b>'+esc(found.learnerId||found.barcode||'')+'</b>'; }
-  else if(found && found.archived===true){ $('quickLearnerInfo').style.display='block'; $('quickLearnerInfo').innerHTML='⚠️ Learner is in Recycle Bin — Restore first in Learners page.'; }
-  else { $('quickLearnerInfo').style.display='block'; $('quickLearnerInfo').innerHTML='❌ Learner not found. Check ID or add learner in Learners page.'; }
-};
-window.lookupQuickBook=function(){
-  const v=($('quickBook').value||'').trim().toUpperCase();
-  quickBookObj=null; $('quickBookInfo').style.display='none';
-  if(!v) return;
-  const found=books.find(b=>String(b.bookNo||b.barcode||'').toUpperCase()===v);
-  if(found && found.archived!==true){
-    quickBookObj=found;
-    const isIssued=issues.some(i=>String(i.bookNo||'').toUpperCase()===v && String(i.status||'').toUpperCase()==='ISSUED');
-    $('quickBookInfo').style.display='block';
-    $('quickBookInfo').innerHTML='✅ Book: <b>'+esc(found.title||'')+'</b> • '+esc(found.subject||'')+' • '+esc(found.grade||'')+' • No: <b>'+esc(found.bookNo||found.barcode||'')+'</b><br>Status: '+(isIssued?'<span class="pill pill-red">📕 ALREADY ISSUED — Return it first</span>':'<span class="pill pill-green">✅ Available</span>');
-  } else if(found && found.archived===true){ $('quickBookInfo').style.display='block'; $('quickBookInfo').innerHTML='⚠️ Book is in Recycle Bin — Restore first in Textbooks page.'; }
-  else { $('quickBookInfo').style.display='block'; $('quickBookInfo').innerHTML='❌ Book not found. Check Book No or add book in Textbooks page.'; }
-};
-window.clearQuick=function(){ $('quickLearner').value=''; $('quickBook').value=''; $('quickDue').value=dueDefault(); $('quickLearnerInfo').style.display='none'; $('quickBookInfo').style.display='none'; $('quickMsg').innerHTML=''; quickLearnerObj=null; quickBookObj=null; $('quickLearner').focus(); };
+function lookupLearner(code){
+  code=String(code||'').trim().toUpperCase();
+  return learners.find(l=>String(l.learnerId||l.barcode||'').toUpperCase()===code && l.archived!==true) || null;
+}
+function lookupBook(code){
+  code=String(code||'').trim().toUpperCase();
+  return books.find(b=>String(b.bookNo||b.barcode||'').toUpperCase()===code && b.archived!==true) || null;
+}
+function onLearnerScan(){
+  const code=($('scanLearner').value||'').trim();
+  if(!code){ foundLearner=null; $('learnerFoundBox').innerHTML=''; return; }
+  const l=lookupLearner(code);
+  if(l){ foundLearner=l; beepSuccess(); $('learnerFoundBox').innerHTML='<div class="ok">🔊 BEEP! ✅ Learner: <b>'+esc(l.name||'')+'</b> • ID: <b>'+esc(l.learnerId||'')+'</b> • '+esc(l.grade||'')+' • '+esc(l.class||'')+'<br>Top: '+esc(login.school||'')+' • Makhanani LTSM • LEARNER • Bottom: '+esc(l.learnerId||'')+'</div>'; $('step1Box').className='scanStep done'; $('step2Box').className='scanStep active'; $('scanBook').focus(); }
+  else { foundLearner=null; beepError(); $('learnerFoundBox').innerHTML='<div class="warn">🔊 BEEP-BEEP! ❌ Learner NOT found: <b>'+esc(code)+'</b><br>Check ID is <b>10A001</b> format, or Add Learner in Learners page.</div>'; }
+}
+function onBookScan(){
+  const code=($('scanBook').value||'').trim();
+  if(!code){ foundBook=null; $('bookFoundBox').innerHTML=''; return; }
+  const b=lookupBook(code);
+  if(b){
+    // Check if already issued
+    const already=issues.find(i=>String(i.bookNo||'').toUpperCase()===String(code).toUpperCase() && i.status!=='RETURNED');
+    if(already){ foundBook=b; beepError(); $('bookFoundBox').innerHTML='<div class="warn">⚠️ Book <b>'+esc(b.bookNo||'')+'</b> is ALREADY ISSUED to <b>'+esc(already.learnerName||'')+'</b> ('+esc(already.learnerId||'')+') since '+esc(already.issueDate||'')+'. Return it first, or pick another book.</div>'; return; }
+    foundBook=b; beepSuccess(); $('bookFoundBox').innerHTML='<div class="ok">🔊 BEEP! ✅ Book: <b>'+esc(b.title||'')+'</b> • Book No: <b>'+esc(b.bookNo||'')+'</b> • '+(b.subject||'')+' • '+(b.grade||'')+'<br>Top: '+esc(login.school||'')+' • Makhanani LTSM • TEXTBOOK • Bottom: '+esc(b.bookNo||'')+'</div>'; $('step2Box').className='scanStep done';
+  } else { foundBook=null; beepError(); $('bookFoundBox').innerHTML='<div class="warn">🔊 BEEP-BEEP! ❌ Book NOT found: <b>'+esc(code)+'</b><br>Check Book No is <b>WHS000001</b> format, or Add Book in Textbooks page.</div>'; }
+}
 window.quickIssue=async function(){
-  if(schoolStatus!=='ACTIVE'){ $('quickMsg').innerHTML='<div class="warn">🟠 Issue BLOCKED — School is '+esc(schoolStatus)+' (RETURN ONLY). You can only Return.</div>'; return; }
-  const lid=($('quickLearner').value||'').trim(); const bno=($('quickBook').value||'').trim(); const due=$('quickDue').value||dueDefault();
-  if(!lid || !bno){ $('quickMsg').innerHTML='<div class="warn">⚠️ Enter Learner ID + Book No.</div>'; return; }
-  if(!quickLearnerObj) lookupQuickLearner(); if(!quickBookObj) lookupQuickBook();
-  if(!quickLearnerObj){ $('quickMsg').innerHTML='<div class="warn">❌ Learner not found.</div>'; return; }
-  if(!quickBookObj){ $('quickMsg').innerHTML='<div class="warn">❌ Book not found.</div>'; return; }
-  const already=issues.some(i=>String(i.bookNo||'').toUpperCase()===bno.toUpperCase() && String(i.status||'').toUpperCase()==='ISSUED');
-  if(already){ $('quickMsg').innerHTML='<div class="warn">❌ Book '+esc(bno)+' is already ISSUED. Return it first.</div>'; return; }
-  if(!navigator.onLine && window.OfflineQueue){ OfflineQueue.enqueue({type:'issue', emis:login.emis, learnerId:quickLearnerObj.learnerId||quickLearnerObj.barcode||'', learnerName:quickLearnerObj.name||'', grade:quickLearnerObj.grade||'', class:quickLearnerObj.class||'', bookNo:quickBookObj.bookNo||quickBookObj.barcode||'', bookTitle:quickBookObj.title||'', dueDate:due, issuedBy:login.name||''}); $('quickMsg').innerHTML='<div class="ok">🟠 Offline — Issue saved to queue. Will sync when online.</div>'; clearQuick(); return; }
+  if(schoolStatus!=='ACTIVE'){ $('quickMsg').innerHTML='<div class="warn">🟠 Issue BLOCKED — School is '+esc(schoolStatus)+' (RETURN ONLY). You can still Return books.</div>'; beepError(); return; }
+  if(!foundLearner){ $('quickMsg').innerHTML='<div class="warn">⚠️ Scan Learner first (Step 1) — e.g. 10A001.</div>'; beepError(); $('scanLearner').focus(); return; }
+  if(!foundBook){ $('quickMsg').innerHTML='<div class="warn">⚠️ Scan Book first (Step 2) — e.g. WHS000001.</div>'; beepError(); $('scanBook').focus(); return; }
+  // Double-check already issued
+  const already=issues.find(i=>String(i.bookNo||'').toUpperCase()===String(foundBook.bookNo||'').toUpperCase() && i.status!=='RETURNED');
+  if(already){ $('quickMsg').innerHTML='<div class="warn">❌ Book already issued to '+esc(already.learnerName||'')+'. Return it first.</div>'; beepError(); return; }
+  if(!navigator.onLine){ $('quickMsg').innerHTML='<div class="warn">🟠 Offline — Issue queued. It will sync when online. (Offline Queue)</div>'; return; }
   try{
-    const id='ISSUE_'+login.emis+'_'+Date.now();
-    await setDoc(doc(db,'schools','EMIS_'+login.emis,'issues',id),{ learnerId:quickLearnerObj.learnerId||quickLearnerObj.barcode||'', learnerName:quickLearnerObj.name||'', grade:quickLearnerObj.grade||'', class:quickLearnerObj.class||'', bookNo:quickBookObj.bookNo||quickBookObj.barcode||'', bookTitle:quickBookObj.title||'', subject:quickBookObj.subject||'', issueDate:todayISO(), issuedAt:new Date().toISOString(), dueDate:due, status:'ISSUED', issuedBy:login.name||'' });
-    await auditLog('BOOK_ISSUED','Issued '+quickBookObj.title+' ('+quickBookObj.bookNo+') to '+quickLearnerObj.name+' ('+(quickLearnerObj.learnerId||'')+') • Due '+due);
-    $('quickMsg').innerHTML='<div class="ok">✅ ISSUED: <b>'+esc(quickBookObj.title||'')+' ('+esc(quickBookObj.bookNo||'')+')</b> → <b>'+esc(quickLearnerObj.name||'')+'</b> • Due: <b>'+esc(due)+'</b></div>';
-    clearQuick(); await loadDashboard();
-  }catch(e){ $('quickMsg').innerHTML='<div class="warn">❌ Issue failed: '+esc(e.message)+'</div>'; }
+    const due=new Date(); due.setDate(due.getDate()+14);
+    const dueStr=due.toISOString().slice(0,10);
+    const issueId='ISSUE_'+login.emis+'_'+Date.now();
+    await setDoc(doc(db,'schools','EMIS_'+login.emis,'issues',issueId),{ learnerName:foundLearner.name, learnerId:foundLearner.learnerId||foundLearner.barcode||'', bookTitle:foundBook.title||'', bookNo:foundBook.bookNo||foundBook.barcode||'', issueDate:todayStr(), dueDate:dueStr, returnDate:'', status:'ISSUED', issuedBy:login?.name||'', createdAt:new Date().toISOString() });
+    await auditLog('BOOK_ISSUED','Issued book '+foundBook.title+' ('+(foundBook.bookNo||'')+') to '+foundLearner.name+' ('+(foundLearner.learnerId||'')+') • Due '+dueStr);
+    beepSuccess();
+    $('quickMsg').innerHTML='<div class="ok">✅ ISSUED! <b>'+esc(foundBook.title||'')+'</b> ('+esc(foundBook.bookNo||'')+') → <b>'+esc(foundLearner.name||'')+'</b> ('+esc(foundLearner.learnerId||'')+')<br>Due: <b>'+dueStr+'</b> • Issued by: '+esc(login?.name||'')+'</div>';
+    clearQuick(); await loadAll();
+  }catch(e){ $('quickMsg').innerHTML='<div class="warn">❌ Issue failed: '+esc(e.message)+'</div>'; beepError(); }
 };
 window.quickReturn=async function(){
-  const bno=($('quickBook').value||'').trim();
-  if(!bno){ $('quickMsg').innerHTML='<div class="warn">⚠️ Enter Book No to Return.</div>'; return; }
-  const openIssue=issues.find(i=>String(i.bookNo||'').toUpperCase()===bno.toUpperCase() && String(i.status||'').toUpperCase()==='ISSUED');
-  if(!openIssue){ $('quickMsg').innerHTML='<div class="warn">❌ Book '+esc(bno)+' is NOT currently issued. Check Book No.</div>'; return; }
-  if(!confirm('↩️ Return '+openIssue.bookTitle+' ('+openIssue.bookNo+')\nfrom '+openIssue.learnerName+'?\n\nThis is NEVER blocked.')) return;
+  // Return by Book No — works even if school is SUSPENDED
+  const bookCode=($('scanBook').value||'').trim();
+  if(!bookCode){ $('quickMsg').innerHTML='<div class="warn">⚠️ Scan Book to Return (Step 2) — e.g. WHS000001.</div>'; beepError(); $('scanBook').focus(); return; }
+  const iss=issues.find(i=>String(i.bookNo||'').toUpperCase()===String(bookCode).toUpperCase() && i.status!=='RETURNED');
+  if(!iss){ $('quickMsg').innerHTML='<div class="warn">❌ Book '+esc(bookCode)+' is NOT currently issued. Nothing to return.</div>'; beepError(); return; }
   try{
-    await updateDoc(doc(db,'schools','EMIS_'+login.emis,'issues',openIssue.id),{ status:'RETURNED', returnDate:todayISO(), returnedAt:new Date().toISOString(), returnedBy:login.name||'' });
-    await auditLog('BOOK_RETURNED','Returned '+openIssue.bookTitle+' ('+openIssue.bookNo+') from '+openIssue.learnerName+' ('+openIssue.learnerId+')');
-    $('quickMsg').innerHTML='<div class="ok">✅ RETURNED: <b>'+esc(openIssue.bookTitle||'')+' ('+esc(openIssue.bookNo||'')+')</b> from <b>'+esc(openIssue.learnerName||'')+'</b></div>';
-    clearQuick(); await loadDashboard();
-  }catch(e){ $('quickMsg').innerHTML='<div class="warn">❌ Return failed: '+esc(e.message)+'</div>'; }
+    await updateDoc(doc(db,'schools','EMIS_'+login.emis,'issues',iss.id),{status:'RETURNED', returnDate:todayStr(), returnedBy:login?.name||''});
+    await auditLog('BOOK_RETURNED','Returned book '+(iss.bookTitle||'')+' ('+(iss.bookNo||'')+') from '+(iss.learnerName||'')+' ('+(iss.learnerId||'')+')');
+    beepReturn();
+    $('quickMsg').innerHTML='<div class="ok">✅ RETURNED! <b>'+esc(iss.bookTitle||'')+'</b> ('+esc(iss.bookNo||'')+') from <b>'+esc(iss.learnerName||'')+'</b> ('+esc(iss.learnerId||'')+')<br>Returned: '+todayStr()+' • Thank you — Every Book Must Come Back!</div>';
+    clearQuick(); await loadAll();
+  }catch(e){ $('quickMsg').innerHTML='<div class="warn">❌ Return failed: '+esc(e.message)+'</div>'; beepError(); }
 };
-window.returnOverdue=async function(issueId){
-  const iss=issues.find(i=>i.id===issueId); if(!iss) return;
-  $('quickBook').value=iss.bookNo||''; lookupQuickBook();
-  await quickReturn();
+window.clearQuick=function(){
+  foundLearner=null; foundBook=null;
+  $('scanLearner').value=''; $('scanBook').value='';
+  $('learnerFoundBox').innerHTML=''; $('bookFoundBox').innerHTML='';
+  $('step1Box').className='scanStep active'; $('step2Box').className='scanStep';
+  $('scanLearner').focus();
+};
+window.renderIssues=function(){
+  const q=($('searchIssues').value||'').trim().toLowerCase(); const f=$('filterStatus').value||'ALL';
+  let list=issues.filter(i=>{
+    if(f==='ISSUED' && i.status==='RETURNED') return false;
+    if(f==='RETURNED' && i.status!=='RETURNED') return false;
+    if(f==='OVERDUE' && !isOverdue(i)) return false;
+    if(!q) return true;
+    return (i.learnerName+' '+i.learnerId+' '+i.bookTitle+' '+i.bookNo).toLowerCase().includes(q);
+  });
+  $('todayCount').textContent=issues.filter(i=>String(i.issueDate||'').slice(0,10)===todayStr()).length;
+  if(!list.length){ $('issuesBody').innerHTML='<div class="info">No issues found.</div>'; return; }
+  let html='<table><tr><th>Learner</th><th>Book</th><th>Issue / Due</th><th>Status</th><th>Action</th></tr>';
+  list.slice(0,60).forEach(i=>{
+    const overdue=isOverdue(i);
+    html+='<tr><td><b>'+esc(i.learnerName||'')+'</b><br><span class="small">'+esc(i.learnerId||'')+'</span></td><td><b>'+esc(i.bookTitle||'')+'</b><br><span class="small">'+esc(i.bookNo||'')+'</span></td><td>'+esc(i.issueDate||'')+' → <b style="color:'+(overdue?'#dc2626':'#111')+'">'+esc(i.dueDate||'')+'</b>'+(overdue?' <span class="pill pill-red">OVERDUE</span>':'')+'</td><td>'+(i.status==='RETURNED'?'<span class="pill pill-green">✅ RETURNED</span>':'<span class="pill pill-blue">📚 ISSUED</span>')+'</td><td>'+(i.status!=='RETURNED'?'<button class="miniBtn btn-green" onclick="returnIssue(\''+esc(i.id)+'\')">↩️ Return</button>':'<span class="small">Returned '+esc(i.returnDate||'')+'</span>')+'</td></tr>';
+  });
+  html+='</table><div class="small">Showing latest 60.</div>'; $('issuesBody').innerHTML=html;
 };
 window.renderOverdue=function(){
-  const q=($('searchOverdue').value||'').trim().toLowerCase();
-  let list=overdueList.filter(o=>{ if(!q) return true; return (o.learnerName+' '+o.bookTitle+' '+o.grade+' '+o.class+' '+o.learnerId).toLowerCase().includes(q); });
-  $('overdueCount').textContent=overdueList.length;
-  if(!list.length){ $('overdueBody').innerHTML='<div class="info">✅ No overdue books'+(q?' for this search.':' — All good!')+'</div>'; return; }
-  let html='<table><tr><th>Learner</th><th>Book</th><th>Due</th><th>Overdue</th><th>Action</th></tr>';
-  list.slice(0,20).forEach(o=>{ html+='<tr><td><b>'+esc(o.learnerName||'')+'</b><br><span class="small">'+esc(o.grade||'')+' • '+esc(o.class||'')+' • '+esc(o.learnerId||'')+'</span></td><td>'+esc(o.bookTitle||o.title||'')+'<br><span class="small">'+esc(o.bookNo||'')+'</span></td><td>'+esc(o.dueDate||'')+'</td><td><b style="color:#dc2626">'+o.daysOver+' days</b></td><td><button class="miniBtn btn-green" onclick="returnOverdue(\''+esc(o.id)+'\')">↩️ Return</button></td></tr>'; });
-  html+='</table><div class="small">Showing top 20. Total overdue: '+overdueList.length+'</div>';
-  $('overdueBody').innerHTML=html;
+  const overdue=issues.filter(isOverdue);
+  $('overdueCount').textContent=overdue.length;
+  if(!overdue.length){ $('overdueBody').innerHTML='<div class="info">✅ No overdue books — All books on time!</div>'; return; }
+  let html='<table><tr><th>Learner</th><th>Book</th><th>Due Date</th><th>Days Overdue</th></tr>';
+  overdue.forEach(i=>{
+    const days=Math.ceil((new Date(todayStr()) - new Date(i.dueDate))/(24*60*60*1000));
+    html+='<tr><td><b>'+esc(i.learnerName||'')+'</b><br><span class="small">'+esc(i.learnerId||'')+'</span></td><td><b>'+esc(i.bookTitle||'')+'</b><br><span class="small">'+esc(i.bookNo||'')+'</span></td><td><b style="color:#dc2626">'+esc(i.dueDate||'')+'</b></td><td><b style="color:#dc2626">'+days+' days</b></td></tr>';
+  });
+  html+='</table>'; $('overdueBody').innerHTML=html;
 };
-window.loadToday=async function(){
-  const today=issues.filter(i=>String(i.issueDate||i.issuedAt||'').slice(0,10)===todayISO() || String(i.returnDate||i.returnedAt||'').slice(0,10)===todayISO());
-  $('todayCount').textContent=today.length;
-  if(!today.length){ $('todayBody').innerHTML='<div class="info">No issues / returns today yet.</div>'; return; }
-  let html='<table><tr><th>Learner</th><th>Book</th><th>Action</th><th>When</th></tr>';
-  today.slice(0,20).forEach(i=>{ const isRet=String(i.status||'').toUpperCase()==='RETURNED'; html+='<tr><td><b>'+esc(i.learnerName||'')+'</b><br><span class="small">'+esc(i.learnerId||'')+'</span></td><td>'+esc(i.bookTitle||i.title||'')+' ('+esc(i.bookNo||'')+')</td><td>'+(isRet?'<span class="pill pill-green">✅ Returned</span>':'<span class="pill pill-orange">📕 Issued</span>')+'</td><td>'+esc(String(i.returnDate||i.issueDate||'').slice(0,10))+'</td></tr>'; });
-  html+='</table>'; $('todayBody').innerHTML=html;
+window.returnIssue=async function(id){
+  const iss=issues.find(x=>x.id===id); if(!iss) return;
+  if(!confirm('↩️ Return '+iss.bookTitle+' ('+iss.bookNo+') from '+iss.learnerName+'?')) return;
+  try{ await updateDoc(doc(db,'schools','EMIS_'+login.emis,'issues',id),{status:'RETURNED', returnDate:todayStr(), returnedBy:login?.name||''}); await auditLog('BOOK_RETURNED','Returned book '+(iss.bookTitle||'')+' ('+(iss.bookNo||'')+') from '+(iss.learnerName||'')+' ('+(iss.learnerId||'')+')'); beepReturn(); await loadAll(); }catch(e){ alert('❌ Return failed: '+e.message); beepError(); }
 };
-window.loadAudit=async function(){
-  try{ const snap=await getDocs(collection(db,'auditLog')); auditEntries=[]; snap.forEach(d=>{ const v=d.data(); if(String(v.emis||'')===String(login.emis||'')) auditEntries.push({id:d.id,...v}); }); auditEntries.sort((a,b)=>String(b.when||'').localeCompare(String(a.when||''))); }catch(e){ auditEntries=[]; }
-  renderAudit();
+window.manualLearnerSearch=function(){
+  const q=($('searchLearnerManual').value||'').trim().toLowerCase();
+  if(!q){ $('manualLearnerBody').innerHTML=''; return; }
+  const list=learners.filter(l=>l.archived!==true && (l.name+' '+l.learnerId).toLowerCase().includes(q)).slice(0,10);
+  if(!list.length){ $('manualLearnerBody').innerHTML='<div class="info">No learner found for "'+esc(q)+'"</div>'; return; }
+  let html='<table><tr><th>Learner</th><th>ID</th><th>Action</th></tr>';
+  list.forEach(l=>{ html+='<tr><td><b>'+esc(l.name||'')+'</b><br><span class="small">'+esc(l.grade||'')+' • '+esc(l.class||'')+'</span></td><td><b>'+esc(l.learnerId||'')+'</b></td><td><button class="miniBtn btn-blue" onclick="fillLearner(\''+esc(l.learnerId||'')+'\')">➡️ Use in Quick Issue</button></td></tr>'; });
+  html+='</table>'; $('manualLearnerBody').innerHTML=html;
 };
-window.renderAudit=function(){
-  const q=($('searchAudit').value||'').trim().toLowerCase(); const f=$('filterAuditAction').value||'ALL';
-  let list=auditEntries.filter(a=>{ if(f!=='ALL' && a.action!==f) return false; if(!q) return true; return (a.who+' '+a.action+' '+a.details).toLowerCase().includes(q); });
-  $('auditCount').textContent=auditEntries.length;
-  if(!list.length){ $('auditBody').innerHTML='<div class="info">No audit entries for your school yet.</div>'; return; }
-  let html='<table><tr><th>When</th><th>Who</th><th>Action</th><th>Details</th></tr>';
-  list.slice(0,50).forEach(a=>{ html+='<tr><td>'+esc(String(a.when||'').slice(0,16).replace('T',' '))+'</td><td><b>'+esc(a.who||'')+'</b><br><span class="small">'+esc(a.role||'')+'</span></td><td><span class="pill pill-blue">'+esc(a.action||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>'; });
-  html+='</table><div class="small">Showing latest 50. Total: '+auditEntries.length+'</div>'; $('auditBody').innerHTML=html;
+window.fillLearner=function(code){ $('scanLearner').value=code; onLearnerScan(); };
+window.manualBookSearch=function(){
+  const q=($('searchBookManual').value||'').trim().toLowerCase();
+  if(!q){ $('manualBookBody').innerHTML=''; return; }
+  const list=books.filter(b=>b.archived!==true && (b.title+' '+b.bookNo).toLowerCase().includes(q)).slice(0,10);
+  if(!list.length){ $('manualBookBody').innerHTML='<div class="info">No book found for "'+esc(q)+'"</div>'; return; }
+  let html='<table><tr><th>Book</th><th>Book No</th><th>Action</th></tr>';
+  list.forEach(b=>{ const issued=issues.some(i=>String(i.bookNo||'').toUpperCase()===String(b.bookNo||'').toUpperCase() && i.status!=='RETURNED'); html+='<tr><td><b>'+esc(b.title||'')+'</b><br><span class="small">'+(b.subject||'')+' • '+(b.grade||'')+'</span></td><td><b>'+esc(b.bookNo||'')+'</b>'+(issued?' <span class="pill pill-red">OUT</span>':' <span class="pill pill-green">IN</span>')+'</td><td><button class="miniBtn btn-blue" onclick="fillBook(\''+esc(b.bookNo||'')+'\')">➡️ Use in Quick Issue</button></td></tr>'; });
+  html+='</table>'; $('manualBookBody').innerHTML=html;
 };
-window.loadMyActivity=async function(){
-  try{ const snap=await getDocs(collection(db,'auditLog')); let mine=[]; snap.forEach(d=>{ const v=d.data(); if(String(v.who||'').toLowerCase()===String(login.name||'').toLowerCase() && String(v.emis||'')===String(login.emis||'')) mine.push({id:d.id,...v}); }); mine.sort((a,b)=>String(b.when||'').localeCompare(String(a.when||''))); mine=mine.slice(0,20); if(!mine.length){ $('myActivityBody').innerHTML='<div class="info">No activity yet.</div>'; return; } let html='<table><tr><th>When</th><th>Action</th><th>Details</th></tr>'; mine.forEach(a=>{ html+='<tr><td>'+esc(String(a.when||'').slice(0,16).replace('T',' '))+'</td><td><span class="pill pill-blue">'+esc(a.action||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>'; }); html+='</table>'; $('myActivityBody').innerHTML=html; }catch(e){ $('myActivityBody').innerHTML='<div class="warn">❌ Activity failed: '+esc(e.message)+'</div>'; }
-};
+window.fillBook=function(code){ $('scanBook').value=code; onBookScan(); };
 document.addEventListener('DOMContentLoaded', async ()=>{
   if(window.OfflineQueue) OfflineQueue.updateBadge();
   login=getLogin();
   if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login first</a>.'; $('blockedBox').style.display='block'; return; }
   const role=(login.role||'').toUpperCase();
   $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
-  if(!['LIBRARIAN','HOD','PRINCIPAL','ADMIN'].includes(role)){ $('loginInfo').innerHTML='🚫 Logged in as <b>'+role+'</b> — Librarian / HOD ONLY. <a href="index.html">Switch login</a>.'; $('blockedBox').style.display='block'; return; }
-  $('loginInfo').innerHTML='✅ Librarian: <b>'+esc(login.name||'')+'</b> • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
-  $('myEmisLabel').textContent=login.emis||'';
-  $('librarianBody').style.display='block';
-  $('quickDue').value=dueDefault();
-  await loadDashboard(); await loadAudit(); await loadMyActivity();
-  // Auto-focus Learner field for fast scanning
-  setTimeout(()=>$('quickLearner').focus(),500);
+  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+') • Book Prefix: <b>'+getPrefix(login.school)+'</b>';
+  $('libBody').style.display='block';
+  await loadAll();
+  // Scanner: Enter = scan complete
+  $('scanLearner').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); onLearnerScan(); } });
+  $('scanBook').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); onBookScan(); } });
+  // Keep focus on scan boxes
+  document.addEventListener('click', e=>{
+    const tag=(e.target.tagName||'').toLowerCase();
+    if(tag!=='input' && tag!=='select' && tag!=='button' && tag!=='a'){ if(!foundLearner) $('scanLearner').focus(); else if(!foundBook) $('scanBook').focus(); }
+  });
 });
 </script>
 <script>
