@@ -3,275 +3,324 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Textbooks v2.17</title>
+<title>Makhanani LTSM — Textbooks v2.2 — Real Barcode + Beep</title>
 <meta name="theme-color" content="#0a1f4d">
-<link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
-<link rel="apple-touch-icon" href="logo.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <style>
 *{box-sizing:border-box}
-html,body{overflow-x:hidden}
-body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111;max-width:100vw}
-header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-header h1{margin:0;font-size:20px;word-break:break-word}header p{margin:2px 0 0;font-size:12px;opacity:.85;word-break:break-word}
-.logoHeader{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
-.logoHeader img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:12px;padding:4px;flex-shrink:0}
-.logoHeader h1{margin:0;font-size:20px}
-.logoHeader p{margin:2px 0 0;font-size:12px;opacity:.85}
-@media(max-width:700px){.logoHeader img{width:44px;height:44px} header h1{font-size:17px}}
-.badge{background:#d4af37;color:#0a1f4d;font-weight:900;padding:4px 10px;border-radius:20px;font-size:12px;white-space:nowrap}
-main{max-width:1100px;margin:auto;padding:14px;width:100%}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);overflow:hidden;word-wrap:break-word;overflow-wrap:break-word}
+body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
+header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;opacity:.9;font-size:13px}
+.logoRow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.logoRow img{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:2px solid #d4af37}
+@media(max-width:700px){.logoRow img{width:44px;height:44px}}
+main{max-width:1100px;margin:auto;padding:14px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
 label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px}
-input,select{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px;max-width:100%}
-input[readonly]{background:#f1f5f9;color:#0a1f4d;font-weight:900;letter-spacing:1px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-@media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
-@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
-.btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px;white-space:normal;word-break:break-word}
-.btn-green{background:#059669;color:#fff}.btn-blue{background:#0a1f4d;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}.btn-orange{background:#ea580c;color:#fff}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn-sm{width:auto;padding:8px 12px;margin:2px;font-size:12px}
-#cloudStatus{background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px;word-break:break-word}
-#subBlockBanner{display:none;background:#ea580c;color:#fff;text-align:center;padding:14px;font-weight:900;font-size:15px;margin:14px;border-radius:12px;line-height:1.5}
-#subOkBanner{display:none;background:#059669;color:#fff;text-align:center;padding:8px;font-weight:700;font-size:12px;margin:14px;border-radius:12px}
-.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word}
-.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word}
-.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;word-break:break-word;overflow-wrap:break-word}
-.small{font-size:12px;color:#64748b}
-.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
-.tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%}
-.tableWrap table{min-width:660px}
+input,select,textarea{width:100%;padding:12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px}
+textarea{min-height:140px;font-family:monospace}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
+.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0}.btn-orange{background:#ea580c;color:#fff}
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
-th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top;word-break:break-word}
+th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
-.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}
-.lockNote{background:#fef3c7;border:1.5px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;margin-top:10px;text-align:center;font-weight:700;word-break:break-word}
-.barcodeBox{background:#fff;border:2px solid #0a1f4d;border-radius:8px;padding:8px 6px 6px;text-align:center;margin-top:8px;min-width:150px}
-.barcodeBox .bcSchool{font-size:8px;font-weight:900;color:#0a1f4d;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1}
-.barcodeBox .bcBrand{font-size:7px;font-weight:900;color:#92400e;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-.barcodeBox .bcBrand span{background:#fef3c7;padding:1px 6px;border-radius:10px;display:inline-block}
-.barcodeBox .bcName{font-size:11px;font-weight:900;color:#111;line-height:1.1;margin:4px 0 1px;word-break:break-word}
-.barcodeBox .bcMeta{font-size:8px;color:#475569;font-weight:700}
-.barcodeBox svg{width:100%;max-width:150px;height:32px;margin-top:4px}
-.barcodeBox .bcBottom{border-top:1.5px solid #0a1f4d;padding-top:4px;margin-top:4px}
-.barcodeBox .bcCode{font-size:12px;font-weight:900;letter-spacing:1px;color:#0a1f4d;line-height:1}
-.barcodeBox .bcCodeLabel{font-size:6.5px;font-weight:700;letter-spacing:1px;color:#94a3b8;text-transform:uppercase;margin-top:1px}
-.returnOnlyBox{background:#ffedd5;border:2px solid #ea580c;border-radius:12px;padding:14px;margin-top:10px;text-align:center;font-weight:900;color:#9a3412;display:none}
-.autoBox{background:#ede9fe;border:1.5px solid #7c3aed;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.pill-orange{background:#ffedd5;color:#9a3412}
+.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}
+.orangeBox{background:#ffedd5;border:2px solid #ea580c;border-radius:12px;padding:12px;margin-top:10px;font-weight:700;color:#9a3412;font-size:13px}
+.small{font-size:12px;color:#64748b}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
+.topnav a.safe{background:#dcfce7;color:#166534;border:1.5px solid #059669}
+.tabBtn{padding:10px 14px;border:none;border-radius:20px;font-weight:900;font-size:13px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}
+.tabBtn.active{background:#0a1f4d;color:#fff}
+.barcodeGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
+.label{border:2px solid #111;border-radius:8px;padding:10px;text-align:center;background:#fff;break-inside:avoid}
+.label b{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.label span{font-size:11px;color:#333;display:block}
+.label .code{font-family:monospace;font-size:18px;font-weight:900;letter-spacing:1px;margin:4px 0}
+.label svg{width:100%;height:48px}
+@media(max-width:700px){.barcodeGrid{grid-template-columns:1fr 1fr}}
+@media print{
+  body{background:#fff} .noPrint{display:none!important} .card{box-shadow:none;border:1px solid #ccc}
+  header{background:#0a1f4d!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .barcodeGrid{grid-template-columns:1fr 1fr 1fr} .label{break-inside:avoid}
+  main{max-width:100%;padding:0} .card{display:none} .card.printArea{display:block!important}
+  a{color:#111;text-decoration:none}
+}
 </style>
 </head>
 <body>
-<header><div class="logoHeader"><img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'"><div><h1>Textbooks — Makhanani LTSM</h1><p>Auto Book Number • CSV Bulk Upload • Print WHS Barcodes 3x5 A4 • Return Only • v2.17<br><span id="whoLine">Not logged in</span></p></div></div><div><span class="badge">v2.17 TEXTBOOKS</span></div></header>
-<div id="cloudStatus">☁️ Cloud: Connecting...</div>
-<div id="subBlockBanner"></div>
-<div id="subOkBanner"></div>
+<div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
+<div id="offlineQueue" data-offline-queue style="background:#ffedd5;color:#9a3412;text-align:center;padding:8px;font-weight:700;font-size:12px;display:none"></div>
+<header>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>📖 Makhanani LTSM — Textbooks v2.2</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Due Date: 30 November — Every book must come back • Return is NEVER blocked<br><b>Real Barcode (CODE128) + Beep • Numbering: MPS000001</b></p>
+</header>
 <main>
-<div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a><a href="add-school.html">🏫 Add School</a><a href="learner-barcode.html">🎓 Learners</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="barcode-print.html">🖨️ Print Barcodes 3x5 A4</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 My Profile</a></div>
-<div class="card">
-<h2>📖 Textbooks — <span id="schoolNameTop">—</span> (<span id="bookCount">0</span>)</h2>
-<div class="info" id="schoolBox">School: —</div>
-<div class="info" id="roleBox">Role: —</div>
-<div class="info" id="subInfoBox">Subscription: Checking...</div>
-<div class="lockNote" id="permissionNote"></div>
-<div id="returnOnlyBox" class="returnOnlyBox">🟠 RETURN ONLY MODE — Subscription Suspended / Expired<br>You can VIEW + PRINT barcodes, but CANNOT Add / Edit / Delete books.<br>Contact Xintimani Group to reactivate.</div>
-<div class="info"><b>Label layout v2.16:</b> TOP = School Name + <b>MAKHANANI LTSM • TEXTBOOK</b> + Textbook Title + Subject • Grade &nbsp;|&nbsp; BOTTOM = <b>Book Number</b> (e.g. WHS000001) — Same as printed A4 label.</div>
+<div class="card noPrint">
+<div class="topnav"><a href="index.html">🏠 Home</a><a href="issue.html">📚 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 My Profile</a><a href="checklist-principal.html" class="safe">✅ Safe Checklist</a></div>
+<div class="info" id="loginInfo">Checking login...</div>
+<div id="returnOnlyBox" class="orangeBox" style="display:none">🟠 RETURN ONLY MODE — Subscription Suspended / Expired<br>You can ONLY RETURN books. You cannot Issue / Add.</div>
 <div class="grid2">
-<button class="btn btn-blue" onclick="loadBooks()">🔄 Refresh Books</button>
-<button class="btn btn-gold" onclick="exportBooksCSV()">📥 Export Books (CSV)</button>
+<button class="btn btn-green" onclick="location.href='issue.html'">📚 Go to Issue / Return</button>
+<button class="btn btn-blue" onclick="location.href='librarian.html'">📚 Librarian</button>
 </div>
-<button class="btn btn-purple" onclick="location.href='barcode-print.html'">🖨️ Print Barcodes — 3x5 A4 (15 per page) — Textbooks</button>
-<div class="small">Tap Print → Pick 📖 Textbooks → Tick books → Preview → Print A4 → Cut on dotted lines → Stick on book cover (use clear tape over barcode).</div>
-</div>
-<div class="card" id="addCard">
-<h2>➕ Add One Book — Auto Book Number</h2>
-<div class="autoBox"><b>🤖 Auto Book Number:</b> Format: <b>School Initials + 6-digit sequence</b><br>Example for this school: <b><span id="schoolPrefixExample">WHS</span>000001, <span id="schoolPrefixExample2">WHS</span>000002...</b> — Prefix = first letter of each word in school name.<br>Next Book Number for this school: <b id="nextBookNo">—</b><br>You can still type your own number if school already has numbers — just untick Auto.</div>
 <div class="grid2">
-<div><label>Title *</label><input id="newTitle" placeholder="e.g. Platinum Mathematics Grade 10" style="text-transform:uppercase"></div>
-<div><label><input type="checkbox" id="autoBookCheck" checked style="width:18px;height:18px;vertical-align:middle" onchange="autoGenerateBookNo()"> 🤖 Auto-generate Book Number</label><input id="newCode" placeholder="Auto: WHS000001" style="text-transform:uppercase" readonly></div>
+<button class="btn btn-grey" onclick="beepOK()">🔊 Test Beep — Success</button>
+<button class="btn btn-grey" onclick="beepError()">🔊 Test Beep — Error</button>
 </div>
-<div class="grid3">
-<div><label>Subject *</label><select id="newSubject"><option value="">— Pick —</option><option>Accounting</option><option>Afrikaans</option><option>Agricultural Sciences</option><option>Business Studies</option><option>CAT</option><option>Consumer Studies</option><option>Economics</option><option>English</option><option>Geography</option><option>History</option><option>Life Orientation</option><option>Life Sciences</option><option>Mathematical Literacy</option><option>Mathematics</option><option>Natural Sciences</option><option>Physical Sciences</option><option>Sepedi</option><option>Setswana</option><option>Social Sciences</option><option>Technology</option><option>Tourism</option><option>Visual Arts</option><option>isiZulu</option><option>isiXhosa</option></select></div>
-<div><label>Grade *</label><select id="newGrade"><option value="">— Pick —</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
-<div><label>Condition</label><select id="newCondition"><option>Good</option><option>New</option><option>Fair</option><option>Damaged</option></select></div>
 </div>
-<button class="btn btn-purple" onclick="autoGenerateBookNo(true)">🔄 Generate Next Book Number</button>
-<button class="btn btn-green" id="addBookBtn" onclick="addBook()">➕ ADD Book</button>
-<div id="addMsg"></div>
+<div class="card noPrint">
+<h2>⚡ Quick — Add / Bulk / Barcodes</h2>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="tabBtn active" id="tabOneBtn" onclick="showTab('one')">➕ Add ONE Textbook</button>
+<button class="tabBtn" id="tabBulkBtn" onclick="showTab('bulk')">📋 Bulk CSV — Add Many</button>
+<button class="tabBtn" id="tabListBtn" onclick="showTab('list')">👀 View Textbooks</button>
+<button class="tabBtn" id="tabBarBtn" onclick="showTab('bar')">🏷️ Barcodes — Print</button>
 </div>
-<div class="card" id="bulkCard">
-<h2>📥 Bulk Upload Books — CSV</h2>
-<div class="info"><b>CSV Format:</b> <code>Title,Code,Subject,Grade,Condition</code><br>Example: <code>Platinum Mathematics Grade 10,WHS000001,Mathematics,Grade 10,Good</code><br><b>NEW:</b> If Code is blank, Book Number auto-generates: <code>Platinum Mathematics Grade 10,,Mathematics,Grade 10,Good</code> → <b>WHS000001</b> (next free).<br>First row = header, will be skipped if it says Title.</div>
-<label>Choose CSV File</label>
-<input id="csvFile" type="file" accept=".csv">
-<button class="btn btn-purple" id="bulkBtn" onclick="bulkUpload()">📥 Upload CSV — Add All Books</button>
+<div class="info" id="prefixInfo">School Prefix: — • Next Book No.: —</div>
+</div>
+<div class="card noPrint" id="oneCard">
+<h2>➕ Add ONE Textbook — Real Barcode</h2>
+<div class="goldBox"><b>Numbering:</b> First letter of each word in school name + 6 digits<br>Example: <b>Makhanani Primary School</b> → <b>MPS000001</b><br>Tap <b>✨ Auto-Generate</b>. Old ENG10-001 still works.</div>
+<div class="grid2">
+<div><label>Title *</label><input id="oneTitle" placeholder="e.g. Platinum English Grade 10"></div>
+<div><label>Subject *</label><select id="oneSubject"><option value="">-- Pick Subject --</option><option>English</option><option>Afrikaans</option><option>isiZulu</option><option>Sepedi</option><option>Setswana</option><option>Xitsonga</option><option>Tshivenda</option><option>isiXhosa</option><option>isiNdebele</option><option>SiSwati</option><option>Mathematics</option><option>Mathematical Literacy</option><option>Physical Sciences</option><option>Life Sciences</option><option>Geography</option><option>History</option><option>Accounting</option><option>Business Studies</option><option>Economics</option><option>Life Orientation</option><option>Technology</option><option>Computer Applications Technology</option><option>Information Technology</option><option>Engineering Graphics and Design</option><option>Consumer Studies</option><option>Tourism</option><option>Agricultural Sciences</option><option>Visual Arts</option><option>Dramatic Arts</option><option>Music</option><option>Religion Studies</option><option>Other</option></select></div>
+</div>
+<div class="grid2">
+<div><label>Grade *</label><select id="oneGrade"><option value="">-- Pick Grade --</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+<div><label>Book No. / Barcode * — Auto: Prefix + 6 digits</label><input id="oneNo" placeholder="Tap ✨ Auto-Generate"><button class="btn btn-gold" type="button" onclick="autoBookNo()">✨ Auto-Generate Book No. — e.g. MPS000001</button><div id="oneBarcodePreview" style="text-align:center;margin-top:8px;background:#fff;border:1px dashed #cbd5e1;border-radius:8px;padding:8px;display:none"><svg id="oneBarcodeSvg"></svg></div></div>
+</div>
+<div class="grid2">
+<div><label>Copies (Default 1)</label><input id="oneCopies" type="number" min="1" max="100" value="1"></div>
+<div><label>Publisher / Edition (Optional)</label><input id="onePublisher" placeholder="e.g. Platinum, 2023"></div>
+</div>
+<div class="info"><b>Copies:</b> MPS000001 + Copies 30 → MPS000001 … MPS000030<br><b>One barcode per copy.</b> Never stick same barcode on 2 books.</div>
+<button class="btn btn-green" id="addOneBtn" onclick="addOne()">➕ Add Textbook(s)</button>
+<div id="oneMsg"></div>
+</div>
+<div class="card noPrint" id="bulkCard" style="display:none">
+<h2>📋 Bulk CSV — Add Many Textbooks</h2>
+<div class="goldBox"><b>CSV:</b> <code>Title,Subject,Grade,BookNo,Copies</code><br>Example: <code>Platinum English Grade 10,English,Grade 10,MPS000001,30</code></div>
+<div><label>Paste CSV Here *</label><textarea id="csvBox" placeholder="Title,Subject,Grade,BookNo,Copies&#10;Platinum English Grade 10,English,Grade 10,MPS000001,30"></textarea></div>
+<div class="grid2">
+<button class="btn btn-blue" onclick="previewCSV()">👀 Preview CSV</button>
+<button class="btn btn-grey" onclick="loadSample()">✏️ Load Sample CSV</button>
+</div>
+<div><label>Or Upload .csv File</label><input type="file" id="csvFile" accept=".csv,text/csv" onchange="readCSVFile(event)"></div>
+<div id="csvPreview"></div>
+<button class="btn btn-green" id="addBulkBtn" onclick="addBulk()" style="display:none">✅ Add All — <span id="bulkCount">0</span> Rows</button>
 <div id="bulkMsg"></div>
 </div>
-<div class="card">
-<h2>🔍 Search Books</h2>
-<div class="grid2">
-<div><label>Search</label><input id="searchBox" placeholder="Search title / code / subject..." oninput="renderBooks()"></div>
-<div><label>Filter Subject</label><select id="subjectFilter" onchange="renderBooks()"><option value="">All Subjects</option></select></div>
+<div class="card" id="listCard" style="display:none">
+<h2>👀 View Textbooks — <span id="listCount">0</span> books</h2>
+<div class="grid2 noPrint">
+<div><label>Search (Title / Book No. / Subject)</label><input id="searchBox" placeholder="Type to filter... e.g. MPS000001" oninput="renderList()"></div>
+<div><label>Filter Grade</label><select id="filterGrade" onchange="renderList()"><option value="">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
 </div>
-<div class="grid2">
-<div><label>Filter Grade</label><select id="gradeFilter" onchange="renderBooks()"><option value="">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
-<div><label>Filter Status</label><select id="statusFilter" onchange="renderBooks()"><option value="">All Status</option><option value="AVAILABLE">✅ Available</option><option value="ISSUED">📚 Issued</option></select></div>
+<div class="grid2 noPrint">
+<div><label>Filter Subject</label><select id="filterSubject" onchange="renderList()"><option value="">All Subjects</option><option>English</option><option>Afrikaans</option><option>isiZulu</option><option>Sepedi</option><option>Setswana</option><option>Xitsonga</option><option>Tshivenda</option><option>isiXhosa</option><option>isiNdebele</option><option>SiSwati</option><option>Mathematics</option><option>Mathematical Literacy</option><option>Physical Sciences</option><option>Life Sciences</option><option>Geography</option><option>History</option><option>Accounting</option><option>Business Studies</option><option>Economics</option><option>Life Orientation</option><option>Technology</option><option>Computer Applications Technology</option><option>Information Technology</option><option>Engineering Graphics and Design</option><option>Consumer Studies</option><option>Tourism</option><option>Agricultural Sciences</option><option>Visual Arts</option><option>Dramatic Arts</option><option>Music</option><option>Religion Studies</option><option>Other</option></select></div>
+<div><label>Filter Status</label><select id="filterStatus" onchange="renderList()"><option value="">All Status</option><option>AVAILABLE</option><option>ISSUED</option><option>LOST</option><option>DAMAGED</option></select></div>
 </div>
-<div id="booksList"></div>
+<div class="grid2 noPrint"><button class="btn btn-blue" onclick="loadBooks()">🔄 Refresh List</button><button class="btn btn-gold" onclick="showTab('bar')">🏷️ Go to Barcodes</button></div>
+<div id="listBody"></div>
+</div>
+<div class="card printArea" id="barCard" style="display:none">
+<h2>🏷️ Real Barcodes — Print 3 × 5 = 15 per A4</h2>
+<div class="info">Real CODE128 barcodes — scannable by any phone camera / scanner. Filter first, then Print. Stick one on each book.</div>
+<div class="grid2 noPrint">
+<div><label>Filter Barcodes — Grade</label><select id="barGrade" onchange="renderBarcodes()"><option value="">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+<div><label>Filter Barcodes — Subject</label><select id="barSubject" onchange="renderBarcodes()"><option value="">All Subjects</option><option>English</option><option>Afrikaans</option><option>isiZulu</option><option>Sepedi</option><option>Setswana</option><option>Xitsonga</option><option>Tshivenda</option><option>isiXhosa</option><option>isiNdebele</option><option>SiSwati</option><option>Mathematics</option><option>Mathematical Literacy</option><option>Physical Sciences</option><option>Life Sciences</option><option>Geography</option><option>History</option><option>Accounting</option><option>Business Studies</option><option>Economics</option><option>Life Orientation</option><option>Technology</option><option>Computer Applications Technology</option><option>Information Technology</option><option>Engineering Graphics and Design</option><option>Consumer Studies</option><option>Tourism</option><option>Agricultural Sciences</option><option>Visual Arts</option><option>Dramatic Arts</option><option>Music</option><option>Religion Studies</option><option>Other</option></select></div>
+</div>
+<div class="grid2 noPrint">
+<button class="btn btn-gold" onclick="printBarcodes()">🖨️ Print Barcodes — This Filter</button>
+<button class="btn btn-blue" onclick="loadBooks()">🔄 Refresh Barcodes</button>
+</div>
+<div id="barcodeGrid" class="barcodeGrid"></div>
+<div id="barMsg"></div>
 </div>
 </main>
+<script src="offline-queue.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
-let ALL_BOOKS=[], ALL_ISSUES=[];
-function getEmis(){ return localStorage.getItem('MAKHANANI_SELECTED_EMIS') || localStorage.getItem('MAKHANANI_SCHOOL_EMIS') || '700310854'; }
-function getSchool(){ return localStorage.getItem('MAKHANANI_SELECTED_SCHOOL') || localStorage.getItem('MAKHANANI_SCHOOL_NAME') || 'WORDSWORTH HIGH SCHOOL'; }
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
-function getRole(){ const l=getLogin(); return l ? (l.role||'').toUpperCase() : ''; }
-function isReturnOnly(){ if(localStorage.getItem('MAKHANANI_RETURN_ONLY')==='true') return true; const login=getLogin(); if(login && login.returnOnly===true) return true; return false; }
-function canEdit(){ if(isReturnOnly()) return false; return ['LIBRARIAN','ADMIN','PRINCIPAL','HOD'].includes(getRole()); }
-let SUB_BLOCKED=false, SUB_REASON="";
-// v2.17 - Auto Book Number: School Initials + 6-digit sequence
-function schoolPrefix(){
-  const name = String(getSchool()||'').trim().toUpperCase();
-  if(!name) return 'SCH';
-  // Split on space / hyphen, take first letter of each word, ignore words like OF / AND / THE? Keep all for predictability, but skip empty
-  const words = name.split(/[\s\-]+/).filter(w=> w.length>0 && /[A-Z]/.test(w));
-  let prefix = words.map(w=> w[0]).join('');
-  // Limit to 4 letters max to keep label short, e.g. WORDSWORTH HIGH SCHOOL -> WHS (3)
-  if(prefix.length>4) prefix = prefix.slice(0,4);
-  return prefix || 'SCH';
+let login=getLogin();
+let books=[];
+let parsedBulk=[];
+
+// === BEEP — Web Audio, no file needed ===
+let audioCtx=null;
+function tone(freq, dur, delay){
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    const t0=audioCtx.currentTime+(delay||0);
+    const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
+    o.type='sine'; o.frequency.value=freq;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.25, t0+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(t0); o.stop(t0+dur+0.02);
+  }catch(e){}
 }
-function nextBookNo(extraTaken){
-  const prefix = schoolPrefix();
-  const taken = new Set(ALL_BOOKS.map(b=> (b.code||'').toUpperCase()));
-  if(extraTaken) extraTaken.forEach(x=> taken.add(String(x).toUpperCase()));
-  let maxSeq = 0;
-  taken.forEach(code=>{
-    if(code.startsWith(prefix)){
-      const suffix = code.slice(prefix.length);
-      if(/^\d+$/.test(suffix)){ const n=parseInt(suffix,10); if(n>maxSeq) maxSeq=n; }
-    }
+window.beepOK=function(){ tone(880, 0.12, 0); }; // 1 high beep
+window.beepError=function(){ tone(220, 0.15, 0); tone(220, 0.15, 0.18); }; // 2 low beeps
+window.beepScan=function(){ tone(1200, 0.08, 0); };
+
+// === REAL BARCODE — JsBarcode CODE128 ===
+function drawBarcode(svgEl, value){
+  try{
+    JsBarcode(svgEl, String(value), { format:'CODE128', width:1.6, height:48, displayValue:false, margin:0, background:'#ffffff', lineColor:'#000000' });
+  }catch(e){ console.error('Barcode fail', e); }
+}
+function drawAllBarcodes(){
+  document.querySelectorAll('svg[data-barcode]').forEach(svg=>{
+    drawBarcode(svg, svg.getAttribute('data-barcode'));
   });
-  let n = maxSeq + 1;
-  while(taken.has(prefix + String(n).padStart(6,'0'))){ n++; }
-  return prefix + String(n).padStart(6,'0');
 }
-window.autoGenerateBookNo = function(force){
-  const auto = $('autoBookCheck').checked;
-  const codeInput = $('newCode');
-  const prefix = schoolPrefix();
-  const ex1=$('schoolPrefixExample'); if(ex1) ex1.textContent=prefix;
-  const ex2=$('schoolPrefixExample2'); if(ex2) ex2.textContent=prefix;
-  if(!auto){ codeInput.readOnly=false; codeInput.placeholder='Type your own, e.g. '+prefix+'000001'; if(force) codeInput.focus(); return ''; }
-  codeInput.readOnly=true;
-  const no = nextBookNo();
-  codeInput.value=no;
-  const nb=$('nextBookNo'); if(nb) nb.textContent=no;
-  return no;
+
+// === NUMBERING — TEXTBOOKS: School Prefix + 6 digits ===
+function getSchoolPrefix(){
+  const name=(login?.school||'').trim(); if(!name) return 'MK';
+  const words=name.split(/\s+/).filter(Boolean);
+  let prefix=words.map(w=>w[0].toUpperCase()).join('');
+  prefix=prefix.replace(/[^A-Z]/g,'').slice(0,4); return prefix || 'MK';
+}
+function formatSeq(prefix,n){ return prefix + String(n).padStart(6,'0'); }
+function nextSeq(existingIds, prefix){
+  let max=0; existingIds.forEach(id=>{ const m=String(id||'').match(new RegExp('^'+prefix+'(\\d{6})$')); if(m) max=Math.max(max, parseInt(m[1],10)); }); return max+1;
+}
+function updatePrefixInfo(){
+  const prefix=getSchoolPrefix(); const existing=books.map(b=>String(b.bookNo||b.barcode||'')); const n=nextSeq(existing, prefix);
+  const el=$('prefixInfo'); if(el) el.innerHTML='School: <b>'+esc(login?.school||'')+'</b> • Prefix: <b>'+prefix+'</b> • Next Book No.: <b>'+formatSeq(prefix,n)+'</b> • Last used: '+(n>1?formatSeq(prefix,n-1):'None yet');
+}
+function expandBookNos(base, copies){
+  if(!copies||copies<=1) return [base];
+  const mNew=String(base).match(/^([A-Z]+)(\d{6})$/);
+  if(mNew){ const prefix=mNew[1], start=parseInt(mNew[2],10); const out=[]; for(let i=0;i<copies;i++) out.push(formatSeq(prefix, start+i)); return out; }
+  const mOld=String(base).match(/^(.*?)(\d+)$/); if(!mOld) return [base];
+  const prefix=mOld[1], numStr=mOld[2], start=parseInt(numStr,10), width=numStr.length;
+  const out=[]; for(let i=0;i<copies;i++) out.push(prefix+String(start+i).padStart(width,'0')); return out;
+}
+window.autoBookNo=function(){
+  const prefix=getSchoolPrefix(); const existing=books.map(b=>String(b.bookNo||b.barcode||'')); const n=nextSeq(existing, prefix);
+  $('oneNo').value=formatSeq(prefix,n);
+  $('oneMsg').innerHTML='<div class="ok">✅ Next Book No.: <b>'+formatSeq(prefix,n)+'</b></div>';
+  beepOK(); previewOneBarcode();
 };
-async function checkSubscription(){
-  const emis=getEmis(); const banner=$('subBlockBanner'); const okBanner=$('subOkBanner'); const infoBox=$('subInfoBox'); const roBox=$('returnOnlyBox');
-  if(isReturnOnly()){
-    SUB_BLOCKED=true; SUB_REASON='🟠 RETURN ONLY MODE — Subscription Suspended / Expired — Contact Xintimani Group.\nSchool: '+getSchool()+' • EMIS '+emis;
-    if(banner){ banner.style.display='block'; banner.style.background='#ea580c'; banner.innerHTML=SUB_REASON.replace(/\n/g,'<br>')+'<br><span style="font-size:12px;font-weight:400">You can VIEW + PRINT. You CANNOT Add / Edit / Delete.</span>'; }
-    if(okBanner) okBanner.style.display='none'; if(roBox) roBox.style.display='block';
-    if(infoBox) infoBox.innerHTML='Subscription: <b style="color:#ea580c">🟠 RETURN ONLY — Suspended / Expired</b> • Contact Xintimani Group';
-    const b1=$('addBookBtn'); if(b1){ b1.disabled=true; b1.textContent='🟠 RETURN ONLY — Cannot Add Book'; } const b2=$('bulkBtn'); if(b2){ b2.disabled=true; b2.textContent='🟠 RETURN ONLY — Cannot Upload'; }
-    return true;
+function previewOneBarcode(){
+  const v=($('oneNo').value||'').trim().toUpperCase(); const box=$('oneBarcodePreview');
+  if(!v){ box.style.display='none'; return; }
+  box.style.display='block'; drawBarcode($('oneBarcodeSvg'), v);
+}
+$('oneNo').addEventListener('input', previewOneBarcode);
+
+window.showTab=function(t){
+  ['One','Bulk','List','Bar'].forEach(x=>{ const b=$('tab'+x+'Btn'); if(b) b.classList.toggle('active', x.toLowerCase()===t); });
+  $('oneCard').style.display=t==='one'?'block':'none'; $('bulkCard').style.display=t==='bulk'?'block':'none'; $('listCard').style.display=t==='list'?'block':'none'; $('barCard').style.display=t==='bar'?'block':'none';
+  if(t==='list') renderList(); if(t==='bar') renderBarcodes();
+};
+window.loadSample=function(){ const prefix=getSchoolPrefix(); $('csvBox').value='Title,Subject,Grade,BookNo,Copies\nPlatinum English Grade 10,English,Grade 10,'+formatSeq(prefix,1)+',2\nPlatinum Maths Grade 10,Mathematics,Grade 10,'+formatSeq(prefix,3)+',2'; previewCSV(); };
+window.readCSVFile=function(e){ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ $('csvBox').value=r.result; previewCSV(); }; r.readAsText(f); };
+function parseCSV(text){
+  const lines=text.trim().split(/\r?\n/).filter(l=>l.trim()); if(!lines.length) return [];
+  const header=lines[0].split(',').map(h=>h.trim().toLowerCase()); const hasHeader=header.includes('title')||header.includes('subject');
+  const rows=hasHeader?lines.slice(1):lines;
+  return rows.map((line,idx)=>{ const parts=line.split(',').map(p=>p.trim().replace(/^"|"$/g,'')); return { line: idx+(hasHeader?2:1), title: parts[0]||'', subject: parts[1]||'', grade: parts[2]||'', bookNo: parts[3]||'', copies: parseInt(parts[4]||'1',10)||1 }; }).filter(r=>r.title||r.bookNo);
+}
+window.previewCSV=function(){
+  const text=$('csvBox').value||''; parsedBulk=parseCSV(text);
+  if(!parsedBulk.length){ $('csvPreview').innerHTML='<div class="warn">⚠️ No rows found.</div>'; $('addBulkBtn').style.display='none'; return; }
+  let html='<table><tr><th>#</th><th>Title</th><th>Subject</th><th>Grade</th><th>BookNo</th><th>Copies</th><th>Will Create</th><th>Check</th></tr>'; let bad=0;
+  parsedBulk.forEach(r=>{ const errs=[]; if(!r.title) errs.push('No Title'); if(!r.subject) errs.push('No Subject'); if(!r.grade) errs.push('No Grade'); if(!r.bookNo) errs.push('No BookNo'); if(books.some(b=>String(b.bookNo||b.barcode||'')===String(r.bookNo))) errs.push('BookNo exists'); if(errs.length) bad++; const nos=expandBookNos(r.bookNo, r.copies); html+='<tr><td>'+r.line+'</td><td>'+esc(r.title)+'</td><td>'+esc(r.subject)+'</td><td>'+esc(r.grade)+'</td><td>'+esc(r.bookNo)+'</td><td>'+r.copies+'</td><td>'+esc(nos[0])+(nos.length>1?' … '+esc(nos[nos.length-1]):'')+'</td><td>'+(errs.length?'<span class="pill pill-red">'+esc(errs.join(', '))+'</span>':'<span class="pill pill-green">✅ OK</span>')+'</td></tr>'; });
+  html+='</table><div class="info">Preview: '+parsedBulk.length+' rows • OK: '+(parsedBulk.length-bad)+' • Problems: '+bad+'</div>';
+  $('csvPreview').innerHTML=html; $('bulkCount').textContent=parsedBulk.length; $('addBulkBtn').style.display='block';
+};
+window.addOne=async function(){
+  const title=($('oneTitle').value||'').trim(); const subject=$('oneSubject').value||''; const grade=$('oneGrade').value||''; let bookNo=($('oneNo').value||'').trim().toUpperCase(); const copies=parseInt($('oneCopies').value||'1',10)||1; const publisher=($('onePublisher').value||'').trim();
+  if(!title||!subject||!grade){ $('oneMsg').innerHTML='<div class="warn">⚠️ Fill Title + Subject + Grade.</div>'; beepError(); return; }
+  if(!login){ $('oneMsg').innerHTML='<div class="warn">🔒 Login first.</div>'; beepError(); return; }
+  if(login.returnOnly && (login.role||'').toUpperCase()!=='ADMIN'){ $('oneMsg').innerHTML='<div class="warn">🟠 RETURN ONLY — Cannot Add.</div>'; beepError(); return; }
+  if(!navigator.onLine){ $('oneMsg').innerHTML='<div class="warn">🟠 Offline — Cannot Add Textbook offline.</div>'; beepError(); return; }
+  if(!bookNo){ const prefix=getSchoolPrefix(); const existing=books.map(b=>String(b.bookNo||b.barcode||'')); bookNo=formatSeq(prefix, nextSeq(existing, prefix)); $('oneNo').value=bookNo; }
+  const nos=expandBookNos(bookNo, copies);
+  const dups=nos.filter(n=>books.some(b=>String(b.bookNo||b.barcode||'')===String(n)));
+  if(dups.length){ $('oneMsg').innerHTML='<div class="warn">❌ Duplicate — '+esc(dups.join(', '))+' already exists. Tap ✨ Auto-Generate.</div>'; beepError(); return; }
+  $('addOneBtn').disabled=true; $('addOneBtn').textContent='⏳ Adding...';
+  try{ for(const n of nos){ await addDoc(collection(db,'schools','EMIS_'+login.emis,'textbooks'), { title, subject, grade, bookNo:n, barcode:n, status:'AVAILABLE', publisher, createdAt:new Date().toISOString(), createdBy:login.name||login.email||'' }); } $('oneMsg').innerHTML='<div class="ok">✅ Added '+nos.length+' copy(ies): <b>'+esc(title)+'</b> • '+esc(nos[0])+(nos.length>1?' … '+esc(nos[nos.length-1]):'')+'</div>'; beepOK(); $('oneTitle').value=''; $('oneNo').value=''; $('oneCopies').value='1'; $('oneBarcodePreview').style.display='none'; await loadBooks(); renderList(); }
+  catch(e){ $('oneMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; beepError(); }
+  $('addOneBtn').disabled=false; $('addOneBtn').textContent='➕ Add Textbook(s)';
+};
+window.addBulk=async function(){
+  if(!parsedBulk.length){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Preview CSV first.</div>'; beepError(); return; }
+  if(!login){ $('bulkMsg').innerHTML='<div class="warn">🔒 Login first.</div>'; beepError(); return; }
+  if(login.returnOnly && (login.role||'').toUpperCase()!=='ADMIN'){ $('bulkMsg').innerHTML='<div class="warn">🟠 RETURN ONLY — Cannot Add.</div>'; beepError(); return; }
+  if(!navigator.onLine){ $('bulkMsg').innerHTML='<div class="warn">🟠 Offline — Bulk Add needs internet.</div>'; beepError(); return; }
+  $('addBulkBtn').disabled=true; $('addBulkBtn').textContent='⏳ Adding...';
+  let added=0, skipped=0; const seen=new Set(books.map(b=>String(b.bookNo||b.barcode||'')));
+  for(const r of parsedBulk){
+    if(!r.title||!r.subject||!r.grade||!r.bookNo){ skipped++; continue; }
+    const nos=expandBookNos(String(r.bookNo).toUpperCase(), r.copies);
+    for(const n of nos){
+      if(seen.has(String(n))){ skipped++; continue; }
+      try{ await addDoc(collection(db,'schools','EMIS_'+login.emis,'textbooks'), { title:r.title, subject:r.subject, grade:r.grade, bookNo:n, barcode:n, status:'AVAILABLE', createdAt:new Date().toISOString(), createdBy:login.name||login.email||'' }); seen.add(String(n)); added++; }catch(e){ skipped++; }
+    }
   }
-  try{
-    const snap=await getDoc(doc(db,'schools','EMIS_'+emis));
-    if(!snap.exists()){ SUB_BLOCKED=false; if(banner) banner.style.display='none'; if(okBanner) okBanner.style.display='none'; if(roBox) roBox.style.display='none'; if(infoBox) infoBox.innerHTML='Subscription: <b>No school doc yet</b> — Allowed. Add school in Add School page.'; return false; }
-    const s=snap.data(); const today=new Date().toISOString().slice(0,10); const end=s.subscriptionEnd||""; const status=(s.subscription||s.status||"ACTIVE").toUpperCase(); const daysLeft=end?Math.ceil((new Date(end)-new Date(today))/(1000*60*60*24)):9999;
-    if(infoBox){ if(status==='SUSPENDED') infoBox.innerHTML='Subscription: <b style="color:#ea580c">🟠 RETURN ONLY — SUSPENDED</b> • Plan: '+(s.plan||'')+' • End: '+(end||'—'); else if(end && end<today) infoBox.innerHTML='Subscription: <b style="color:#ea580c">🟠 RETURN ONLY — EXPIRED on '+end+'</b>'; else if(daysLeft<=30) infoBox.innerHTML='Subscription: <b style="color:#92400e">✅ ACTIVE — ⚠️ '+daysLeft+' days left</b> • Plan: '+(s.plan||'')+' • End: '+end; else infoBox.innerHTML='Subscription: <b style="color:#166534">✅ ACTIVE</b> • Plan: '+(s.plan||'')+' • End: '+end+' • '+daysLeft+' days left'; }
-    if(status==='SUSPENDED'){ SUB_BLOCKED=true; SUB_REASON='🟠 RETURN ONLY — SUBSCRIPTION SUSPENDED — Contact Xintimani Group.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
-    else if(end && end<today){ SUB_BLOCKED=true; SUB_REASON='🟠 RETURN ONLY — SUBSCRIPTION EXPIRED on '+end+' — Contact Xintimani Group.\nSchool: '+(s.name||'')+' • EMIS '+emis; }
-    else { SUB_BLOCKED=false; SUB_REASON=""; }
-    if(SUB_BLOCKED){ if(banner){ banner.style.display='block'; banner.style.background='#ea580c'; banner.innerHTML=SUB_REASON.replace(/\n/g,'<br>')+'<br><span style="font-size:12px;font-weight:400">You can VIEW + PRINT. You CANNOT Add / Edit / Delete.</span>'; } if(okBanner) okBanner.style.display='none'; if(roBox) roBox.style.display='block'; const b1=$('addBookBtn'); if(b1){ b1.disabled=true; b1.textContent='🟠 RETURN ONLY — Cannot Add Book'; } const b2=$('bulkBtn'); if(b2){ b2.disabled=true; b2.textContent='🟠 RETURN ONLY — Cannot Upload'; } }
-    else { if(banner) banner.style.display='none'; if(roBox) roBox.style.display='none'; if(okBanner && s.subscriptionEnd){ okBanner.style.display='block'; okBanner.textContent='✅ Subscription ACTIVE — '+(s.plan||'')+' • Ends '+s.subscriptionEnd+' • '+daysLeft+' days left'; } const b1=$('addBookBtn'); if(b1 && canEdit()){ b1.disabled=false; b1.textContent='➕ ADD Book'; } const b2=$('bulkBtn'); if(b2 && canEdit()){ b2.disabled=false; b2.textContent='📥 Upload CSV — Add All Books'; } }
-    return SUB_BLOCKED;
-  }catch(e){ SUB_BLOCKED=false; if(infoBox) infoBox.innerHTML='Subscription: Could not check (offline) — Allowed for now.'; return false; }
-}
-function applyRole(){
-  const login=getLogin();
-  if(!login){ $('roleBox').innerHTML='Role: <b>NOT LOGGED IN</b>'; $('permissionNote').innerHTML='⚠️ Login in Home first.'; return; }
-  if(isReturnOnly()){ $('roleBox').innerHTML='Role: <b>'+getRole()+'</b> • 🟠 RETURN ONLY'; $('permissionNote').innerHTML='🟠 RETURN ONLY MODE — View + Print only. Cannot Add / Edit / Delete. Contact Xintimani Group.'; }
-  else if(getRole()==='TEACHER'){ $('roleBox').innerHTML='Role: <b>TEACHER</b> • View Only • Cannot Add Books'; $('permissionNote').innerHTML='👁️ TEACHER — View + Print only. Cannot Add / Edit / Delete books.'; }
-  else if(getRole()==='LIBRARIAN'){ $('roleBox').innerHTML='Role: <b>LIBRARIAN</b> • Can Add / Edit Books'; $('permissionNote').innerHTML='✅ LIBRARIAN — Can Add / Edit / Delete books (if subscription ACTIVE).'; }
-  else if(getRole()==='ADMIN'){ $('roleBox').innerHTML='Role: <b>ADMIN</b> • Full Access'; $('permissionNote').innerHTML='✅ ADMIN — Full Access (if subscription ACTIVE).'; }
-  else { $('roleBox').innerHTML='Role: <b>'+getRole()+'</b>'; $('permissionNote').innerHTML=''; }
-  if(!canEdit() && !isReturnOnly() && !SUB_BLOCKED){ const b1=$('addBookBtn'); if(b1){ b1.disabled=true; b1.textContent='🔒 View Only — Teacher Cannot Add Books'; } const b2=$('bulkBtn'); if(b2){ b2.disabled=true; b2.textContent='🔒 View Only — Teacher Cannot Upload'; } }
-}
-async function loadBooks(){
-  const emis=getEmis();
-  try{
-    const [bs, is] = await Promise.all([ getDocs(collection(db,'schools','EMIS_'+emis,'textbooks')), getDocs(collection(db,'schools','EMIS_'+emis,'issues')) ]);
-    ALL_BOOKS=[]; bs.forEach(d=>{ ALL_BOOKS.push({id:d.id, ...d.data()}); }); ALL_ISSUES=[]; is.forEach(d=>{ ALL_ISSUES.push({id:d.id, ...d.data()}); });
-    ALL_BOOKS.sort((a,b)=> (a.code||'').localeCompare(b.code||'')); $('bookCount').textContent=ALL_BOOKS.length; $('schoolNameTop').textContent=getSchool();
-    const subjects=[...new Set(ALL_BOOKS.map(b=>b.subject).filter(Boolean))].sort(); $('subjectFilter').innerHTML='<option value="">All Subjects</option>'+subjects.map(s=>`<option>${s}</option>`).join('');
-    $('cloudStatus').textContent='☁️ Cloud: Connected — '+getSchool()+' • Books: '+ALL_BOOKS.length+(isReturnOnly()?' • 🟠 RETURN ONLY':'');
-    autoGenerateBookNo();
-    renderBooks();
-  }catch(e){ $('booksList').innerHTML='<div class="warn">❌ Load failed: '+e.message+'</div>'; $('cloudStatus').textContent='🔴 Cloud: Offline — '+e.message; }
-}
-window.loadBooks=loadBooks;
-function renderBooks(){
-  const q=($('searchBox').value||'').toLowerCase().trim(); const sf=$('subjectFilter').value; const gf=$('gradeFilter').value; const stf=$('statusFilter').value; const schoolName=getSchool().toUpperCase();
-  let list=[...ALL_BOOKS]; if(sf) list=list.filter(b=> (b.subject||'')===sf); if(gf) list=list.filter(b=> (b.grade||'')===gf); if(q) list=list.filter(b=> ((b.title||'')+' '+(b.code||'')+' '+(b.subject||'')).toLowerCase().includes(q));
-  if(stf){ list=list.filter(b=>{ const issued=ALL_ISSUES.find(x=> x.bookCode===b.code && x.status==='OUT'); const st=issued?'ISSUED':'AVAILABLE'; return st===stf; }); }
-  if(list.length===0){ $('booksList').innerHTML='<div class="info">No books found. Add books above or upload CSV.</div>'; return; }
-  let html='<div class="tableWrap"><table><tr><th>Barcode Label</th><th>Title</th><th>Subject / Grade</th><th>Status</th><th>Actions</th></tr>';
-  list.slice(0,300).forEach(b=>{ const code=b.code||b.id; const issued=ALL_ISSUES.find(x=> x.bookCode===code && x.status==='OUT'); const safeId=b.id.replace(/[^a-zA-Z0-9]/g,'_');
-    html+='<tr><td><div class="barcodeBox"><div class="bcSchool">'+schoolName+'</div><div class="bcBrand"><span>MAKHANANI LTSM • TEXTBOOK</span></div><div class="bcName">'+(b.title||'')+'</div><div class="bcMeta">'+(b.subject||'')+' • '+(b.grade||'')+'</div><svg id="bc_'+safeId+'"></svg><div class="bcBottom"><div class="bcCode">'+code+'</div><div class="bcCodeLabel">BOOK NUMBER</div></div></div></td><td><b>'+(b.title||'')+'</b><br><span class="small">'+(b.condition||'')+'</span></td><td>'+(b.subject||'')+' • '+(b.grade||'')+'</td><td>'+(issued ? '<span class="pill pill-blue">📚 ISSUED to '+issued.learnerName+'</span>' : '<span class="pill pill-green">✅ AVAILABLE</span>')+'</td><td>'+(canEdit() && !SUB_BLOCKED ? '<button class="btn btn-red btn-sm" onclick="deleteBook(\''+b.id+'\')">🗑️ Delete</button>' : '<span class="small">View Only</span>')+'<br><button class="btn btn-purple btn-sm" onclick="printOneBook(\''+code+'\')">🖨️ Print This One</button></td></tr>'; });
-  html+='</table></div>'; $('booksList').innerHTML=html;
-  list.slice(0,300).forEach(b=>{ try{ JsBarcode('#bc_'+b.id.replace(/[^a-zA-Z0-9]/g,'_'), String(b.code||b.id), {format:'CODE128', width:1.5, height:32, displayValue:false, margin:0}); }catch(e){} });
-}
-window.renderBooks=renderBooks;
-window.printOneBook = function(code){ localStorage.setItem('MAKHANANI_PRINT_SINGLE', JSON.stringify({type:'BOOK', code:code})); location.href='barcode-print.html?single='+encodeURIComponent(code); };
-window.addBook = async function(){
-  if(isReturnOnly() || SUB_BLOCKED){ $('addMsg').innerHTML='<div class="warn">🟠 RETURN ONLY MODE — Cannot Add Book<br>'+SUB_REASON.replace(/\n/g,'<br>')+'<br>Contact Xintimani Group to reactivate.</div>'; return; }
-  if(!canEdit()){ alert('Only Librarian / Admin / Principal can add books.'); return; }
-  const emis=getEmis(); const title=($('newTitle').value||'').trim().toUpperCase(); const subject=$('newSubject').value; const grade=$('newGrade').value; const condition=$('newCondition').value;
-  let code='';
-  if($('autoBookCheck').checked){ code = autoGenerateBookNo(); } else { code = ($('newCode').value||'').trim().toUpperCase(); }
-  if(!title || !subject || !grade){ $('addMsg').innerHTML='<div class="warn">⚠️ Fill Title + Subject + Grade. Book Number auto-generates.</div>'; return; }
-  if(!code){ $('addMsg').innerHTML='<div class="warn">⚠️ Could not generate Book Number.</div>'; return; }
-  if(ALL_BOOKS.find(x=> (x.code||'').toUpperCase()===code)){ $('addMsg').innerHTML='<div class="warn">❌ Book Number <b>'+code+'</b> already exists. Tap <b>🔄 Generate Next Book Number</b> to get next free one.</div>'; return; }
-  try{ await setDoc(doc(db,'schools','EMIS_'+emis,'textbooks',code), {title:title, code:code, subject:subject, grade:grade, condition:condition, status:'AVAILABLE', createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); $('addMsg').innerHTML='<div class="ok">✅ Book Added: <b>'+title+' ('+code+')</b> • '+subject+' '+grade+'<br>Next Book Number will be <b>'+nextBookNo([code])+'</b></div>'; $('newTitle').value=''; $('newSubject').value=''; $('newGrade').value=''; await loadBooks(); }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+e.message+'</div>'; }
+  $('bulkMsg').innerHTML='<div class="ok">✅ Bulk done — Added: '+added+' • Skipped: '+skipped+'</div>'; beepOK();
+  $('addBulkBtn').disabled=false; $('addBulkBtn').textContent='✅ Add All — '+parsedBulk.length+' Rows';
+  await loadBooks(); renderList();
 };
-window.deleteBook = async function(id){
-  if(isReturnOnly() || SUB_BLOCKED){ alert('🟠 RETURN ONLY MODE\n'+SUB_REASON); return; }
-  if(!canEdit()) return; const b=ALL_BOOKS.find(x=>x.id===id); if(!b) return; const issued=ALL_ISSUES.find(x=> x.bookCode===b.code && x.status==='OUT'); if(issued){ alert('❌ Cannot delete — Book is OUT to '+issued.learnerName+' ('+issued.learnerCode+'). Return it first.'); return; }
-  if(!confirm('Delete Book:\n'+b.title+' ('+b.code+')\nConfirm?')) return;
-  try{ await deleteDoc(doc(db,'schools','EMIS_'+getEmis(),'textbooks',id)); await loadBooks(); }catch(e){ alert('Delete failed: '+e.message); }
+window.loadBooks=async function(){
+  login=getLogin();
+  if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login on Home first</a>.'; $('whoLine').textContent='Not logged in'; return; }
+  const role=(login.role||'').toUpperCase();
+  if(role==='TEACHER'){ $('loginInfo').innerHTML='🚫 Teachers cannot Add Textbooks. <a href="issue.html">Go to Issue / Return</a>.'; $('oneCard').style.display='none'; $('bulkCard').style.display='none'; return; }
+  if(role==='PRINCIPAL'){ $('loginInfo').innerHTML='👩🏾‍🏫 Principal — View only. To Add Textbooks, ask Librarian / HOD.'; $('oneCard').style.display='none'; $('bulkCard').style.display='none'; }
+  else { $('loginInfo').innerHTML='✅ Logged in as <b>'+role+' — '+(login.name||'')+'</b> • '+(login.school||'')+' (EMIS '+(login.emis||'')+')' + (login.returnOnly ? ' • <span class="pill pill-orange">🟠 RETURN ONLY</span>' : ' • <span class="pill pill-green">✅ ACTIVE</span>'); }
+  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  if(login.returnOnly && role!=='ADMIN') $('returnOnlyBox').style.display='block';
+  try{ const snap=await getDocs(collection(db,'schools','EMIS_'+login.emis,'textbooks')); books=[]; snap.forEach(d=>books.push({id:d.id,...d.data()})); books.sort((a,b)=>String(a.title||'').localeCompare(String(b.title||''))); $('listCount').textContent=books.length; updatePrefixInfo(); renderList(); renderBarcodes(); }
+  catch(e){ $('listBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
 };
-window.bulkUpload = async function(){
-  if(isReturnOnly() || SUB_BLOCKED){ $('bulkMsg').innerHTML='<div class="warn">🟠 RETURN ONLY MODE — Cannot Upload<br>'+SUB_REASON.replace(/\n/g,'<br>')+'</div>'; return; }
-  if(!canEdit()){ alert('Only Librarian / Admin / Principal can upload.'); return; }
-  const file=$('csvFile').files[0]; if(!file){ $('bulkMsg').innerHTML='<div class="warn">⚠️ Choose CSV file first.</div>'; return; }
-  const text=await file.text(); const lines=text.split(/\r?\n/).filter(l=>l.trim()); if(lines.length<2){ $('bulkMsg').innerHTML='<div class="warn">⚠️ CSV is empty or only header.</div>'; return; }
-  let start=0; if(lines[0].toLowerCase().includes('title')) start=1; let added=0, skipped=0, errors=[]; const usedInBatch=new Set(ALL_BOOKS.map(b=> (b.code||'').toUpperCase()));
-  $('bulkMsg').innerHTML='<div class="info">⏳ Uploading '+(lines.length-start)+' books...</div>';
-  for(let i=start;i<lines.length;i++){ const cols=lines[i].split(',').map(c=>c.trim().replace(/^"|"$/g,'')); if(cols.length<4){ skipped++; continue; } const [title, codeRaw, subject, grade, condition]=cols; if(!title || !subject || !grade){ skipped++; continue; } let codeU=(codeRaw||'').toUpperCase(); if(!codeU){ codeU = nextBookNo([...usedInBatch]); } if(usedInBatch.has(codeU)){ skipped++; continue; } usedInBatch.add(codeU); try{ await setDoc(doc(db,'schools','EMIS_'+getEmis(),'textbooks',codeU), {title:title.toUpperCase(), code:codeU, subject:subject, grade:grade, condition:condition||'Good', status:'AVAILABLE', createdAt:serverTimestamp(), createdBy:(getLogin()||{}).name||''}); added++; }catch(e){ errors.push(codeU+': '+e.message); } }
-  $('bulkMsg').innerHTML='<div class="ok">✅ Bulk Upload Done: <b>'+added+' added</b> • '+skipped+' skipped • '+errors.length+' errors<br>'+(errors.length? errors.join('<br>'):'')+'</div>'; await loadBooks();
+window.renderList=function(){
+  const q=($('searchBox').value||'').trim().toLowerCase(); const fg=$('filterGrade').value||''; const fs=$('filterSubject').value||''; const st=$('filterStatus').value||'';
+  const list=books.filter(u=>{ const hay=[u.title,u.bookNo,u.barcode,u.subject,u.grade].join(' ').toLowerCase(); if(q&&!hay.includes(q)) return false; if(fg&&String(u.grade||'')!==fg) return false; if(fs&&String(u.subject||'')!==fs) return false; if(st&&String(u.status||'AVAILABLE').toUpperCase()!==st) return false; return true; });
+  if(!list.length){ $('listBody').innerHTML='<div class="info">No textbooks for this filter.</div>'; return; }
+  let html='<table><tr><th>Title</th><th>Subject / Grade</th><th>Book No. / Barcode</th><th>Status</th></tr>';
+  list.slice(0,300).forEach(u=>{ const s=(u.status||'AVAILABLE').toUpperCase(); const pill=s==='AVAILABLE'?'<span class="pill pill-green">✅ AVAILABLE</span>':s==='ISSUED'?'<span class="pill pill-gold">📚 ISSUED</span>':s==='LOST'?'<span class="pill pill-red">❌ LOST</span>':'<span class="pill pill-red">⚠️ DAMAGED</span>'; html+='<tr><td><b>'+esc(u.title||'')+'</b></td><td>'+esc(u.subject||'')+' • '+esc(u.grade||'')+'</td><td><b>'+esc(u.bookNo||u.barcode||u.id)+'</b></td><td>'+pill+'</td></tr>'; });
+  html+='</table><div class="small">Showing '+list.slice(0,300).length+' of '+list.length+' books.</div>'; $('listBody').innerHTML=html;
 };
-window.exportBooksCSV = function(){
-  if(ALL_BOOKS.length===0){ alert('No books.'); return; }
-  let csv='Title,Code,Subject,Grade,Condition,Status\n'; ALL_BOOKS.forEach(b=>{ const issued=ALL_ISSUES.find(x=> x.bookCode===b.code && x.status==='OUT'); csv+='"'+(b.title||'')+'","'+(b.code||'')+'","'+(b.subject||'')+'","'+(b.grade||'')+'","'+(b.condition||'')+'","'+(issued?'ISSUED':'AVAILABLE')+'"\n'; });
-  const blob=new Blob([csv], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Makhanani_Books_'+getEmis()+'.csv'; a.click(); URL.revokeObjectURL(url);
+window.renderBarcodes=function(){
+  const fg=$('barGrade').value||''; const fs=$('barSubject').value||'';
+  const list=books.filter(u=>{ if(fg&&String(u.grade||'')!==fg) return false; if(fs&&String(u.subject||'')!==fs) return false; return true; });
+  if(!list.length){ $('barcodeGrid').innerHTML='<div class="info">No textbooks for this filter.</div>'; $('barMsg').innerHTML=''; return; }
+  let html='';
+  list.slice(0,150).forEach(u=>{ const code=String(u.bookNo||u.barcode||u.id); html+='<div class="label"><b>'+esc(u.title||'')+'</b><span>'+esc(u.subject||'')+' • '+esc(u.grade||'')+' • '+esc(login?.school||'')+'</span><svg data-barcode="'+esc(code)+'"></svg><div class="code">'+esc(code)+'</div><span>Textbook — Scan in Issue / Return</span></div>'; });
+  $('barcodeGrid').innerHTML=html; drawAllBarcodes();
+  $('barMsg').innerHTML='<div class="info">Showing '+list.slice(0,150).length+' of '+list.length+' real barcodes (max 150 per print).</div>';
 };
-document.addEventListener('DOMContentLoaded', async ()=>{ const login=getLogin(); if(login) $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'')+' • '+(login.email||'')+(isReturnOnly()?' • 🟠 RETURN ONLY':''); $('schoolBox').textContent='School: '+getSchool()+' • EMIS '+getEmis(); applyRole(); await checkSubscription(); await loadBooks(); });
+window.printBarcodes=function(){ renderBarcodes(); setTimeout(()=>{ document.querySelectorAll('.card').forEach(c=>c.classList.remove('printArea')); $('barCard').classList.add('printArea'); setTimeout(()=>window.print(),300); }, 300); };
+window.addEventListener('afterprint', ()=>{ document.querySelectorAll('.card').forEach(c=>c.classList.add('printArea')); });
+document.addEventListener('DOMContentLoaded', async ()=>{ if(window.OfflineQueue) OfflineQueue.updateBadge(); document.querySelectorAll('.card').forEach(c=>c.classList.add('printArea')); await loadBooks(); });
+</script>
+<script>
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW failed', e)); }); }
 </script>
 </body>
 </html>
