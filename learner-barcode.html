@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.1 — ID 10A001 + Barcode + Bin + Audit</title>
+<title>Makhanani LTSM — Learners v2.2 — Camera Verify Card</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -24,14 +25,15 @@ input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8p
 .btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:12px}
 .btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-grey{background:#e2e8f0}.btn-red{background:#dc2626;color:#fff}.btn-orange{background:#ea580c;color:#fff}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
-.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-orange{background:#ffedd5;color:#9a3412}.pill-blue{background:#dbeafe;color:#1e40af}
+.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}
 .info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}
 .small{font-size:12px;color:#64748b}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
 .topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}
 .topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
 .topnav a.safe{background:#dcfce7;color:#166534;border:1.5px solid #059669}
@@ -39,280 +41,226 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
 th{background:#0a1f4d;color:#fff}
 .miniBtn{padding:6px 10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;margin:2px}
-.barcodeBox{background:#fff;border:2px dashed #0a1f4d;border-radius:12px;padding:12px;text-align:center;margin-top:10px}
-@media print{
-  body{background:#fff}
-  header, .topnav, #offlineBanner, button, input, select, .card:nth-child(1){display:none!important}
-  main{max-width:100%;padding:0}
-  .card{display:block!important;box-shadow:none;border:none;padding:0;margin:0}
-  #learnerBody > .card:not(#listCard){display:none!important}
-  #listCard{display:block!important}
-  table{font-size:11px}
-  th{background:#0a1f4d!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .noPrint{display:none!important}
-}
+.modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;overflow:auto;padding:14px}
+.modalBox{background:#fff;border-radius:12px;max-width:900px;margin:20px auto;padding:16px}
+#cameraReader{width:100%;max-width:500px;margin:10px auto;border:3px solid #0a1f4d;border-radius:12px;overflow:hidden;background:#000;min-height:260px}
+#cameraReader video{width:100%!important}
+.cameraFrame{border:3px solid #059669;border-radius:12px;padding:10px;text-align:center;background:#f0fdf4}
 </style>
 </head>
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🎓 Makhanani LTSM — Learners v2.1</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Learners • ID Format: 10A001 • Barcode + Bin + Audit • My School Only</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🎓📷 Makhanani LTSM — Learners v2.2</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Camera Verify Learner Card • Learner ID 9E003 / 10A001 • My School Only</p>
 </header>
 <main>
 <div class="card">
-<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Issue / Return</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 Profile</a></div>
+<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Issue / Return</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="librarian.html">📚 Librarian</a><a href="barcode-print.html">🖨️ Print Barcodes A4 3x5</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 Profile</a></div>
 <div class="info" id="loginInfo">Checking login...</div>
 <div id="blockedBox" class="warn" style="display:none">🔒 Not logged in. Go to <a href="index.html">Login</a> first.</div>
 <div id="subBlockedBox" class="warn" style="display:none"></div>
 </div>
 
 <div id="learnerBody" style="display:none">
+<div class="card">
+<h2>📷 Camera Verify — Scan Printed Learner Card</h2>
+<div class="info"><b>Use after printing:</b> Print card in Barcode Print → Cut → Tap <b>📷 Scan Card To Verify</b> → Point at card → BEEP + Finds learner = Card works ✅<br>If it says NOT found, re-print that card — barcode too light / wrinkled.</div>
+<div class="grid2">
+<button class="btn btn-green" onclick="openCamera()">📷 Scan Card To Verify</button>
+<button class="btn btn-gold" onclick="testBeep()">🔊 Test Beep</button>
+</div>
+<label>📷 Or Type / USB Scan Learner ID To Verify</label>
+<input id="scanVerify" placeholder="Scan 9E003 here + Enter..." autocomplete="off">
+<div id="verifyMsg"></div>
+</div>
 
 <div class="card">
-<h2>➕ Add Learner — Next ID: <span id="nextIdPreview">— Pick Grade + Class —</span></h2>
-<div class="small">Format: <b>Grade + Class Letter + 001</b> — e.g. Grade 10, Class A → <b>10A001</b> • Grade 5, Class B → <b>5B001</b> • Grade R, Class A → <b>RA001</b></div>
-<div class="goldBox" id="schoolInfo"></div>
-<label>👤 Learner Full Name *</label>
-<input id="newName" placeholder="e.g. Thandi Mokoena">
+<h2>➕ Add New Learner — Auto Learner ID</h2>
+<div class="goldBox" id="schoolInfo">Loading...</div>
+<div class="info"><b>Learner ID Format:</b> Grade + Class + Number — e.g. Grade 9 + Class E + 003 = <b>9E003</b> • Grade 10 + A + 001 = <b>10A001</b> • Grade 8 + B + 015 = <b>8B015</b><br>Pick Grade + Class, type Name, we auto-make the ID. No typing ID.</div>
+<label>Learner Full Name *</label>
+<input id="learnerName" placeholder="e.g. Thato Mashele" autocomplete="off">
 <div class="grid2">
-<label>🎓 Grade *</label>
-<label>🏫 Class * — Type Letter Only: A or B</label>
+<label>Grade *</label>
+<label>Class *</label>
 </div>
 <div class="grid2">
-<select id="newGrade" onchange="updateNextIdPreview()"><option value="">Select Grade</option><option value="Grade R">Grade R</option><option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option><option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option></select>
-<input id="newClass" placeholder="e.g. A, B, 10A, 5A" oninput="updateNextIdPreview()">
+<select id="grade"><option value="">Select Grade</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
+<select id="classLetter"><option value="">Select Class</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option><option>H</option></select>
 </div>
-<div class="small">Class examples: Type <b>A</b> for 10A, <b>B</b> for 10B. Or type full <b>10A</b> — letter will be extracted. Count is per class: 10A001, 10A002 → 10B001 starts again at 001.</div>
-<button class="btn btn-green" id="addBtn" onclick="addLearner()">➕ Add Learner</button>
+<label>🔢 Auto Learner ID — Preview</label>
+<input id="learnerIdPreview" placeholder="Pick Grade + Class + Name to preview ID" readonly style="background:#fef3c7;font-weight:900;font-size:18px;text-align:center">
+<div class="grid2">
+<button class="btn btn-green" onclick="addLearner()">➕ Add Learner</button>
+<button class="btn btn-gold" onclick="addLearnerAndVerify()">➕ Add + 📷 Verify Card</button>
+</div>
 <div id="addMsg"></div>
-<div id="newBarcodeBox" class="barcodeBox" style="display:none">
-<div><b id="newBarcodeName"></b> • <span id="newBarcodeId"></span></div>
-<svg id="newBarcodeSvg"></svg>
-<div class="small">Scan this barcode to Issue / Return. Print this page or screenshot.</div>
-<button class="btn btn-blue" onclick="window.print()">🖨️ Print Barcode</button>
-</div>
-</div>
-
-<div class="card" id="listCard">
-<h2>👩🏾‍🎓 All Learners — <span id="learnerCount">0</span> active • <span id="binCount">0</span> in Bin</h2>
-<div class="grid2">
-<label>Search Learners — Name / ID / Class</label>
-<label>Filter by Grade</label>
-</div>
-<div class="grid2">
-<input id="searchLearners" placeholder="Type name or ID e.g. 10A001..." oninput="renderLearners()">
-<select id="filterGrade" onchange="renderLearners()"><option value="ALL">All Grades</option><option value="Grade R">Grade R</option><option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option><option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option></select>
-</div>
-<div class="grid2">
-<button class="btn btn-blue" onclick="loadLearners()">🔄 Refresh Learners</button>
-<button class="btn btn-gold" onclick="printLearnerList()">🖨️ Print Learner List</button>
-</div>
-<div id="learnersBody"></div>
 </div>
 
 <div class="card">
-<h2>♻️ Recycle Bin — Learners — <span id="binTitleCount">0</span> — Auto-Empty: <span id="binSettingLabel">30 days</span></h2>
-<div class="info" id="binInfo">Archived learners stay here until auto-empty. Restore anytime before auto-empty to save them.</div>
-<button class="btn btn-blue" onclick="loadLearners()">🔄 Refresh Bin</button>
-<div id="binBody"></div>
+<h2>🎓 Learners — <span id="learnerCount">0</span> — <span id="schoolNameTitle"></span></h2>
+<div class="grid2">
+<label>Search Learner</label>
+<label>Filter Grade</label>
 </div>
-
+<div class="grid2">
+<input id="searchBox" placeholder="Thato, 9E003..." oninput="renderList()">
+<select id="filterGrade" onchange="renderList()"><option value="ALL">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
+</div>
+<div class="grid2">
+<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button>
+<button class="btn btn-gold" onclick="window.location.href='barcode-print.html'">🖨️ Print All Cards A4 3x5</button>
+</div>
+<div id="listBody"></div>
+</div>
 </div>
 </main>
+
+<div class="modalOverlay" id="cameraModal">
+<div class="modalBox">
+<h2>📷 Scan Learner Card — Point At Barcode</h2>
+<div class="info">Hold phone <b>15-20cm</b> from card. Barcode inside box, flat, good light. BEEP = Verified ✅</div>
+<div class="cameraFrame"><div id="cameraReader"></div><div class="small" id="cameraStatus">Starting camera...</div><div id="cameraLastScan"></div></div>
+<div class="grid2"><button class="btn btn-green" onclick="closeCamera(true)">✅ Done — Close</button><button class="btn btn-grey" onclick="closeCamera(false)">❌ Cancel</button></div>
+<div class="small">Scanned: <span id="cameraScanCount">0</span></div>
+</div>
+</div>
+
 <script src="offline-queue.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, setDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
 let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
 const $ = id => document.getElementById(id);
 function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
 let login=getLogin();
-let learners=[], schoolStatus='ACTIVE', binDays=30;
-async function auditLog(action, details){
-  try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){}
-}
-function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,4) || 'MK'); }
-function binLabel(d){ if(d===0 || d==='0') return 'OFF — Never auto-delete'; return d+' days'; }
-// LEARNER ID FORMAT v2.1 — 10A001 = Grade 10 + Class A + 001
-function gradeNumber(grade){
-  if(!grade) return '';
-  const g=String(grade).trim().toUpperCase();
-  if(g==='GRADE R' || g==='R') return 'R';
-  const m=g.match(/(\d+)/);
-  return m ? m[1] : g;
-}
-function classLetter(cls){
-  if(!cls) return 'A';
-  const c=String(cls).trim().toUpperCase();
-  const m=c.match(/[A-Z]/);
-  return m ? m[0] : 'A';
-}
-function classKey(grade, cls){ return gradeNumber(grade) + classLetter(cls); }
-function nextLearnerId(grade, cls){
-  const g = grade || $('newGrade')?.value || '';
-  const c = cls || $('newClass')?.value || 'A';
-  if(!g) return '— Pick Grade + Class —';
-  const key = classKey(g, c);
-  let max = 0;
-  learners.forEach(l=>{
-    const id = String(l.learnerId || l.barcode || '').toUpperCase();
-    if(id.startsWith(key)){
-      const num = parseInt(id.slice(key.length), 10);
-      if(!isNaN(num) && num > max) max = num;
-    }
+let learners=[], schoolStatus='ACTIVE';
+let audioCtx=null;
+function beep(freq=880, dur=0.12, type='square', vol=0.25){ try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=vol; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur); }catch(e){} }
+function beepSuccess(){ beep(880,0.12,'square',0.25); setTimeout(()=>beep(1320,0.15,'square',0.25),80); }
+function beepError(){ beep(220,0.2,'square',0.25); setTimeout(()=>beep(180,0.25,'square',0.25),120); }
+window.testBeep=function(){ beepSuccess(); $('verifyMsg').innerHTML='<div class="ok">🔊 Beep played!</div>'; };
+async function auditLog(action, details){ try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){} }
+async function loadSchoolMeta(){ try{ const snap=await getDocs(collection(db,'schools')); snap.forEach(ds=>{ if(String(ds.id)==='EMIS_'+login.emis){ const v=ds.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); } }); }catch(e){} }
+// ===== CAMERA VERIFY v2.2 =====
+let html5Qr=null, cameraRunning=false, lastCameraCode='', lastCameraTime=0, cameraScanCount=0;
+window.openCamera=function(){
+  if(!window.Html5Qrcode){ alert('❌ Camera library failed. Check internet, refresh.'); return; }
+  $('cameraModal').style.display='block';
+  $('cameraStatus').textContent='Starting camera... Allow Camera when asked...';
+  $('cameraLastScan').innerHTML='';
+  if(cameraRunning) return;
+  html5Qr=new Html5Qrcode('cameraReader');
+  const config={fps:10, qrbox:{width:280,height:120}, aspectRatio:1.2, supportedScanTypes:[Html5QrcodeScanType.SCAN_TYPE_CAMERA]};
+  html5Qr.start({facingMode:'environment'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at learner card...'; }).catch(()=>{
+    html5Qr.start({facingMode:'user'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at card...'; }).catch(e2=>{
+      $('cameraStatus').textContent='❌ Camera failed: '+esc(e2.message||e2);
+      $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? 1) Use Chrome / Safari (not WhatsApp) 2) Padlock → Camera → Allow 3) HTTPS only 4) Close Zoom.</div>';
+    });
   });
-  return key + String(max + 1).padStart(3, '0');
-}
-window.updateNextIdPreview=function(){
-  const el=$('nextIdPreview'); if(!el) return;
-  el.textContent=nextLearnerId();
 };
-async function loadSchoolMeta(){
-  try{ const snap=await getDocs(collection(db,'schools')); snap.forEach(ds=>{ if(String(ds.id)==='EMIS_'+login.emis){ const v=ds.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); if(typeof v.binAutoEmptyDays==='number') binDays=v.binAutoEmptyDays; } }); }catch(e){}
+function onCameraScan(decodedText){
+  const code=String(decodedText||'').trim().toUpperCase(); if(!code) return;
+  const now=Date.now(); if(code===lastCameraCode && now-lastCameraTime<2000) return;
+  lastCameraCode=code; lastCameraTime=now; cameraScanCount++; $('cameraScanCount').textContent=cameraScanCount;
+  handleVerify(code, true);
 }
-window.loadLearners=async function(){
+async function closeCameraSilent(){ try{ if(html5Qr && cameraRunning){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){} cameraRunning=false; html5Qr=null; $('cameraModal').style.display='none'; }
+window.closeCamera=async function(done){ await closeCameraSilent(); };
+// ===== END CAMERA =====
+function handleVerify(code, fromCamera){
+  code=String(code||'').trim().toUpperCase(); if(!code) return;
+  const l=learners.find(x=>String(x.learnerId||'').toUpperCase()===code && x.archived!==true);
+  if(l){
+    beepSuccess();
+    const html='<div class="ok">🔊 BEEP! ✅ VERIFIED! Card works!<br><b>'+esc(l.name)+'</b> • ID: <b>'+esc(l.learnerId)+'</b> • '+esc(l.grade)+' • '+esc(l.class)+'<br>Top: '+esc(login.school||'')+' • MAKHANANI LTSM • LEARNER • Bottom: '+esc(l.learnerId)+'</div>';
+    $('verifyMsg').innerHTML=html;
+    if(fromCamera) $('cameraLastScan').innerHTML=html;
+    return;
+  }
+  beepError();
+  const html='<div class="warn">🔊 BEEP-BEEP! ❌ NOT FOUND: <b>'+esc(code)+'</b><br>Card may be from another school, or learner not added yet, or barcode too light / wrinkled — Re-print.</div>';
+  $('verifyMsg').innerHTML=html;
+  if(fromCamera) $('cameraLastScan').innerHTML=html;
+}
+function makeLearnerId(grade, cls){
+  const gNum=String(grade||'').replace('Grade','').trim();
+  if(!gNum || !cls) return '';
+  const existing=learners.filter(l=>l.grade===grade && l.class===cls && l.archived!==true).length;
+  const next=String(existing+1).padStart(3,'0');
+  return gNum+cls+next;
+}
+function updatePreview(){
+  const grade=$('grade').value||''; const cls=$('classLetter').value||'';
+  $('learnerIdPreview').value=makeLearnerId(grade, cls);
+}
+window.loadAll=async function(){
+  await loadSchoolMeta();
+  if(schoolStatus!=='ACTIVE'){ $('subBlockedBox').style.display='block'; $('subBlockedBox').innerHTML='🟠 <b>'+esc(login.school||'')+'</b> is <b>'+esc(schoolStatus)+'</b> — Adding learners BLOCKED. Viewing still works.'; } else $('subBlockedBox').style.display='none';
   try{
-    await loadSchoolMeta();
     const base='EMIS_'+login.emis;
-    const snap=await getDocs(collection(db,'schools',base,'learners'));
-    learners=[]; snap.forEach(d=>learners.push({id:d.id,...d.data()}));
-    learners.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
-    $('schoolInfo').innerHTML='🏫 <b>'+esc(login.school||'')+'</b> • EMIS: <b>'+esc(login.emis||'')+'</b> • Prefix: <b>'+getPrefix(login.school||'')+'</b><br>💳 Subscription: <b>'+esc(schoolStatus)+'</b> '+(schoolStatus!=='ACTIVE'?'<span class="pill pill-orange">🟠 RETURN ONLY — Add Learner blocked</span>':'<span class="pill pill-green">✅ ACTIVE</span>')+' • ♻️ Bin Auto-Empty: <b>'+binLabel(binDays)+'</b> • 🆔 ID Format: <b>10A001</b> (Grade + Class + 001)';
-    $('binSettingLabel').textContent=binLabel(binDays);
-    updateNextIdPreview();
-    if(schoolStatus!=='ACTIVE'){ $('subBlockedBox').style.display='block'; $('subBlockedBox').innerHTML='🟠 <b>RETURN ONLY / SUSPENDED</b> — Add Learner is BLOCKED for this school. You can still view learners and return books.'; } else $('subBlockedBox').style.display='none';
-    await autoEmptyCheck();
-    renderLearners(); renderBin();
-  }catch(e){ $('learnersBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
+    const ls=await getDocs(collection(db,'schools',base,'learners'));
+    learners=[]; ls.forEach(d=>learners.push({id:d.id,...d.data()}));
+    learners=learners.filter(l=>l.archived!==true).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
+    $('schoolInfo').innerHTML='School: <b>'+esc(login.school||'')+'</b> • EMIS <b>'+esc(login.emis||'')+'</b> • Learners: <b>'+learners.length+'</b>';
+    $('schoolNameTitle').textContent=login.school||'';
+    updatePreview(); renderList();
+  }catch(e){ $('listBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
 };
-async function autoEmptyCheck(){
-  if(binDays===0) return;
-  const now=Date.now(); let emptied=0;
-  for(const l of [...learners]){
-    if(l.archived===true && l.archivedAt){
-      const ageDays=(now - new Date(l.archivedAt).getTime())/(24*60*60*1000);
-      if(ageDays >= binDays){
-        try{ await deleteDoc(doc(db,'schools','EMIS_'+login.emis,'learners',l.id)); await auditLog('LEARNER_AUTO_EMPTIED','Auto-emptied learner '+l.name+' ('+(l.learnerId||'')+') from Bin after '+binDays+' days'); learners=learners.filter(x=>x.id!==l.id); emptied++; }catch(e){}
-      }
-    }
-  }
-  if(emptied) $('binInfo').innerHTML='🧹 Auto-emptied <b>'+emptied+'</b> learner(s) from Bin (older than '+binLabel(binDays)+').';
-}
 window.addLearner=async function(){
-  if(schoolStatus!=='ACTIVE'){ $('addMsg').innerHTML='<div class="warn">🟠 Add Learner BLOCKED — School is '+esc(schoolStatus)+' (RETURN ONLY).</div>'; return; }
-  const name=($('newName').value||'').trim(); const grade=$('newGrade').value; const clsRaw=($('newClass').value||'').trim();
-  if(!name){ $('addMsg').innerHTML='<div class="warn">⚠️ Enter Learner Name.</div>'; return; }
-  if(!grade){ $('addMsg').innerHTML='<div class="warn">⚠️ Select Grade.</div>'; return; }
-  if(!clsRaw){ $('addMsg').innerHTML='<div class="warn">⚠️ Enter Class Letter (e.g. A).</div>'; return; }
-  // Normalize Class to Letter only for storage, but keep display as Grade+Letter e.g. 10A
-  const clsLetter = classLetter(clsRaw);
-  const clsDisplay = gradeNumber(grade) + clsLetter;
-  const learnerId = nextLearnerId(grade, clsLetter);
-  if(!learnerId || learnerId.includes('Pick')){ $('addMsg').innerHTML='<div class="warn">⚠️ Pick Grade + Class first.</div>'; return; }
-  if(learners.some(l=>String(l.learnerId||'').toUpperCase()===learnerId)){
-    $('addMsg').innerHTML='<div class="warn">❌ ID '+esc(learnerId)+' already exists. Try again.</div>'; return;
-  }
-  if(!navigator.onLine){ $('addMsg').innerHTML='<div class="warn">🟠 Offline — Add Learner needs internet.</div>'; return; }
+  const name=($('learnerName').value||'').trim();
+  const grade=$('grade').value||''; const cls=$('classLetter').value||'';
+  if(!name){ $('addMsg').innerHTML='<div class="warn">⚠️ Type learner name.</div>'; beepError(); return; }
+  if(!grade){ $('addMsg').innerHTML='<div class="warn">⚠️ Pick Grade.</div>'; beepError(); return; }
+  if(!cls){ $('addMsg').innerHTML='<div class="warn">⚠️ Pick Class.</div>'; beepError(); return; }
+  if(schoolStatus!=='ACTIVE'){ $('addMsg').innerHTML='<div class="warn">🟠 Adding BLOCKED — School is '+esc(schoolStatus)+'</div>'; beepError(); return; }
+  const learnerId=makeLearnerId(grade, cls);
   try{
     const id='LEARNER_'+login.emis+'_'+learnerId;
-    await setDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{ name, grade, class:clsDisplay, learnerId, barcode:learnerId, archived:false, createdAt:new Date().toISOString(), createdBy:login?.name||'' });
-    await auditLog('LEARNER_EDITED','Added learner '+name+' ('+learnerId+') • '+grade+' • '+clsDisplay);
-    $('addMsg').innerHTML='<div class="ok">✅ Learner added: <b>'+esc(name)+'</b> • '+esc(grade)+' • '+esc(clsDisplay)+' • ID: <b>'+esc(learnerId)+'</b></div>';
-    $('newName').value=''; $('newGrade').value=''; $('newClass').value='';
-    $('newBarcodeName').textContent=name; $('newBarcodeId').textContent=learnerId; $('newBarcodeBox').style.display='block';
-    try{ JsBarcode('#newBarcodeSvg', learnerId, {format:'CODE128', width:2, height:60, displayValue:true, fontSize:16}); }catch(e){}
-    await loadLearners();
-  }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; }
+    await setDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{ name, grade, class:cls, learnerId, archived:false, createdAt:new Date().toISOString(), createdBy:login?.name||'' });
+    await auditLog('LEARNER_ADDED','Added learner '+name+' ('+learnerId+') • '+grade+' • '+cls);
+    beepSuccess();
+    $('addMsg').innerHTML='<div class="ok">✅ Added: <b>'+esc(name)+'</b> • ID: <b>'+esc(learnerId)+'</b> • '+esc(grade)+' • '+esc(cls)+'<br>Next: Go to Print Barcodes → Print card for '+esc(learnerId)+'</div>';
+    $('learnerName').value=''; await loadAll();
+  }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; beepError(); }
 };
-window.renderLearners=function(){
-  const q=($('searchLearners').value||'').trim().toLowerCase(); const gf=$('filterGrade').value||'ALL';
-  const active=learners.filter(l=>l.archived!==true);
-  let list=active.filter(l=>{ if(gf!=='ALL' && l.grade!==gf) return false; if(!q) return true; return (l.name+' '+l.learnerId+' '+l.barcode+' '+l.class+' '+l.grade).toLowerCase().includes(q); });
-  $('learnerCount').textContent=active.length; $('binCount').textContent=learners.filter(l=>l.archived===true).length;
-  if(!list.length){ $('learnersBody').innerHTML='<div class="info">No learners found. Add one above.</div>'; return; }
-  let html='<table><tr><th>Learner</th><th>Grade / Class</th><th>LearnerID / Barcode</th><th>Action</th></tr>';
-  list.forEach(l=>{
-    html+='<tr><td><b>'+esc(l.name||'')+'</b></td><td>'+esc(l.grade||'')+' • '+esc(l.class||'')+'</td><td><b>'+esc(l.learnerId||l.barcode||'')+'</b></td><td>'
-      +'<button class="miniBtn btn-blue" onclick="showBarcode(\''+esc(l.id)+'\')">📊 Barcode</button>'
-      +'<button class="miniBtn btn-gold" onclick="editLearner(\''+esc(l.id)+'\')">✏️ Edit</button>'
-      +'<button class="miniBtn btn-orange" onclick="archiveLearner(\''+esc(l.id)+'\')">♻️ Archive</button>'
-      +'</td></tr>'
-      +'<tr id="barcodeRow_'+esc(l.id)+'" style="display:none"><td colspan="4"><div class="barcodeBox"><b>'+esc(l.name||'')+' • '+esc(l.learnerId||'')+'</b><br><svg id="barcodeSvg_'+esc(l.id)+'"></svg><br><button class="miniBtn btn-blue" onclick="window.print()">🖨️ Print</button></div></td></tr>';
+window.addLearnerAndVerify=async function(){
+  const before=learners.length;
+  await addLearner();
+  // If added, open camera to verify printed card after print
+  setTimeout(()=>{ if(learners.length>before){ $('verifyMsg').innerHTML='<div class="info">✅ Learner added. Now go to <b>Print Barcodes</b> → Print card → Come back here → <b>📷 Scan Card To Verify</b>.</div>'; } }, 600);
+};
+window.renderList=function(){
+  const q=($('searchBox').value||'').trim().toLowerCase(); const gf=$('filterGrade').value||'ALL';
+  let list=learners.filter(l=>{ if(gf!=='ALL' && l.grade!==gf) return false; if(!q) return true; return (l.name+' '+l.learnerId+' '+l.grade+' '+l.class).toLowerCase().includes(q); });
+  $('learnerCount').textContent=list.length;
+  if(!list.length){ $('listBody').innerHTML='<div class="info">No learners found.</div>'; return; }
+  let html='<table><tr><th>Learner</th><th>Grade • Class</th><th>Learner ID</th><th>Barcode</th><th>Verify</th><th>Delete</th></tr>';
+  list.slice(0,100).forEach((l,idx)=>{
+    html+='<tr><td><b>'+esc(l.name||'')+'</b></td><td>'+esc(l.grade||'')+' • '+esc(l.class||'')+'</td><td><b>'+esc(l.learnerId||'')+'</b></td><td><svg id="lb_'+idx+'"></svg></td><td><button class="miniBtn btn-green" onclick="verifyOne(\''+esc(l.learnerId||'')+'\')">📷 Verify</button></td><td><button class="miniBtn btn-red" onclick="deleteLearner(\''+esc(l.id)+'\',\''+esc(l.name||'')+'\')">🗑️</button></td></tr>';
   });
-  html+='</table>'; $('learnersBody').innerHTML=html;
+  html+='</table><div class="small">Showing first 100.</div>'; $('listBody').innerHTML=html;
+  setTimeout(()=>{ list.slice(0,100).forEach((l,idx)=>{ try{ JsBarcode('#lb_'+idx, String(l.learnerId||''), {format:'CODE128', lineColor:'#000', background:'#fff', width:1.2, height:32, displayValue:false, margin:0}); }catch(e){} }); },60);
 };
-window.showBarcode=function(id){
-  const l=learners.find(x=>x.id===id); if(!l) return;
-  const row=$('barcodeRow_'+id); const isHidden=row.style.display==='none'; row.style.display=isHidden?'':'none';
-  if(isHidden){ try{ JsBarcode('#barcodeSvg_'+id, String(l.learnerId||l.barcode||''), {format:'CODE128', width:2, height:60, displayValue:true, fontSize:16}); }catch(e){} }
-};
-window.editLearner=function(id){
-  const l=learners.find(x=>x.id===id); if(!l) return;
-  const newName=prompt('Edit Learner Name:', l.name||''); if(newName===null) return;
-  const newGrade=prompt('Edit Grade (e.g. Grade 10):', l.grade||''); if(newGrade===null) return;
-  const newClass=prompt('Edit Class Letter (e.g. A):', l.class||''); if(newClass===null) return;
-  if(!newName.trim()){ alert('Name cannot be empty.'); return; }
-  saveEditLearner(id, newName.trim(), newGrade.trim(), newClass.trim());
-};
-async function saveEditLearner(id, name, grade, clsRaw){
-  const l=learners.find(x=>x.id===id); if(!l) return;
-  // Keep LearnerID same when editing — do NOT regenerate ID, or issued books will break
-  const clsDisplay = gradeNumber(grade) + classLetter(clsRaw);
-  try{
-    await updateDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{name,grade,class:clsDisplay,updatedAt:new Date().toISOString(),updatedBy:login?.name||''});
-    await auditLog('LEARNER_EDITED','Edited learner '+l.name+' ('+(l.learnerId||'')+') → '+name+' • '+grade+' • '+clsDisplay+' • ID kept as '+(l.learnerId||''));
-    await loadLearners(); alert('✅ Learner updated. LearnerID kept as '+(l.learnerId||'')+' so issued books still match.');
-  }catch(e){ alert('❌ Edit failed: '+e.message); }
-}
-window.archiveLearner=async function(id){
-  const l=learners.find(x=>x.id===id); if(!l) return;
-  if(!confirm('♻️ Archive '+l.name+' ('+(l.learnerId||'')+')?\n\nThey will move to Recycle Bin. They will NOT be deleted. You can restore anytime before auto-empty ('+binLabel(binDays)+').')) return;
-  try{
-    await updateDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{archived:true,archivedAt:new Date().toISOString(),archivedBy:login?.name||''});
-    await auditLog('LEARNER_ARCHIVED','Archived learner '+l.name+' ('+(l.learnerId||'')+') • '+l.grade+' • '+l.class);
-    await loadLearners();
-  }catch(e){ alert('❌ Archive failed: '+e.message); }
-};
-window.renderBin=function(){
-  const bin=learners.filter(l=>l.archived===true);
-  $('binTitleCount').textContent=bin.length;
-  if(!bin.length){ $('binBody').innerHTML='<div class="info">♻️ Bin is empty — No archived learners.</div>'; return; }
-  let html='<table><tr><th>Learner</th><th>Archived On</th><th>Auto-Delete In</th><th>Action</th></tr>';
-  bin.forEach(l=>{
-    const archDate=l.archivedAt?new Date(l.archivedAt):null;
-    const daysLeft=binDays===0?'Never':(archDate?Math.max(0, Math.ceil(binDays - (Date.now()-archDate.getTime())/(24*60*60*1000)))+' days':'—');
-    html+='<tr><td><b>'+esc(l.name||'')+'</b><br><span class="small">'+esc(l.grade||'')+' • '+esc(l.class||'')+' • '+esc(l.learnerId||'')+'</span></td><td>'+(archDate?archDate.toLocaleDateString('en-ZA'):'—')+'</td><td><b style="color:#dc2626">'+daysLeft+'</b></td><td><button class="miniBtn btn-green" onclick="restoreLearner(\''+esc(l.id)+'\')">↩️ Restore</button><button class="miniBtn btn-red" onclick="deleteLearnerForever(\''+esc(l.id)+'\')">🗑️ Delete Forever</button></td></tr>';
-  });
-  html+='</table>'; $('binBody').innerHTML=html;
-};
-window.restoreLearner=async function(id){
-  const l=learners.find(x=>x.id===id); if(!l) return;
-  try{ await updateDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{archived:false,archivedAt:null,archivedBy:null,restoredAt:new Date().toISOString(),restoredBy:login?.name||''}); await auditLog('LEARNER_RESTORED','Restored learner '+l.name+' ('+(l.learnerId||'')+') from Bin'); await loadLearners(); }
-  catch(e){ alert('❌ Restore failed: '+e.message); }
-};
-window.deleteLearnerForever=async function(id){
-  const l=learners.find(x=>x.id===id); if(!l) return;
-  if(!confirm('🗑️ DELETE FOREVER '+l.name+' ('+(l.learnerId||'')+')?\n\nThis CANNOT be undone. The learner will be permanently deleted.')) return;
-  try{ await deleteDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id)); await auditLog('LEARNER_PERMANENT_DELETED','Permanently deleted learner '+l.name+' ('+(l.learnerId||'')+') from Bin'); await loadLearners(); }
-  catch(e){ alert('❌ Delete failed: '+e.message); }
-};
-window.printLearnerList=function(){
-  document.querySelectorAll('#listCard button, #listCard input, #listCard select').forEach(el=>el.classList.add('noPrint'));
-  window.print();
-  setTimeout(()=>{ document.querySelectorAll('#listCard button, #listCard input, #listCard select').forEach(el=>el.classList.remove('noPrint')); },500);
+window.verifyOne=function(code){ $('scanVerify').value=code; handleVerify(code, false); $('scanVerify').focus(); };
+window.deleteLearner=async function(id, name){
+  if(!confirm('🗑️ Delete learner '+name+'? This archives them.')) return;
+  try{ await setDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{archived:true},{merge:true}); await auditLog('LEARNER_ARCHIVED','Archived learner '+name); await loadAll(); }catch(e){ alert('❌ Delete failed: '+e.message); }
 };
 document.addEventListener('DOMContentLoaded', async ()=>{
   if(window.OfflineQueue) OfflineQueue.updateBadge();
   login=getLogin();
   if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login first</a>.'; $('blockedBox').style.display='block'; return; }
-  const role=(login.role||'').toUpperCase();
-  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
-  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
   $('learnerBody').style.display='block';
-  await loadLearners();
+  await loadAll();
+  $('grade').addEventListener('change', updatePreview);
+  $('classLetter').addEventListener('change', updatePreview);
+  $('scanVerify').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); handleVerify($('scanVerify').value, false); $('scanVerify').value=''; } });
 });
 </script>
 <script>
