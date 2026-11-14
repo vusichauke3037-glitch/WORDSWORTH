@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Issue / Return v2.2 — Beep + Scan + WHS000001 / 10A001</title>
+<title>Makhanani LTSM — Issue / Return v2.3 — Camera Scan Real Stickers</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -44,13 +45,18 @@ th{background:#0a1f4d;color:#fff}
 .scanStep.done{border-color:#059669;background:#dcfce7}
 .tabBtn{padding:10px 14px;border:2px solid #0a1f4d;border-radius:20px;font-weight:900;font-size:13px;cursor:pointer;background:#fff;color:#0a1f4d}
 .tabBtn.active{background:#0a1f4d;color:#fff}
+.modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;overflow:auto;padding:14px}
+.modalBox{background:#fff;border-radius:12px;max-width:900px;margin:20px auto;padding:16px}
+#cameraReader{width:100%;max-width:500px;margin:10px auto;border:3px solid #0a1f4d;border-radius:12px;overflow:hidden;background:#000;min-height:260px}
+#cameraReader video{width:100%!important}
+.cameraFrame{border:3px solid #059669;border-radius:12px;padding:10px;text-align:center;background:#f0fdf4}
 </style>
 </head>
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>📚 Makhanani LTSM — Issue / Return v2.2</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Issue / Return • Learner 10A001 • Book WHS000001 • Beep + Scan • My School Only</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>📚📷 Makhanani LTSM — Issue / Return v2.3</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Camera Scan Real Stickers • Learner 9E003 / 10A001 • Book WHS000001 • Beep + Scan • My School Only</p>
 </header>
 <main>
 <div class="card">
@@ -72,6 +78,20 @@ th{background:#0a1f4d;color:#fff}
 </div>
 
 <div class="card">
+<h2>📷 Camera Scan — No USB Scanner Needed</h2>
+<div class="info"><b>Fastest on phone:</b> Tap <b>📷 Scan Learner</b> → Point at learner card → BEEP → Auto-opens Book camera → Point at book sticker → BEEP → Tap Issue.<br>For Return: Tap <b>📷 Scan Book To Return</b> → Point at book → BEEP → Auto-Returns.<br><span class="small">Needs HTTPS + Allow Camera. If camera fails, use USB scanner or type code below.</span></div>
+<div class="grid2">
+<button class="btn btn-green" onclick="openCamera('LEARNER')">📷 Scan Learner Card</button>
+<button class="btn btn-blue" onclick="openCamera('BOOK')">📷 Scan Book Sticker</button>
+</div>
+<div class="grid2">
+<button class="btn btn-orange" onclick="openCamera('RETURN')">📷 Scan Book To Return</button>
+<button class="btn btn-gold" onclick="openCamera('AUTO')">⚡ Auto Mode — Learner → Book → Issue</button>
+</div>
+<div class="small">Auto Mode: Scans learner, then automatically asks for book, then Issues. Best for queue of learners.</div>
+</div>
+
+<div class="card">
 <h2>⚡ Issue / Return — Scan Learner → Scan Book</h2>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
 <button class="tabBtn active" id="tabIssueBtn" onclick="setMode('ISSUE')">📚 Issue Mode</button>
@@ -80,14 +100,22 @@ th{background:#0a1f4d;color:#fff}
 <div class="small" id="modeHint">Issue Mode: Scan Learner + Book → Issue. Return Mode: Scan Book only → Return (Return is NEVER blocked).</div>
 
 <div class="scanStep active" id="step1Box">
-<label>📷 Step 1 — Scan / Type Learner ID — e.g. 10A001 *</label>
-<input id="scanLearner" class="bigScan" placeholder="Scan Learner Barcode 10A001..." autocomplete="off" autofocus>
+<label>📷 Step 1 — Scan / Type Learner ID — e.g. 9E003 / 10A001 *</label>
+<input id="scanLearner" class="bigScan" placeholder="Scan Learner Barcode 9E003..." autocomplete="off" autofocus>
+<div class="grid2">
+<button class="btn btn-green" onclick="openCamera('LEARNER')">📷 Camera — Scan Learner</button>
+<button class="btn btn-grey" onclick="clearLearner()">🧹 Clear Learner</button>
+</div>
 <div id="learnerFoundBox"></div>
 </div>
 
 <div class="scanStep" id="step2Box">
 <label>📷 Step 2 — Scan / Type Book Number — e.g. WHS000001 *</label>
 <input id="scanBook" class="bigScan" placeholder="Scan Book Barcode WHS000001..." autocomplete="off">
+<div class="grid2">
+<button class="btn btn-blue" onclick="openCamera('BOOK')">📷 Camera — Scan Book</button>
+<button class="btn btn-grey" onclick="clearBook()">🧹 Clear Book</button>
+</div>
 <div id="bookFoundBox"></div>
 </div>
 
@@ -96,7 +124,7 @@ th{background:#0a1f4d;color:#fff}
 <button class="btn btn-blue" onclick="quickReturn()">↩️ Return This Book Now</button>
 </div>
 <div class="grid2">
-<button class="btn btn-grey" onclick="clearIssue()">🧹 Clear</button>
+<button class="btn btn-grey" onclick="clearIssue()">🧹 Clear All</button>
 <button class="btn btn-gold" onclick="window.location.href='barcode-print.html'">🖨️ Print Barcodes A4 3x5</button>
 </div>
 <div id="actionMsg"></div>
@@ -114,7 +142,7 @@ th{background:#0a1f4d;color:#fff}
 <label>Filter by Status</label>
 </div>
 <div class="grid2">
-<input id="searchIssues" placeholder="Type name, 10A001, WHS000001..." oninput="renderIssues()">
+<input id="searchIssues" placeholder="Type name, 9E003, WHS000001..." oninput="renderIssues()">
 <select id="filterStatus" onchange="renderIssues()"><option value="ALL">All</option><option value="ISSUED">📚 ISSUED — Not Returned</option><option value="RETURNED">✅ RETURNED</option><option value="OVERDUE">🔴 OVERDUE</option></select>
 </div>
 <div id="issuesBody"></div>
@@ -127,7 +155,7 @@ th{background:#0a1f4d;color:#fff}
 <label>Search Book by Title / Book No</label>
 </div>
 <div class="grid2">
-<input id="searchLearnerManual" placeholder="e.g. Thandi or 10A001" oninput="manualLearnerSearch()">
+<input id="searchLearnerManual" placeholder="e.g. Thato or 9E003" oninput="manualLearnerSearch()">
 <input id="searchBookManual" placeholder="e.g. Maths or WHS000001" oninput="manualBookSearch()">
 </div>
 <div id="manualLearnerBody"></div>
@@ -136,6 +164,24 @@ th{background:#0a1f4d;color:#fff}
 
 </div>
 </main>
+
+<div class="modalOverlay" id="cameraModal">
+<div class="modalBox">
+<h2 id="cameraTitle">📷 Camera Scan — Point At Barcode</h2>
+<div class="info" id="cameraHint">Hold phone <b>15-20cm</b> away. Keep barcode <b>inside box</b>, flat, good light, no shadow. It will BEEP when found.</div>
+<div class="cameraFrame">
+<div id="cameraReader"></div>
+<div class="small" id="cameraStatus">Starting camera...</div>
+<div id="cameraLastScan"></div>
+</div>
+<div class="grid2">
+<button class="btn btn-green" onclick="closeCamera(true)">✅ Done — Close Camera</button>
+<button class="btn btn-grey" onclick="closeCamera(false)">❌ Cancel</button>
+</div>
+<div class="small">Mode: <span id="cameraModeLabel">LEARNER</span> • Scanned: <span id="cameraScanCount">0</span></div>
+</div>
+</div>
+
 <script src="offline-queue.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -150,36 +196,95 @@ let learners=[], books=[], issues=[], schoolStatus='ACTIVE', binDays=30;
 let foundLearner=null, foundBook=null, mode='ISSUE';
 // REAL BEEP
 let audioCtx=null;
-function beep(freq=880, dur=0.12, type='square', vol=0.25){
-  try{
-    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-    if(audioCtx.state==='suspended') audioCtx.resume();
-    const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
-    o.type=type; o.frequency.value=freq; g.gain.value=vol;
-    o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur);
-  }catch(e){}
-}
+function beep(freq=880, dur=0.12, type='square', vol=0.25){ try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=vol; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur); }catch(e){} }
 function beepSuccess(){ beep(880,0.12,'square',0.25); setTimeout(()=>beep(1320,0.15,'square',0.25),80); }
 function beepError(){ beep(220,0.2,'square',0.25); setTimeout(()=>beep(180,0.25,'square',0.25),120); }
 function beepReturn(){ beep(660,0.18,'square',0.25); }
 window.testBeep=function(){ beepSuccess(); $('actionMsg').innerHTML='<div class="ok">🔊 Beep played! If no sound, turn sound ON and tap again (browser needs 1 tap to unlock).</div>'; };
-async function auditLog(action, details){
-  try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){}
-}
+async function auditLog(action, details){ try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){} }
 function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean); return (words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,3) || 'WHS'); }
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 function isOverdue(iss){ if(!iss || iss.status==='RETURNED') return false; if(!iss.dueDate) return false; return iss.dueDate < todayStr(); }
-async function loadSchoolMeta(){
-  try{ const snap=await getDocs(collection(db,'schools')); snap.forEach(ds=>{ if(String(ds.id)==='EMIS_'+login.emis){ const v=ds.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); if(typeof v.binAutoEmptyDays==='number') binDays=v.binAutoEmptyDays; } }); }catch(e){}
+async function loadSchoolMeta(){ try{ const snap=await getDocs(collection(db,'schools')); snap.forEach(ds=>{ if(String(ds.id)==='EMIS_'+login.emis){ const v=ds.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); if(typeof v.binAutoEmptyDays==='number') binDays=v.binAutoEmptyDays; } }); }catch(e){} }
+// ===== CAMERA SCAN v2.3 =====
+let html5Qr=null, cameraRunning=false, cameraMode='LEARNER', lastCameraCode='', lastCameraTime=0, cameraScanCount=0, autoMode=false;
+window.openCamera=function(what){
+  if(!window.Html5Qrcode){ alert('❌ Camera library failed to load. Check internet, refresh page.'); return; }
+  cameraMode=what; autoMode=(what==='AUTO');
+  if(what==='AUTO') cameraMode='LEARNER';
+  if(what==='RETURN'){ setMode('RETURN'); cameraMode='BOOK'; }
+  $('cameraModal').style.display='block';
+  $('cameraModeLabel').textContent=what==='AUTO'?'AUTO — Learner → Book → Issue':what;
+  $('cameraTitle').textContent=what==='LEARNER'?'📷 Scan Learner Card — Point At Learner Barcode':what==='BOOK'?'📷 Scan Book Sticker — Point At Book Barcode':what==='RETURN'?'📷 Scan Book To Return — Point At Book Barcode':'⚡ Auto — Scan Learner First';
+  $('cameraHint').innerHTML=what==='LEARNER'?'Hold phone <b>15-20cm</b> from <b>Learner Card</b>. Barcode inside box. BEEP = Found.':what==='BOOK'||what==='RETURN'?'Hold phone <b>15-20cm</b> from <b>Book Sticker</b>. Barcode inside box. BEEP = Found.':'<b>Auto Mode:</b> Scan Learner first → Camera will ask for Book → Scan Book → Tap Issue.';
+  $('cameraStatus').textContent='Starting camera... Allow Camera when asked...';
+  $('cameraLastScan').innerHTML='';
+  if(cameraRunning) return;
+  html5Qr=new Html5Qrcode('cameraReader');
+  const config={fps:10, qrbox:{width:280,height:120}, aspectRatio:1.2, supportedScanTypes:[Html5QrcodeScanType.SCAN_TYPE_CAMERA]};
+  html5Qr.start({facingMode:'environment'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at barcode sticker...'; }).catch(()=>{
+    html5Qr.start({facingMode:'user'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at barcode...'; }).catch(e2=>{
+      $('cameraStatus').textContent='❌ Camera failed: '+esc(e2.message||e2);
+      $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? 1) Use Chrome / Safari (not WhatsApp browser) 2) Padlock → Site Settings → Camera → Allow 3) HTTPS only 4) Close Zoom / Teams.</div>';
+    });
+  });
+};
+async function onCameraScan(decodedText){
+  const code=String(decodedText||'').trim().toUpperCase(); if(!code) return;
+  const now=Date.now(); if(code===lastCameraCode && now-lastCameraTime<2000) return;
+  lastCameraCode=code; lastCameraTime=now; cameraScanCount++; $('cameraScanCount').textContent=cameraScanCount;
+  // Handle by current cameraMode
+  if(cameraMode==='LEARNER'){
+    const l=learners.find(x=>String(x.learnerId||x.barcode||'').toUpperCase()===code && x.archived!==true);
+    if(!l){ beepError(); $('cameraLastScan').innerHTML='<div class="warn">❌ Learner NOT found: <b>'+esc(code)+'</b> — Try again, check card.</div>'; return; }
+    foundLearner=l; beepSuccess();
+    $('scanLearner').value=l.learnerId||code;
+    $('cameraLastScan').innerHTML='<div class="ok">🔊 BEEP! ✅ Learner: <b>'+esc(l.name)+'</b> • '+esc(l.learnerId)+'</div>';
+    $('learnerFoundBox').innerHTML='<div class="ok">🔊 BEEP! ✅ Learner: <b>'+esc(l.name||'')+'</b> • ID: <b>'+esc(l.learnerId||'')+'</b> • '+esc(l.grade||'')+' • '+esc(l.class||'')+'</div>';
+    $('step1Box').className='scanStep done'; $('step2Box').className='scanStep active';
+    if(autoMode){
+      // Auto: close learner camera, open book camera after short pause
+      setTimeout(async ()=>{ await closeCameraSilent(); cameraMode='BOOK'; openCamera('BOOK'); $('cameraTitle').textContent='⚡ Auto — Now Scan Book'; }, 900);
+    } else {
+      setTimeout(()=>{ closeCamera(true); $('scanBook').focus(); }, 800);
+    }
+    return;
+  }
+  // BOOK or RETURN
+  const b=books.find(x=>String(x.bookNo||x.barcode||'').toUpperCase()===code && x.archived!==true);
+  if(!b){ beepError(); $('cameraLastScan').innerHTML='<div class="warn">❌ Book NOT found: <b>'+esc(code)+'</b> — Try again.</div>'; return; }
+  if(mode==='RETURN' || cameraMode==='BOOK' && mode==='RETURN'){
+    const iss=issues.find(i=>String(i.bookNo||'').toUpperCase()===code && i.status!=='RETURNED');
+    if(!iss){ beepError(); $('cameraLastScan').innerHTML='<div class="warn">❌ Book <b>'+esc(code)+'</b> is NOT currently issued. Nothing to return.</div>'; return; }
+    foundBook=b; beepSuccess();
+    $('scanBook').value=b.bookNo||code;
+    $('cameraLastScan').innerHTML='<div class="ok">🔊 BEEP! ✅ Book to Return: <b>'+esc(b.title)+'</b> • With '+esc(iss.learnerName||'')+'</div>';
+    await closeCamera(true);
+    await doReturn();
+    return;
+  }
+  // Normal BOOK scan for Issue
+  const already=issues.find(i=>String(i.bookNo||'').toUpperCase()===code && i.status!=='RETURNED');
+  if(already){ beepError(); $('cameraLastScan').innerHTML='<div class="warn">⚠️ Book <b>'+esc(code)+'</b> ALREADY ISSUED to <b>'+esc(already.learnerName||'')+'</b>. Return it first.</div>'; return; }
+  foundBook=b; beepSuccess();
+  $('scanBook').value=b.bookNo||code;
+  $('cameraLastScan').innerHTML='<div class="ok">🔊 BEEP! ✅ Book: <b>'+esc(b.title)+'</b> • '+esc(b.bookNo)+'</div>';
+  $('bookFoundBox').innerHTML='<div class="ok">🔊 BEEP! ✅ Book: <b>'+esc(b.title||'')+'</b> • Book No: <b>'+esc(b.bookNo||'')+'</b> • '+(b.subject||'')+' • '+(b.grade||'')+'</div>';
+  $('step2Box').className='scanStep done';
+  await closeCamera(true);
+  // In Auto Mode, auto-issue if learner + book both present
+  if(autoMode && foundLearner && foundBook){ setTimeout(()=>doIssue(), 400); }
 }
+async function closeCameraSilent(){ try{ if(html5Qr && cameraRunning){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){} cameraRunning=false; html5Qr=null; $('cameraModal').style.display='none'; }
+window.closeCamera=async function(done){ await closeCameraSilent(); if(done && lastCameraCode) { /* keep values */ } };
+// ===== END CAMERA =====
 window.setMode=function(m){
   mode=m;
   $('tabIssueBtn').className='tabBtn'+(m==='ISSUE'?' active':'');
   $('tabReturnBtn').className='tabBtn'+(m==='RETURN'?' active':'');
   $('mainActionBtn').textContent=m==='ISSUE'?'📚 Issue Book Now':'↩️ Return Book Now';
   $('modeHint').textContent=m==='ISSUE'?'Issue Mode: Scan Learner + Book → Issue.':'Return Mode: Scan Book only → Return (Return is NEVER blocked, even if school is SUSPENDED).';
-  if(m==='RETURN') $('scanBook').focus();
-  else $('scanLearner').focus();
+  if(m==='RETURN') $('scanBook').focus(); else $('scanLearner').focus();
 };
 window.loadAll=async function(){
   $('todayDate').textContent=new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'});
@@ -198,7 +303,7 @@ window.loadAll=async function(){
     const todayReturned=issues.filter(i=>String(i.returnDate||'').slice(0,10)===today);
     const overdue=issues.filter(isOverdue);
     const issuedNow=issues.filter(i=>i.status!=='RETURNED');
-    $('statsBox').innerHTML='📚 Issued Today: <b>'+todayIssues.length+'</b> • ✅ Returned Today: <b>'+todayReturned.length+'</b> • 📚 Currently Out: <b>'+issuedNow.length+'</b> • 🔴 Overdue: <b>'+overdue.length+'</b><br>👩🏾‍🎓 Learners: <b>'+learners.filter(l=>l.archived!==true).length+'</b> • 📖 Books: <b>'+books.filter(b=>b.archived!==true).length+'</b> • 💳 Status: <b>'+esc(schoolStatus)+'</b> • Prefix: <b>'+getPrefix(login.school)+'</b> (e.g. '+getPrefix(login.school)+'000001)';
+    $('statsBox').innerHTML='📚 Issued Today: <b>'+todayIssues.length+'</b> • ✅ Returned Today: <b>'+todayReturned.length+'</b> • 📚 Currently Out: <b>'+issuedNow.length+'</b> • 🔴 Overdue: <b>'+overdue.length+'</b><br>👩🏾‍🎓 Learners: <b>'+learners.filter(l=>l.archived!==true).length+'</b> • 📖 Books: <b>'+books.filter(b=>b.archived!==true).length+'</b> • 💳 Status: <b>'+esc(schoolStatus)+'</b> • Prefix: <b>'+getPrefix(login.school)+'</b>';
     renderIssues(); renderOverdue();
   }catch(e){ $('issuesBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
 };
@@ -209,7 +314,7 @@ function onLearnerScan(){
   if(!code){ foundLearner=null; $('learnerFoundBox').innerHTML=''; return; }
   const l=lookupLearner(code);
   if(l){ foundLearner=l; beepSuccess(); $('learnerFoundBox').innerHTML='<div class="ok">🔊 BEEP! ✅ Learner: <b>'+esc(l.name||'')+'</b> • ID: <b>'+esc(l.learnerId||'')+'</b> • '+esc(l.grade||'')+' • '+esc(l.class||'')+'<br>Top: '+esc(login.school||'')+' • Makhanani LTSM • LEARNER • Bottom: '+esc(l.learnerId||'')+'</div>'; $('step1Box').className='scanStep done'; $('step2Box').className='scanStep active'; $('scanBook').focus(); }
-  else { foundLearner=null; beepError(); $('learnerFoundBox').innerHTML='<div class="warn">🔊 BEEP-BEEP! ❌ Learner NOT found: <b>'+esc(code)+'</b><br>Check ID is <b>10A001</b> format, or Add Learner in Learners page.</div>'; }
+  else { foundLearner=null; beepError(); $('learnerFoundBox').innerHTML='<div class="warn">🔊 BEEP-BEEP! ❌ Learner NOT found: <b>'+esc(code)+'</b><br>Check ID is <b>9E003 / 10A001</b> format, or Add Learner in Learners page.</div>'; }
 }
 function onBookScan(){
   const code=($('scanBook').value||'').trim();
@@ -227,7 +332,7 @@ function onBookScan(){
 }
 async function doIssue(){
   if(schoolStatus!=='ACTIVE'){ $('actionMsg').innerHTML='<div class="warn">🟠 Issue BLOCKED — School is '+esc(schoolStatus)+' (RETURN ONLY). You can still Return books.</div>'; beepError(); return; }
-  if(!foundLearner){ $('actionMsg').innerHTML='<div class="warn">⚠️ Scan Learner first (Step 1) — e.g. 10A001.</div>'; beepError(); $('scanLearner').focus(); return; }
+  if(!foundLearner){ $('actionMsg').innerHTML='<div class="warn">⚠️ Scan Learner first (Step 1) — e.g. 9E003.</div>'; beepError(); $('scanLearner').focus(); return; }
   if(!foundBook){ $('actionMsg').innerHTML='<div class="warn">⚠️ Scan Book first (Step 2) — e.g. WHS000001.</div>'; beepError(); $('scanBook').focus(); return; }
   const already=issues.find(i=>String(i.bookNo||'').toUpperCase()===String(foundBook.bookNo||'').toUpperCase() && i.status!=='RETURNED');
   if(already){ $('actionMsg').innerHTML='<div class="warn">❌ Book already issued to '+esc(already.learnerName||'')+'. Return it first.</div>'; beepError(); return; }
@@ -257,8 +362,10 @@ async function doReturn(){
 }
 window.doMainAction=function(){ if(mode==='RETURN') doReturn(); else doIssue(); };
 window.quickReturn=function(){ setMode('RETURN'); doReturn(); };
+window.clearLearner=function(){ foundLearner=null; $('scanLearner').value=''; $('learnerFoundBox').innerHTML=''; $('step1Box').className='scanStep active'; $('scanLearner').focus(); };
+window.clearBook=function(){ foundBook=null; $('scanBook').value=''; $('bookFoundBox').innerHTML=''; $('step2Box').className='scanStep'; };
 window.clearIssue=function(){
-  foundLearner=null; foundBook=null;
+  foundLearner=null; foundBook=null; autoMode=false;
   $('scanLearner').value=''; $('scanBook').value='';
   $('learnerFoundBox').innerHTML=''; $('bookFoundBox').innerHTML='';
   $('step1Box').className='scanStep active'; $('step2Box').className='scanStep';
@@ -322,16 +429,15 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if(window.OfflineQueue) OfflineQueue.updateBadge();
   login=getLogin();
   if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login first</a>.'; $('blockedBox').style.display='block'; return; }
-  const role=(login.role||'').toUpperCase();
-  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
-  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+role+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+') • Book Prefix: <b>'+getPrefix(login.school)+'</b>';
+  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
+  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+') • Book Prefix: <b>'+getPrefix(login.school)+'</b>';
   $('issueBody').style.display='block';
   await loadAll();
   $('scanLearner').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); onLearnerScan(); } });
   $('scanBook').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); onBookScan(); } });
   document.addEventListener('click', e=>{
     const tag=(e.target.tagName||'').toLowerCase();
-    if(tag!=='input' && tag!=='select' && tag!=='button' && tag!=='a'){ if(mode==='RETURN') $('scanBook').focus(); else if(!foundLearner) $('scanLearner').focus(); else if(!foundBook) $('scanBook').focus(); }
+    if(tag!=='input' && tag!=='select' && tag!=='button' && tag!=='a' && !cameraRunning){ if(mode==='RETURN') $('scanBook').focus(); else if(!foundLearner) $('scanLearner').focus(); else if(!foundBook) $('scanBook').focus(); }
   });
 });
 </script>
