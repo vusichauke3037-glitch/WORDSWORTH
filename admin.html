@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Admin v2.4 — Schools + Subscription</title>
+<title>Makhanani LTSM — Admin v2.5 — Schools + Subscription + Bin</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
@@ -50,8 +50,8 @@ th{background:#0a1f4d;color:#fff}
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>⚙️ Makhanani LTSM — Admin v2.4</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Admin ONLY • Schools + Subscription • Return is NEVER blocked</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>⚙️ Makhanani LTSM — Admin v2.5</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Admin ONLY • Schools + Subscription + Bin Auto-Empty • Return is NEVER blocked</p>
 </header>
 <main>
 <div class="card">
@@ -77,7 +77,7 @@ th{background:#0a1f4d;color:#fff}
 
 <div class="card">
 <h2>➕ 2️⃣ Add New School — Appears in Login Dropdown for Everyone</h2>
-<div class="goldBox"><b>How it works:</b> Add here once → Saved to Firestore `schools` collection → Login page (`index.html`) auto-loads it → Teachers / Librarians pick it from dropdown. No code edit needed.<br><b>EMIS must be correct</b> — it is the key: `EMIS_924140123`. Wrong EMIS = learners / books won't load.</div>
+<div class="goldBox"><b>How it works:</b> Add here once → Saved to Firestore `schools` collection → Login page (`index.html`) auto-loads it → Teachers / Librarians pick it from dropdown. No code edit needed.<br><b>EMIS must be correct</b> — it is the key: `EMIS_924140123`. Wrong EMIS = learners / books won't load.<br>New schools start with Bin Auto-Empty = <b>30 days</b>. Change it in Section 5 below.</div>
 <label>🏫 New School Name * — Full official name, e.g. Makhanani Primary School</label>
 <input id="newSchoolName" placeholder="e.g. Bokamoso Primary School">
 <label>🆔 EMIS Number * — e.g. 924140123</label>
@@ -90,6 +90,8 @@ th{background:#0a1f4d;color:#fff}
 <input id="newPhone" placeholder="e.g. 082 123 4567">
 <label>💳 Subscription Status *</label>
 <select id="newStatus"><option value="ACTIVE">✅ ACTIVE — Can Issue + Return + Add</option><option value="RETURN_ONLY">🟠 RETURN ONLY — Can ONLY Return</option><option value="SUSPENDED">🔴 SUSPENDED — Can ONLY Return (same as Return Only)</option></select>
+<label>♻️ Bin Auto-Empty *</label>
+<select id="newBinDays"><option value="0">♾️ OFF — Never auto-delete</option><option value="7">7 days</option><option value="14">14 days</option><option value="30" selected>30 days (Recommended)</option><option value="60">60 days</option><option value="90">90 days</option></select>
 <button class="btn btn-green" id="addSchoolBtn" onclick="addSchool()">➕ Add School</button>
 <div id="addMsg"></div>
 </div>
@@ -114,7 +116,17 @@ th{background:#0a1f4d;color:#fff}
 </div>
 
 <div class="card">
-<h2>🧹 5️⃣ Danger Zone</h2>
+<h2>♻️ 5️⃣ Bin Auto-Empty — Set for Picked School</h2>
+<div class="info" id="binSettingInfo">Pick a school above first, then set auto-empty here.</div>
+<label>🗓️ Auto-delete archived items after:</label>
+<select id="binDays"><option value="0">♾️ OFF — Never auto-delete (Bin keeps forever)</option><option value="7">7 days</option><option value="14">14 days</option><option value="30" selected>30 days (Recommended)</option><option value="60">60 days</option><option value="90">90 days</option></select>
+<button class="btn btn-blue" onclick="saveBinSetting()">💾 Save Bin Setting</button>
+<div id="binSettingMsg"></div>
+<div class="small" style="margin-top:8px">Example: 30 days = Learner archived on 1 Nov → auto-deleted on 1 Dec if not restored.<br>Restore anytime before that date to save it. Applies to BOTH Textbooks + Learners Bin for that school.</div>
+</div>
+
+<div class="card">
+<h2>🧹 6️⃣ Danger Zone</h2>
 <div class="warn">Delete School removes the school record from `schools` list only. It does NOT delete learners / books / issues under `EMIS_xxx` — those stay in Firestore until you delete them manually in Firebase Console.</div>
 <button class="btn btn-red" onclick="deletePickedSchool()">🗑️ Delete Picked School from List</button>
 <div id="dangerMsg"></div>
@@ -134,18 +146,20 @@ function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGG
 let login=getLogin();
 let schools=[];
 let selectedSchool=null;
-
 function getPrefix(schoolName){
   const words=String(schoolName||'').trim().split(/\s+/).filter(Boolean);
   let p=words.map(w=>w[0].toUpperCase()).join('').replace(/[^A-Z]/g,'').slice(0,4);
   return p || 'MK';
 }
+function binLabel(days){
+  if(days===0 || days==='0') return 'OFF — Never auto-delete';
+  return days+' days';
+}
 async function loadSchools(){
-  // Fallback if Firestore empty — same as index.html fallback
   let fallback=[
-    { school:'Makhanani Primary School', emis:'123456789', status:'ACTIVE', district:'', principal:'', phone:'' },
-    { school:'Makhanani Secondary School', emis:'123456790', status:'ACTIVE', district:'', principal:'', phone:'' },
-    { school:'Thabo Secondary School', emis:'987654321', status:'ACTIVE', district:'', principal:'', phone:'' },
+    { school:'Makhanani Primary School', emis:'123456789', status:'ACTIVE', district:'', principal:'', phone:'', binAutoEmptyDays:30 },
+    { school:'Makhanani Secondary School', emis:'123456790', status:'ACTIVE', district:'', principal:'', phone:'', binAutoEmptyDays:30 },
+    { school:'Thabo Secondary School', emis:'987654321', status:'ACTIVE', district:'', principal:'', phone:'', binAutoEmptyDays:30 },
   ];
   try{
     const snap=await getDocs(collection(db,'schools'));
@@ -154,7 +168,7 @@ async function loadSchools(){
       const data=d.data()||{};
       const emis=data.emis || String(d.id||'').replace('EMIS_','');
       const name=data.school || data.name || data.schoolName || '';
-      if(name && emis) fromDb.push({ id:d.id, school:name, emis:String(emis), status:(data.status||data.subscription||'ACTIVE').toUpperCase(), district:data.district||'', principal:data.principal||data.principalName||'', phone:data.phone||data.principalPhone||'', createdAt:data.createdAt||'' });
+      if(name && emis) fromDb.push({ id:d.id, school:name, emis:String(emis), status:(data.status||data.subscription||'ACTIVE').toUpperCase(), district:data.district||'', principal:data.principal||data.principalName||'', phone:data.phone||data.principalPhone||'', createdAt:data.createdAt||'', binAutoEmptyDays:(typeof data.binAutoEmptyDays==='number'?data.binAutoEmptyDays:30) });
     });
     if(fromDb.length){ schools=fromDb; }
     else { schools=fallback; }
@@ -168,7 +182,7 @@ function renderSchoolList(filter){
   const list=schools.filter(s=>!q || s.school.toLowerCase().includes(q) || String(s.emis).includes(q));
   const box=$('schoolList');
   if(!list.length){ box.innerHTML='<div style="padding:12px;font-size:13px">No school found.</div>'; box.style.display='block'; return; }
-  box.innerHTML=list.map(s=>'<button type="button" onclick="pickSchoolByEmis(\''+esc(s.emis)+'\')"><b>'+esc(s.school)+'</b><span>EMIS: '+esc(s.emis)+' • '+(s.status||'ACTIVE')+'</span></button>').join('');
+  box.innerHTML=list.map(s=>'<button type="button" onclick="pickSchoolByEmis(\''+esc(s.emis)+'\')"><b>'+esc(s.school)+'</b><span>EMIS: '+esc(s.emis)+' • '+(s.status||'ACTIVE')+' • Bin: '+binLabel(s.binAutoEmptyDays)+'</span></button>').join('');
   box.style.display='block';
 }
 window.filterSchools=function(){ renderSchoolList($('schoolSearch').value); };
@@ -180,12 +194,15 @@ window.pickSchoolByEmis=function(emis){
   $('schoolList').style.display='none';
   $('schoolPicked').style.display='block';
   const prefix=getPrefix(selectedSchool.school);
-  $('schoolPicked').innerHTML='✅ Picked: <b>'+esc(selectedSchool.school)+'</b> • EMIS: <b>'+esc(selectedSchool.emis)+'</b> • Status: <b>'+esc(selectedSchool.status||'ACTIVE')+'</b><br>Textbook Prefix: <b>'+prefix+'</b> • Next Book No. starts with: <b>'+prefix+'000001</b> (actual next depends on existing books)';
+  const binDays=(typeof selectedSchool.binAutoEmptyDays==='number'?selectedSchool.binAutoEmptyDays:30);
+  $('schoolPicked').innerHTML='✅ Picked: <b>'+esc(selectedSchool.school)+'</b> • EMIS: <b>'+esc(selectedSchool.emis)+'</b> • Status: <b>'+esc(selectedSchool.status||'ACTIVE')+'</b><br>Textbook Prefix: <b>'+prefix+'</b> • Next Book No. starts with: <b>'+prefix+'000001</b><br>♻️ Bin Auto-Empty: <b>'+binLabel(binDays)+'</b>';
   $('subInfo').innerHTML='Picked: <b>'+esc(selectedSchool.school)+'</b> (EMIS '+esc(selectedSchool.emis)+') • Current: <b>'+esc(selectedSchool.status||'ACTIVE')+'</b>';
+  $('binDays').value=String(binDays);
+  $('binSettingInfo').innerHTML='Picked: <b>'+esc(selectedSchool.school)+'</b> • Current Bin setting: <b>'+binLabel(binDays)+'</b>';
   loadSchoolStats();
 };
 window.clearPicked=function(){
-  selectedSchool=null; $('schoolSearch').value=''; $('schoolPicked').style.display='none'; $('statsBox').innerHTML=''; $('subInfo').innerHTML='Pick a school above first, then set subscription here.';
+  selectedSchool=null; $('schoolSearch').value=''; $('schoolPicked').style.display='none'; $('statsBox').innerHTML=''; $('subInfo').innerHTML='Pick a school above first, then set subscription here.'; $('binSettingInfo').innerHTML='Pick a school above first, then set auto-empty here.'; $('binDays').value='30';
 };
 document.addEventListener('click',(e)=>{
   if(!e.target.closest('#schoolSearch') && !e.target.closest('#schoolList')) $('schoolList').style.display='none';
@@ -198,10 +215,13 @@ window.loadSchoolStats=async function(){
     const l=await getDocs(collection(db,'schools',base,'learners'));
     const b=await getDocs(collection(db,'schools',base,'textbooks'));
     const iss=await getDocs(collection(db,'schools',base,'issues'));
-    let issued=0, returned=0;
+    let issued=0, returned=0, archivedLearners=0, archivedBooks=0;
     iss.forEach(d=>{ const s=(d.data().status||'').toUpperCase(); if(s==='ISSUED') issued++; if(s==='RETURNED') returned++; });
+    l.forEach(d=>{ if(d.data().archived===true) archivedLearners++; });
+    b.forEach(d=>{ if(d.data().archived===true) archivedBooks++; });
     const prefix=getPrefix(selectedSchool.school);
-    $('statsBox').innerHTML='<div class="goldBox">📊 <b>'+esc(selectedSchool.school)+'</b> (EMIS '+esc(selectedSchool.emis)+')<br>👩🏾‍🎓 Learners: <b>'+l.size+'</b> • 📖 Textbooks: <b>'+b.size+'</b> • 📚 Currently ISSUED: <b>'+issued+'</b> • ✅ Returned: <b>'+returned+'</b><br>Status: <b>'+esc(selectedSchool.status||'ACTIVE')+'</b> • Prefix: <b>'+prefix+'</b></div>';
+    const binDays=(typeof selectedSchool.binAutoEmptyDays==='number'?selectedSchool.binAutoEmptyDays:30);
+    $('statsBox').innerHTML='<div class="goldBox">📊 <b>'+esc(selectedSchool.school)+'</b> (EMIS '+esc(selectedSchool.emis)+')<br>👩🏾‍🎓 Learners (active): <b>'+(l.size-archivedLearners)+'</b> • 📖 Textbooks (active): <b>'+(b.size-archivedBooks)+'</b> • 📚 Currently ISSUED: <b>'+issued+'</b> • ✅ Returned: <b>'+returned+'</b><br>♻️ In Bin: Learners <b>'+archivedLearners+'</b> • Books <b>'+archivedBooks+'</b> • Bin Auto-Empty: <b>'+binLabel(binDays)+'</b><br>Status: <b>'+esc(selectedSchool.status||'ACTIVE')+'</b> • Prefix: <b>'+prefix+'</b></div>';
   }catch(e){ $('statsBox').innerHTML='<div class="warn">❌ Stats failed: '+esc(e.message)+'</div>'; }
 };
 window.addSchool=async function(){
@@ -211,6 +231,7 @@ window.addSchool=async function(){
   const principal=($('newPrincipal').value||'').trim();
   const phone=($('newPhone').value||'').trim();
   const status=$('newStatus').value||'ACTIVE';
+  const binDays=parseInt($('newBinDays').value||'30',10);
   if(!school){ $('addMsg').innerHTML='<div class="warn">⚠️ Enter School Name.</div>'; return; }
   if(!emis){ $('addMsg').innerHTML='<div class="warn">⚠️ Enter EMIS Number.</div>'; return; }
   if(schools.some(s=>String(s.emis)===String(emis))){ $('addMsg').innerHTML='<div class="warn">❌ EMIS '+esc(emis)+' already exists — pick it from dropdown instead.</div>'; return; }
@@ -218,11 +239,10 @@ window.addSchool=async function(){
   if(!navigator.onLine){ $('addMsg').innerHTML='<div class="warn">🟠 Offline — Add School needs internet.</div>'; return; }
   $('addSchoolBtn').disabled=true; $('addSchoolBtn').textContent='⏳ Adding...';
   try{
-    await setDoc(doc(db,'schools','EMIS_'+emis), { school, emis, district, principal, phone, status, subscription:status, createdAt:new Date().toISOString(), createdBy:login?.name||login?.email||'' });
-    $('addMsg').innerHTML='<div class="ok">✅ School added: <b>'+esc(school)+'</b> • EMIS '+esc(emis)+' • Status '+esc(status)+'<br>It will now appear in Login dropdown for everyone. Prefix: <b>'+getPrefix(school)+'</b></div>';
+    await setDoc(doc(db,'schools','EMIS_'+emis), { school, emis, district, principal, phone, status, subscription:status, binAutoEmptyDays:binDays, createdAt:new Date().toISOString(), createdBy:login?.name||login?.email||'' });
+    $('addMsg').innerHTML='<div class="ok">✅ School added: <b>'+esc(school)+'</b> • EMIS '+esc(emis)+' • Status '+esc(status)+' • Bin: '+binLabel(binDays)+'<br>It will now appear in Login dropdown for everyone. Prefix: <b>'+getPrefix(school)+'</b></div>';
     $('newSchoolName').value=''; $('newEmis').value=''; $('newDistrict').value=''; $('newPrincipal').value=''; $('newPhone').value='';
     await loadSchools();
-    // Auto-pick the new school
     pickSchoolByEmis(emis);
   }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; }
   $('addSchoolBtn').disabled=false; $('addSchoolBtn').textContent='➕ Add School';
@@ -238,10 +258,11 @@ window.renderSchools=function(){
   const list=schools.filter(s=>!q || s.school.toLowerCase().includes(q) || String(s.emis).includes(q));
   $('schoolCount').textContent=schools.length;
   if(!list.length){ $('schoolsBody').innerHTML='<div class="info">No schools found.</div>'; return; }
-  let html='<table><tr><th>School</th><th>EMIS / Prefix</th><th>Status</th><th>Action</th></tr>';
+  let html='<table><tr><th>School</th><th>EMIS / Prefix</th><th>Status</th><th>Bin</th><th>Action</th></tr>';
   list.forEach(s=>{
     const prefix=getPrefix(s.school);
-    html+='<tr><td><b>'+esc(s.school)+'</b><br><span class="small">'+esc(s.district||'')+' • Principal: '+esc(s.principal||'-')+'</span></td><td>EMIS: <b>'+esc(s.emis)+'</b><br>Prefix: <b>'+prefix+'</b></td><td>'+statusPill(s.status)+'</td><td><button class="miniBtn btn-blue" onclick="pickSchoolByEmis(\''+esc(s.emis)+'\')">👉 Pick / Manage</button><br><button class="miniBtn btn-green" onclick="setSubFor(\''+esc(s.emis)+'\',\'ACTIVE\')">✅ Active</button><button class="miniBtn btn-orange" onclick="setSubFor(\''+esc(s.emis)+'\',\'RETURN_ONLY\')">🟠 Return Only</button><button class="miniBtn btn-red" onclick="setSubFor(\''+esc(s.emis)+'\',\'SUSPENDED\')">🔴 Suspend</button><br><button class="miniBtn btn-red" onclick="deleteSchool(\''+esc(s.emis)+'\')">🗑️ Delete</button></td></tr>';
+    const binDays=(typeof s.binAutoEmptyDays==='number'?s.binAutoEmptyDays:30);
+    html+='<tr><td><b>'+esc(s.school)+'</b><br><span class="small">'+esc(s.district||'')+' • Principal: '+esc(s.principal||'-')+'</span></td><td>EMIS: <b>'+esc(s.emis)+'</b><br>Prefix: <b>'+prefix+'</b></td><td>'+statusPill(s.status)+'</td><td><span class="pill pill-gold">♻️ '+binLabel(binDays)+'</span></td><td><button class="miniBtn btn-blue" onclick="pickSchoolByEmis(\''+esc(s.emis)+'\')">👉 Pick / Manage</button><br><button class="miniBtn btn-green" onclick="setSubFor(\''+esc(s.emis)+'\',\'ACTIVE\')">✅ Active</button><button class="miniBtn btn-orange" onclick="setSubFor(\''+esc(s.emis)+'\',\'RETURN_ONLY\')">🟠 Return Only</button><button class="miniBtn btn-red" onclick="setSubFor(\''+esc(s.emis)+'\',\'SUSPENDED\')">🔴 Suspend</button><br><button class="miniBtn btn-red" onclick="deleteSchool(\''+esc(s.emis)+'\')">🗑️ Delete</button></td></tr>';
   });
   html+='</table>'; $('schoolsBody').innerHTML=html;
 };
@@ -254,6 +275,19 @@ window.setSubFor=async function(emis, status){
     if(selectedSchool && String(selectedSchool.emis)===String(emis)){ selectedSchool.status=status; $('subInfo').innerHTML='Picked: <b>'+esc(selectedSchool.school)+'</b> • Current: <b>'+esc(status)+'</b>'; }
     renderSchools();
   }catch(e){ $('subMsg').innerHTML='<div class="warn">❌ Failed: '+esc(e.message)+'</div>'; }
+};
+window.saveBinSetting=async function(){
+  if(!selectedSchool){ $('binSettingMsg').innerHTML='<div class="warn">⚠️ Pick a school first.</div>'; return; }
+  const days=parseInt($('binDays').value||'30',10);
+  try{
+    await updateDoc(doc(db,'schools','EMIS_'+selectedSchool.emis),{binAutoEmptyDays:days,updatedAt:new Date().toISOString(),updatedBy:login?.name||''});
+    selectedSchool.binAutoEmptyDays=days;
+    const s=schools.find(x=>String(x.emis)===String(selectedSchool.emis)); if(s) s.binAutoEmptyDays=days;
+    $('binSettingMsg').innerHTML='<div class="ok">✅ Saved — Bin will auto-empty after <b>'+binLabel(days)+'</b> for '+esc(selectedSchool.school)+'</div>';
+    $('binSettingInfo').innerHTML='Picked: <b>'+esc(selectedSchool.school)+'</b> • Current Bin setting: <b>'+binLabel(days)+'</b>';
+    $('schoolPicked').innerHTML='✅ Picked: <b>'+esc(selectedSchool.school)+'</b> • EMIS: <b>'+esc(selectedSchool.emis)+'</b> • Status: <b>'+esc(selectedSchool.status||'ACTIVE')+'</b><br>Textbook Prefix: <b>'+getPrefix(selectedSchool.school)+'</b> • Next Book No. starts with: <b>'+getPrefix(selectedSchool.school)+'000001</b><br>♻️ Bin Auto-Empty: <b>'+binLabel(days)+'</b>';
+    renderSchools();
+  }catch(e){ $('binSettingMsg').innerHTML='<div class="warn">❌ Save failed: '+esc(e.message)+'</div>'; }
 };
 window.deleteSchool=async function(emis){
   const s=schools.find(x=>String(x.emis)===String(emis));
