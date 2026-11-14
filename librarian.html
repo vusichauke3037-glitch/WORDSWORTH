@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Librarian v2.3 — Camera Scan + Quick Issue</title>
+<title>Makhanani LTSM — Librarian v2.4 — Camera Fixed — No unpkg</title>
 <meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
@@ -59,8 +59,8 @@ th{background:#0a1f4d;color:#fff}
 <body>
 <div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>📚📷 Makhanani LTSM — Librarian v2.3</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Camera Scan Real Stickers • Quick Issue / Return • Learner 9E003 • Book WHS000001 • My School Only</p>
+<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>📚📷 Makhanani LTSM — Librarian v2.4</h1></div>
+<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Camera Fixed — No unpkg — Built-in Scanner • Quick Issue / Return • Learner 9E003 • Book WHS000001 • My School Only</p>
 </header>
 <main>
 <div class="card">
@@ -91,8 +91,8 @@ th{background:#0a1f4d;color:#fff}
 </div>
 
 <div class="card">
-<h2>📷 Camera Scan — Quick Issue / Return — No USB Scanner Needed</h2>
-<div class="info"><b>Librarian Fast Flow:</b><br>1. Tap <b>📷 Scan Learner</b> → Point at card → BEEP<br>2. Tap <b>📷 Scan Book</b> → Point at sticker → BEEP → Tap Issue<br>Return: Tap <b>📷 Scan Book To Return</b> → Point → Auto-Returns.<br>Auto: <b>⚡ Auto Mode</b> scans learner then book then auto-issues.</div>
+<h2>📷 Camera Scan — Quick Issue / Return — FIXED v2.4</h2>
+<div class="info"><b>Librarian Fast Flow:</b><br>1. Tap <b>📷 Scan Learner</b> → Point at card → BEEP<br>2. Tap <b>📷 Scan Book</b> → Point at sticker → BEEP → Tap Issue<br>Return: Tap <b>📷 Scan Book To Return</b> → Point → Auto-Returns.<br>Auto: <b>⚡ Auto Mode</b> scans learner then book then auto-issues.<br><b>v2.4 Fix:</b> Uses phone's built-in scanner — No unpkg error. Use <b>Chrome / Safari</b>, NOT WhatsApp browser.</div>
 <div class="grid2">
 <button class="btn btn-green" onclick="openCamera('LEARNER')">📷 Scan Learner Card</button>
 <button class="btn btn-blue" onclick="openCamera('BOOK')">📷 Scan Book Sticker</button>
@@ -209,34 +209,65 @@ function getPrefix(schoolName){ const words=String(schoolName||'').trim().split(
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 function isOverdue(iss){ if(!iss || iss.status==='RETURNED') return false; if(!iss.dueDate) return false; return iss.dueDate < todayStr(); }
 async function loadSchoolMeta(){ try{ const snap=await getDocs(collection(db,'schools')); snap.forEach(ds=>{ if(String(ds.id)==='EMIS_'+login.emis){ const v=ds.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); } }); }catch(e){} }
-// ===== CAMERA v2.3 =====
-let html5Qr=null, cameraRunning=false, cameraMode='LEARNER', lastCameraCode='', lastCameraTime=0, cameraScanCount=0, autoMode=false;
+// ===== CAMERA v2.4 — FIX: No unpkg, Native BarcodeDetector + jsDelivr fallback =====
+let html5Qr=null, cameraRunning=false, nativeStream=null, nativeRaf=null, nativeDetector=null, cameraMode='LEARNER', lastCameraCode='', lastCameraTime=0, cameraScanCount=0, autoMode=false;
 window.openCamera=function(what){
-  if(!window.Html5Qrcode){ alert('❌ Camera library failed to load. Check internet, refresh.'); return; }
   cameraMode=what; autoMode=(what==='AUTO');
   if(what==='AUTO') cameraMode='LEARNER';
   if(what==='RETURN') cameraMode='BOOK';
+  window._cameraWasReturn=(what==='RETURN');
   $('cameraModal').style.display='block';
   $('cameraModeLabel').textContent=what==='AUTO'?'AUTO — Learner → Book → Issue':what;
   $('cameraTitle').textContent=what==='LEARNER'?'📷 Scan Learner Card':what==='BOOK'?'📷 Scan Book Sticker':what==='RETURN'?'📷 Scan Book To Return':'⚡ Auto — Scan Learner First';
   $('cameraHint').innerHTML=what==='LEARNER'?'Hold phone <b>15-20cm</b> from <b>Learner Card</b>. Barcode inside box. BEEP = Found.':what==='BOOK'||what==='RETURN'?'Hold phone <b>15-20cm</b> from <b>Book Sticker</b>. Barcode inside box. BEEP = Found.':'<b>Auto Mode:</b> Scan Learner first → Camera will ask for Book → Scan Book → Auto-Issue.';
   $('cameraStatus').textContent='Starting camera... Allow Camera when asked...';
   $('cameraLastScan').innerHTML='';
+  if('BarcodeDetector' in window){ startNativeCamera(); return; }
+  if(window.Html5Qrcode){ startHtml5Camera(); return; }
+  $('cameraStatus').textContent='Loading camera library from jsDelivr...';
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js';
+  s.onload=()=>{ if(window.Html5Qrcode) startHtml5Camera(); else $('cameraStatus').textContent='❌ Camera library still failed — Use Type / USB below.'; };
+  s.onerror=()=>{ $('cameraStatus').textContent='❌ No internet for camera library — Use Type / USB below.'; $('cameraLastScan').innerHTML='<div class="warn">No internet / CDN blocked. Fix: 1) Turn WiFi ON 2) Open in Chrome (not WhatsApp) 3) Refresh. Or type code: 9E003 / WHS000001 + Enter — That still works.</div>'; };
+  document.head.appendChild(s);
+};
+async function startNativeCamera(){
+  try{
+    $('cameraStatus').textContent='✅ Using phone built-in scanner — Point at barcode...';
+    let reader=$('cameraReader');
+    reader.innerHTML='<video id="nativeVideo" autoplay playsinline muted style="width:100%;height:auto;background:#000;border-radius:8px"></video><div style="border:2px dashed #059669;margin:8px;padding:6px;text-align:center;color:#059669;font-weight:900">⬜ Put Barcode Inside Here ⬜</div>';
+    const video=document.getElementById('nativeVideo');
+    nativeStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
+    video.srcObject=nativeStream;
+    await video.play();
+    cameraRunning=true;
+    nativeDetector=new BarcodeDetector({formats:['code_128','code_39','ean_13','ean_8','upc_a','upc_e','qr_code']});
+    const loop=async()=>{
+      if(!cameraRunning) return;
+      try{ const codes=await nativeDetector.detect(video); if(codes && codes.length) onCameraScan(codes[0].rawValue); }catch(e){}
+      nativeRaf=requestAnimationFrame(loop);
+    };
+    loop();
+  }catch(e){
+    $('cameraStatus').textContent='❌ Camera failed: '+e.message;
+    $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? 1) Use Chrome / Safari (not WhatsApp browser) 2) Padlock → Site Settings → Camera → Allow 3) HTTPS only 4) Close Zoom / Teams.</div>';
+  }
+}
+function startHtml5Camera(){
   if(cameraRunning) return;
   html5Qr=new Html5Qrcode('cameraReader');
   const config={fps:10, qrbox:{width:280,height:120}, aspectRatio:1.2, supportedScanTypes:[Html5QrcodeScanType.SCAN_TYPE_CAMERA]};
   html5Qr.start({facingMode:'environment'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at barcode sticker...'; }).catch(()=>{
     html5Qr.start({facingMode:'user'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at barcode...'; }).catch(e2=>{
       $('cameraStatus').textContent='❌ Camera failed: '+esc(e2.message||e2);
-      $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? 1) Use Chrome / Safari (not WhatsApp browser) 2) Padlock → Site Settings → Camera → Allow 3) HTTPS only 4) Close Zoom / Teams.</div>';
+      $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? Use Chrome, Allow Camera, HTTPS only.</div>';
     });
   });
-};
+}
 async function onCameraScan(decodedText){
   const code=String(decodedText||'').trim().toUpperCase(); if(!code) return;
   const now=Date.now(); if(code===lastCameraCode && now-lastCameraTime<2000) return;
   lastCameraCode=code; lastCameraTime=now; cameraScanCount++; $('cameraScanCount').textContent=cameraScanCount;
-  const isReturnMode = (window._cameraWasReturn === true);
   if(cameraMode==='LEARNER'){
     const l=learners.find(x=>String(x.learnerId||x.barcode||'').toUpperCase()===code && x.archived!==true);
     if(!l){ beepError(); $('cameraLastScan').innerHTML='<div class="warn">❌ Learner NOT found: <b>'+esc(code)+'</b></div>'; return; }
@@ -251,7 +282,6 @@ async function onCameraScan(decodedText){
   }
   const b=books.find(x=>String(x.bookNo||x.barcode||'').toUpperCase()===code && x.archived!==true);
   if(!b){ beepError(); $('cameraLastScan').innerHTML='<div class="warn">❌ Book NOT found: <b>'+esc(code)+'</b></div>'; return; }
-  // Return detection: if original open was RETURN, auto-return
   if(window._cameraWasReturn){
     const iss=issues.find(i=>String(i.bookNo||'').toUpperCase()===code && i.status!=='RETURNED');
     if(!iss){ beepError(); $('cameraLastScan').innerHTML='<div class="warn">❌ Book <b>'+esc(code)+'</b> NOT issued. Nothing to return.</div>'; return; }
@@ -268,10 +298,7 @@ async function onCameraScan(decodedText){
   await closeCamera(true);
   if(autoMode && foundLearner && foundBook){ setTimeout(()=>doIssue(), 400); }
 }
-// Track RETURN flag
-const _origOpenCamera = window.openCamera;
-window.openCamera = function(what){ window._cameraWasReturn = (what==='RETURN'); return _origOpenCamera(what); };
-async function closeCameraSilent(){ try{ if(html5Qr && cameraRunning){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){} cameraRunning=false; html5Qr=null; $('cameraModal').style.display='none'; }
+async function closeCameraSilent(){ cameraRunning=false; if(nativeRaf) cancelAnimationFrame(nativeRaf); if(nativeStream){ nativeStream.getTracks().forEach(t=>t.stop()); nativeStream=null; } try{ if(html5Qr){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){} html5Qr=null; $('cameraModal').style.display='none'; }
 window.closeCamera=async function(done){ window._cameraWasReturn=false; await closeCameraSilent(); };
 // ===== END CAMERA =====
 window.loadAll=async function(){
