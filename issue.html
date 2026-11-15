@@ -2,241 +2,307 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Issue / Return v2.1</title><meta name="theme-color" content="#0a1f4d">
+<title>Makhanani LTSM — Issue / Return</title><meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const rtdb = firebase.database();
+</script>
 <style>
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:13px}main{max-width:950px;margin:auto;padding:14px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}label{font-weight:700;font-size:13px;display:block;margin:12px 0 4px}input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:15px;background:#fff}.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:10px}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-red{background:#dc2626;color:#fff}.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}.small{font-size:12px;color:#64748b}.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}.pill{padding:3px 8px;border-radius:20px;font-weight:900;font-size:11px}.pill-green{background:#dcfce7;color:#059669}.pill-red{background:#fee2e2;color:#dc2626}.pill-gold{background:#fef3c7;color:#92400e}.stat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}.statBox{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center}.statBox b{font-size:22px;color:#0a1f4d;display:block}.statBox span{font-size:12px;color:#64748b}.tabBtn{padding:11px 14px;border:2px solid #0a1f4d;border-radius:20px;font-weight:900;font-size:13px;cursor:pointer;background:#fff;color:#0a1f4d}.tabBtn.active{background:#0a1f4d;color:#fff}.miniBtn{padding:8px 10px;border:none;border-radius:6px;font-weight:900;font-size:12px;cursor:pointer;margin:2px 0;width:100%}.suggest{border:1.5px solid #cbd5e1;border-radius:8px;margin-top:4px;max-height:180px;overflow:auto;background:#fff;display:none}.suggest div{padding:10px;border-bottom:1px solid #e2e8f0;cursor:pointer;font-size:13px}.suggest div:hover{background:#dbeafe}.picked{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:8px}
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
+header{background:#0a1f4d;color:#fff;padding:14px;text-align:center}header h1{margin:0;font-size:20px}header p{margin:4px 0 0;opacity:.9;font-size:12px}
+header img{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;display:block;margin:0 auto 8px}
+main{max-width:900px;margin:auto;padding:12px}.card{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+h2{margin:0 0 10px;color:#0a1f4d;font-size:17px;border-bottom:2px solid #d4af37;padding-bottom:6px}
+label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:10px}
+input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;font-size:15px;margin-top:5px}
+input:focus,select:focus{border-color:#0a1f4d;outline:none}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:10px}
+.btn-blue{background:#0a1f4d;color:#fff}.btn-green{background:#059669;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}
+.btn-small{width:auto;padding:7px 10px;font-size:12px;margin:2px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{flex:1;min-width:90px;padding:10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:7px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
+.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
+.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
+.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
+.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:10px;margin-top:10px;font-size:13px;line-height:1.6}
+.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
+.topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
+.small{font-size:12px;color:#64748b}
+@media(max-width:600px){.kpi{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-<header><h1>📖 Makhanani LTSM — Issue / Return v2.1</h1><p>Xintimani Group • <span id="whoLine">Checking...</span><br>Scan Learner + Book = Issue in 3 Seconds • WhatsApp: 078 023 3263</p></header>
+<header>
+<img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'">
+<h1>📖 Issue / Return</h1><p id="userLine">Loading...</p>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">📊 Principal</a><a href="teachers.html">👩‍🏫 Teachers</a><a href="profile.html">👤 Profile</a></div>
+</header>
 <main>
-<div class="card">
-<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="admin.html">⚙️ Admin</a><a href="super_admin.html">👑 Super Admin</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">📊 Principal</a><a href="teachers.html">👩‍🏫 Teachers</a><a href="profile.html">👤 Profile</a><a href="https://wa.me/27780233263?text=Hello%20Makhanani">📱 WhatsApp 078 023 3263</a></div>
-<div class="info" id="loginInfo">Checking login...</div>
-<div id="blockedBox" class="warn" style="display:none">🔒 Login first. <a href="index.html">Go to Login</a>.</div>
+<div class="card"><div class="kpi"><div><b id="kLearners">0</b><span>Learners</span></div><div><b id="kBooks">0</b><span>Books</span></div><div><b id="kOut">0</b><span>Out</span></div><div><b id="kOverdue">0</b><span>Overdue</span></div></div>
+<div id="statusBox" class="info">⏳ Loading your school from Firebase...</div>
+<div class="tabs" style="margin-top:10px"><button class="active" onclick="showTab('issue',this)">📤 Issue Book</button><button onclick="showTab('return',this)">📥 Return Book</button><button onclick="showTab('out',this)">📖 Books Out</button><button onclick="showTab('overdue',this)">⚠️ Overdue + WhatsApp</button></div>
+<input id="searchBox" placeholder="🔍 Search learner / book / barcode..." oninput="renderAll()">
 </div>
 
-<div id="body" style="display:none">
-<div class="card" id="superSchoolCard" style="display:none">
-<h2>🏫 SUPER ADMIN — Pick School To Issue For</h2>
-<label>🏫 Select School *</label>
-<select id="superSchoolSelect"><option value="">Loading schools...</option></select>
-<div class="small">SUPER ADMIN can issue for ANY school. Pick one — Learners + Books load for that school.</div>
-</div>
+<!-- ISSUE -->
+<div class="card" id="tab-issue">
+<h2>📤 Issue Book — 3 Seconds</h2>
+<div class="goldBox"><b>How:</b> 1. Pick Learner → 2. Scan / Type Barcode → 3. Click ISSUE. Learner gets 1 book at a time per barcode. Duplicate barcode blocked.</div>
+<label>👥 Learner — Type to Search</label>
+<input id="learnerSearch" placeholder="Type learner name or ID... e.g. Thandi / L001" oninput="filterLearners()">
+<select id="learnerSelect"><option value="">-- Pick Learner --</option></select>
+<div id="learnerInfo" class="info" style="display:none"></div>
 
-<div class="card">
-<h2>📊 Today — <span id="schoolNameTitle"></span></h2>
-<div class="stat">
-<div class="statBox"><b id="tIssued">—</b><span>Issued Today</span></div>
-<div class="statBox"><b id="tReturned">—</b><span>Returned Today</span></div>
-<div class="statBox"><b id="tOverdue">—</b><span>Overdue</span></div>
-<div class="statBox"><b id="tLearners">—</b><span>Learners</span></div>
-<div class="statBox"><b id="tBooks">—</b><span>Books</span></div>
-<div class="statBox"><b id="tOut">—</b><span>Books Out Now</span></div>
-</div>
-<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh All</button>
-</div>
+<label>📚 Book Barcode — Scan or Type</label>
+<input id="barcodeInput" placeholder="Scan barcode or type BK001" oninput="findBook()">
+<div id="bookInfo" class="info" style="display:none"></div>
 
-<div class="card">
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-<button class="tabBtn active" id="tabIssue" onclick="setTab('ISSUE')">📤 Issue Book</button>
-<button class="tabBtn" id="tabReturn" onclick="setTab('RETURN')">📥 Return Book</button>
-<button class="tabBtn" id="tabOut" onclick="setTab('OUT')">📚 Books Out Now</button>
-</div>
-</div>
-
-<div class="card" id="secIssue">
-<h2>📤 1. Issue Book — 3 Steps</h2>
-<label>👧 Step 1 — Learner: Type Name / Learner ID / Class (Scan works too)</label>
-<input id="learnerSearch" placeholder="e.g. Thandi OR L001 OR 10A — Type 2 letters to search..." oninput="searchLearner()">
-<div class="suggest" id="learnerSuggest"></div>
-<div id="learnerPicked"></div>
-
-<label>📖 Step 2 — Book: Type Title / Barcode / ISBN (Scan barcode works too)</label>
-<input id="bookSearch" placeholder="e.g. Maths Grade 10 OR BK001 OR 978-... — Type 2 letters..." oninput="searchBook()">
-<div class="suggest" id="bookSuggest"></div>
-<div id="bookPicked"></div>
-
-<label>📅 Step 3 — Due Date (Auto = 14 days)</label>
+<label>📅 Due Date</label>
 <input id="dueDate" type="date">
-<button class="btn btn-green" onclick="doIssue()">📤 ISSUE BOOK →</button>
+<button class="btn btn-green" onclick="issueBook()">📤 ISSUE BOOK →</button>
 <div id="issueMsg"></div>
-<div class="goldBox">💡 <b>Demo Tip:</b> If no learners/books yet, go to <b>Librarian → Add Learner / Add Book</b> first, or use <b>school.html → Create Test Data</b>.<br>Scanner: Click in Learner / Book box, scan barcode — It types automatically.</div>
 </div>
 
-<div class="card" id="secReturn" style="display:none">
-<h2>📥 2. Return Book</h2>
-<label>🔍 Search: Learner Name / Book Title / Barcode</label>
-<input id="returnSearch" placeholder="Type learner or book to find issued books..." oninput="renderOut(true)">
-<div id="returnBox"></div>
+<!-- RETURN -->
+<div class="card" id="tab-return" style="display:none">
+<h2>📥 Return Book — Scan Barcode Only</h2>
+<label>📚 Barcode to Return</label>
+<input id="returnBarcode" placeholder="Scan / Type barcode... e.g. BK001">
+<button class="btn btn-blue" onclick="returnBook()">📥 RETURN BOOK</button>
+<div id="returnMsg"></div>
+<h3>Books Out Now — Click Return</h3>
+<div id="returnList"></div>
 </div>
 
-<div class="card" id="secOut" style="display:none">
-<h2>📚 3. Books Out Now — Overdue In Red</h2>
-<label>Search Learner / Book</label><input id="outSearch" placeholder="Type to filter..." oninput="renderOut(false)">
-<div id="outBox"></div>
+<!-- OUT -->
+<div class="card" id="tab-out" style="display:none">
+<h2>📖 Books Out</h2>
+<div id="outList"></div>
 </div>
 
-<div class="card">
-<h2>📱 Need Help?</h2>
-<button class="btn btn-green" onclick="window.open('https://wa.me/27780233263?text='+encodeURIComponent('Hello Makhanani, I need help with Issue / Return.'),'_blank')">📱 WhatsApp — 078 023 3263</button>
-<button class="btn btn-red" onclick="doLogout()">🚪 Logout</button>
+<!-- OVERDUE -->
+<div class="card" id="tab-overdue" style="display:none">
+<h2>⚠️ Overdue — WhatsApp Parent In 1 Click</h2>
+<div class="goldBox">Overdue = Due Date passed + Not returned. Click 📱 to WhatsApp parent: "Book overdue, please return / replace."</div>
+<div id="overdueList"></div>
+<button class="btn btn-gold" onclick="whatsappAllOverdue()">📱 WhatsApp ALL Overdue Parents</button>
 </div>
-</div>
+
+<div class="card"><button class="btn btn-grey" onclick="logout()">🚪 Logout</button></div>
 </main>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
-let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){}
-const $ = id => document.getElementById(id);
-const esc = s => String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
-let login=getLogin();
-let currentEmis='', currentSchoolName='', allLearners=[], allBooks=[], allIssues=[];
-let pickedLearner=null, pickedBook=null;
 
-window.setTab=function(t){
-  ['ISSUE','RETURN','OUT'].forEach(k=>{ $('tab'+(k==='ISSUE'?'Issue':k==='RETURN'?'Return':'Out')).className='tabBtn'+(t===k?' active':''); $('sec'+(k==='ISSUE'?'Issue':k==='RETURN'?'Return':'Out')).style.display=t===k?'block':'none'; });
-  if(t!=='ISSUE') renderOut(t==='RETURN');
+<script>
+let currentUser=null, schoolId='', learners=[], books=[], issues=[];
+let useDemo=false;
+const DEMO={
+  learners:[{id:'L001', name:'Thandi Mokoena', learnerId:'L001', className:'10A', grade:'10', phone:'0780233263'},
+  {id:'L002', name:'Sipho Dube', learnerId:'L002', className:'10A', grade:'10', phone:'0781112222'}],
+  books:[{id:'BK001', title:'Mathematics Grade 10', barcode:'BK001', subject:'Mathematics', grade:'10', author:'Maskew Miller', status:'AVAILABLE'},
+  {id:'BK002', title:'English Grade 10', barcode:'BK002', subject:'English', grade:'10', author:'Oxford', status:'AVAILABLE'}],
+  issues:[]
 };
-function base(){ return 'EMIS_'+currentEmis; }
-function todayStr(){ return new Date().toISOString().slice(0,10); }
-function dueDefault(){ const d=new Date(); d.setDate(d.getDate()+14); return d.toISOString().slice(0,10); }
+function esc(s){ return String(s||'').replace(/</g,'&lt;'); }
+function getUser(){ try{ return JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){ return null; } }
+function logout(){ localStorage.removeItem('makhanani_user'); location.href='index.html'; }
+function showTab(name, btn){
+  ['issue','return','out','overdue'].forEach(t=>document.getElementById('tab-'+t).style.display = t===name ? 'block':'none');
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+function todayPlus(days){ const d=new Date(); d.setDate(d.getDate()+days); return d.toISOString().slice(0,10); }
+document.getElementById('dueDate').value = todayPlus(14);
 
-window.loadAll=async function(){
-  if(!currentEmis){ $('outBox').innerHTML='<div class="warn">⚠️ Select school first (SUPER ADMIN).</div>'; return; }
-  try{
-    const [lSnap,bSnap,iSnap]=await Promise.all([getDocs(collection(db,'schools',base(),'learners')), getDocs(collection(db,'schools',base(),'textbooks')), getDocs(collection(db,'schools',base(),'issues'))]);
-    allLearners=[]; lSnap.forEach(d=>{ allLearners.push({id:d.id, ...d.data()}); });
-    allBooks=[]; bSnap.forEach(d=>{ allBooks.push({id:d.id, ...d.data()}); });
-    allIssues=[]; iSnap.forEach(d=>{ allIssues.push({id:d.id, ...d.data()}); });
-    allIssues.sort((a,b)=>String(b.issuedAt||'').localeCompare(String(a.issuedAt||'')));
-    updateStats(); renderOut(false);
-    $('schoolNameTitle').textContent=currentSchoolName+' (EMIS '+currentEmis+')';
-  }catch(e){ $('outBox').innerHTML='<div class="warn">❌ Failed: '+esc(e.message)+'<br>FIX: Firebase → Rules → Allow read, write → Publish</div>'; }
-};
-function updateStats(){
-  const today=todayStr();
-  const issuedToday=allIssues.filter(i=>String(i.issuedAt||'').slice(0,10)===today).length;
-  const returnedToday=allIssues.filter(i=>String(i.returnedAt||'').slice(0,10)===today).length;
-  const outNow=allIssues.filter(i=>!i.returnedAt);
-  const overdue=outNow.filter(i=> i.dueDate && i.dueDate < today).length;
-  $('tIssued').textContent=issuedToday; $('tReturned').textContent=returnedToday; $('tOverdue').textContent=overdue;
-  $('tLearners').textContent=allLearners.length; $('tBooks').textContent=allBooks.length; $('tOut').textContent=outNow.length;
-}
-window.searchLearner=function(){
-  const q=($('learnerSearch').value||'').toLowerCase().trim();
-  const box=$('learnerSuggest');
-  if(q.length<2){ box.style.display='none'; return; }
-  const found=allLearners.filter(l=> (String(l.name||'')+' '+String(l.learnerId||l.id||'')+' '+String(l.className||l.class||'')+' '+String(l.grade||'')).toLowerCase().includes(q)).slice(0,8);
-  if(!found.length){ box.innerHTML='<div>No learner found. Check spelling or add learner in Librarian.</div>'; box.style.display='block'; return; }
-  box.innerHTML=found.map(l=>'<div onclick="pickLearner(\''+l.id+'\')">👧 <b>'+esc(l.name||'')+'</b> • ID: '+esc(l.learnerId||l.id)+' • Class: '+esc(l.className||l.class||'')+'</div>').join('');
-  box.style.display='block';
-};
-window.pickLearner=function(id){
-  pickedLearner=allLearners.find(l=>l.id===id); if(!pickedLearner) return;
-  $('learnerPicked').innerHTML='<div class="picked">✅ Learner: <b>'+esc(pickedLearner.name||'')+'</b> • ID: '+esc(pickedLearner.learnerId||pickedLearner.id)+' • Class: '+esc(pickedLearner.className||pickedLearner.class||'')+' <a href="#" onclick="clearLearner();return false;">Change</a></div>';
-  $('learnerSuggest').style.display='none'; $('learnerSearch').value=pickedLearner.name;
-  document.getElementById('bookSearch').focus();
-};
-window.clearLearner=function(){ pickedLearner=null; $('learnerPicked').innerHTML=''; $('learnerSearch').value=''; };
-window.searchBook=function(){
-  const q=($('bookSearch').value||'').toLowerCase().trim();
-  const box=$('bookSuggest');
-  if(q.length<2){ box.style.display='none'; return; }
-  const outIds=new Set(allIssues.filter(i=>!i.returnedAt).map(i=>i.bookId));
-  const found=allBooks.filter(b=> (String(b.title||'')+' '+String(b.barcode||b.id||'')+' '+String(b.isbn||'')+' '+String(b.subject||'')).toLowerCase().includes(q)).slice(0,8);
-  if(!found.length){ box.innerHTML='<div>No book found. Check spelling or add book in Librarian.</div>'; box.style.display='block'; return; }
-  box.innerHTML=found.map(b=>{ const isOut=outIds.has(b.id); return '<div onclick="pickBook(\''+b.id+'\')">📖 <b>'+esc(b.title||'')+'</b> • Barcode: '+esc(b.barcode||b.id)+' • '+esc(b.subject||'')+' '+(isOut?'<span style="color:#dc2626;font-weight:900">⚠️ OUT NOW</span>':'<span style="color:#059669;font-weight:900">✅ AVAILABLE</span>')+'</div>'; }).join('');
-  box.style.display='block';
-};
-window.pickBook=function(id){
-  pickedBook=allBooks.find(b=>b.id===id); if(!pickedBook) return;
-  const isOut=allIssues.some(i=>i.bookId===id && !i.returnedAt);
-  $('bookPicked').innerHTML='<div class="picked" style="'+(isOut?'background:#fee2e2;border-color:#dc2626':'')+'">✅ Book: <b>'+esc(pickedBook.title||'')+'</b> • Barcode: '+esc(pickedBook.barcode||pickedBook.id)+' • Subject: '+esc(pickedBook.subject||'')+' '+(isOut?'<br><b style="color:#dc2626">⚠️ This book is OUT NOW — Pick another book or return it first.</b>':'<br><b style="color:#059669">✅ Available</b>')+' <a href="#" onclick="clearBook();return false;">Change</a></div>';
-  $('bookSuggest').style.display='none'; $('bookSearch').value=pickedBook.title;
-};
-window.clearBook=function(){ pickedBook=null; $('bookPicked').innerHTML=''; $('bookSearch').value=''; };
-window.doIssue=async function(){
-  if(!pickedLearner){ $('issueMsg').innerHTML='<div class="warn">⚠️ Step 1: Pick a Learner first.</div>'; return; }
-  if(!pickedBook){ $('issueMsg').innerHTML='<div class="warn">⚠️ Step 2: Pick a Book first.</div>'; return; }
-  const isOut=allIssues.some(i=>i.bookId===pickedBook.id && !i.returnedAt);
-  if(isOut){ $('issueMsg').innerHTML='<div class="warn">⚠️ This book is already OUT. Return it first, or pick another copy.</div>'; return; }
-  const due=$('dueDate').value||dueDefault();
-  $('issueMsg').innerHTML='<div class="info">⏳ Issuing...</div>';
-  try{
-    const issueId='ISS_'+Date.now();
-    await setDoc(doc(db,'schools',base(),'issues',issueId),{ learnerId:pickedLearner.learnerId||pickedLearner.id, learnerName:pickedLearner.name||'', learnerClass:pickedLearner.className||pickedLearner.class||'', bookId:pickedBook.id, bookTitle:pickedBook.title||'', bookBarcode:pickedBook.barcode||pickedBook.id, issuedBy:login.name||'', issuedAt:new Date().toISOString(), dueDate:due, returnedAt:'', status:'ISSUED' });
-    $('issueMsg').innerHTML='<div class="ok">✅ ISSUED! <b>'+esc(pickedBook.title||'')+'</b> → <b>'+esc(pickedLearner.name||'')+'</b> ('+esc(pickedLearner.className||'')+')<br>Due: <b>'+due+'</b> • Issued by: '+esc(login.name||'')+'<br>Next learner: Pick new learner + book below.</div>';
-    clearLearner(); clearBook();
-    await loadAll();
-    document.getElementById('learnerSearch').focus();
-  }catch(e){ $('issueMsg').innerHTML='<div class="warn">❌ Issue failed: '+esc(e.message)+'<br>FIX: Firebase → Rules → Allow read, write → Publish</div>'; }
-};
-window.renderOut=function(isReturn){
-  const q=((isReturn?$('returnSearch').value:$('outSearch').value)||'').toLowerCase();
-  const box=$(isReturn?'returnBox':'outBox');
-  const outNow=allIssues.filter(i=>!i.returnedAt);
-  const filtered=outNow.filter(i=> !q || (String(i.learnerName||'')+' '+String(i.bookTitle||'')+' '+String(i.bookBarcode||'')).toLowerCase().includes(q));
-  if(!filtered.length){ box.innerHTML='<div class="info">✅ No books out'+(q?' matching search':'')+'. All returned!</div>'; return; }
-  const today=todayStr();
-  let html='<table><tr><th>Learner</th><th>Book</th><th>Issued / Due</th><th>Action</th></tr>';
-  for(const i of filtered){
-    const overdue=i.dueDate && i.dueDate < today;
-    html+='<tr style="'+(overdue?'background:#fee2e2':'')+'"><td><b>'+esc(i.learnerName||'')+'</b><br><span class="small">ID: '+esc(i.learnerId||'')+' • Class: '+esc(i.learnerClass||'')+'</span></td><td><b>'+esc(i.bookTitle||'')+'</b><br><span class="small">Barcode: '+esc(i.bookBarcode||i.bookId)+' • By: '+esc(i.issuedBy||'')+'</span></td><td>'+esc(String(i.issuedAt||'').slice(0,10))+'<br>Due: <b>'+esc(i.dueDate||'')+'</b><br>'+(overdue?'<span style="color:#dc2626;font-weight:900">⚠️ OVERDUE</span>':'<span style="color:#059669;font-weight:900">On Time</span>')+'</td><td><button class="miniBtn" style="background:#059669;color:#fff" onclick="doReturn(\''+i.id+'\')">📥 Return Now</button><button class="miniBtn" style="background:#0a1f4d;color:#fff" onclick="waOverdue(\''+i.id+'\')">📱 WhatsApp Learner</button></td></tr>';
+// ===== LOAD =====
+async function loadAll(){
+  currentUser=getUser();
+  if(!currentUser){ location.href='index.html'; return; }
+  schoolId=currentUser.schoolId;
+  document.getElementById('userLine').innerHTML=`👋 ${esc(currentUser.name)} • ${esc(currentUser.schoolName)} • ${esc(currentUser.role)}`;
+  // Teacher: limit to their class
+  if(currentUser.role==='TEACHER' && currentUser.className){
+    document.getElementById('statusBox').innerHTML=`⚠️ Teacher — You see <b>Class ${esc(currentUser.className)}</b> only.`;
   }
-  html+='</table><div class="small">Out now: '+filtered.length+'</div>'; box.innerHTML=html;
-};
-window.doReturn=async function(id){
-  if(!confirm('Return this book?')) return;
-  try{ await updateDoc(doc(db,'schools',base(),'issues',id),{returnedAt:new Date().toISOString(), returnedBy:login.name||'', status:'RETURNED'}); await loadAll(); alert('✅ Returned!'); }catch(e){ alert('Return failed: '+e.message); }
-};
-window.waOverdue=function(id){
-  const i=allIssues.find(x=>x.id===id); if(!i) return;
-  const learner=allLearners.find(l=> (l.learnerId||l.id)===i.learnerId);
-  const phone=learner?.phone||learner?.parentPhone||'';
-  if(!phone){ alert('No phone for this learner. Add phone in Librarian → Learners.'); return; }
-  let x=String(phone).replace(/\D/g,''); if(x.startsWith('0')) x='27'+x.slice(1);
-  window.open('https://wa.me/'+x+'?text='+encodeURIComponent('Hello, This is '+currentSchoolName+' — Makhanani LTSM (078 023 3263). Book "'+i.bookTitle+'" for '+i.learnerName+' was due '+i.dueDate+'. Please return it tomorrow. Thank you.'),'_blank');
-};
-async function loadSuperSchools(){
   try{
-    const snap=await getDocs(collection(db,'schools'));
-    let schools=[]; snap.forEach(d=>{ schools.push({id:d.id, ...d.data()}); });
-    schools.sort((a,b)=>String(a.schoolName||a.name||'').localeCompare(String(b.schoolName||b.name||'')));
-    let html='<option value="">— Select School —</option>'; for(const s of schools){ html+='<option value="'+esc(s.emis||'')+'">'+esc(s.schoolName||s.name||'')+' — EMIS '+esc(s.emis||'')+'</option>'; }
-    $('superSchoolSelect').innerHTML=html;
-    if(login.emis){ $('superSchoolSelect').value=login.emis; }
-  }catch(e){ $('superSchoolSelect').innerHTML='<option value="">❌ '+esc(e.message)+'</option>'; }
-}
-window.doLogout=function(){ localStorage.removeItem('MAKHANANI_LOGGED_IN'); location.href='index.html'; };
-document.addEventListener('DOMContentLoaded', async ()=>{
-  login=getLogin();
-  if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login</a> first.'; $('blockedBox').style.display='block'; return; }
-  const role=(login.role||'').toUpperCase();
-  // FIX: ALL roles can issue — SUPER ADMIN, ADMIN, PRINCIPAL, LIBRARIAN, TEACHER
-  const allowed=['TEACHER','LIBRARIAN','ADMIN','PRINCIPAL','SUPER ADMIN'];
-  if(!allowed.includes(role)){ $('loginInfo').innerHTML='🔒 Role '+esc(role)+' cannot issue. Login as Teacher / Librarian / Admin.'; $('blockedBox').style.display='block'; return; }
-  $('whoLine').textContent=login.name+' • '+role+' • '+(login.school||'');
-  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+esc(role)+' • '+(login.school||'')+' • WhatsApp 078 023 3263';
-  $('body').style.display='block';
-  $('dueDate').value=dueDefault();
-  if(role==='SUPER ADMIN' || login.school==='ALL SCHOOLS' || login.isPreview){
-    $('superSchoolCard').style.display='block';
-    await loadSuperSchools();
-    $('superSchoolSelect').addEventListener('change', e=>{ currentEmis=e.target.value; const opt=e.target.selectedOptions[0]; currentSchoolName=opt?opt.text.split(' — EMIS')[0]:''; if(currentEmis) loadAll(); });
-    // Auto-load first school if emis from login
-    currentEmis=login.emis||'';
-    if(currentEmis){ const opt=document.querySelector('#superSchoolSelect option[value="'+currentEmis+'"]'); currentSchoolName=opt?opt.text.split(' — EMIS')[0]:(login.school||''); await loadAll(); }
-  } else {
-    currentEmis=login.emis||''; currentSchoolName=login.school||'';
-    await loadAll();
+    const lSnap=await db.collection('schools').doc(schoolId).collection('learners').get();
+    const bSnap=await db.collection('schools').doc(schoolId).collection('books').get();
+    const iSnap=await db.collection('schools').doc(schoolId).collection('issues').get();
+    if(!lSnap.empty || !bSnap.empty || !iSnap.empty){
+      learners=lSnap.docs.map(d=>({id:d.id, ...d.data()}));
+      books=bSnap.docs.map(d=>({id:d.id, ...d.data()}));
+      issues=iSnap.docs.map(d=>({id:d.id, ...d.data()}));
+      // If issues collection has returned too, filter OUT only for display, but keep all for return logic
+      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Firestore — ${schoolId}`;
+      renderAll(); return;
+    }
+    const rSnap=await rtdb.ref('schools/'+schoolId).once('value');
+    const rv=rSnap.val();
+    if(rv && (rv.learners || rv.books)){
+      learners=Object.values(rv.learners||{});
+      books=Object.values(rv.books||{});
+      issues=Object.values(rv.issues||{});
+      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Realtime — ${schoolId}`;
+      renderAll(); return;
+    }
+    throw new Error('No data');
+  }catch(e){
+    console.log('Demo:', e.message);
+    useDemo=true; learners=[...DEMO.learners]; books=[...DEMO.books]; issues=[];
+    document.getElementById('statusBox').innerHTML=`⚠️ Firebase has no learners/books yet — Showing Demo. Add learners/books in Librarian page.`;
+    renderAll();
   }
-  setTab('ISSUE');
-  document.addEventListener('click', e=>{ if(!e.target.closest('#learnerSearch') && !e.target.closest('#learnerSuggest')) $('learnerSuggest').style.display='none'; if(!e.target.closest('#bookSearch') && !e.target.closest('#bookSuggest')) $('bookSuggest').style.display='none'; });
-});
+}
+
+// ===== HELPERS =====
+async function saveIssue(id, data){
+  if(useDemo) return;
+  try{ await db.collection('schools').doc(schoolId).collection('issues').doc(id).set(data, {merge:true}); }catch(e){}
+  try{ await rtdb.ref('schools/'+schoolId+'/issues/'+id).set(data); }catch(e){}
+}
+async function updateBookStatus(barcode, status){
+  const b=books.find(x=>x.barcode===barcode);
+  if(b) b.status=status;
+  if(useDemo) return;
+  try{ await db.collection('schools').doc(schoolId).collection('books').doc(barcode).update({status}); }catch(e){}
+  try{ await rtdb.ref('schools/'+schoolId+'/books/'+barcode).update({status}); }catch(e){}
+}
+
+// ===== FILTER / FIND =====
+function filterLearners(){
+  const q=(document.getElementById('learnerSearch').value||'').toLowerCase();
+  const sel=document.getElementById('learnerSelect');
+  let list=learners;
+  if(currentUser.role==='TEACHER' && currentUser.className) list=list.filter(l=> (l.className||'')===currentUser.className);
+  list=list.filter(l=>(l.name+' '+l.learnerId+' '+l.className).toLowerCase().includes(q));
+  sel.innerHTML='<option value="">-- Pick Learner --</option>'+list.slice(0,50).map(l=>`<option value="${esc(l.id)}">${esc(l.name)} — ${esc(l.learnerId)} — ${esc(l.className)}</option>`).join('');
+  sel.onchange=()=>{
+    const id=sel.value; const l=learners.find(x=>x.id===id);
+    const info=document.getElementById('learnerInfo');
+    if(!l){ info.style.display='none'; return; }
+    info.style.display='block';
+    const outCount=issues.filter(i=>i.learnerId===l.learnerId && i.status==='OUT').length;
+    info.innerHTML=`<b>${esc(l.name)}</b> • ${esc(l.learnerId)} • Class ${esc(l.className)} • Grade ${esc(l.grade||'-')} • Parent: ${esc(l.phone||'No phone')}<br>Books Out: <b>${outCount}</b>`;
+  };
+}
+function findBook(){
+  const bc=document.getElementById('barcodeInput').value.trim().toUpperCase();
+  const info=document.getElementById('bookInfo');
+  if(!bc){ info.style.display='none'; return; }
+  const b=books.find(x=>(x.barcode||'').toUpperCase()===bc);
+  if(!b){ info.style.display='block'; info.innerHTML=`⚠️ Barcode <b>${esc(bc)}</b> not found. Add it in Librarian → Books first.`; return; }
+  info.style.display='block';
+  const out=issues.find(i=>i.barcode===bc && i.status==='OUT');
+  if(out){ info.innerHTML=`⛔ <b>${esc(b.title)}</b> (${esc(b.barcode)}) — <b>ALREADY OUT</b> to ${esc(out.learnerName)} (${esc(out.learnerId)}) • Due ${esc(out.dueDate)}`; }
+  else { info.innerHTML=`✅ <b>${esc(b.title)}</b> (${esc(b.barcode)}) — ${esc(b.subject||'')} Grade ${esc(b.grade||'-')} • Status: ${esc(b.status||'AVAILABLE')}`; }
+}
+
+// ===== ISSUE =====
+async function issueBook(){
+  const learnerId=document.getElementById('learnerSelect').value;
+  const barcode=document.getElementById('barcodeInput').value.trim().toUpperCase();
+  const dueDate=document.getElementById('dueDate').value;
+  const msg=document.getElementById('issueMsg');
+  if(!learnerId){ msg.innerHTML='<div class="warn">⚠️ Pick Learner first.</div>'; return; }
+  if(!barcode){ msg.innerHTML='<div class="warn">⚠️ Scan / Type Barcode.</div>'; return; }
+  if(!dueDate){ msg.innerHTML='<div class="warn">⚠️ Pick Due Date.</div>'; return; }
+  const learner=learners.find(l=>l.id===learnerId);
+  const book=books.find(b=>(b.barcode||'').toUpperCase()===barcode);
+  if(!learner){ msg.innerHTML='<div class="warn">⚠️ Learner not found.</div>'; return; }
+  if(!book){ msg.innerHTML='<div class="warn">⚠️ Book barcode not found. Add it in Librarian → Books.</div>'; return; }
+  const already=issues.find(i=>i.barcode===barcode && i.status==='OUT');
+  if(already){ msg.innerHTML=`<div class="warn">⛔ This book is ALREADY OUT to ${esc(already.learnerName)} (${esc(already.learnerId)}). Return it first.</div>`; return; }
+  const alreadyLearnerHas=issues.find(i=>i.learnerId===learner.learnerId && i.barcode===barcode && i.status==='OUT');
+  if(alreadyLearnerHas){ msg.innerHTML='<div class="warn">⛔ Learner already has this book.</div>'; return; }
+
+  const issueId=barcode+'_'+learner.learnerId+'_'+Date.now();
+  const data={learnerId:learner.learnerId, learnerName:learner.name, className:learner.className, phone:learner.phone||'', barcode, bookTitle:book.title, subject:book.subject||'', dueDate, issueDate:new Date().toISOString().slice(0,10), issuedBy:currentUser.name, schoolId, status:'OUT'};
+  issues.push({id:issueId, ...data});
+  await saveIssue(issueId, data);
+  await updateBookStatus(barcode, 'OUT');
+  msg.innerHTML=`<div class="ok">✅ ISSUED: <b>${esc(book.title)}</b> (${esc(barcode)}) → <b>${esc(learner.name)}</b> (${esc(learner.learnerId)}) • Due ${dueDate}<br>Parent WhatsApp ready below.</div>`;
+  document.getElementById('barcodeInput').value=''; document.getElementById('bookInfo').style.display='none';
+  // WhatsApp parent
+  if(learner.phone){
+    const clean=learner.phone.replace(/\D/g,''); const wa=clean.startsWith('0') ? '27'+clean.slice(1) : clean;
+    const txt=`Hello, this is ${currentUser.schoolName} Library. 📚 Your child ${learner.name} (${learner.learnerId}, ${learner.className}) borrowed: ${book.title} (${barcode}). Please return by ${dueDate}. If lost, replace or pay. Thank you. — ${currentUser.schoolName}`;
+    if(confirm('✅ Issued. WhatsApp parent now?\n\n'+txt)) window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(txt),'_blank');
+  }
+  renderAll(); filterLearners();
+}
+
+// ===== RETURN =====
+async function returnBook(){
+  const bc=(document.getElementById('returnBarcode').value.trim().toUpperCase());
+  const msg=document.getElementById('returnMsg');
+  if(!bc){ msg.innerHTML='<div class="warn">⚠️ Scan / Type Barcode to return.</div>'; return; }
+  const issue=issues.find(i=>i.barcode===bc && i.status==='OUT');
+  if(!issue){ msg.innerHTML=`<div class="warn">⚠️ Barcode ${esc(bc)} is NOT out. Check Books Out list.</div>`; return; }
+  issue.status='RETURNED'; issue.returnDate=new Date().toISOString().slice(0,10);
+  await saveIssue(issue.id, issue);
+  await updateBookStatus(bc, 'AVAILABLE');
+  msg.innerHTML=`<div class="ok">✅ RETURNED: <b>${esc(issue.bookTitle)}</b> (${esc(bc)}) from <b>${esc(issue.learnerName)}</b> (${esc(issue.learnerId)})</div>`;
+  document.getElementById('returnBarcode').value='';
+  renderAll();
+}
+async function returnById(id){
+  const issue=issues.find(i=>i.id===id); if(!issue) return;
+  issue.status='RETURNED'; issue.returnDate=new Date().toISOString().slice(0,10);
+  await saveIssue(id, issue); await updateBookStatus(issue.barcode, 'AVAILABLE');
+  renderAll();
+}
+function whatsappParent(issue){
+  const learner=learners.find(l=>l.learnerId===issue.learnerId);
+  const phone=learner?.phone || issue.phone || '';
+  if(!phone){ alert('No parent phone for this learner. Add phone in Librarian → Learners.'); return; }
+  const clean=phone.replace(/\D/g,''); const wa=clean.startsWith('0') ? '27'+clean.slice(1) : clean;
+  const txt=`Hello, this is ${currentUser.schoolName} Library. ⚠️ OVERDUE: Your child ${issue.learnerName} (${issue.learnerId}, ${issue.className}) has not returned: ${issue.bookTitle} (${issue.barcode}) — Was due ${issue.dueDate}. Please return tomorrow, or replace / pay. Thank you. — ${currentUser.schoolName}`;
+  window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(txt),'_blank');
+}
+function whatsappAllOverdue(){
+  const today=new Date().toISOString().slice(0,10);
+  const overdue=issues.filter(i=>i.status==='OUT' && i.dueDate && i.dueDate < today);
+  if(!overdue.length){ alert('No overdue books.'); return; }
+  if(!confirm(`WhatsApp ${overdue.length} overdue parents one by one?`)) return;
+  overdue.forEach((o,idx)=>setTimeout(()=>whatsappParent(o), idx*800));
+}
+
+// ===== RENDER =====
+function renderAll(){
+  const q=(document.getElementById('searchBox').value||'').toLowerCase();
+  const today=new Date().toISOString().slice(0,10);
+  const outIssues=issues.filter(i=>i.status==='OUT');
+  let displayOut=outIssues;
+  if(currentUser.role==='TEACHER' && currentUser.className) displayOut=displayOut.filter(i=>i.className===currentUser.className);
+  const fOut=displayOut.filter(i=>(i.learnerName+' '+i.learnerId+' '+i.bookTitle+' '+i.barcode).toLowerCase().includes(q));
+  const overdue=outIssues.filter(i=>i.dueDate && i.dueDate < today);
+  document.getElementById('kLearners').textContent=learners.length;
+  document.getElementById('kBooks').textContent=books.length;
+  document.getElementById('kOut').textContent=outIssues.length;
+  document.getElementById('kOverdue').textContent=overdue.length;
+
+  document.getElementById('returnList').innerHTML = fOut.length ? `<table><tr><th>Learner</th><th>Book</th><th>Due</th><th>Action</th></tr>${fOut.map(i=>`<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}</td><td>${esc(i.dueDate)} ${i.dueDate < today ? '<b style="color:#dc2626">OVERDUE</b>' : ''}</td><td><button class="btn-small btn-blue" onclick="returnById('${esc(i.id)}')">📥 Return</button></td></tr>`).join('')}</table>` : '<p class="small">No books out.</p>';
+  document.getElementById('outList').innerHTML = fOut.length ? `<table><tr><th>Learner</th><th>Book</th><th>Issued</th><th>Due</th><th>Action</th></tr>${fOut.map(i=>`<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}</td><td>${esc(i.issueDate||'-')}</td><td>${esc(i.dueDate)} ${i.dueDate < today ? '<b style="color:#dc2626">OVERDUE</b>' : ''}</td><td><button class="btn-small btn-blue" onclick="returnById('${esc(i.id)}')">📥 Return</button> <button class="btn-small btn-gold" onclick="whatsappParent(${JSON.stringify(i).replace(/"/g,'&quot;')})">📱 Parent</button></td></tr>`).join('')}</table>` : '<p class="small">No books out.</p>';
+  const fOver=overdue.filter(i=>(i.learnerName+' '+i.bookTitle+' '+i.barcode).toLowerCase().includes(q));
+  document.getElementById('overdueList').innerHTML = fOver.length ? `<table><tr><th>Learner</th><th>Book</th><th>Due</th><th>Days Late</th><th>Action</th></tr>${fOver.map(i=>{
+    const days=Math.ceil((new Date(today)-new Date(i.dueDate))/86400000);
+    return `<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}<br>Parent: ${esc(i.phone||'-')}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}</td><td>${esc(i.dueDate)}</td><td><b style="color:#dc2626">${days} days</b></td><td><button class="btn-small btn-gold" onclick="whatsappParent(${JSON.stringify(i).replace(/"/g,'&quot;')})">📱 WhatsApp Parent</button> <button class="btn-small btn-blue" onclick="returnById('${esc(i.id)}')">📥 Return</button></td></tr>`;
+  }).join('')}</table>` : '<p class="small">No overdue books. 🎉</p>';
+}
+loadAll();
 </script>
 </body>
 </html>
