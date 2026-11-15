@@ -36,7 +36,6 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 </header>
 <div class="wrap">
 
-<!-- KPI -->
 <div class="kpi">
 <div><b id="kpiLearners">0</b><span>👩‍🎓 LEARNERS — WHS</span></div>
 <div><b id="kpiBooks">0</b><span>📚 TEXTBOOKS — WHS</span></div>
@@ -44,7 +43,6 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 <div><b id="kpiUsers">0</b><span>👥 USERS — WHS</span></div>
 </div>
 
-<!-- TABS -->
 <div class="tabs">
 <button id="tabBtnOverview" class="active" onclick="showTab('overview')">📊 Overview</button>
 <button id="tabBtnAdd" onclick="showTab('add')">➕ Add User</button>
@@ -52,7 +50,6 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 <button id="tabBtnReports" onclick="showTab('reports')">📊 Reports</button>
 </div>
 
-<!-- OVERVIEW -->
 <div id="tab-overview" class="tab active"><div class="card">
 <h2>📊 Whole School — WORDSWORTH HIGH SCHOOL — By Grade / Category</h2>
 <div class="row">
@@ -64,11 +61,10 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 <div class="row"><button class="btn btn-green" style="flex:1" onclick="location.href='learners.html'">👩‍🎓 See All Learners →</button><button class="btn btn-gold" style="flex:1" onclick="location.href='books.html'">📚 See All Textbooks →</button></div>
 </div></div>
 
-<!-- ADD USER -->
 <div id="tab-add" class="tab"><div class="card">
 <h2>➕ Add User — For WORDSWORTH Only</h2>
 <label>👤 Full Name *</label><input id="userName" placeholder="e.g. Vusi Chauke">
-<label>📧 Email *</label><input id="userEmail" placeholder="e.g. librarian@wordsworth.co.za" value="librarian@wordsworth.co.za">
+<label>📧 Email *</label><input id="userEmail" placeholder="e.g. librarian@wordsworth.co.za">
 <label>🔐 Password * — Give To User</label><input id="userPass" placeholder="e.g. 1234" value="1234">
 <label>👤 Role * — Dropdown — REQUIRED ▼</label>
 <select id="userRole" onchange="onRoleChange()">
@@ -88,16 +84,14 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 <div class="info">Teacher → Must pick Grade + Class. Teacher sees only that class, e.g. <b>10A</b>.<br>Librarian / Principal → <b>All Classes</b> — Sees whole school.</div>
 </div></div>
 
-<!-- USERS -->
 <div id="tab-users" class="tab"><div class="card">
 <h2>👥 Users — WORDSWORTH Only — <span id="usersCount">0</span></h2>
 <div style="overflow-x:auto"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Grade / Class</th><th>Action</th></tr></thead><tbody id="usersTable"></tbody></table></div>
 </div></div>
 
-<!-- REPORTS -->
 <div id="tab-reports" class="tab"><div class="card">
 <h2>📊 Reports — Dropdowns Required</h2>
-<div class="warn">⚠️ <b>All dropdowns below are REQUIRED. No selection = No report shown. Export button DISABLED until picked.</b><br>Grade / Class dropdowns optional for Teacher — Principal must pick Grade + Category + Report Type.</div>
+<div class="warn">⚠️ <b>All dropdowns below are REQUIRED. No selection = No report shown. Export button DISABLED until picked.</b></div>
 <label>📊 Report Type * — Dropdown — REQUIRED ▼</label>
 <select id="reportType" onchange="checkReports()">
 <option value="">-- Pick Report Type * --</option>
@@ -121,10 +115,19 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 
 </div>
 <script>
-// FIREBASE - REPLACE with your config from index.html
-const firebaseConfig={apiKey:"YOUR_API_KEY",authDomain:"YOUR_PROJECT.firebaseapp.com",databaseURL:"https://YOUR_PROJECT-default-rtdb.firebaseio.com",projectId:"YOUR_PROJECT",storageBucket:"YOUR_PROJECT.appspot.com",messagingSenderId:"YOUR_SENDER",appId:"YOUR_APP"};
+// FIREBASE - MAKHANANI LTSM - YOUR REAL CONFIG - Compat Version - Already Filled
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const rtdb=firebase.database();
+const rtdb = firebase.database();
 let user=null, schoolId='WHS', prefix='WHS', schoolName='WORDSWORTH HIGH SCHOOL (WHS)';
 try{ user=JSON.parse(localStorage.getItem('makhanani_user')||'null'); if(user){ schoolId=user.schoolId||'WHS'; prefix=user.prefix||'WHS'; schoolName=user.schoolName||schoolName; } }catch(e){}
 document.getElementById('schoolLine').textContent=schoolName+' • Prefix '+prefix+' • EMIS 700310854 • Grades 8-12';
@@ -166,7 +169,7 @@ async function loadData(){
     let bsnap=await rtdb.ref('textbooks/'+schoolId).once('value'); books=Object.entries(bsnap.val()||{}).map(([id,v])=>({id,...v}));
     let lsnap=await rtdb.ref('learners/'+schoolId).once('value'); learners=Object.entries(lsnap.val()||{}).map(([id,v])=>({id,...v}));
     let usnap=await rtdb.ref('users/'+schoolId).once('value'); users=Object.entries(usnap.val()||{}).map(([id,v])=>({id,...v}));
-  }catch(e){ console.log(e); }
+  }catch(e){ console.log('Firebase load error',e); }
   if(books.length===0){
     books=[
       {id:'1',number:prefix+'000001',title:'Maths Grade 10 Textbook',category:'Maths',grade:'10',status:'Free',learnerName:''},
@@ -174,14 +177,14 @@ async function loadData(){
       {id:'3',number:prefix+'000003',title:'Life Sciences Grade 11',category:'Life Sciences',grade:'11',status:'Free',learnerName:''},
     ];
     learners=[{id:'1',learnerId:'10A001',name:'Thabo M',grade:'10',className:'A'}];
-    users=[{id:'1',name:'Vusi Chauke',email:'vusichauke3037@gmail.com',role:'Principal',className:'All Classes'}];
+    if(users.length===0) users=[{id:'1',name:'Vusi Chauke',email:'vusichauke3037@gmail.com',role:'Principal',className:'All Classes'}];
   }
   document.getElementById('kpiLearners').textContent=learners.length;
   document.getElementById('kpiBooks').textContent=books.length;
   document.getElementById('kpiIssued').textContent=books.filter(b=>b.status==='Issued').length;
   document.getElementById('kpiUsers').textContent=users.length;
   document.getElementById('usersCount').textContent=users.length;
-  document.getElementById('usersTable').innerHTML=users.map(u=>`<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td><td>${u.grade? 'Gr '+u.grade+' ':''}${u.className||'All Classes'}</td><td><button class="btn btn-grey" onclick="deleteUser('${u.id}')">🗑️</button></td></tr>`).join('');
+  document.getElementById('usersTable').innerHTML=users.length?users.map(u=>`<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td><td>${u.grade?'Gr '+u.grade+' ':''}${u.className||'All Classes'}</td><td><button class="btn btn-grey" onclick="deleteUser('${u.id}')">🗑️</button></td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;padding:20px">No users yet — Add one in ➕ Add User tab.</td></tr>';
   renderOverview(); checkReports();
 }
 function renderOverview(){
@@ -207,13 +210,13 @@ async function addUser(){
     if(!cls || cls==='All Classes'){ msg.innerHTML='<div class="warn">⚠️ Teacher needs Class — Pick Class A / B / C / D / E.</div>'; return; }
   } else { cls='All Classes'; grade=''; }
   let rec={name,email,role,grade,className:cls,schoolId,prefix,schoolName,password:pass,createdAt:Date.now()};
-  try{ let ref=rtdb.ref('users/'+schoolId).push(); await ref.set(rec); rec.id=ref.key; }catch(e){}
+  try{ let ref=rtdb.ref('users/'+schoolId).push(); await ref.set(rec); rec.id=ref.key; msg.innerHTML=`<div class="ok">✅ User Added to Firebase: <b>${name}</b> — <b>${email}</b> — Role: <b>${role}</b> — ${role==='Teacher'?'Grade '+grade+' Class '+cls:'All Classes — Whole School'}<br>Login with Email + Password <b>${pass}</b></div>`; }
+  catch(e){ msg.innerHTML=`<div class="warn">⚠️ Firebase save failed: ${e.message} — Check Rules in Firebase Console.</div>`; return; }
   users.push({...rec,id:rec.id||Date.now()});
-  msg.innerHTML=`<div class="ok">✅ User Added: <b>${name}</b> — <b>${email}</b> — Role: <b>${role}</b> — ${role==='Teacher'?'Grade '+grade+' Class '+cls:'All Classes — Whole School'}<br>Login with Email + Password <b>${pass}</b></div>`;
   document.getElementById('userName').value=''; document.getElementById('userEmail').value='';
   document.getElementById('kpiUsers').textContent=users.length; document.getElementById('usersCount').textContent=users.length;
   document.getElementById('usersTable').innerHTML=users.map(u=>`<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td><td>${u.grade?'Gr '+u.grade+' ':''}${u.className||'All Classes'}</td><td><button class="btn btn-grey" onclick="deleteUser('${u.id}')">🗑️</button></td></tr>`).join('');
-  showTab('users');
+  setTimeout(()=>showTab('users'),800);
 }
 async function deleteUser(id){ if(!confirm('Delete this user?')) return; users=users.filter(u=>String(u.id)!==String(id)); try{ await rtdb.ref('users/'+schoolId+'/'+id).remove(); }catch(e){} loadData(); }
 function checkReports(){
