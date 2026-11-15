@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makhanani LTSM — Upload DBE Schools — Super Admin Only</title><meta name="theme-color" content="#0a1f4d">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const rtdb = firebase.database();
+</script>
+<style>
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#111827;color:#111}
+header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;line-height:1.6;font-size:13px}
+header img{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;display:block;margin:0 auto 10px}
+main{max-width:1100px;margin:auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}h3{color:#0a1f4d;margin:14px 0 6px;font-size:15px}
+p,li{font-size:14px;line-height:1.6}ul,ol{padding-left:20px}li{margin-bottom:6px}
+.btn{padding:11px 14px;border:none;border-radius:8px;font-weight:900;font-size:13px;cursor:pointer;margin-top:8px}
+.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}
+.btn-full{width:100%}.btn-small{padding:6px 9px;font-size:11px;margin:2px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
+.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
+.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
+.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
+.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:10px;line-height:1.6;margin-top:10px}
+.topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
+.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
+input,select,textarea{width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px}label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:10px}
+textarea{height:160px;font-family:monospace;font-size:12px}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}
+.badge-green{background:#dcfce7;color:#166534}.badge-red{background:#fee2e2;color:#991b1b}.badge-orange{background:#fef3c7;color:#92400e}.badge-blue{background:#dbeafe;color:#1e40af}.badge-grey{background:#e2e8f0;color:#334155}
+.small{font-size:12px;color:#64748b}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{padding:10px 14px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
+.progress{height:22px;background:#e2e8f0;border-radius:20px;overflow:hidden;margin-top:10px;display:none}.progress div{height:100%;background:#059669;color:#fff;font-size:12px;font-weight:900;text-align:center;line-height:22px;width:0%}
+.formatBox{background:#0a1f4d;color:#fff;border-radius:12px;padding:14px;margin-top:10px;font-family:monospace;font-size:13px;line-height:1.7}
+.formatBox b{color:#fde68a}
+.filterRow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+.townChips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.townChips button{padding:7px 11px;border:2px solid #0a1f4d;background:#fff;color:#0a1f4d;border-radius:20px;font-weight:900;font-size:11px;cursor:pointer}
+.townChips button.active{background:#0a1f4d;color:#fff}
+.townChips button.clear{background:#fee2e2;border-color:#dc2626;color:#991b1b}
+@media(max-width:700px){.kpi{grid-template-columns:1fr 1fr}.filterRow{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+<img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+<h1>🏫 Upload DBE Schools — Super Admin Only</h1>
+<p><b>For Vusi Chauke Only — Do NOT Send To Schools</b><br>Xintimani Group • 078 023 3263<br>Format: <b>EMIS + NAME + TOWN + PROVINCE</b> — With TOWN Filter</p>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="super_admin.html">👑 Super Admin</a><a href="home.html">🏠 Home</a><a href="founder.html">👑 Founder</a><a href="financials.html">💰 Financials</a></div>
+</header>
+<main>
+
+<div class="card">
+<div class="warn"><b>⚠️ PRIVATE:</b> DBE Schools list = Your leads. <b>Do NOT send to schools.</b> Uploading here does <b>NOT</b> give them login. Only saves as LEADS.</div>
+<div id="authMsg"></div>
+<button class="btn btn-blue" onclick="loadLeads()">🔄 Refresh Leads</button>
+<button class="btn btn-green" onclick="exportLeadsCSV()">📥 Export Leads CSV (EMIS,NAME,TOWN,PROVINCE)</button>
+<button class="btn btn-gold" onclick="downloadTemplate()">📄 Download CSV Template — EMIS,NAME,TOWN,PROVINCE</button>
+</div>
+
+<div class="card">
+<h2>📊 DBE Leads At A Glance</h2>
+<div class="kpi">
+<div><b id="kTotal">—</b><span>Total DBE Leads</span></div>
+<div><b id="kContacted">—</b><span>Contacted</span></div>
+<div><b id="kInterested">—</b><span>Interested / Demo</span></div>
+<div><b id="kConverted">—</b><span>Converted To Active</span></div>
+<div><b id="kNotContacted">—</b><span>Not Contacted Yet</span></div>
+<div><b id="kGauteng">—</b><span>Gauteng</span></div>
+<div><b id="kLimpopo">—</b><span>Limpopo</span></div>
+<div><b id="kOther">—</b><span>Other Provinces</span></div>
+</div>
+<div id="townKpiBox"></div>
+</div>
+
+<div class="card">
+<div class="tabs">
+<button id="tabBtn-upload" class="active" onclick="showTab('upload')">📤 Upload CSV — EMIS,NAME,TOWN,PROVINCE</button>
+<button id="tabBtn-paste" onclick="showTab('paste')">📋 Paste / Type</button>
+<button id="tabBtn-single" onclick="showTab('single')">➕ Add 1 School</button>
+<button id="tabBtn-list" onclick="showTab('list')">📋 All DBE Leads + Town Filter</button>
+</div>
+
+<div id="tab-upload">
+<h3>📤 Upload CSV — Format: EMIS,NAME,TOWN,PROVINCE</h3>
+<div class="formatBox"><b>FORMAT — 4 COLUMNS ONLY — IN THIS ORDER:</b><br>EMIS,NAME,TOWN,PROVINCE<br>123456789,THUTO PRIMARY,Alexandra,GAUTENG<br>987654321,NKOSI SECONDARY,Polokwane,LIMPOPO<br>555444333,KGOMO PRIMARY,Soweto,GAUTENG</div>
+<ul>
+<li><b>EMIS:</b> DBE EMIS number — Unique. If EMIS already exists, it will SKIP.</li>
+<li><b>NAME:</b> School Name — e.g. THUTO PRIMARY. Saved in CAPS.</li>
+<li><b>TOWN:</b> Town / Area — e.g. Alexandra, Polokwane, Soweto, Tembisa. This is Town, not District.</li>
+<li><b>PROVINCE:</b> GAUTENG / LIMPOPO / MPUMALANGA / KZN / etc. Use CAPS.</li>
+<li><b>First row = Header:</b> Must be <b>EMIS,NAME,TOWN,PROVINCE</b> — System will skip header automatically.</li>
+<li><b>Max per upload:</b> 500 schools at a time.</li>
+<li><b>Old 12-column files still work:</b> Auto-detects old format too.</li>
+</ul>
+<label>Choose CSV File (.csv) — From DBE / Excel → Save As CSV</label>
+<input type="file" id="csvFile" accept=".csv,text/csv">
+<div id="uploadPreview"></div>
+<button class="btn btn-green btn-full" onclick="uploadCSV()">📤 UPLOAD DBE SCHOOLS →</button>
+<div class="progress" id="uploadProgress"><div id="uploadBar">0%</div></div>
+<div id="uploadMsg"></div>
+<div class="info"><b>How to make CSV in Excel (1 min):</b><br>1) Open Excel → Column A = EMIS, B = NAME, C = TOWN, D = PROVINCE<br>2) Type / Paste DBE list<br>3) File → Save As → <b>CSV (Comma delimited) (*.csv)</b><br>4) Upload that .csv file here.</div>
+</div>
+
+<div id="tab-paste" style="display:none">
+<h3>📋 Paste / Type — Format: EMIS,NAME,TOWN,PROVINCE</h3>
+<p>Copy rows from Excel and paste. One school per line:</p>
+<div class="formatBox">123456789,THUTO PRIMARY,Alexandra,GAUTENG<br>987654321,NKOSI SECONDARY,Polokwane,LIMPOPO<br>555444333,KGOMO PRIMARY,Soweto,GAUTENG</div>
+<textarea id="pasteBox" placeholder="Paste here...&#10;123456789,THUTO PRIMARY,Alexandra,GAUTENG&#10;987654321,NKOSI SECONDARY,Polokwane,LIMPOPO"></textarea>
+<button class="btn btn-green btn-full" onclick="uploadPaste()">📋 IMPORT PASTED SCHOOLS →</button>
+<div id="pasteMsg"></div>
+</div>
+
+<div id="tab-single" style="display:none">
+<h3>➕ Add 1 DBE School — Format: EMIS,NAME,TOWN,PROVINCE</h3>
+<label>EMIS *</label><input id="sEmis" placeholder="e.g. 123456789">
+<label>NAME — School Name *</label><input id="sName" placeholder="e.g. THUTO PRIMARY">
+<label>TOWN * — Type town, or pick from existing towns below</label><input id="sTown" placeholder="e.g. Alexandra" list="townList">
+<datalist id="townList"></datalist>
+<label>PROVINCE * — Dropdown</label><select id="sProvince"><option value="">-- Select Province --</option><option>GAUTENG</option><option>LIMPOPO</option><option>MPUMALANGA</option><option>NORTH WEST</option><option>FREE STATE</option><option>KWA-ZULU NATAL</option><option>EASTERN CAPE</option><option>WESTERN CAPE</option><option>NORTHERN CAPE</option></select>
+<label>Principal Name (Optional — Add Later)</label><input id="sPrincipal" placeholder="e.g. Mr. Chauke">
+<label>Principal Phone (Optional — Add Later)</label><input id="sPhone" placeholder="e.g. 0780233263">
+<label>Principal Email (Optional)</label><input id="sEmail" type="email" placeholder="e.g. principal@thuto.co.za">
+<label>Status — Dropdown</label><select id="sStatus"><option>NOT CONTACTED</option><option>CONTACTED</option><option>INTERESTED</option><option>DEMO</option><option>CONVERTED</option><option>NOT INTERESTED</option></select>
+<label>Notes</label><input id="sNotes" placeholder="e.g. Met at circuit meeting">
+<button class="btn btn-green btn-full" onclick="addSingle()">➕ ADD SCHOOL LEAD →</button>
+<div id="singleMsg"></div>
+</div>
+
+<div id="tab-list" style="display:none">
+<h3>📋 All DBE Leads — Search + Province + TOWN + Status</h3>
+<div class="filterRow">
+<div><label>🔍 Search EMIS / NAME / TOWN</label><input id="searchBox" placeholder="e.g. 123456, THUTO, Alexandra" oninput="renderLeads()"></div>
+<div><label>📍 Filter Province — Dropdown</label><select id="filterProvince" onchange="renderLeads()"><option value="">All Provinces</option><option>GAUTENG</option><option>LIMPOPO</option><option>MPUMALANGA</option><option>NORTH WEST</option><option>FREE STATE</option><option>KWA-ZULU NATAL</option><option>EASTERN CAPE</option><option>WESTERN CAPE</option><option>NORTHERN CAPE</option></select></div>
+<div><label>🏘️ Filter TOWN — Dropdown (Auto From Your Data)</label><select id="filterTown" onchange="setTownFilter(this.value)"><option value="">All Towns</option></select></div>
+<div><label>Filter Status — Dropdown</label><select id="filterStatus" onchange="renderLeads()"><option value="">All Status</option><option>NOT CONTACTED</option><option>CONTACTED</option><option>INTERESTED</option><option>DEMO</option><option>CONVERTED</option><option>NOT INTERESTED</option></select></div>
+</div>
+<div class="goldBox" style="margin-top:10px"><b>🏘️ Quick Town Chips — Tap a town to filter:</b><br><span class="small">Chips auto-update from your uploaded schools. Tap again to clear.</span></div>
+<div id="townChips" class="townChips"></div>
+<div id="filterSummary" class="info" style="display:none"></div>
+<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+<button class="btn btn-blue" onclick="bulkMarkContacted()">📞 Mark All Visible As CONTACTED</button>
+<button class="btn btn-grey" onclick="clearAllFilters()">✖️ Clear All Filters</button>
+<button class="btn btn-green" onclick="exportVisibleCSV()">📥 Export Visible (Filtered) CSV</button>
+</div>
+<div id="leadsList"></div>
+</div>
+</div>
+
+<div class="card">
+<h2>📱 WhatsApp Templates — For DBE Leads</h2>
+<table><tr><th>When</th><th>Message</th></tr>
+<tr><td><b>First Contact</b><br>(If you have Principal phone)</td><td><i>Hello [Principal], I am Vusi Chauke from Xintimani Group — Makhanani LTSM. We help schools stop losing library books. Scan barcode, see % Retrieval in 10 seconds. Can I send you Home link? Home: YOUR-LINK/home.html — Demo 7 days FREE. Vusi 078 023 3263</i></td></tr>
+<tr><td><b>No Phone Yet?</b></td><td>Find Principal phone via Circuit / School visit / Google school name + town. Add phone via ✏️ Edit, then WhatsApp.</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h2>⚡ What Happens After Upload?</h2>
+<ol>
+<li><b>Lead saved</b> in Firestore `dbe_leads` — With EMIS as ID — NOT in `schools` — Does NOT give login.</li>
+<li><b>You add Principal phone</b> via ✏️ Edit (or when you visit school).</li>
+<li><b>You WhatsApp</b> principal from this page — 1 tap per school.</li>
+<li><b>Principal says YES</b> → Click <b>✅ Convert To Active</b> → Creates real school in `schools` + Principal login + DEMO 7 days → WhatsApp Principal login.</li>
+<li><b>Super Admin</b> shows converted schools as Active. DBE Leads shows them as CONVERTED.</li>
+</ol>
+</div>
+
+</main>
+<script>
+let ALL_LEADS = [];
+let CURRENT_TOWN = '';
+function esc(s){ return String(s||'').replace(/</g,'&lt;'); }
+function showTab(name){
+  ['upload','paste','single','list'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none';
+    document.getElementById('tabBtn-'+t).classList.toggle('active', t===name);
+  });
+  if(name==='list') renderLeads();
+}
+function cleanPhone(p){
+  let c=String(p||'').replace(/\D/g,'');
+  if(c.startsWith('27')) c=c.slice(2);
+  if(c.startsWith('0')) c=c.slice(1);
+  return c;
+}
+function normTown(t){
+  // Normalise town for grouping: Trim, Uppercase first letter, collapse spaces
+  const s=String(t||'').trim().replace(/\s+/g,' ');
+  if(!s) return '';
+  return s.toUpperCase();
+}
+function displayTown(t){
+  const s=String(t||'').trim();
+  if(!s) return '—';
+  // Title case for display: ALEXANDRA -> Alexandra, SOWETO -> Soweto
+  return s.toLowerCase().replace(/\b\w/g, c=>c.toUpperCase());
+}
+function statusBadge(st){
+  const s=(st||'NOT CONTACTED').toUpperCase();
+  if(s==='CONVERTED') return '<span class="badge badge-green">✅ CONVERTED</span>';
+  if(s==='DEMO' || s==='INTERESTED') return '<span class="badge badge-blue">💡 '+esc(s)+'</span>';
+  if(s==='CONTACTED') return '<span class="badge badge-orange">📞 CONTACTED</span>';
+  if(s==='NOT INTERESTED') return '<span class="badge badge-red">❌ NOT INTERESTED</span>';
+  return '<span class="badge badge-grey">⏳ NOT CONTACTED</span>';
+}
+function parseCSVLine(line){
+  const out=[]; let cur='', inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){ if(inQ && line[i+1]==='"'){ cur+='"'; i++; } else inQ=!inQ; }
+    else if(ch===',' && !inQ){ out.push(cur.trim()); cur=''; }
+    else cur+=ch;
+  }
+  out.push(cur.trim());
+  return out;
+}
+function rowsFromText(text){
+  const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+  if(lines.length===0) return [];
+  const firstCols=parseCSVLine(lines[0]).map(c=>c.toLowerCase().trim());
+  const isHeader = firstCols.includes('emis') || firstCols.includes('name') || firstCols.includes('school name') || firstCols.includes('school');
+  const dataLines = isHeader ? lines.slice(1) : lines;
+  const isNewFormat = isHeader && firstCols[0]==='emis' && firstCols[1]==='name';
+  const isOldFormat = isHeader && (firstCols[0].includes('school'));
+  return dataLines.map(line=>{
+    const c=parseCSVLine(line);
+    if(isNewFormat){
+      return { emis:(c[0]||'').trim(), schoolName:(c[1]||'').toUpperCase().trim(), town:(c[2]||'').trim(), province:(c[3]||'').toUpperCase().trim(), district:'', circuit:'', principalName:'', principalPhone:'', principalEmail:'', phase:'', quintile:'', status:'NOT CONTACTED', notes:'' };
+    } else if(isOldFormat){
+      return { schoolName:(c[0]||'').toUpperCase().trim(), emis:(c[1]||'').trim(), province:(c[2]||'').toUpperCase().trim(), district:(c[3]||'').trim(), circuit:(c[4]||'').trim(), principalName:(c[5]||'').trim(), principalPhone:(c[6]||'').trim(), principalEmail:(c[7]||'').toLowerCase().trim(), phase:(c[8]||'').toUpperCase().trim(), quintile:(c[9]||'').trim(), status:(c[10]||'NOT CONTACTED').toUpperCase().trim() || 'NOT CONTACTED', notes:(c[11]||'').trim(), town:(c[4]||'').trim() };
+    } else {
+      const firstIsNumeric = /^\d+$/.test((c[0]||'').trim());
+      if(firstIsNumeric && c.length>=4){
+        return { emis:(c[0]||'').trim(), schoolName:(c[1]||'').toUpperCase().trim(), town:(c[2]||'').trim(), province:(c[3]||'').toUpperCase().trim(), district:'', circuit:'', principalName:'', principalPhone:'', principalEmail:'', phase:'', quintile:'', status:'NOT CONTACTED', notes:'' };
+      }
+      return { schoolName:(c[0]||'').toUpperCase().trim(), emis:(c[1]||'').trim(), province:(c[2]||'').toUpperCase().trim(), district:(c[3]||'').trim(), circuit:(c[4]||'').trim(), principalName:(c[5]||'').trim(), principalPhone:(c[6]||'').trim(), principalEmail:(c[7]||'').toLowerCase().trim(), phase:(c[8]||'').toUpperCase().trim(), quintile:(c[9]||'').trim(), status:(c[10]||'NOT CONTACTED').toUpperCase().trim()||'NOT CONTACTED', notes:(c[11]||'').trim(), town:(c[4]||'').trim() };
+    }
+  }).filter(r=>r.schoolName.length>1);
+}
+async function loadLeads(){
+  const msg=document.getElementById('authMsg');
+  try{
+    const u=JSON.parse(localStorage.getItem('makhanani_user')||'null');
+    if(!u || !['ADMIN','SUPER_ADMIN'].includes((u.role||'').toUpperCase())){
+      msg.innerHTML='<div class="warn">⚠️ You must login as <b>ADMIN / SUPER_ADMIN</b> to see this page. <button class="btn btn-blue" onclick="location.href=\'index.html\'">Go To Login →</button><br>Demo Admin: admin@thuto.co.za / 1234</div>';
+      document.getElementById('leadsList').innerHTML='<div class="warn">Login as Admin first.</div>';
+      return;
+    }
+    msg.innerHTML=`<div class="ok">✅ Logged in as <b>${esc(u.name)}</b> — ${esc(u.role)}</div>`;
+  }catch(e){}
+  try{
+    const snap=await db.collection('dbe_leads').orderBy('schoolName').get();
+    ALL_LEADS = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  }catch(e){
+    try{ const snap=await db.collection('dbe_leads').get(); ALL_LEADS = snap.docs.map(d=>({id:d.id, ...d.data()})); }catch(e2){ document.getElementById('leadsList').innerHTML='<div class="warn">⚠️ Could not load leads: '+esc(e2.message)+'</div>'; return; }
+  }
+  updateKPIs(); buildTownFilter(); renderLeads();
+}
+function updateKPIs(){
+  const total=ALL_LEADS.length;
+  const contacted=ALL_LEADS.filter(l=>['CONTACTED','INTERESTED','DEMO','CONVERTED'].includes((l.status||'').toUpperCase())).length;
+  const interested=ALL_LEADS.filter(l=>['INTERESTED','DEMO'].includes((l.status||'').toUpperCase())).length;
+  const converted=ALL_LEADS.filter(l=>(l.status||'').toUpperCase()==='CONVERTED').length;
+  const notContacted=ALL_LEADS.filter(l=>(l.status||'').toUpperCase()==='NOT CONTACTED' || !(l.status)).length;
+  const gauteng=ALL_LEADS.filter(l=>(l.province||'').toUpperCase().includes('GAUTENG')).length;
+  const limpopo=ALL_LEADS.filter(l=>(l.province||'').toUpperCase().includes('LIMPOPO')).length;
+  document.getElementById('kTotal').textContent=total;
+  document.getElementById('kContacted').textContent=contacted;
+  document.getElementById('kInterested').textContent=interested;
+  document.getElementById('kConverted').textContent=converted;
+  document.getElementById('kNotContacted').textContent=notContacted;
+  document.getElementById('kGauteng').textContent=gauteng;
+  document.getElementById('kLimpopo').textContent=limpopo;
+  document.getElementById('kOther').textContent=total-gauteng-limpopo;
+  // Top towns KPI
+  const townCounts={};
+  ALL_LEADS.forEach(l=>{ const t=normTown(l.town||l.district||l.circuit||''); if(t) townCounts[t]=(townCounts[t]||0)+1; });
+  const topTowns=Object.entries(townCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(topTowns.length>0){
+    document.getElementById('townKpiBox').innerHTML=`<div class="goldBox"><b>🏘️ Top Towns:</b> ${topTowns.map(([t,c])=>`${displayTown(t)} (${c})`).join(' • ')}<br><span class="small">Total towns: ${Object.keys(townCounts).length} — Use Town Filter below to see one town at a time.</span></div>`;
+  } else {
+    document.getElementById('townKpiBox').innerHTML='';
+  }
+}
+function getTownCounts(){
+  const counts={};
+  ALL_LEADS.forEach(l=>{ const t=normTown(l.town||l.district||l.circuit||''); if(t) counts[t]=(counts[t]||0)+1; });
+  return counts;
+}
+function buildTownFilter(){
+  const counts=getTownCounts();
+  const towns=Object.keys(counts).sort();
+  const sel=document.getElementById('filterTown');
+  if(!sel) return;
+  const prev=sel.value;
+  sel.innerHTML='<option value="">All Towns</option>' + towns.map(t=>`<option value="${esc(t)}">${displayTown(t)} (${counts[t]})</option>`).join('');
+  if(prev && towns.includes(prev)) sel.value=prev;
+  // Datalist for Add 1 School — Town autocomplete
+  const dl=document.getElementById('townList');
+  if(dl) dl.innerHTML=towns.map(t=>`<option value="${displayTown(t)}">`).join('');
+  // Chips
+  const chipsEl=document.getElementById('townChips');
+  if(chipsEl){
+    if(towns.length===0){ chipsEl.innerHTML='<span class="small">No towns yet — Upload CSV first.</span>'; return; }
+    chipsEl.innerHTML = towns.map(t=>`<button class="${CURRENT_TOWN===t?'active':''}" onclick="setTownFilter('${esc(t)}')">🏘️ ${displayTown(t)} (${counts[t]})</button>`).join('') + (CURRENT_TOWN ? `<button class="clear" onclick="clearTownFilter()">✖️ Clear Town</button>` : '');
+  }
+}
+function setTownFilter(town){
+  CURRENT_TOWN = town || '';
+  const sel=document.getElementById('filterTown');
+  if(sel) sel.value=CURRENT_TOWN;
+  buildTownFilter();
+  renderLeads();
+}
+function clearTownFilter(){ setTownFilter(''); }
+function clearAllFilters(){
+  CURRENT_TOWN='';
+  document.getElementById('searchBox').value='';
+  document.getElementById('filterProvince').value='';
+  document.getElementById('filterTown').value='';
+  document.getElementById('filterStatus').value='';
+  buildTownFilter(); renderLeads();
+}
+function getFilteredLeads(){
+  const q=(document.getElementById('searchBox')?.value||'').toLowerCase();
+  const fp=document.getElementById('filterProvince')?.value||'';
+  const fs=document.getElementById('filterStatus')?.value||'';
+  const ft=CURRENT_TOWN || document.getElementById('filterTown')?.value || '';
+  return ALL_LEADS.filter(l=>{
+    if(q && !((l.schoolName||'').toLowerCase().includes(q) || (l.principalName||'').toLowerCase().includes(q) || (l.emis||'').includes(q) || (l.town||'').toLowerCase().includes(q) || (l.principalPhone||'').includes(q))) return false;
+    if(fp && (l.province||'').toUpperCase()!==fp) return false;
+    if(ft && normTown(l.town||l.district||l.circuit||'')!==ft) return false;
+    if(fs && (l.status||'NOT CONTACTED').toUpperCase()!==fs) return false;
+    return true;
+  });
+}
+function renderLeads(){
+  const list=getFilteredLeads();
+  const summary=document.getElementById('filterSummary');
+  if(summary){
+    const q=(document.getElementById('searchBox')?.value||'');
+    const fp=document.getElementById('filterProvince')?.value||'';
+    const fs=document.getElementById('filterStatus')?.value||'';
+    const ft=CURRENT_TOWN;
+    if(q || fp || ft || fs){
+      summary.style.display='block';
+      summary.innerHTML=`<b>Showing ${list.length} of ${ALL_LEADS.length} schools</b> — Filters: ${q?`Search "${esc(q)}" • `:''}${fp?`Province ${esc(fp)} • `:''}${ft?`🏘️ Town <b>${displayTown(ft)}</b> • `:''}${fs?`Status ${esc(fs)}`:''} <button class="btn btn-grey btn-small" onclick="clearAllFilters()">✖️ Clear</button>`;
+    } else {
+      summary.style.display='none';
+    }
+  }
+  if(list.length===0){ const el=document.getElementById('leadsList'); if(el) el.innerHTML='<div class="info">No DBE leads match filters. Click <b>Clear All Filters</b> or Upload CSV — Format EMIS,NAME,TOWN,PROVINCE.</div>'; return; }
+  let html='<table><tr><th>EMIS</th><th>NAME</th><th>TOWN</th><th>PROVINCE</th><th>Principal / Phone</th><th>Status</th><th>Actions</th></tr>';
+  list.forEach(l=>{
+    const phone=cleanPhone(l.principalPhone);
+    const firstMsg=`Hello ${l.principalName||'Principal'}, I am Vusi Chauke from Xintimani Group — Makhanani LTSM. We help schools stop losing library books. Scan barcode, see % Retrieval in 10 seconds. Can I send you Home link? Demo 7 days FREE. Vusi 078 023 3263`;
+    const waLink = phone ? `https://wa.me/27${phone}?text=${encodeURIComponent(firstMsg)}` : `https://wa.me/27780233263?text=${encodeURIComponent(firstMsg)}`;
+    html+=`<tr>
+      <td><b>${esc(l.emis||'—')}</b></td>
+      <td><b>${esc(l.schoolName)}</b><br><span class="small">Notes: ${esc(l.notes||'—')}</span></td>
+      <td><b>${displayTown(l.town||l.district||l.circuit||'—')}</b></td>
+      <td>${esc(l.province||'—')}</td>
+      <td>${esc(l.principalName||'—')}<br><span class="small">${esc(l.principalPhone||'No phone yet — Edit to add')}<br>${esc(l.principalEmail||'')}</span></td>
+      <td>${statusBadge(l.status)}<br><select class="btn-small" style="padding:6px;border:2px solid #e2e8f0;border-radius:8px;margin-top:6px" onchange="setLeadStatus('${esc(l.id)}',this.value)"><option ${l.status==='NOT CONTACTED'?'selected':''}>NOT CONTACTED</option><option ${l.status==='CONTACTED'?'selected':''}>CONTACTED</option><option ${l.status==='INTERESTED'?'selected':''}>INTERESTED</option><option ${l.status==='DEMO'?'selected':''}>DEMO</option><option ${l.status==='CONVERTED'?'selected':''}>CONVERTED</option><option ${l.status==='NOT INTERESTED'?'selected':''}>NOT INTERESTED</option></select></td>
+      <td>
+        <button class="btn btn-green btn-small" onclick="window.open('${waLink}','_blank')">📱 WhatsApp</button>
+        <button class="btn btn-blue btn-small" onclick="convertLead('${esc(l.id)}')">✅ Convert To Active</button><br>
+        <button class="btn btn-grey btn-small" onclick="editLead('${esc(l.id)}')">✏️ Edit</button>
+        <button class="btn btn-red btn-small" onclick="deleteLead('${esc(l.id)}','${esc(l.schoolName)}')">🗑️ Delete</button>
+      </td>
+    </tr>`;
+  });
+  html+='</table>';
+  const el=document.getElementById('leadsList'); if(el) el.innerHTML=html;
+}
+async function saveLeads(rows){
+  let added=0, skipped=0, skippedList=[];
+  const existingEmis=new Set(ALL_LEADS.map(l=> String(l.emis||'').trim()).filter(Boolean));
+  const existingNames=new Set(ALL_LEADS.map(l=> (l.schoolName||'').toUpperCase()));
+  const bar=document.getElementById('uploadProgress'); const barInner=document.getElementById('uploadBar');
+  if(bar) bar.style.display='block';
+  for(let i=0;i<rows.length;i++){
+    const r=rows[i];
+    if(r.emis && existingEmis.has(String(r.emis).trim())){ skipped++; if(skippedList.length<5) skippedList.push(r.schoolName+' (EMIS '+r.emis+')'); continue; }
+    if(!r.emis && existingNames.has(r.schoolName.toUpperCase())){ skipped++; continue; }
+    const id = r.emis ? ('emis_'+String(r.emis).replace(/[^a-z0-9]+/gi,'_')) : ('dbe_'+r.schoolName.toLowerCase().replace(/[^a-z0-9]+/g,'_').slice(0,60)+'_'+Date.now()+'_'+i);
+    const doc={emis:r.emis||'', schoolName:r.schoolName, town:r.town||'', province:r.province||'', district:r.district||'', circuit:r.circuit||'', principalName:r.principalName||'', principalPhone:r.principalPhone||'', principalEmail:r.principalEmail||'', phase:r.phase||'', quintile:r.quintile||'', status:r.status||'NOT CONTACTED', notes:r.notes||'', source:'DBE_UPLOAD', createdAt:new Date().toISOString(), createdBy:'Vusi'};
+    try{ await db.collection('dbe_leads').doc(id).set(doc); if(r.emis) existingEmis.add(String(r.emis).trim()); existingNames.add(r.schoolName.toUpperCase()); added++; }catch(e){ skipped++; }
+    if(barInner){ const pct=Math.round((i+1)/rows.length*100); barInner.style.width=pct+'%'; barInner.textContent=pct+'%'; }
+    if(i%50===49) await new Promise(res=>setTimeout(res,200));
+  }
+  if(bar) setTimeout(()=>bar.style.display='none',1000);
+  return {added, skipped, skippedList};
+}
+async function uploadCSV(){
+  const file=document.getElementById('csvFile').files[0];
+  const msg=document.getElementById('uploadMsg');
+  if(!file){ msg.innerHTML='<div class="warn">⚠️ Choose CSV file first.</div>'; return; }
+  msg.innerHTML='<div class="info">⏳ Reading CSV...</div>';
+  const text=await file.text();
+  const rows=rowsFromText(text);
+  if(rows.length===0){ msg.innerHTML='<div class="warn">⚠️ No schools found. Check format — Must be <b>EMIS,NAME,TOWN,PROVINCE</b> — First row header, then schools.</div>'; return; }
+  document.getElementById('uploadPreview').innerHTML=`<div class="goldBox"><b>Preview: ${rows.length} schools found.</b><br>Format: <b>EMIS,NAME,TOWN,PROVINCE</b><br>First 3:<br>1) ${esc(rows[0].emis)} — ${esc(rows[0].schoolName)} — ${esc(rows[0].town)} — ${esc(rows[0].province)}<br>${rows[1] ? '2) '+esc(rows[1].emis)+' — '+esc(rows[1].schoolName)+' — '+esc(rows[1].town)+' — '+esc(rows[1].province)+'<br>' : ''}${rows[2] ? '3) '+esc(rows[2].emis)+' — '+esc(rows[2].schoolName)+' — '+esc(rows[2].town)+' — '+esc(rows[2].province) : ''}<br><button class="btn btn-green" onclick="confirmUpload()">✅ CONFIRM UPLOAD ${rows.length} SCHOOLS →</button></div>`;
+  window._pendingRows=rows;
+}
+async function confirmUpload(){
+  const rows=window._pendingRows||[]; const msg=document.getElementById('uploadMsg');
+  if(rows.length===0) return;
+  msg.innerHTML='<div class="info">⏳ Uploading... Do NOT close page.</div>';
+  const res=await saveLeads(rows);
+  msg.innerHTML=`<div class="ok">✅ Done! Added <b>${res.added}</b> • Skipped duplicates (EMIS already exists) <b>${res.skipped}</b><br>${res.skippedList.length>0 ? 'Skipped examples: '+res.skippedList.map(esc).join(' • ')+'<br>' : ''}Go to Tab <b>All DBE Leads</b> to see them. Town Filter will auto-update.</div>`;
+  window._pendingRows=[]; document.getElementById('uploadPreview').innerHTML='';
+  loadLeads(); showTab('list');
+}
+async function uploadPaste(){
+  const text=document.getElementById('pasteBox').value;
+  const msg=document.getElementById('pasteMsg');
+  if(!text.trim()){ msg.innerHTML='<div class="warn">⚠️ Paste schools first. Format: EMIS,NAME,TOWN,PROVINCE</div>'; return; }
+  const rows=rowsFromText(text);
+  if(rows.length===0){ msg.innerHTML='<div class="warn">⚠️ No schools found. Format: EMIS,NAME,TOWN,PROVINCE</div>'; return; }
+  msg.innerHTML='<div class="info">⏳ Importing '+rows.length+'...</div>';
+  const res=await saveLeads(rows);
+  msg.innerHTML=`<div class="ok">✅ Added <b>${res.added}</b> • Skipped <b>${res.skipped}</b> • Town Filter auto-updated.</div>`;
+  document.getElementById('pasteBox').value=''; loadLeads(); showTab('list');
+}
+async function addSingle(){
+  const emis=document.getElementById('sEmis').value.trim();
+  const schoolName=document.getElementById('sName').value.trim().toUpperCase();
+  const town=document.getElementById('sTown').value.trim();
+  const province=document.getElementById('sProvince').value;
+  const msg=document.getElementById('singleMsg');
+  if(!schoolName){ msg.innerHTML='<div class="warn">⚠️ NAME required.</div>'; return; }
+  if(!town){ msg.innerHTML='<div class="warn">⚠️ TOWN required.</div>'; return; }
+  if(!province){ msg.innerHTML='<div class="warn">⚠️ PROVINCE required — Pick from dropdown.</div>'; return; }
+  const doc={emis, schoolName, town, province, district:'', circuit:'', principalName:document.getElementById('sPrincipal').value.trim(), principalPhone:document.getElementById('sPhone').value.trim(), principalEmail:document.getElementById('sEmail').value.trim().toLowerCase(), phase:'', quintile:'', status:document.getElementById('sStatus').value, notes:document.getElementById('sNotes').value.trim(), source:'MANUAL', createdAt:new Date().toISOString(), createdBy:'Vusi'};
+  const id = emis ? ('emis_'+emis.replace(/[^a-z0-9]+/gi,'_')) : ('dbe_'+schoolName.toLowerCase().replace(/[^a-z0-9]+/g,'_').slice(0,60)+'_'+Date.now());
+  try{
+    await db.collection('dbe_leads').doc(id).set(doc);
+    msg.innerHTML=`<div class="ok">✅ Added <b>${esc(emis)} — ${esc(schoolName)} — ${esc(town)} — ${esc(province)}</b></div>`;
+    ['sEmis','sName','sTown','sPrincipal','sPhone','sEmail','sNotes'].forEach(i=>document.getElementById(i).value='');
+    loadLeads(); showTab('list');
+  }catch(e){ msg.innerHTML='<div class="warn">⚠️ Add failed: '+esc(e.message)+'</div>'; }
+}
+async function setLeadStatus(id, status){
+  try{ await db.collection('dbe_leads').doc(id).set({status, updatedAt:new Date().toISOString()}, {merge:true}); loadLeads(); }catch(e){ alert('⚠️ Status update failed: '+e.message); }
+}
+async function editLead(id){
+  const l=ALL_LEADS.find(x=>x.id===id); if(!l) return;
+  const town=prompt(`Edit TOWN for ${l.schoolName}`, l.town||''); if(town===null) return;
+  const phone=prompt(`Edit Principal Phone for ${l.schoolName} (leave blank if none)`, l.principalPhone||''); if(phone===null) return;
+  const principal=prompt(`Edit Principal Name for ${l.schoolName}`, l.principalName||''); if(principal===null) return;
+  const notes=prompt(`Edit Notes for ${l.schoolName}`, l.notes||''); if(notes===null) return;
+  try{ await db.collection('dbe_leads').doc(id).set({town, principalPhone:phone, principalName:principal, notes}, {merge:true}); alert('✅ Updated'); loadLeads(); }catch(e){ alert('⚠️ Edit failed: '+e.message); }
+}
+async function deleteLead(id, name){
+  if(!confirm(`🗑️ Delete lead ${name}?\n\nOnly deletes lead, not active school if converted.`)) return;
+  try{ await db.collection('dbe_leads').doc(id).delete(); alert('🗑️ Deleted '+name); loadLeads(); }catch(e){ alert('⚠️ Delete failed: '+e.message); }
+}
+async function convertLead(id){
+  const l=ALL_LEADS.find(x=>x.id===id); if(!l) return;
+  const email=prompt(`Convert ${l.schoolName} to ACTIVE school.\n\nPrincipal Email — Will be Login *`, l.principalEmail||'');
+  if(!email) return;
+  const password=prompt(`Principal Password for ${l.schoolName} (Min 6)`, '123456');
+  if(!password || password.length<6){ alert('⚠️ Password min 6.'); return; }
+  const plan=prompt(`Plan? DEMO / STARTER / STANDARD / PREMIUM`, 'DEMO');
+  if(!plan) return;
+  const schoolName=l.schoolName;
+  const schoolId=schoolName.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+  const prefix=schoolName.trim().split(/\s+/).map(w=>w.replace(/[^A-Za-z]/g,'').charAt(0).toUpperCase()).join('') || 'SC';
+  const d=new Date(); if((plan||'DEMO').toUpperCase()==='DEMO') d.setDate(d.getDate()+7); else d.setFullYear(d.getFullYear()+1);
+  const expiry=d.toISOString().slice(0,10);
+  const principal={name:l.principalName||'Principal', email:email.toLowerCase().trim(), password, pin:password, role:'PRINCIPAL', subject:'', className:'', schoolId, schoolName, phone:l.principalPhone||'', status:'ACTIVE', plan:plan.toUpperCase(), planKey:plan.toUpperCase(), billing:plan.toUpperCase()==='DEMO'?'FREE':'YEARLY', expiryDate:expiry, createdAt:new Date().toISOString()};
+  try{
+    await db.collection('schools').doc(schoolId).collection('users').doc(email.toLowerCase().replace(/[@.]/g,'_')).set(principal);
+    await db.collection('schools').doc(schoolId).set({schoolName, schoolId, prefix, principalName:l.principalName||'Principal', principalEmail:email.toLowerCase(), principalPhone:l.principalPhone||'', plan:plan.toUpperCase(), planKey:plan.toUpperCase(), billing:plan.toUpperCase()==='DEMO'?'FREE':'YEARLY', status:'ACTIVE', expiryDate:expiry, emis:l.emis||'', town:l.town||'', province:l.province||'', district:l.district||'', circuit:l.circuit||'', phase:l.phase||'', quintile:l.quintile||'', source:'DBE_LEAD', createdAt:new Date().toISOString()}, {merge:true});
+    try{ await rtdb.ref('schools/'+schoolId+'/users/'+email.toLowerCase().replace(/[@.]/g,'_')).set(principal); }catch(e){}
+    try{ await rtdb.ref('schools/'+schoolId+'/info').set({schoolName, schoolId, prefix, principalName:l.principalName||'Principal', principalEmail:email.toLowerCase(), principalPhone:l.principalPhone||'', plan:plan.toUpperCase(), billing:plan.toUpperCase()==='DEMO'?'FREE':'YEARLY', status:'ACTIVE', expiryDate:expiry}); }catch(e){}
+    try{ await rtdb.ref('schools/'+schoolId+'/subscription').set({plan:plan.toUpperCase(), billing:plan.toUpperCase()==='DEMO'?'FREE':'YEARLY', status:'ACTIVE', expiryDate:expiry}); }catch(e){}
+    await db.collection('dbe_leads').doc(id).set({status:'CONVERTED', convertedAt:new Date().toISOString(), convertedSchoolId:schoolId}, {merge:true});
+    const phone=cleanPhone(l.principalPhone);
+    const msg=`Hello ${l.principalName||'Principal'}, your Makhanani LTSM is ready! ✅\n\nSchool: ${schoolName}\nLogin: YOUR-LINK/index.html\nEmail: ${email.toLowerCase()}\nPassword: ${password}\nPlan: ${plan.toUpperCase()} — Free until ${expiry}\nPrefix: ${prefix}\n\nLogin, add 1 teacher, 5 learners, 5 books, then Issue 1 book. Need help? WhatsApp Vusi 078 023 3263`;
+    if(phone && confirm(`✅ Converted ${schoolName}!\n\nPrefix: ${prefix} • Expiry: ${expiry}\n\nWhatsApp Principal now with login?`)){
+      window.open(`https://wa.me/27${phone}?text=${encodeURIComponent(msg)}`,'_blank');
+    } else { alert(`✅ Converted ${schoolName}\nLogin: ${email} / ${password}\nPrefix: ${prefix} • Expiry: ${expiry}`); }
+    loadLeads();
+  }catch(e){ alert('⚠️ Convert failed: '+e.message); }
+}
+async function bulkMarkContacted(){
+  const list=getFilteredLeads();
+  if(list.length===0){ alert('No visible leads to mark.'); return; }
+  if(!confirm(`Mark ${list.length} visible (filtered) leads as CONTACTED?\n\nFilters: ${CURRENT_TOWN? 'Town '+displayTown(CURRENT_TOWN)+' • ':''}${list.length} schools`)) return;
+  for(const l of list){ try{ await db.collection('dbe_leads').doc(l.id).set({status:'CONTACTED'}, {merge:true}); }catch(e){} }
+  alert(`✅ Marked ${list.length} as CONTACTED`); loadLeads();
+}
+function exportVisibleCSV(){
+  const list=getFilteredLeads();
+  if(list.length===0){ alert('No visible leads to export.'); return; }
+  let csv='EMIS,NAME,TOWN,PROVINCE,Principal Name,Principal Phone,Principal Email,Status,Notes\n';
+  list.forEach(l=>{
+    const row=[l.emis,l.schoolName,l.town,l.province,l.principalName,l.principalPhone,l.principalEmail,l.status,l.notes];
+    csv+=row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')+'\n';
+  });
+  const blob=new Blob([csv], {type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dbe_leads_filtered_'+(CURRENT_TOWN||'all')+'_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+function downloadTemplate(){
+  const csv='EMIS,NAME,TOWN,PROVINCE\n123456789,THUTO PRIMARY,Alexandra,GAUTENG\n987654321,NKOSI SECONDARY,Polokwane,LIMPOPO\n555444333,KGOMO PRIMARY,Soweto,GAUTENG\n';
+  const blob=new Blob([csv], {type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dbe_schools_EMIS_NAME_TOWN_PROVINCE.csv'; a.click();
+}
+function exportLeadsCSV(){
+  if(ALL_LEADS.length===0){ alert('No leads to export. Click Refresh first.'); return; }
+  let csv='EMIS,NAME,TOWN,PROVINCE,Principal Name,Principal Phone,Principal Email,Status,Notes\n';
+  ALL_LEADS.forEach(l=>{
+    const row=[l.emis,l.schoolName,l.town,l.province,l.principalName,l.principalPhone,l.principalEmail,l.status,l.notes];
+    csv+=row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')+'\n';
+  });
+  const blob=new Blob([csv], {type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dbe_leads_EMIS_NAME_TOWN_PROVINCE_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+window.onload=loadLeads;
+</script>
+</body>
+</html>
