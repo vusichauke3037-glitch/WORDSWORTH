@@ -10,7 +10,7 @@ header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#
 .wrap{max-width:1100px;margin:0 auto;padding:12px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
 input{cursor:text}select{appearance:auto;-webkit-appearance:auto}
 select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 .btn{border:none;border-radius:8px;padding:12px 14px;font-weight:900;cursor:pointer;font-size:14px}
@@ -49,21 +49,24 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 <div id="tab-learners" class="tab active"><div class="card">
 <h2>👩‍🎓 My Learners — Only My Classes</h2>
 <label>🏫 Filter By My Class — Dropdown</label>
-<select id="filterClass" onchange="renderLearners()"><option value="">🏫 All My Classes</option></select>
+<select id="filterClass" onchange="renderLearners()"><option value="">🏫 ALL MY CLASSES</option></select>
 <div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Learner ID</th><th>Name</th><th>Class</th><th>Textbooks Issued</th></tr></thead><tbody id="learnerTable"></tbody></table></div>
 </div></div>
 
 <div id="tab-books" class="tab"><div class="card">
-<h2>📚 My Textbooks — Only Grades I Teach</h2>
-<label>📚 Filter By Category — Dropdown</label>
-<select id="filterCategory" onchange="renderBooks()"><option value="">📚 All Categories</option><option value="Maths">Maths</option><option value="English">English</option><option value="Life Sciences">Life Sciences</option><option value="Physical Sciences">Physical Sciences</option><option value="Geography">Geography</option><option value="History">History</option><option value="Accounting">Accounting</option><option value="Business Studies">Business Studies</option><option value="Life Orientation">Life Orientation</option><option value="Afrikaans">Afrikaans</option></select>
+<h2>📚 My Textbooks — Only Grades I Teach — ALL CAPS Categories</h2>
+<label>📚 Filter By Category — Dropdown — ALL CAPS</label>
+<select id="filterCategory" onchange="renderBooks()">
+<option value="">📚 ALL CATEGORIES</option>
+<option value="MATHS">MATHS</option><option value="ENGLISH">ENGLISH</option><option value="LIFE SCIENCES">LIFE SCIENCES</option><option value="PHYSICAL SCIENCES">PHYSICAL SCIENCES</option><option value="GEOGRAPHY">GEOGRAPHY</option><option value="HISTORY">HISTORY</option><option value="ACCOUNTING">ACCOUNTING</option><option value="BUSINESS STUDIES">BUSINESS STUDIES</option><option value="LIFE ORIENTATION">LIFE ORIENTATION</option><option value="AFRIKAANS">AFRIKAANS</option><option value="SEPEDI">SEPEDI</option><option value="ISIZULU">ISIZULU</option><option value="SESOTHO">SESOTHO</option><option value="XITSONGA">XITSONGA</option><option value="TECHNOLOGY">TECHNOLOGY</option><option value="COMPUTER APPLICATIONS TECHNOLOGY">COMPUTER APPLICATIONS TECHNOLOGY</option><option value="ENGINEERING GRAPHICS AND DESIGN">ENGINEERING GRAPHICS AND DESIGN</option><option value="TOURISM">TOURISM</option><option value="CONSUMER STUDIES">CONSUMER STUDIES</option><option value="AGRICULTURAL SCIENCES">AGRICULTURAL SCIENCES</option><option value="ECONOMICS">ECONOMICS</option><option value="MATHEMATICAL LITERACY">MATHEMATICAL LITERACY</option>
+</select>
 <div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Number</th><th>Title</th><th>Category</th><th>Grade</th><th>Status</th><th>Learner</th></tr></thead><tbody id="bookTable"></tbody></table></div>
 </div></div>
 
 <div id="tab-issue" class="tab"><div class="card">
 <h2>📕 Issue / Return — Only My Learners</h2>
-<label>👩‍🎓 Pick Learner * — Dropdown — My Classes Only</label><select id="issueLearner"><option value="">-- Pick Learner * --</option></select>
-<label>📚 Pick Textbook * — Dropdown — Only Free — My Grades Only</label><select id="issueBook"><option value="">-- Pick Textbook * --</option></select>
+<label>👩‍🎓 Pick Learner * — Dropdown — My Classes Only</label><select id="issueLearner"><option value="">-- PICK LEARNER * --</option></select>
+<label>📚 Pick Textbook * — Dropdown — Only Free — My Grades Only</label><select id="issueBook"><option value="">-- PICK TEXTBOOK * --</option></select>
 <div class="row"><button class="btn btn-green" style="flex:1" onclick="issueBook()">📕 Issue To Learner</button><button class="btn btn-gold" style="flex:1" onclick="returnBook()">↩️ Return</button></div>
 <div id="issueMsg"></div>
 </div></div>
@@ -72,9 +75,10 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
+function toCaps(s){return String(s||'').trim().toUpperCase();}
 let user=null,schoolId='WHS',prefix='WHS',schoolName='WORDSWORTH HIGH SCHOOL (WHS)';
 try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null'); if(user){schoolId=user.schoolId||'WHS';prefix=user.prefix||'WHS';schoolName=user.schoolName||schoolName;}}catch(e){}
-document.getElementById('schoolLine').textContent=(user?user.name+' • '+user.role+' • ':'')+schoolName+' • Prefix '+prefix;
+document.getElementById('schoolLine').textContent=(user?toCaps(user.name)+' • '+toCaps(user.role)+' • ':'')+schoolName+' • Prefix '+prefix;
 let books=[],learners=[];
 function showTab(t){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');}
 // TEACHER FILTER - MULTIPLE CLASSES - Works for old + new users
@@ -95,7 +99,7 @@ function canTeacherSeeBook(bookGrade){
   return true;
 }
 async function loadData(){
-  try{let bs=await rtdb.ref('textbooks/'+schoolId).once('value');books=Object.entries(bs.val()||{}).map(([id,v])=>({id,...v}));let ls=await rtdb.ref('learners/'+schoolId).once('value');learners=Object.entries(ls.val()||{}).map(([id,v])=>({id,...v}));}catch(e){console.log(e);}
+  try{let bs=await rtdb.ref('textbooks/'+schoolId).once('value');books=Object.entries(bs.val()||{}).map(([id,v])=>({id,...v,category:toCaps(v.category)}));let ls=await rtdb.ref('learners/'+schoolId).once('value');learners=Object.entries(ls.val()||{}).map(([id,v])=>({id,...v}));}catch(e){console.log(e);}
   if(learners.length===0){
     learners=[
       {id:'1',learnerId:'10A001',name:'Thabo M',grade:'10',className:'A'},
@@ -104,18 +108,18 @@ async function loadData(){
       {id:'4',learnerId:'10C001',name:'Hidden C',grade:'10',className:'C'},
     ];
     books=[
-      {id:'1',number:prefix+'000001',title:'Maths Grade 10 Textbook',category:'Maths',grade:'10',status:'Free',learnerName:''},
-      {id:'2',number:prefix+'000002',title:'English Grade 10 Textbook',category:'English',grade:'10',status:'Issued',learnerName:'10A001 - Thabo M'},
-      {id:'3',number:prefix+'000003',title:'Life Sciences Grade 11',category:'Life Sciences',grade:'11',status:'Free',learnerName:''},
-      {id:'4',number:prefix+'000004',title:'Maths Grade 12',category:'Maths',grade:'12',status:'Free',learnerName:''},
+      {id:'1',number:prefix+'000001',title:'MATHS GRADE 10 TEXTBOOK',category:'MATHS',grade:'10',status:'Free',learnerName:''},
+      {id:'2',number:prefix+'000002',title:'ENGLISH GRADE 10 TEXTBOOK',category:'ENGLISH',grade:'10',status:'Issued',learnerName:'10A001 - Thabo M'},
+      {id:'3',number:prefix+'000003',title:'LIFE SCIENCES GRADE 11',category:'LIFE SCIENCES',grade:'11',status:'Free',learnerName:''},
+      {id:'4',number:prefix+'000004',title:'MATHS GRADE 12',category:'MATHS',grade:'12',status:'Free',learnerName:''},
     ];
   }
   // If user has no teachingClasses (old demo), default to 10A + 10B + 11A for demo
   if(user && user.role==='Teacher' && !user.teachingClasses){ user.teachingClasses=['10A','10B','11A']; user.teachingGrades=['10','11']; }
   let myClasses = (user && user.teachingClasses) ? user.teachingClasses : ['All Classes'];
-  document.getElementById('teacherInfo').innerHTML=`👩‍🏫 <b>${user?user.name:'Teacher'}</b> — Subject: <b>${user?.subject||'All Subjects'}</b><br>✅ You teach: <b>${myClasses.join(' • ')}</b> — You see ONLY these classes. Other classes are hidden.`;
+  document.getElementById('teacherInfo').innerHTML=`👩‍🏫 <b>${toCaps(user?user.name:'Teacher')}</b> — Subject: <b>${toCaps(user?.subject||'ALL SUBJECTS')}</b><br>✅ You teach: <b>${myClasses.join(' • ')}</b> — You see ONLY these classes. Other classes are hidden.`;
   let sel=document.getElementById('filterClass');
-  sel.innerHTML='<option value="">🏫 All My Classes</option>'+myClasses.map(c=>`<option value="${c}">${c}</option>`).join('');
+  sel.innerHTML='<option value="">🏫 ALL MY CLASSES</option>'+myClasses.map(c=>`<option value="${c}">${c}</option>`).join('');
   fillIssue(); renderLearners(); renderBooks();
 }
 function myLearners(){ return learners.filter(l=>canTeacherSee(l.grade,l.className)); }
@@ -128,19 +132,19 @@ function renderLearners(){
   document.getElementById('kpiIssued').textContent=myBooks().filter(b=>b.status==='Issued').length;
   document.getElementById('learnerTable').innerHTML=list.length?list.map(l=>{
     let issued=books.filter(b=>b.learnerName && b.learnerName.includes(l.learnerId)).length;
-    return `<tr><td><b>${l.learnerId}</b></td><td>${l.name}</td><td>Grade ${l.grade}${l.className}</td><td>${issued} textbooks</td></tr>`;
+    return `<tr><td><b>${l.learnerId}</b></td><td>${toCaps(l.name)}</td><td>Grade ${l.grade}${l.className}</td><td>${issued} textbooks</td></tr>`;
   }).join(''):`<tr><td colspan="4" style="text-align:center;padding:20px">No learners in your classes${cls?' — '+cls:''}.</td></tr>`;
 }
 function renderBooks(){
   let cat=document.getElementById('filterCategory').value;
-  let list=myBooks(); if(cat) list=list.filter(b=>b.category===cat);
-  document.getElementById('bookTable').innerHTML=list.length?list.map(b=>`<tr><td><b>${b.number}</b></td><td>${b.title}</td><td><span class="badge badge-cat">${b.category}</span></td><td>Gr ${b.grade}</td><td><span class="badge ${b.status==='Issued'?'badge-issued':'badge-free'}">${b.status||'Free'}</span></td><td>${b.learnerName||'—'}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No textbooks for your grades${cat?' — '+cat:''}.</td></tr>`;
+  let list=myBooks(); if(cat) list=list.filter(b=>toCaps(b.category)===cat);
+  document.getElementById('bookTable').innerHTML=list.length?list.map(b=>`<tr><td><b>${b.number}</b></td><td>${toCaps(b.title)}</td><td><span class="badge badge-cat">${toCaps(b.category)}</span></td><td>Gr ${b.grade}</td><td><span class="badge ${b.status==='Issued'?'badge-issued':'badge-free'}">${toCaps(b.status||'Free')}</span></td><td>${b.learnerName||'—'}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No textbooks for your grades${cat?' — '+cat:''}.</td></tr>`;
 }
 function fillIssue(){
   let list=myLearners();
-  document.getElementById('issueLearner').innerHTML='<option value="">-- Pick Learner * --</option>'+list.map(l=>`<option value="${l.learnerId}">${l.learnerId} - ${l.name} - Grade ${l.grade}${l.className}</option>`).join('');
+  document.getElementById('issueLearner').innerHTML='<option value="">-- PICK LEARNER * --</option>'+list.map(l=>`<option value="${l.learnerId}">${l.learnerId} - ${toCaps(l.name)} - Grade ${l.grade}${l.className}</option>`).join('');
   let free=myBooks().filter(b=>b.status!=='Issued');
-  document.getElementById('issueBook').innerHTML='<option value="">-- Pick Textbook * --</option>'+free.map(b=>`<option value="${b.id}">${b.number} - ${b.title} - ${b.category} Gr ${b.grade}</option>`).join('');
+  document.getElementById('issueBook').innerHTML='<option value="">-- PICK TEXTBOOK * --</option>'+free.map(b=>`<option value="${b.id}">${b.number} - ${toCaps(b.title)} - ${toCaps(b.category)} Gr ${b.grade}</option>`).join('');
 }
 async function issueBook(){
   let lid=document.getElementById('issueLearner').value,bid=document.getElementById('issueBook').value,msg=document.getElementById('issueMsg');
@@ -149,7 +153,7 @@ async function issueBook(){
   if(!book) return;
   book.status='Issued';book.learnerName=lid+' - '+(learner?learner.name:'');
   try{await rtdb.ref('textbooks/'+schoolId+'/'+book.id).update({status:'Issued',learnerName:book.learnerName});}catch(e){}
-  msg.innerHTML=`<div class="ok">✅ Issued <b>${book.number} - ${book.title}</b> to <b>${book.learnerName}</b></div>`;fillIssue();renderLearners();renderBooks();
+  msg.innerHTML=`<div class="ok">✅ Issued <b>${book.number} - ${toCaps(book.title)}</b> to <b>${book.learnerName}</b></div>`;fillIssue();renderLearners();renderBooks();
 }
 async function returnBook(){
   let bid=document.getElementById('issueBook').value,msg=document.getElementById('issueMsg');
