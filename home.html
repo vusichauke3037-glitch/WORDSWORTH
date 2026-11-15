@@ -32,9 +32,9 @@ input,select{width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
 .small{font-size:12px;color:#64748b}.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-green{background:#dcfce7;color:#166534}.badge-blue{background:#dbeafe;color:#1e40af}.badge-grey{background:#e2e8f0;color:#334155}.badge-orange{background:#fef3c7;color:#92400e}
 .kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .selected{background:#dcfce7;border:2px solid #059669;border-radius:10px;padding:10px;margin-top:10px;line-height:1.6}
-@media(max-width:700px){.kpi{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+@media(max-width:700px){.kpi{grid-template-columns:1fr 1fr}.grid2,.grid3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -42,78 +42,84 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
 <h1>🏠 Makhanani LTSM — Home</h1>
 <p>Issue • Return • Search • Barcodes<br><span id="schoolLine">Loading...</span></p>
-<div class="topnav"><a href="index.html">🏠 Login</a><a href="home.html">🏠 Home</a><a href="learners.html">👩‍🎓 Learners</a><a href="books.html">📚 Books</a><a href="barcode.html">🏷️ Barcodes — Learner + Book</a><a href="learner_barcode.html">🏷️ Learner Barcode</a><a href="book_barcode.html">📚 Book Barcode</a></div>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="home.html">🏠 Home</a><a href="learners.html">👩‍🎓 Learners</a><a href="books.html">📚 Books</a><a href="barcode.html">🏷️ Barcodes — A4 3x5</a><a href="learner_barcode.html">🏷️ Learner Barcode</a><a href="book_barcode.html">📚 Textbook Barcode</a></div>
 </header>
 <main>
 <div class="card">
 <div id="authMsg"></div>
 <div style="display:flex;gap:8px;flex-wrap:wrap">
 <button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button>
-<button class="btn btn-gold" onclick="location.href='barcode.html'">🏷️ PRINT BARCODES — Learner + Book →</button>
+<button class="btn btn-gold" onclick="location.href='barcode.html'">🏷️ PRINT BARCODES — A4 3x5 →</button>
 <button class="btn btn-grey" onclick="logout()">🚪 Logout</button>
 </div>
 <div class="kpi" style="margin-top:10px">
 <div><b id="kLearners">—</b><span>Learners</span></div>
-<div><b id="kBooks">—</b><span>Books</span></div>
-<div><b id="kAvail">—</b><span>Available Books</span></div>
-<div><b id="kIssued">—</b><span>Issued Books</span></div>
+<div><b id="kBooks">—</b><span>Textbooks</span></div>
+<div><b id="kAvail">—</b><span>Available</span></div>
+<div><b id="kIssued">—</b><span>Issued</span></div>
 </div>
+<div id="formatBox" class="goldBox"></div>
 </div>
 
 <div class="card">
-<h2>🔍 Scan / Search — Learner Or Book</h2>
-<label>🔍 Scan Barcode Or Type Code / Name — e.g. 10A001, BK001, Thabo, Maths</label>
-<input id="searchBox" placeholder="Scan barcode here, or type 10A001 / BK001 / Thabo..." oninput="doSearch()" autofocus>
+<h2>🔍 Scan / Search — Learner Or Textbook</h2>
+<label>🔍 Scan Barcode Or Type Code / Name — e.g. 10A001, MPS000001, Thabo, Maths</label>
+<input id="searchBox" placeholder="Scan barcode here, or type 10A001 / MPS000001 / Thabo..." oninput="doSearch()" autofocus>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-<button class="btn btn-gold" onclick="location.href='barcode.html'" style="flex:1">🏷️ Barcodes — Learner + Book →</button>
+<button class="btn btn-gold" onclick="location.href='barcode.html'" style="flex:1">🏷️ Barcodes — Learner + Textbook →</button>
 <button class="btn btn-green" onclick="location.href='learner_barcode.html'" style="flex:1">🏷️ Learner Barcode</button>
-<button class="btn btn-blue" onclick="location.href='book_barcode.html'" style="flex:1">📚 Book Barcode</button>
+<button class="btn btn-blue" onclick="location.href='book_barcode.html'" style="flex:1">📚 Textbook Barcode</button>
 </div>
 <div id="searchResults"></div>
 </div>
 
 <div class="card">
 <div class="tabs">
-<button id="tabBtn-issue" class="active" onclick="showTab('issue')">📕 Issue Book</button>
-<button id="tabBtn-return" onclick="showTab('return')">📗 Return Book</button>
-<button id="tabBtn-issued" onclick="showTab('issued')">📋 Issued Books</button>
+<button id="tabBtn-issue" class="active" onclick="showTab('issue')">📕 Issue Textbook</button>
+<button id="tabBtn-return" onclick="showTab('return')">📗 Return Textbook</button>
+<button id="tabBtn-issued" onclick="showTab('issued')">📋 Issued Textbooks</button>
 </div>
 
 <div id="tab-issue">
-<h3>📕 Issue Book — Scan Learner + Scan Book</h3>
+<h3>📕 Issue Textbook — Scan Learner + Scan Textbook</h3>
 <div class="grid2">
 <div>
-<label>Learner — Search / Scan Learner Code</label>
+<label>Learner — Search / Scan Learner ID</label>
 <input id="issueLearnerSearch" placeholder="e.g. 10A001 or Thabo" oninput="filterIssueLearners()">
 <div id="issueLearnerDrop"></div>
 <div id="issueLearnerSelected" class="selected" style="display:none"></div>
+<div class="grid2">
+<div><label>Grade Filter</label><select id="issueGradeFilter" onchange="filterIssueLearners()"><option value="">All Grades</option></select></div>
+<div><label>Class Filter</label><select id="issueClassFilter" onchange="filterIssueLearners()"><option value="">All Classes</option></select></div>
+</div>
 </div>
 <div>
-<label>Book — Search / Scan Book Code</label>
-<input id="issueBookSearch" placeholder="e.g. BK001 or Maths" oninput="filterIssueBooks()">
+<label>Textbook — Search / Scan Textbook Number</label>
+<input id="issueBookSearch" placeholder="e.g. MPS000001 or Maths" oninput="filterIssueBooks()">
 <div id="issueBookDrop"></div>
 <div id="issueBookSelected" class="selected" style="display:none"></div>
+<label>Category Filter</label><select id="issueCatFilter" onchange="filterIssueBooks()"><option value="">All Categories</option></select>
 </div>
 </div>
-<button class="btn btn-green btn-full" onclick="issueBook()">📕 ISSUE BOOK →</button>
-<button class="btn btn-gold btn-full" onclick="printCombinedPack()">🔄 Print Combined Pack — This Learner + This Book →</button>
+<button class="btn btn-green btn-full" onclick="issueBook()">📕 ISSUE TEXTBOOK →</button>
+<button class="btn btn-gold btn-full" onclick="printCombinedPack()">🔄 Print Combined Pack — This Learner + This Textbook →</button>
 <div id="issueMsg"></div>
-<div class="info"><b>How to issue:</b> 1) Scan learner barcode → Tap learner → 2) Scan book barcode → Tap book → 3) Click ISSUE → Done in 10 seconds.</div>
+<div class="info"><b>How to issue:</b> 1) Scan learner barcode `10A001` → Tap learner → 2) Scan textbook barcode `MPS000001` → Tap textbook → 3) Click ISSUE → Done in 10 seconds.<br><b>Learner ID:</b> Grade + Class + 3 Digits &nbsp;|&nbsp; <b>Textbook No.:</b> School Initials + 6 Digits</div>
 </div>
 
 <div id="tab-return" style="display:none">
-<h3>📗 Return Book — Scan Book</h3>
-<label>Book — Search / Scan Book Code To Return</label>
-<input id="returnBookSearch" placeholder="e.g. BK001" oninput="filterReturnBooks()">
+<h3>📗 Return Textbook — Scan Textbook Number</h3>
+<label>Textbook — Search / Scan Textbook Number To Return</label>
+<input id="returnBookSearch" placeholder="e.g. MPS000001" oninput="filterReturnBooks()">
 <div id="returnBookDrop"></div>
 <div id="returnBookSelected" class="selected" style="display:none"></div>
-<button class="btn btn-blue btn-full" onclick="returnBook()">📗 RETURN BOOK →</button>
+<button class="btn btn-blue btn-full" onclick="returnBook()">📗 RETURN TEXTBOOK →</button>
 <div id="returnMsg"></div>
 </div>
 
 <div id="tab-issued" style="display:none">
-<h3>📋 Issued Books — Who Has What</h3>
-<label>🔍 Search Issued — Learner / Book / Code</label><input id="issuedSearch" placeholder="e.g. Thabo, BK001" oninput="renderIssued()">
+<h3>📋 Issued Textbooks — Who Has What</h3>
+<label>🔍 Search Issued — Learner / Textbook / Code</label><input id="issuedSearch" placeholder="e.g. Thabo, MPS000001, 10A001" oninput="renderIssued()">
 <div id="issuedList"></div>
 </div>
 </div>
@@ -122,38 +128,53 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <h2>⚡ Quick Actions</h2>
 <div style="display:flex;gap:8px;flex-wrap:wrap">
 <button class="btn btn-blue" onclick="location.href='learners.html'">👩‍🎓 Learners</button>
-<button class="btn btn-blue" onclick="location.href='books.html'">📚 Books</button>
-<button class="btn btn-gold" onclick="location.href='barcode.html'">🏷️ Barcodes — Learner + Book →</button>
+<button class="btn btn-blue" onclick="location.href='books.html'">📚 Textbooks</button>
+<button class="btn btn-gold" onclick="location.href='barcode.html'">🏷️ Barcodes — A4 3x5 →</button>
 <button class="btn btn-green" onclick="location.href='learner_barcode.html'">🏷️ Learner Barcode →</button>
-<button class="btn btn-blue" onclick="location.href='book_barcode.html'">📚 Book Barcode →</button>
+<button class="btn btn-blue" onclick="location.href='book_barcode.html'">📚 Textbook Barcode →</button>
 </div>
 <ul>
-<li><b>Scan:</b> Scan learner `10A001` or book `BK001` in Search box above — It opens instantly.</li>
+<li><b>Scan:</b> Scan learner `10A001` or textbook `MPS000001` in Search box above — It opens instantly.</li>
 <li><b>No scanner?</b> Type code manually — Same result.</li>
-<li><b>Print:</b> Click 🏷️ Print Barcode on any learner / book in Learners / Books pages — Opens barcode page already filled.</li>
+<li><b>Print:</b> Click 🏷️ Print Barcode on any learner / textbook in Learners / Books pages — Opens barcode page already filled.</li>
+<li><b>Learner ID:</b> Grade + Class + 3 Digits — Grade `10` + Class `A` + `001` = `10A001`</li>
+<li><b>Textbook No.:</b> School Initials + 6 Digits — `Makhanani Primary School` = `MPS000001`</li>
 </ul>
 </div>
 </main>
 <script>
 let ALL_LEARNERS=[],ALL_BOOKS=[],ISSUED=[];
-let SCHOOL_ID='',SCHOOL_NAME='',PREFIX='10A';
+let SCHOOL_ID='',SCHOOL_NAME='',PREFIX='MPS';
 let SEL_ISSUE_LEARNER=null,SEL_ISSUE_BOOK=null,SEL_RETURN_BOOK=null;
-let selectedLearnerName='',selectedLearnerClass='',selectedLearnerCode='',selectedBookCode='',selectedBookTitle='';
+let selectedLearnerName='',selectedLearnerGrade='',selectedLearnerClass='',selectedLearnerCode='',selectedBookCode='',selectedBookTitle='';
 function esc(s){return String(s||'').replace(/</g,'&lt;');}
 function showTab(n){['issue','return','issued'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===n?'block':'none';document.getElementById('tabBtn-'+t).classList.toggle('active',t===n);});if(n==='issued')renderIssued();}
 function logout(){localStorage.removeItem('makhanani_user');location.href='index.html';}
+function schoolInitials(name){
+  const words=String(name||'').trim().split(/\s+/).filter(w=>/[A-Za-z]/.test(w));
+  if(words.length===0) return 'MPS';
+  return words.map(w=>w.replace(/[^A-Za-z]/g,'').charAt(0).toUpperCase()).join('')||'MPS';
+}
+function textbookNumber(num){return PREFIX+String(num).padStart(6,'0');}
+function learnerID(grade,cls,num){return String(grade||'').trim().toUpperCase()+String(cls||'').trim().toUpperCase()+String(num).padStart(3,'0');}
+function parseLearnerCode(code){
+  const m=String(code||'').trim().toUpperCase().match(/^(\d+)([A-Z])(\d+)?$/);
+  if(m) return {grade:m[1],cls:m[2],num:m[3]?parseInt(m[3]):0};
+  return {grade:'',cls:'',num:0};
+}
 async function loadAll(){
   let u=null;try{u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
   if(!u){document.getElementById('authMsg').innerHTML='<div class="warn">⚠️ Login first. <button class="btn btn-blue" onclick="location.href=\'index.html\'">Go To Login →</button><br>Demo Teacher: teacher@thuto.co.za / 1234</div>';return;}
-  SCHOOL_ID=u.schoolId||'';SCHOOL_NAME=u.schoolName||'';PREFIX=u.schoolPrefix||u.prefix||'10A';
+  SCHOOL_ID=u.schoolId||'';SCHOOL_NAME=u.schoolName||'Makhanani Primary School';PREFIX=schoolInitials(SCHOOL_NAME);
   document.getElementById('authMsg').innerHTML=`<div class="ok">✅ Logged in as <b>${esc(u.name)}</b> — ${esc(u.role)} — ${esc(SCHOOL_NAME)}</div>`;
-  document.getElementById('schoolLine').textContent=SCHOOL_NAME+' • Prefix '+PREFIX;
+  document.getElementById('schoolLine').textContent=SCHOOL_NAME+' • Textbook Prefix '+PREFIX;
+  document.getElementById('formatBox').innerHTML=`<b>👩‍🎓 Learner ID:</b> Grade + Class + 3 Digits = <b>10A001</b> &nbsp;|&nbsp; <b>📚 Textbook No.:</b> School Initials + 6 Digits = <b>${esc(textbookNumber(1))}</b> &nbsp;|&nbsp; School Initials: <b>${esc(PREFIX)}</b>`;
   ALL_LEARNERS=[];ALL_BOOKS=[];ISSUED=[];
-  try{const s=await db.collection('schools').doc(SCHOOL_ID).collection('learners').get();s.forEach(d=>{const l=d.data();ALL_LEARNERS.push({id:d.id,name:l.name||'',code:l.barcode||l.code||d.id,className:l.className||l.class||''});});}catch(e){}
-  try{const rs=await rtdb.ref('schools/'+SCHOOL_ID+'/learners').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,l])=>{if(!ALL_LEARNERS.find(x=>x.id===id))ALL_LEARNERS.push({id,name:l.name||'',code:l.barcode||l.code||id,className:l.className||l.class||''});});}catch(e){}
-  try{const s=await db.collection('schools').doc(SCHOOL_ID).collection('books').get();s.forEach(d=>{const b=d.data();ALL_BOOKS.push({id:d.id,title:b.title||'',code:b.barcode||b.code||d.id,category:b.category||b.subject||'',status:b.status||'AVAILABLE',issuedTo:b.issuedTo||'',issuedToCode:b.issuedToCode||''});});}catch(e){}
-  try{const rs=await rtdb.ref('schools/'+SCHOOL_ID+'/books').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,b])=>{if(!ALL_BOOKS.find(x=>x.id===id))ALL_BOOKS.push({id,title:b.title||'',code:b.barcode||b.code||id,category:b.category||b.subject||'',status:b.status||'AVAILABLE',issuedTo:b.issuedTo||'',issuedToCode:b.issuedToCode||''});});}catch(e){}
-  if(ALL_LEARNERS.length===0){try{ALL_LEARNERS=JSON.parse(localStorage.getItem('makhanani_learners')||'[]');}catch(e){}}
+  try{const s=await db.collection('schools').doc(SCHOOL_ID).collection('learners').get();s.forEach(d=>{const l=d.data();const code=l.barcode||l.code||l.learnerCode||l.learnerID||d.id;const p=parseLearnerCode(code);ALL_LEARNERS.push({id:d.id,name:l.name||l.learnerName||'',code,grade:l.grade||p.grade||'',className:l.className||l.class||p.cls||''});});}catch(e){}
+  try{const rs=await rtdb.ref('schools/'+SCHOOL_ID+'/learners').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,l])=>{if(!ALL_LEARNERS.find(x=>x.id===id)){const code=l.barcode||l.code||id;const p=parseLearnerCode(code);ALL_LEARNERS.push({id,name:l.name||'',code,grade:l.grade||p.grade||'',className:l.className||l.class||p.cls||''});}});}catch(e){}
+  try{const s=await db.collection('schools').doc(SCHOOL_ID).collection('books').get();s.forEach(d=>{const b=d.data();ALL_BOOKS.push({id:d.id,title:b.title||b.bookTitle||'',code:b.barcode||b.code||b.bookCode||b.textbookNumber||d.id,category:b.category||b.subject||'',status:b.status||'AVAILABLE',issuedTo:b.issuedTo||'',issuedToCode:b.issuedToCode||''});});}catch(e){}
+  try{const rs=await rtdb.ref('schools/'+SCHOOL_ID+'/books').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,b])=>{if(!ALL_BOOKS.find(x=>x.id===id))ALL_BOOKS.push({id,title:b.title||'',code:b.barcode||b.code||b.textbookNumber||id,category:b.category||b.subject||'',status:b.status||'AVAILABLE',issuedTo:b.issuedTo||'',issuedToCode:b.issuedToCode||''});});}catch(e){}
+  if(ALL_LEARNERS.length===0){try{ALL_LEARNERS=JSON.parse(localStorage.getItem('makhanani_learners')||'[]').map(x=>{const p=parseLearnerCode(x.code||'');return {id:x.id,name:x.name||'',code:x.code||'',grade:x.grade||p.grade||'',className:x.className||x.class||p.cls||''};});}catch(e){}}
   if(ALL_BOOKS.length===0){try{ALL_BOOKS=JSON.parse(localStorage.getItem('makhanani_books')||'[]');}catch(e){}}
   try{const s=await db.collection('schools').doc(SCHOOL_ID).collection('issues').get();s.forEach(d=>{const i=d.data();if(i.status!=='RETURNED')ISSUED.push({id:d.id,...i});});}catch(e){}
   try{const rs=await rtdb.ref('schools/'+SCHOOL_ID+'/issues').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,i])=>{if(i.status!=='RETURNED'&&!ISSUED.find(x=>x.id===id))ISSUED.push({id,...i});});}catch(e){}
@@ -163,65 +184,83 @@ async function loadAll(){
   document.getElementById('kBooks').textContent=ALL_BOOKS.length;
   document.getElementById('kAvail').textContent=avail;
   document.getElementById('kIssued').textContent=issued;
+  const grades=[...new Set(ALL_LEARNERS.map(l=>l.grade).filter(Boolean))].sort();
+  const classes=[...new Set(ALL_LEARNERS.map(l=>l.className).filter(Boolean))].sort();
+  const cats=[...new Set(ALL_BOOKS.map(b=>b.category).filter(Boolean))].sort();
+  document.getElementById('issueGradeFilter').innerHTML='<option value="">All Grades</option>'+grades.map(g=>`<option>${esc(g)}</option>`).join('');
+  document.getElementById('issueClassFilter').innerHTML='<option value="">All Classes</option>'+classes.map(c=>`<option>${esc(c)}</option>`).join('');
+  document.getElementById('issueCatFilter').innerHTML='<option value="">All Categories</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join('');
   renderIssued();
 }
 function doSearch(){
   const q=(document.getElementById('searchBox').value||'').toLowerCase().trim();
   const el=document.getElementById('searchResults');
   if(!q){el.innerHTML='';return;}
-  const learners=ALL_LEARNERS.filter(l=>(l.name||'').toLowerCase().includes(q)||(l.code||'').toLowerCase().includes(q)||(l.className||'').toLowerCase().includes(q)).slice(0,5);
+  const learners=ALL_LEARNERS.filter(l=>(l.name||'').toLowerCase().includes(q)||(l.code||'').toLowerCase().includes(q)||(l.grade||'').toLowerCase().includes(q)||(l.className||'').toLowerCase().includes(q)).slice(0,5);
   const books=ALL_BOOKS.filter(b=>(b.title||'').toLowerCase().includes(q)||(b.code||'').toLowerCase().includes(q)||(b.category||'').toLowerCase().includes(q)).slice(0,5);
-  if(learners.length===0&&books.length===0){el.innerHTML='<div class="info">No learner / book found for "'+esc(q)+'"</div>';return;}
+  if(learners.length===0&&books.length===0){el.innerHTML='<div class="info">No learner / textbook found for "'+esc(q)+'"</div>';return;}
   let html='';
-  learners.forEach(l=>{html+=`<div class="goldBox"><b>👩‍🎓 LEARNER — ${esc(l.name)}</b> — ${esc(l.code)} — ${esc(l.className)}<br><button class="btn btn-green btn-small" onclick="printLearnerFromHome('${esc(l.code)}','${esc(l.name)}','${esc(l.className)}')">🏷️ Print Barcode</button> <button class="btn btn-blue btn-small" onclick="selectLearnerForIssue('${esc(l.id)}')">📕 Issue To This Learner →</button></div>`;});
-  books.forEach(b=>{const st=b.status||'AVAILABLE';html+=`<div class="goldBox"><b>📚 BOOK — ${esc(b.title)}</b> — ${esc(b.code)} — ${esc(b.category)} — ${st==='ISSUED'?'<span class="badge badge-orange">📕 ISSUED to '+esc(b.issuedTo||'')+'</span>':'<span class="badge badge-green">✅ AVAILABLE</span>'}<br><button class="btn btn-green btn-small" onclick="printBookFromHome('${esc(b.code)}','${esc(b.title)}','${esc(b.category)}')">📚 Print Barcode</button> <button class="btn btn-blue btn-small" onclick="selectBookForIssue('${esc(b.id)}')">📕 Issue This Book →</button></div>`;});
+  learners.forEach(l=>{html+=`<div class="goldBox"><b>👩‍🎓 LEARNER — ${esc(l.name)}</b> — Learner ID <b>${esc(l.code)}</b> — Grade ${esc(l.grade)} Class ${esc(l.className)}<br><button class="btn btn-green btn-small" onclick="printLearnerFromHome('${esc(l.code)}','${esc(l.name)}','${esc(l.grade)}','${esc(l.className)}')">🏷️ Print Barcode</button> <button class="btn btn-blue btn-small" onclick="selectLearnerForIssue('${esc(l.id)}')">📕 Issue To This Learner →</button></div>`;});
+  books.forEach(b=>{const st=b.status||'AVAILABLE';html+=`<div class="goldBox"><b>📚 TEXTBOOK — ${esc(b.title)}</b> — Textbook No. <b>${esc(b.code)}</b> — ${esc(b.category)} — ${st==='ISSUED'?'<span class="badge badge-orange">📕 ISSUED to '+esc(b.issuedTo||'')+'</span>':'<span class="badge badge-green">✅ AVAILABLE</span>'}<br><button class="btn btn-green btn-small" onclick="printBookFromHome('${esc(b.code)}','${esc(b.title)}','${esc(b.category)}')">📚 Print Barcode</button> <button class="btn btn-blue btn-small" onclick="selectBookForIssue('${esc(b.id)}')">📕 Issue This Textbook →</button></div>`;});
   el.innerHTML=html;
 }
-function printLearnerFromHome(code,name,cls){localStorage.setItem('makhanani_print_learner',JSON.stringify({code,name,cls}));location.href='barcode.html';}
+function printLearnerFromHome(code,name,grade,cls){localStorage.setItem('makhanani_print_learner',JSON.stringify({code,name,grade,cls}));location.href='barcode.html';}
 function printBookFromHome(code,title,cat){localStorage.setItem('makhanani_print_book',JSON.stringify({code,title,cat}));location.href='barcode.html';}
 function printCombinedPack(){
   const learnerName=selectedLearnerName||SEL_ISSUE_LEARNER?.name||'';
+  const learnerGrade=selectedLearnerGrade||SEL_ISSUE_LEARNER?.grade||'';
   const learnerClass=selectedLearnerClass||SEL_ISSUE_LEARNER?.className||'';
   const learnerCode=selectedLearnerCode||SEL_ISSUE_LEARNER?.code||'';
   const bookCode=selectedBookCode||SEL_ISSUE_BOOK?.code||'';
   const bookTitle=selectedBookTitle||SEL_ISSUE_BOOK?.title||'';
-  if(!learnerCode&&!bookCode){alert('⚠️ Pick Learner + Book first in Issue tab, then click Print Combined Pack.');return;}
-  localStorage.setItem('makhanani_print_combined',JSON.stringify({learnerName,learnerClass,learnerCode,bookCode,bookTitle}));
+  if(!learnerCode&&!bookCode){alert('⚠️ Pick Learner + Textbook first in Issue tab, then click Print Combined Pack.');return;}
+  localStorage.setItem('makhanani_print_combined',JSON.stringify({learnerName,learnerGrade,learnerClass,learnerCode,bookCode,bookTitle}));
   location.href='barcode.html';
 }
 function selectLearnerForIssue(id){
   const l=ALL_LEARNERS.find(x=>x.id===id);if(!l)return;SEL_ISSUE_LEARNER=l;
-  selectedLearnerName=l.name;selectedLearnerClass=l.className;selectedLearnerCode=l.code;
+  selectedLearnerName=l.name;selectedLearnerGrade=l.grade;selectedLearnerClass=l.className;selectedLearnerCode=l.code;
   document.getElementById('issueLearnerSearch').value=l.name+' — '+l.code;
-  const el=document.getElementById('issueLearnerSelected');el.style.display='block';el.innerHTML=`<b>✅ Learner:</b> ${esc(l.name)} — ${esc(l.code)} — ${esc(l.className)} <button class="btn btn-grey btn-small" onclick="clearIssueLearner()">✖️ Clear</button> <button class="btn btn-green btn-small" onclick="printLearnerFromHome('${esc(l.code)}','${esc(l.name)}','${esc(l.className)}')">🏷️ Print Barcode</button>`;
+  const el=document.getElementById('issueLearnerSelected');el.style.display='block';el.innerHTML=`<b>✅ Learner:</b> ${esc(l.name)} — Learner ID <b>${esc(l.code)}</b> — Grade ${esc(l.grade)} Class ${esc(l.className)} <button class="btn btn-grey btn-small" onclick="clearIssueLearner()">✖️ Clear</button> <button class="btn btn-green btn-small" onclick="printLearnerFromHome('${esc(l.code)}','${esc(l.name)}','${esc(l.grade)}','${esc(l.className)}')">🏷️ Print Barcode</button>`;
   showTab('issue');document.getElementById('issueBookSearch').focus();
 }
 function selectBookForIssue(id){
   const b=ALL_BOOKS.find(x=>x.id===id);if(!b)return;SEL_ISSUE_BOOK=b;
   selectedBookCode=b.code;selectedBookTitle=b.title;
   document.getElementById('issueBookSearch').value=b.title+' — '+b.code;
-  const el=document.getElementById('issueBookSelected');el.style.display='block';el.innerHTML=`<b>✅ Book:</b> ${esc(b.title)} — ${esc(b.code)} — ${esc(b.category)} <button class="btn btn-grey btn-small" onclick="clearIssueBook()">✖️ Clear</button> <button class="btn btn-green btn-small" onclick="printBookFromHome('${esc(b.code)}','${esc(b.title)}','${esc(b.category)}')">📚 Print Barcode</button>`;
+  const el=document.getElementById('issueBookSelected');el.style.display='block';el.innerHTML=`<b>✅ Textbook:</b> ${esc(b.title)} — Textbook No. <b>${esc(b.code)}</b> — ${esc(b.category)} <button class="btn btn-grey btn-small" onclick="clearIssueBook()">✖️ Clear</button> <button class="btn btn-green btn-small" onclick="printBookFromHome('${esc(b.code)}','${esc(b.title)}','${esc(b.category)}')">📚 Print Barcode</button>`;
   showTab('issue');
 }
-function clearIssueLearner(){SEL_ISSUE_LEARNER=null;selectedLearnerName='';selectedLearnerClass='';selectedLearnerCode='';document.getElementById('issueLearnerSearch').value='';document.getElementById('issueLearnerSelected').style.display='none';}
+function clearIssueLearner(){SEL_ISSUE_LEARNER=null;selectedLearnerName='';selectedLearnerGrade='';selectedLearnerClass='';selectedLearnerCode='';document.getElementById('issueLearnerSearch').value='';document.getElementById('issueLearnerSelected').style.display='none';}
 function clearIssueBook(){SEL_ISSUE_BOOK=null;selectedBookCode='';selectedBookTitle='';document.getElementById('issueBookSearch').value='';document.getElementById('issueBookSelected').style.display='none';}
 function filterIssueLearners(){
   const q=(document.getElementById('issueLearnerSearch').value||'').toLowerCase().trim();const el=document.getElementById('issueLearnerDrop');
-  if(!q){el.innerHTML='';return;}
-  const list=ALL_LEARNERS.filter(l=>(l.name||'').toLowerCase().includes(q)||(l.code||'').toLowerCase().includes(q)).slice(0,5);
-  el.innerHTML=list.map(l=>`<div class="goldBox" style="cursor:pointer" onclick="selectLearnerForIssue('${esc(l.id)}')"><b>${esc(l.name)}</b> — ${esc(l.code)} — ${esc(l.className)}</div>`).join('')||'<div class="info">No learner found.</div>';
+  const fg=document.getElementById('issueGradeFilter').value||'';const fc=document.getElementById('issueClassFilter').value||'';
+  if(!q&&!fg&&!fc){el.innerHTML='';return;}
+  const list=ALL_LEARNERS.filter(l=>{
+    if(q&&!((l.name||'').toLowerCase().includes(q)||(l.code||'').toLowerCase().includes(q)))return false;
+    if(fg&&(l.grade||'')!==fg)return false;
+    if(fc&&(l.className||'')!==fc)return false;
+    return true;
+  }).slice(0,5);
+  el.innerHTML=list.map(l=>`<div class="goldBox" style="cursor:pointer" onclick="selectLearnerForIssue('${esc(l.id)}')"><b>${esc(l.name)}</b> — ${esc(l.code)} — Grade ${esc(l.grade)} Class ${esc(l.className)}</div>`).join('')||'<div class="info">No learner found.</div>';
 }
 function filterIssueBooks(){
   const q=(document.getElementById('issueBookSearch').value||'').toLowerCase().trim();const el=document.getElementById('issueBookDrop');
-  if(!q){el.innerHTML='';return;}
-  const list=ALL_BOOKS.filter(b=>((b.title||'').toLowerCase().includes(q)||(b.code||'').toLowerCase().includes(q))&&(b.status||'AVAILABLE')==='AVAILABLE').slice(0,5);
-  el.innerHTML=list.map(b=>`<div class="goldBox" style="cursor:pointer" onclick="selectBookForIssue('${esc(b.id)}')"><b>${esc(b.title)}</b> — ${esc(b.code)} — ${esc(b.category)}</div>`).join('')||'<div class="info">No AVAILABLE book found. Book may be ISSUED.</div>';
+  const fc=document.getElementById('issueCatFilter').value||'';
+  if(!q&&!fc){el.innerHTML='';return;}
+  const list=ALL_BOOKS.filter(b=>{
+    if(q&&!((b.title||'').toLowerCase().includes(q)||(b.code||'').toLowerCase().includes(q)))return false;
+    if(fc&&(b.category||'')!==fc)return false;
+    return (b.status||'AVAILABLE')==='AVAILABLE';
+  }).slice(0,5);
+  el.innerHTML=list.map(b=>`<div class="goldBox" style="cursor:pointer" onclick="selectBookForIssue('${esc(b.id)}')"><b>${esc(b.title)}</b> — ${esc(b.code)} — ${esc(b.category)}</div>`).join('')||'<div class="info">No AVAILABLE textbook found. Textbook may be ISSUED.</div>';
 }
 function filterReturnBooks(){
   const q=(document.getElementById('returnBookSearch').value||'').toLowerCase().trim();const el=document.getElementById('returnBookDrop');
   if(!q){el.innerHTML='';return;}
   const list=ALL_BOOKS.filter(b=>((b.title||'').toLowerCase().includes(q)||(b.code||'').toLowerCase().includes(q))&&(b.status||'')==='ISSUED').slice(0,5);
-  el.innerHTML=list.map(b=>`<div class="goldBox" style="cursor:pointer" onclick="selectReturnBook('${esc(b.id)}')"><b>${esc(b.title)}</b> — ${esc(b.code)} — Issued to ${esc(b.issuedTo||'')}</div>`).join('')||'<div class="info">No ISSUED book found.</div>';
+  el.innerHTML=list.map(b=>`<div class="goldBox" style="cursor:pointer" onclick="selectReturnBook('${esc(b.id)}')"><b>${esc(b.title)}</b> — ${esc(b.code)} — Issued to ${esc(b.issuedTo||'')}</div>`).join('')||'<div class="info">No ISSUED textbook found.</div>';
 }
 function selectReturnBook(id){
   const b=ALL_BOOKS.find(x=>x.id===id);if(!b)return;SEL_RETURN_BOOK=b;
@@ -229,9 +268,9 @@ function selectReturnBook(id){
   const el=document.getElementById('returnBookSelected');el.style.display='block';el.innerHTML=`<b>✅ Return:</b> ${esc(b.title)} — ${esc(b.code)} — Issued to ${esc(b.issuedTo||'')} <button class="btn btn-grey btn-small" onclick="SEL_RETURN_BOOK=null;document.getElementById('returnBookSelected').style.display='none'">✖️ Clear</button>`;
 }
 async function issueBook(){
-  if(!SEL_ISSUE_LEARNER||!SEL_ISSUE_BOOK){document.getElementById('issueMsg').innerHTML='<div class="warn">⚠️ Pick Learner + Book first — Scan / Type in boxes above.</div>';return;}
+  if(!SEL_ISSUE_LEARNER||!SEL_ISSUE_BOOK){document.getElementById('issueMsg').innerHTML='<div class="warn">⚠️ Pick Learner + Textbook first — Scan / Type in boxes above.</div>';return;}
   const today=new Date().toISOString().slice(0,10);const due=new Date();due.setDate(due.getDate()+14);const dueStr=due.toISOString().slice(0,10);
-  const issue={learnerId:SEL_ISSUE_LEARNER.id,learnerName:SEL_ISSUE_LEARNER.name,learnerCode:SEL_ISSUE_LEARNER.code,learnerClass:SEL_ISSUE_LEARNER.className,bookId:SEL_ISSUE_BOOK.id,bookTitle:SEL_ISSUE_BOOK.title,bookCode:SEL_ISSUE_BOOK.code,bookCategory:SEL_ISSUE_BOOK.category,issueDate:today,dueDate:dueStr,status:'ISSUED',schoolId:SCHOOL_ID};
+  const issue={learnerId:SEL_ISSUE_LEARNER.id,learnerName:SEL_ISSUE_LEARNER.name,learnerCode:SEL_ISSUE_LEARNER.code,learnerID:SEL_ISSUE_LEARNER.code,learnerGrade:SEL_ISSUE_LEARNER.grade,learnerClass:SEL_ISSUE_LEARNER.className,bookId:SEL_ISSUE_BOOK.id,bookTitle:SEL_ISSUE_BOOK.title,bookCode:SEL_ISSUE_BOOK.code,textbookNumber:SEL_ISSUE_BOOK.code,bookCategory:SEL_ISSUE_BOOK.category,issueDate:today,dueDate:dueStr,status:'ISSUED',schoolId:SCHOOL_ID};
   try{
     const docRef=await db.collection('schools').doc(SCHOOL_ID).collection('issues').add(issue);
     await db.collection('schools').doc(SCHOOL_ID).collection('books').doc(SEL_ISSUE_BOOK.id).set({status:'ISSUED',issuedTo:SEL_ISSUE_LEARNER.name,issuedToCode:SEL_ISSUE_LEARNER.code},{merge:true});
@@ -242,7 +281,7 @@ async function issueBook(){
   clearIssueLearner();clearIssueBook();loadAll();
 }
 async function returnBook(){
-  if(!SEL_RETURN_BOOK){document.getElementById('returnMsg').innerHTML='<div class="warn">⚠️ Pick Book to return first.</div>';return;}
+  if(!SEL_RETURN_BOOK){document.getElementById('returnMsg').innerHTML='<div class="warn">⚠️ Pick Textbook to return first.</div>';return;}
   const today=new Date().toISOString().slice(0,10);
   try{
     const issues=ISSUED.filter(i=>i.bookId===SEL_RETURN_BOOK.id);
@@ -256,15 +295,15 @@ async function returnBook(){
 function renderIssued(){
   const q=(document.getElementById('issuedSearch').value||'').toLowerCase();
   let list=ISSUED.filter(i=>{if(!q)return true;return (i.learnerName||'').toLowerCase().includes(q)||(i.bookTitle||'').toLowerCase().includes(q)||(i.learnerCode||'').toLowerCase().includes(q)||(i.bookCode||'').toLowerCase().includes(q);});
-  // Also show books with status ISSUED even if no issue record
   ALL_BOOKS.filter(b=>(b.status||'')==='ISSUED'&&!ISSUED.find(i=>i.bookId===b.id)).forEach(b=>{if(!q||(b.title||'').toLowerCase().includes(q)||(b.code||'').toLowerCase().includes(q)||(b.issuedTo||'').toLowerCase().includes(q))list.push({learnerName:b.issuedTo||'—',learnerCode:b.issuedToCode||'',bookTitle:b.title,bookCode:b.code,issueDate:'—',dueDate:'—',bookId:b.id});});
-  if(list.length===0){document.getElementById('issuedList').innerHTML='<div class="ok">✅ No books issued. All books available.</div>';return;}
-  let html=`<div class="info">Issued: <b>${list.length}</b> books</div><table><tr><th>Learner</th><th>Book</th><th>Issue / Due</th><th>Action</th></tr>`;
+  if(list.length===0){document.getElementById('issuedList').innerHTML='<div class="ok">✅ No textbooks issued. All textbooks available.</div>';return;}
+  let html=`<div class="info">Issued: <b>${list.length}</b> textbooks</div><table><tr><th>Learner</th><th>Textbook</th><th>Issue / Due</th><th>Action</th></tr>`;
   list.forEach(i=>{html+=`<tr><td><b>${esc(i.learnerName||'—')}</b><br><span class="small">${esc(i.learnerCode||'')}</span></td><td><b>${esc(i.bookTitle||'—')}</b><br><span class="small">${esc(i.bookCode||'')}</span></td><td>${esc(i.issueDate||'—')}<br><span class="small">Due ${esc(i.dueDate||'—')}</span></td><td><button class="btn btn-blue btn-small" onclick="selectReturnBook('${esc(i.bookId)}');showTab('return')">📗 Return →</button> <button class="btn btn-green btn-small" onclick="printCombinedPackForIssued('${esc(i.learnerCode)}','${esc(i.learnerName)}','${esc(i.bookCode)}','${esc(i.bookTitle)}')">🔄 Print Pack</button></td></tr>`;});
   html+='</table>';document.getElementById('issuedList').innerHTML=html;
 }
 function printCombinedPackForIssued(learnerCode,learnerName,bookCode,bookTitle){
-  localStorage.setItem('makhanani_print_combined',JSON.stringify({learnerName,learnerClass:'',learnerCode,bookCode,bookTitle}));
+  const p=parseLearnerCode(learnerCode);
+  localStorage.setItem('makhanani_print_combined',JSON.stringify({learnerName,learnerGrade:p.grade,learnerClass:p.cls,learnerCode,bookCode,bookTitle}));
   location.href='barcode.html';
 }
 window.onload=loadAll;
