@@ -1,5 +1,10 @@
-// Makhanani LTSM - Organized Task Bar - Grouped By Functionality + ROLE FILTER
-// Add to every page: <div id="taskbar"></div> + <script src="nav.js"></script>
+// Makhanani LTSM - COMBINED: Organized Task Bar + Role Filter + Role Guard
+// ONE FILE FOR ALL PAGES
+// Add to every page:
+//   In <header>: <div id="taskbar"></div><script src="nav.js"></script>
+//   In <body> top (protected pages only): <script>guardPage(3, 'Principal Dashboard');</script>
+//   OR use: <body data-min-level="3" data-page-name="Principal Dashboard">
+// DELETE role_guard.js - No longer needed
 (function(){
   function esc(s){return String(s||'').replace(/</g,'&lt;');}
   function currentPage(){
@@ -7,25 +12,75 @@
   }
   function isActive(pages){ return pages.includes(currentPage()) ? ' active' : ''; }
 
-  let user=null;
-  try{ user=JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){}
-  let role=(user&&user.role)||'';
+  // ========== ROLE GUARD - BLOCK UNAUTHORIZED PAGES ==========
+  function getLevel(role){
+    if(role==='Teacher') return 1;
+    if(role==='Librarian') return 2;
+    if(role==='Principal') return 3;
+    if(role==='Super Admin') return 4;
+    if(role==='Admin') return 3;
+    return 0;
+  }
+  function getUser(){
+    try{ return JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){ return null; }
+  }
+  // Global - call on each protected page: guardPage(3, 'Principal Dashboard')
+  window.guardPage = function(minLevel, pageName, redirectPage){
+    let user = getUser();
+    if(!user){ location.href='index.html'; return false; }
+    let level = getLevel(user.role);
+    if(level >= minLevel) return true;
+    let needName = minLevel===4 ? 'Super Admin' : minLevel===3 ? 'Principal' : minLevel===2 ? 'Librarian' : 'Teacher';
+    let homeForRole = level===1 ? 'teacher.html' : level===2 ? 'librarian.html' : level===3 ? 'principal.html' : 'super_admin.html';
+    let target = redirectPage || homeForRole;
+    // Hide body immediately to prevent flash of data
+    if(document.body){ document.body.style.visibility='hidden'; }
+    document.addEventListener('DOMContentLoaded', function(){
+      document.body.style.visibility='visible';
+      document.body.innerHTML = `
+<div style="font-family:Arial,sans-serif;background:#f1f5f9;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;border-radius:12px;padding:24px;max-width:480px;width:100%;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.2)">
+    <div style="font-size:48px">🚫</div>
+    <h2 style="color:#0a1f4d;margin:10px 0">You Don't Have Permission</h2>
+    <p style="line-height:1.6;font-size:14px">You are logged in as <b>${esc(user.name||'')}</b> — Role: <b>${esc(user.role||'')}</b><br><br>
+    This page <b>${esc(pageName||'')}</b> is for <b>${needName} and above</b> only.<br>
+    Your role cannot see this data.</p>
+    <div style="background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;line-height:1.6;font-size:13px;margin:12px 0">
+      <b>Where to go instead:</b><br>
+      Teacher → Teacher Dashboard<br>
+      Librarian → Librarian Dashboard<br>
+      Principal → Principal Dashboard<br>
+      Super Admin → Super Admin Dashboard
+    </div>
+    <button onclick="location.href='${target}'" style="width:100%;padding:12px;border:none;border-radius:8px;background:#0a1f4d;color:#fff;font-weight:900;font-size:14px;cursor:pointer;margin-top:8px">✅ Go To My Dashboard →</button>
+    <button onclick="location.href='home.html'" style="width:100%;padding:12px;border:none;border-radius:8px;background:#d4af37;color:#0a1f4d;font-weight:900;font-size:14px;cursor:pointer;margin-top:8px">🏠 Go To Home →</button>
+    <button onclick="localStorage.removeItem('makhanani_user');location.href='index.html'" style="width:100%;padding:12px;border:none;border-radius:8px;background:#e2e8f0;color:#0a1f4d;font-weight:900;font-size:14px;cursor:pointer;margin-top:8px">🚪 Logout + Login As Different User</button>
+  </div>
+</div>`;
+      document.title = 'Blocked - No Permission';
+    });
+    return false;
+  };
+  // Auto-guard via data attribute: <body data-min-level="3" data-page-name="Principal">
+  window.addEventListener('DOMContentLoaded', function(){
+    let body = document.body;
+    if(!body) return;
+    let min = body.getAttribute('data-min-level');
+    let name = body.getAttribute('data-page-name');
+    if(min){ window.guardPage(parseInt(min), name||document.title); }
+  });
+
+  // ========== TASK BAR - ORGANIZED + ROLE FILTER ==========
+  let user = getUser();
+  let role = (user && user.role) || '';
   let loggedIn = !!user;
-
-  // ROLE LEVELS: Teacher=1, Librarian=2, Principal=3, Super Admin=4
-  let level = 0;
-  if(role==='Teacher') level=1;
-  else if(role==='Librarian') level=2;
-  else if(role==='Principal') level=3;
-  else if(role==='Super Admin') level=4;
-  else if(role==='Admin') level=3;
-
+  let level = getLevel(role);
   let isTeacher = level>=1;
   let isLibrarian = level>=2;
   let isPrincipal = level>=3;
   let isSuper = level>=4;
 
-  // If not logged in, show only Home + Login
+  // Not logged in - show only Home + Login
   if(!loggedIn){
     let html = `
 <style>
@@ -43,14 +98,12 @@
     return;
   }
 
-  // Build Dashboards dropdown - only roles user is allowed to see
   let dashItems = '';
   if(isTeacher) dashItems += `<a href="teacher.html" class="${isActive(['teacher.html'])}">👩‍🏫 Teacher <span class="desc">My Class Only — Issue / Return</span></a>`;
   if(isLibrarian) dashItems += `<a href="librarian.html" class="${isActive(['librarian.html'])}">📚 Librarian <span class="desc">All Textbooks — Issue / Return / Lost</span></a>`;
   if(isPrincipal) dashItems += `<a href="principal.html" class="${isActive(['principal.html'])}">🏫 Principal <span class="desc">Whole School — Reports / Users</span></a>`;
   if(isSuper) dashItems += `<a href="super_admin.html" class="${isActive(['super_admin.html'])}">👑 Super Admin <span class="desc">ALL Schools — ALL Users</span></a>`;
 
-  // Learners dropdown - All logged in roles see it
   let learnersDrop = `
   <div class="taskDrop"><button class="taskDropBtn ${isActive(['learners.html','learner_barcode.html']) ? 'active' : ''}">👩‍🎓 Learners ▼</button><div class="taskDropContent">
     <div class="head">👩‍🎓 LEARNERS — FUNCTION: LEARNER RECORDS</div>
@@ -61,7 +114,6 @@
     <a href="learner_barcode.html" class="${isActive(['learner_barcode.html'])}">🏷️ Learner Barcode <span class="desc">Print 10A001 Label — A4 3x5</span></a>
   </div></div>`;
 
-  // Textbooks dropdown - All logged in roles see it
   let textbooksDrop = `
   <div class="taskDrop"><button class="taskDropBtn ${isActive(['books.html','book_barcode.html']) ? 'active' : ''}">📚 Textbooks ▼</button><div class="taskDropContent">
     <div class="head">📚 TEXTBOOKS — FUNCTION: TEXTBOOK STOCK</div>
@@ -72,7 +124,6 @@
     <a href="book_barcode.html" class="${isActive(['book_barcode.html'])}">📚 Textbook Barcode <span class="desc">Print MPS000001 Label — A4 3x5</span></a>
   </div></div>`;
 
-  // Schools dropdown - Principal + Super Admin ONLY
   let schoolsDrop = '';
   if(isPrincipal){
     schoolsDrop = `
@@ -85,7 +136,6 @@
   </div></div>`;
   }
 
-  // Uploads dropdown - Super Admin ONLY (Principal sees Upload Learners inside Learners menu)
   let uploadsDrop = '';
   if(isSuper){
     uploadsDrop = `
@@ -97,7 +147,6 @@
   </div></div>`;
   }
 
-  // Barcodes dropdown - All logged in roles
   let barcodesDrop = `
   <div class="taskDrop"><button class="taskDropBtn ${isActive(['barcode.html','learner_barcode.html','book_barcode.html']) ? 'active' : ''}">🏷️ Barcodes ▼</button><div class="taskDropContent">
     <div class="head">🏷️ BARCODES — FUNCTION: PRINT LABELS</div>
@@ -106,7 +155,6 @@
     <a href="book_barcode.html">📚 Textbook Barcode <span class="desc">MPS000001 Label</span></a>
   </div></div>`;
 
-  // Reports dropdown - Librarian+ (Librarian sees only Librarian, Principal sees Principal, Super sees all)
   let reportsDrop = '';
   if(isLibrarian){
     let reportItems = '';
@@ -145,25 +193,21 @@
 </style>
 <div class="taskbar">
   <a href="home.html" class="${isActive(['home.html','index.html'])}">🏠 Home</a>
-
   <div class="taskDrop"><button class="taskDropBtn ${isActive(['teacher.html','librarian.html','principal.html','super_admin.html']) ? 'active' : ''}">📂 Dashboards ▼</button><div class="taskDropContent">
     <div class="head">📂 DASHBOARDS — YOUR ROLE: ${esc(role.toUpperCase())}</div>
     ${dashItems}
   </div></div>
-
   ${learnersDrop}
   ${textbooksDrop}
   ${schoolsDrop}
   ${uploadsDrop}
   ${barcodesDrop}
   ${reportsDrop}
-
   <span class="taskUser">👤 ${esc(user.name||'')} • ${esc(user.schoolName||'')}</span>
   <span class="taskRole">${esc(role.toUpperCase())}</span>
   <a href="#" onclick="event.preventDefault();localStorage.removeItem('makhanani_user');location.href='index.html';">🚪 Logout</a>
 </div>
 `;
-
   function mount(){
     let el=document.getElementById('taskbar');
     if(el){ el.innerHTML=html; }
