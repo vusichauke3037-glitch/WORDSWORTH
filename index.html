@@ -8,7 +8,7 @@
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#0a1f4d;color:#111;min-height:100vh}
 .topbar{background:#0a1f4d;color:#fff;padding:14px;text-align:center}
 .topbar img{width:92px;height:92px;object-fit:contain;background:#fff;border-radius:50%;padding:8px;display:block;margin:0 auto 8px;box-shadow:0 2px 10px rgba(0,0,0,.3)}
-.topbar h1{margin:0;font-size:24px;letter-spacing:.3px}.topbar p{margin:6px 0 0;opacity:.9;font-size:13px;line-height:1.5}
+.topbar h1{margin:0;font-size:24px}.topbar p{margin:6px 0 0;opacity:.9;font-size:13px;line-height:1.5}
 .wrap{max-width:520px;margin:16px auto;padding:0 14px 20px}
 .card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.2);margin-bottom:12px}
 .card h2{margin:0 0 4px;color:#0a1f4d;font-size:19px}.card p{margin:0 0 12px;color:#64748b;font-size:13px}
@@ -26,9 +26,10 @@ select:focus,input:focus{border-color:#0a1f4d}
 .small{font-size:12px;color:#64748b;text-align:center;margin-top:10px;line-height:1.5}
 .links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}.links a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
 .kpi{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}.kpi div{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px;text-align:center}.kpi b{font-size:20px;color:#0a1f4d;display:block}.kpi span{font-size:11px;color:#64748b}
-.pinWrap{position:relative}.pinWrap button{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:#e2e8f0;padding:8px 10px;border-radius:7px;font-weight:900;cursor:pointer}
+.passWrap{position:relative}.passWrap button{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:#e2e8f0;padding:8px 10px;border-radius:7px;font-weight:900;cursor:pointer}
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
 details{margin-top:10px}summary{cursor:pointer;font-weight:900;color:#0a1f4d;font-size:13px}
+.forgot{text-align:right;margin-top:6px}.forgot a{font-size:12px;color:#2563eb;font-weight:900;text-decoration:none}
 </style>
 </head>
 <body>
@@ -43,16 +44,17 @@ details{margin-top:10px}summary{cursor:pointer;font-weight:900;color:#0a1f4d;fon
 <!-- LOGIN CARD -->
 <div class="card">
 <h2>🔐 Login To Your School</h2>
-<p>Pick your school, your email, enter your PIN.</p>
+<p>Pick your school, enter your email + password.</p>
 
-<label for="schoolSel">1. School</label>
+<label for="schoolSel">1. School — Dropdown</label>
 <select id="schoolSel"><option value="">Loading schools...</option></select>
 
-<label for="emailSel">2. Your Email</label>
-<select id="emailSel"><option value="">Pick school first...</option></select>
+<label for="emailInput">2. Email</label>
+<input id="emailInput" type="email" placeholder="e.g. principal@school.co.za" autocomplete="email">
 
-<label for="pinInput">3. PIN (Default: 1234)</label>
-<div class="pinWrap"><input id="pinInput" type="password" inputmode="numeric" placeholder="Enter PIN • e.g. 1234" maxlength="6" autocomplete="off"><button type="button" onclick="togglePin()">👁️</button></div>
+<label for="passInput">3. Password</label>
+<div class="passWrap"><input id="passInput" type="password" placeholder="Enter your password" autocomplete="current-password"><button type="button" onclick="togglePass()">👁️</button></div>
+<div class="forgot"><a href="#" onclick="forgotPassword();return false;">Forgot Password?</a> • <a href="#" onclick="showDemo();return false;">Use Demo Login</a></div>
 
 <button class="btn btn-blue" id="loginBtn" onclick="doLogin()">➡️ LOGIN</button>
 <div id="msg"></div>
@@ -63,7 +65,7 @@ details{margin-top:10px}summary{cursor:pointer;font-weight:900;color:#0a1f4d;fon
 </div>
 
 <div class="info" id="schoolInfo" style="display:none"></div>
-<div class="info">✅ <b>New school?</b> Click <b>Request Access</b> below — Vusi will approve you today. No payment to try demo.<br>📱 <b>Help?</b> WhatsApp <b>078 023 3263</b></div>
+<div class="info">✅ <b>New school?</b> Click <b>Request Access</b> below — Vusi will approve you today.<br>📱 <b>Help?</b> WhatsApp <b>078 023 3263</b></div>
 
 <div class="kpi"><div><b>3 sec</b><span>Issue Book</span></div><div><b>2 sec</b><span>Return Book</span></div><div><b>1 click</b><span>WhatsApp Parent</span></div></div>
 </div>
@@ -71,7 +73,7 @@ details{margin-top:10px}summary{cursor:pointer;font-weight:900;color:#0a1f4d;fon
 <!-- QUICK LINKS -->
 <div class="card">
 <h2>🚀 Quick Links</h2>
-<p>Go straight to your page after login — Or use manuals below.</p>
+<p>Go straight to your page after login.</p>
 <div class="row">
 <button class="btn btn-blue" onclick="go('principal.html')">📊 Principal</button>
 <button class="btn btn-green" onclick="go('librarian.html')">📚 Librarian</button>
@@ -110,8 +112,8 @@ details{margin-top:10px}summary{cursor:pointer;font-weight:900;color:#0a1f4d;fon
 <a href="marketing-manual.html">📣 Marketing Manual</a>
 </div>
 <button class="btn btn-green" onclick="window.open('https://wa.me/27780233263?text='+encodeURIComponent('Hello Makhanani LTSM, I want a demo for my school.'),'_blank')">📱 WhatsApp Vusi — 078 023 3263</button>
-<details><summary>❓ Forgot PIN / Blocked / No Users Found?</summary>
-<div class="info"><b>Forgot PIN?</b> Ask Admin / Principal to reset to 1234 in Admin → Users → Reset to 1234.<br><b>Blocked?</b> Ask Admin to unblock you. Do not create new account.<br><b>No users found?</b> Pick correct School first, then Email. Or ask Admin — Your email not added to that school.<br><b>Still stuck?</b> WhatsApp 078 023 3263</div>
+<details><summary>❓ Forgot Password / Blocked / No Users Found?</summary>
+<div class="info"><b>Forgot Password?</b> Click Forgot Password above → WhatsApp Vusi. Or ask Admin / Principal to reset to <b>1234</b> in Super Admin → Users → Reset to 1234.<br><b>Blocked?</b> Ask Admin to unblock you. Do not create new account.<br><b>No school found?</b> Pick correct School from dropdown first. If your school is not in list, click Request Access.<br><b>Still stuck?</b> WhatsApp 078 023 3263</div>
 </details>
 </div>
 
@@ -122,12 +124,11 @@ details{margin-top:10px}summary{cursor:pointer;font-weight:900;color:#0a1f4d;fon
 
 </div>
 
-<!-- FIREBASE — REPLACE WITH YOUR CONFIG -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ▼▼▼ PASTE YOUR FIREBASE CONFIG HERE — From Firebase Console → Project Settings → Your apps → Web ▼▼▼
+// ▼▼▼ PASTE YOUR FIREBASE CONFIG HERE — Same as subscriptions.html + super_admin.html ▼▼▼
 const firebaseConfig = {
   apiKey: "PASTE_YOUR_API_KEY",
   authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
@@ -136,28 +137,24 @@ const firebaseConfig = {
   messagingSenderId: "PASTE_SENDER_ID",
   appId: "PASTE_APP_ID"
 };
-// ▲▲▲ If you leave it as PASTE_..., demo mode will run automatically ▲▲▲
-
 const isDemoConfig = !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("PASTE_");
 let db=null;
-if(!isDemoConfig){ try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.log("Firebase init failed, demo mode",e); } }
+if(!isDemoConfig){ try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.log(e); } }
 
-// DEMO DATA — Used when Firebase not set up yet. Delete after real setup if you want.
+// DEMO DATA — Works without Firebase. Password = 1234 for all demo users.
 const DEMO_SCHOOLS=[
   {id:"demo-wordsworth", name:"WORDSWORTH PRIMARY", emis:"123456", package:"STANDARD", monthly:500, status:"ACTIVE", users:[
-    {email:"principal@wordsworth.co.za", name:"Mr. Chauke", role:"PRINCIPAL", pin:"1234"},
-    {email:"librarian@wordsworth.co.za", name:"Ms. Dube", role:"LIBRARIAN", pin:"1234"},
-    {email:"teacher@wordsworth.co.za", name:"Mr. Nkosi", role:"TEACHER", pin:"1234", className:"10A"}
+    {email:"principal@wordsworth.co.za", name:"Mr. Chauke", role:"PRINCIPAL", password:"1234", pin:"1234"},
+    {email:"librarian@wordsworth.co.za", name:"Ms. Dube", role:"LIBRARIAN", password:"1234", pin:"1234"},
+    {email:"teacher@wordsworth.co.za", name:"Mr. Nkosi", role:"TEACHER", password:"1234", pin:"1234", className:"10A"}
   ]},
   {id:"demo-thuto", name:"THUTO PRIMARY", emis:"234567", package:"STARTER", monthly:350, status:"ACTIVE", users:[
-    {email:"principal@thuto.co.za", name:"Mrs. Dube", role:"PRINCIPAL", pin:"1234"},
-    {email:"librarian@thuto.co.za", name:"Mr. Mokoena", role:"LIBRARIAN", pin:"1234"}
+    {email:"principal@thuto.co.za", name:"Mrs. Dube", role:"PRINCIPAL", password:"1234", pin:"1234"},
+    {email:"librarian@thuto.co.za", name:"Mr. Mokoena", role:"LIBRARIAN", password:"1234", pin:"1234"}
   ]}
 ];
 
 let ALL_SCHOOLS=[];
-let CURRENT_USERS=[];
-
 const $=id=>document.getElementById(id);
 function showMsg(html,cls){ const m=$("msg"); m.innerHTML=html; m.className=cls; }
 function saveSession(school,user){
@@ -169,77 +166,73 @@ function saveSession(school,user){
   localStorage.setItem("makhanani_userName", user.name||"");
   localStorage.setItem("makhanani_role", (user.role||"").toUpperCase());
   localStorage.setItem("makhanani_class", user.className||user.class||"");
-  localStorage.setItem("makhanani_pin", user.pin||"");
+  localStorage.setItem("makhanani_password", user.password||user.pin||"");
+  localStorage.setItem("makhanani_pin", user.password||user.pin||"");
   localStorage.setItem("makhanani_loginAt", new Date().toISOString());
 }
 function fillSchools(){
-  const sel=$("schoolSel"); sel.innerHTML='<option value="">-- Pick Your School --</option>';
+  const sel=$("schoolSel"); sel.innerHTML='<option value="">-- Select Your School --</option>';
   ALL_SCHOOLS.forEach(s=>{ const o=document.createElement("option"); o.value=s.id; o.textContent=s.name+" ("+(s.emis||"")+") — "+(s.package||""); sel.appendChild(o); });
   if(ALL_SCHOOLS.length===0){ sel.innerHTML='<option value="">No schools found — Click Request Access below</option>'; }
 }
-function fillUsers(){
-  const sid=$("schoolSel").value; const sel=$("emailSel"); sel.innerHTML='<option value="">-- Pick Your Email --</option>'; CURRENT_USERS=[];
-  if(!sid) return;
-  const school=ALL_SCHOOLS.find(s=>s.id===sid);
-  if(!school) return;
-  CURRENT_USERS=school.users||[];
-  CURRENT_USERS.forEach(u=>{ const o=document.createElement("option"); o.value=u.email; o.textContent=u.name+" — "+u.email+" ("+u.role+")"; sel.appendChild(o); });
-  const info=$("schoolInfo");
-  if(school){
-    info.style.display="block";
-    info.innerHTML="🏫 <b>"+school.name+"</b> • EMIS: "+(school.emis||"-")+" • Package: <b>"+(school.package||"-")+"</b> • Monthly: R"+(school.monthly||"-")+" • Status: <b>"+(school.status||"ACTIVE")+"</b>";
-    if((school.status||"").toUpperCase()==="SUSPENDED"){ showMsg("⚠️ This school is SUSPENDED. WhatsApp Vusi — 078 023 3263 to reactivate.","warn"); }
-  }
+function onSchoolChange(){
+  const sid=$("schoolSel").value; const info=$("schoolInfo");
+  if(!sid){ info.style.display="none"; return; }
+  const school=ALL_SCHOOLS.find(s=>s.id===sid); if(!school) return;
+  info.style.display="block";
+  info.innerHTML="🏫 <b>"+school.name+"</b> • EMIS: "+(school.emis||"-")+" • Package: <b>"+(school.package||"-")+"</b> • Monthly: R"+(school.monthly||"-")+" • Status: <b>"+(school.status||"ACTIVE")+"</b>";
+  if((school.status||"").toUpperCase()==="SUSPENDED"){ showMsg("⚠️ This school is SUSPENDED. WhatsApp Vusi — 078 023 3263 to reactivate.","warn"); }
 }
 async function loadSchools(){
-  // Try Firebase first if configured
   if(db){
     try{
       const snap=await getDocs(collection(db,"schools"));
       let list=[];
       for(const docSnap of snap.docs){
         const d=docSnap.data();
-        // Users are in subcollection or field — try both
         let users=d.users||[];
-        try{
-          const uSnap=await getDocs(collection(db,"schools",docSnap.id,"users"));
-          if(!uSnap.empty){ users=uSnap.docs.map(x=>({id:x.id,...x.data()})); }
-        }catch(e){}
-        // Also try global users collection filtered by schoolId
+        try{ const uSnap=await getDocs(collection(db,"schools",docSnap.id,"users")); if(!uSnap.empty) users=uSnap.docs.map(x=>({id:x.id,...x.data()})); }catch(e){}
         if(users.length===0){
-          try{
-            const q2=query(collection(db,"users"), where("schoolId","==",docSnap.id));
-            const u2=await getDocs(q2);
-            if(!u2.empty) users=u2.docs.map(x=>({id:x.id,...x.data()}));
-          }catch(e){}
+          try{ const q2=query(collection(db,"users"), where("schoolId","==",docSnap.id)); const u2=await getDocs(q2); if(!u2.empty) users=u2.docs.map(x=>({id:x.id,...x.data()})); }catch(e){}
         }
+        // Normalize: password OR pin both work
+        users=users.map(u=>({...u, password:u.password||u.pin||"", pin:u.pin||u.password||""}));
         list.push({id:docSnap.id, name:d.name||d.schoolName||"Unnamed School", emis:d.emis||d.EMIS||"", package:d.package||d.plan||"", monthly:d.monthly||d.monthlyFee||"", status:d.status||"ACTIVE", users});
       }
       if(list.length>0){ ALL_SCHOOLS=list; fillSchools(); return; }
     }catch(e){ console.log("Firebase load failed, using demo",e); }
   }
-  // Fallback: Demo mode
   ALL_SCHOOLS=DEMO_SCHOOLS;
   fillSchools();
-  if(isDemoConfig){ showMsg("ℹ️ <b>Demo Mode:</b> Firebase not connected yet. Use WORDSWORTH → principal@wordsworth.co.za → PIN 1234 to test. Paste your Firebase config in this file to go live.","info"); }
+  if(isDemoConfig){ showMsg("ℹ️ <b>Demo Mode:</b> Firebase not connected yet. Pick WORDSWORTH → principal@wordsworth.co.za → Password 1234 to test.","info"); }
 }
-window.togglePin=()=>{ const i=$("pinInput"); i.type=i.type==="password"?"text":"password"; };
+window.togglePass=()=>{ const i=$("passInput"); i.type=i.type==="password"?"text":"password"; };
+window.showDemo=()=>{ fillDemo('principal'); };
 window.fillDemo=(role)=>{
-  $("schoolSel").value="demo-wordsworth"; fillUsers();
-  setTimeout(()=>{ $("emailSel").value= role==="principal" ? "principal@wordsworth.co.za" : "librarian@wordsworth.co.za"; $("pinInput").value="1234"; showMsg("✅ Demo filled — Click LOGIN","ok"); },50);
+  $("schoolSel").value="demo-wordsworth"; onSchoolChange();
+  setTimeout(()=>{ $("emailInput").value= role==="principal" ? "principal@wordsworth.co.za" : "librarian@wordsworth.co.za"; $("passInput").value="1234"; showMsg("✅ Demo filled — Click LOGIN","ok"); },50);
+};
+window.forgotPassword=()=>{
+  const email=($("emailInput").value||"").trim();
+  const schoolId=$("schoolSel").value;
+  const school=ALL_SCHOOLS.find(s=>s.id===schoolId);
+  const text="Hello Vusi, I forgot my password.\n\nSchool: "+(school?.name||"-")+"\nEmail: "+(email||"-")+"\nPlease reset my password to 1234.";
+  window.open("https://wa.me/27780233263?text="+encodeURIComponent(text),"_blank");
+  showMsg("📱 WhatsApp opened — Send it, Vusi will reset your password to 1234.","info");
 };
 window.go=(page)=>{ location.href=page; };
 window.doLogin=async ()=>{
-  const sid=$("schoolSel").value, email=$("emailSel").value, pin=$("pinInput").value.trim();
-  if(!sid){ showMsg("⚠️ Pick your school first.","warn"); return; }
-  if(!email){ showMsg("⚠️ Pick your email.","warn"); return; }
-  if(!pin){ showMsg("⚠️ Enter your PIN (Default: 1234).","warn"); return; }
+  const sid=$("schoolSel").value, email=($("emailInput").value||"").trim().toLowerCase(), pass=($("passInput").value||"").trim();
+  if(!sid){ showMsg("⚠️ Please select your school from the dropdown.","warn"); return; }
+  if(!email || !email.includes("@")){ showMsg("⚠️ Enter a valid email.","warn"); return; }
+  if(!pass){ showMsg("⚠️ Enter your password.","warn"); return; }
   const school=ALL_SCHOOLS.find(s=>s.id===sid);
   if(!school){ showMsg("⚠️ School not found.","warn"); return; }
   if((school.status||"").toUpperCase()==="SUSPENDED"){ showMsg("⛔ This school is SUSPENDED. WhatsApp Vusi — 078 023 3263 to reactivate.","warn"); return; }
-  const user=(school.users||[]).find(u=>(u.email||"").toLowerCase()===email.toLowerCase());
-  if(!user){ showMsg("⚠️ No user found for that email in this school. Ask Admin to add you.","warn"); return; }
-  if(String(user.pin||"")!==String(pin)){ showMsg("❌ Wrong PIN. Default is 1234. Ask Admin to reset to 1234.","warn"); return; }
+  const user=(school.users||[]).find(u=>(u.email||"").toLowerCase()===email);
+  if(!user){ showMsg("⚠️ No user found for that email in this school. Ask Admin to add you, or pick correct school.","warn"); return; }
+  const correctPass=String(user.password||user.pin||"");
+  if(String(pass)!==correctPass){ showMsg("❌ Wrong password. Click Forgot Password to reset.","warn"); return; }
   if((user.status||"").toUpperCase()==="BLOCKED"){ showMsg("⛔ You are BLOCKED. Ask Admin to unblock you.","warn"); return; }
   saveSession(school,user);
   showMsg("✅ Welcome "+(user.name||"")+" — Logging you in...","ok");
@@ -253,7 +246,10 @@ window.doLogin=async ()=>{
     else location.href="profile.html";
   },600);
 };
-$("schoolSel").addEventListener("change", fillUsers);
+$("schoolSel").addEventListener("change", onSchoolChange);
+// Enter key = Login
+$("passInput").addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(); });
+$("emailInput").addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(); });
 loadSchools();
 </script>
 </body>
