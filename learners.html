@@ -1,374 +1,204 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners</title><meta name="theme-color" content="#0a1f4d">
-<link rel="icon" type="image/png" href="logo.png">
-<link rel="manifest" href="manifest.json">
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Learners - Makhanani LTSM</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script>
-const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
-firebase.initializeApp(firebaseConfig);const db=firebase.firestore();const rtdb=firebase.database();
-</script>
 <style>
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
-header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;line-height:1.6;font-size:13px}
-header img{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;display:block;margin:0 auto 10px}
-main{max-width:1100px;margin:auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}h3{color:#0a1f4d;margin:14px 0 6px;font-size:15px}
-p,li{font-size:14px;line-height:1.6}ul,ol{padding-left:20px}li{margin-bottom:6px}
-.btn{padding:11px 14px;border:none;border-radius:8px;font-weight:900;font-size:13px;cursor:pointer;margin-top:8px}
-.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}
-.btn-full{width:100%}.btn-small{padding:6px 9px;font-size:11px;margin:2px}.btn:disabled{background:#cbd5e1;color:#64748b;cursor:not-allowed}
-input,select,textarea{width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px}label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:10px}
-select.required{border:2px solid #dc2626;background:#fff1f2}select.required.ok{border:2px solid #059669;background:#dcfce7}
-.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
-.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
-.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
-.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:10px;line-height:1.6;margin-top:10px}
-.topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
-.navDrop{position:relative;display:inline-block}.navDropBtn{background:rgba(255,255,255,.2);color:#fff;border:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px;cursor:pointer}.navDropContent{display:none;position:absolute;left:0;top:100%;background:#fff;min-width:220px;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.3);z-index:99;overflow:hidden}.navDropContent a{display:block;color:#0a1f4d;text-decoration:none;padding:10px 12px;font-size:13px;font-weight:900;border-bottom:1px solid #f1f5f9}.navDropContent a:hover{background:#fef3c7}.navDrop:hover .navDropContent{display:block}.navDropContent .head{background:#0a1f4d;color:#fff;padding:8px 12px;font-size:11px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{padding:10px 14px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
-.small{font-size:12px;color:#64748b}.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-green{background:#dcfce7;color:#166534}.badge-orange{background:#fef3c7;color:#92400e}.badge-red{background:#fee2e2;color:#991b1b}.badge-grey{background:#e2e8f0;color:#334155}.badge-blue{background:#dbeafe;color:#1e40af}
-.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.step{border:2px solid #e2e8f0;border-radius:10px;padding:10px;margin-top:10px}.step.done{border-color:#059669;background:#f0fdf4}.stepTitle{font-weight:900;color:#0a1f4d}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:99;padding:12px}.modal.open{display:flex}.modal .box{background:#fff;border-radius:12px;padding:16px;max-width:480px;width:100%;max-height:90vh;overflow:auto}
-@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}.kpi{grid-template-columns:1fr 1fr}}
-</style>
-</head>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#0a1f4d}
+header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
+header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
+.wrap{max-width:1100px;margin:0 auto;padding:12px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
+input{cursor:text}select{appearance:auto;-webkit-appearance:auto}
+select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
+.btn{border:none;border-radius:8px;padding:12px 14px;font-weight:900;cursor:pointer;font-size:14px}
+.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.kpi b{font-size:24px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-issued{background:#fee2e2;color:#991b1b}.badge-free{background:#dcfce7;color:#166534}.badge-cat{background:#fef3c7;color:#92400e}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{flex:1;min-width:100px;padding:12px;border:none;border-radius:8px;background:#e2e8f0;font-weight:900;cursor:pointer}.tabs button.active{background:#0a1f4d;color:#fff}
+.tab{display:none}.tab.active{display:block}
+@media(max-width:700px){.kpi{grid-template-columns:repeat(3,1fr)}.row{flex-direction:column}table{font-size:12px}}
+</style></head>
 <body>
-<header>
-<img src="logo.png" alt="Logo" onerror="this.style.display='none'">
-<h1>👩‍🎓 Learners</h1>
-<p>Makhanani LTSM • Xintimani Group<br><span id="schoolLine">Loading...</span> • Learner ID: Grade + Class + 3 Digits — Dropdowns Required</p>
-<div class="topnav">
-<a href="index.html">🏠 Login</a>
-<div class="navDrop"><button class="navDropBtn">📂 Dashboards ▼</button><div class="navDropContent"><div class="head">PICK DASHBOARD</div><a href="home.html">🏠 Home</a><a href="teacher.html">👩‍🏫 Teacher</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">🏫 Principal</a><a href="super_admin.html">👑 Super Admin</a></div></div>
-<div class="navDrop"><button class="navDropBtn">👩‍🎓 Learners ▼</button><div class="navDropContent"><div class="head">PICK LEARNER PAGE</div><a href="learners.html">📋 All Learners</a><a href="learner_barcode.html">🏷️ Learner Barcode</a><a href="upload.html">📤 Upload Learners</a></div></div>
-<div class="navDrop"><button class="navDropBtn">📚 Textbooks ▼</button><div class="navDropContent"><div class="head">PICK TEXTBOOK PAGE</div><a href="books.html">📋 All Textbooks</a><a href="book_barcode.html">📚 Textbook Barcode</a><a href="barcode.html">🏷️ All Barcodes</a></div></div>
-</div>
+<header><h1>👩‍🎓 Learners</h1><p id="schoolLine">Loading school...</p>
+<div id="taskbar"></div><script src="nav.js"></script>
+<script>guardPage(1,'Learners');</script>
 </header>
-<main>
-<div class="card">
-<div id="authMsg"></div>
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh Learners</button>
-<button class="btn btn-gold" onclick="location.href='learner_barcode.html'">🏷️ Print Learner Barcodes →</button>
-<button class="btn btn-green" onclick="exportCSV()">📥 Export CSV</button>
-<button class="btn btn-blue" onclick="location.href='upload.html'">📤 Upload Learners →</button>
-</div>
-<div class="kpi" style="margin-top:10px">
-<div><b id="kTotal">—</b><span>Total Learners</span></div>
-<div><b id="kWithBook">—</b><span>With Textbook</span></div>
-<div><b id="kNoBook">—</b><span>No Textbook Yet</span></div>
-<div><b id="kNext">—</b><span>Next ID — 10A</span></div>
-</div>
-<div id="formatBox" class="goldBox"></div>
+<div class="wrap">
+<div class="info" id="roleInfo">Loading...</div>
+<div class="kpi">
+<div><b id="kpiTotal">0</b><span>👩‍🎓 TOTAL LEARNERS</span></div>
+<div><b id="kpiWithBooks">0</b><span>📕 WITH TEXTBOOKS</span></div>
+<div><b id="kpiNoBooks">0</b><span>📗 WITHOUT TEXTBOOKS</span></div>
 </div>
 
-<div class="card">
 <div class="tabs">
-<button id="tabBtn-list" class="active" onclick="showTab('list')">📋 All Learners</button>
-<button id="tabBtn-add" onclick="showTab('add')">➕ Add Learner</button>
-<button id="tabBtn-bulk" onclick="showTab('bulk')">➕➕ Add Many Learners</button>
-<button id="tabBtn-issue" onclick="showTab('issue')">📕 Issue Textbook</button>
+<button id="tabBtnList" class="active" onclick="showTab('list')">👩‍🎓 All Learners</button>
+<button id="tabBtnAdd" onclick="showTab('add')">➕ Add Learner</button>
+<button id="tabBtnBulk" onclick="showTab('bulk')">📋 Bulk Add</button>
 </div>
 
-<div id="tab-list">
-<h3>📋 All Learners — Search + Filter Dropdowns</h3>
-<div class="grid3">
-<div><label>🔍 Search — Name / Learner ID</label><input id="searchBox" placeholder="e.g. Thabo, 10A001" oninput="renderLearners()"></div>
-<div><label>Filter Grade — Dropdown ▼</label><select id="filterGrade" onchange="renderLearners()"><option value="">-- All Grades -- ▼</option></select></div>
-<div><label>Filter Class — Dropdown ▼</label><select id="filterClass" onchange="renderLearners()"><option value="">-- All Classes -- ▼</option></select></div>
+<div id="tab-list" class="tab active"><div class="card">
+<h2>👩‍🎓 Learners — WORDSWORTH — Filter By Grade / Class</h2>
+<div class="row">
+<div><label>📚 Grade — Dropdown</label><select id="filterGrade" onchange="onGradeFilter()"><option value="">📚 ALL GRADES</option><option value="8">GRADE 8</option><option value="9">GRADE 9</option><option value="10">GRADE 10</option><option value="11">GRADE 11</option><option value="12">GRADE 12</option></select></div>
+<div><label>🏫 Class — Dropdown</label><select id="filterClass" onchange="renderLearners()"><option value="">🏫 ALL CLASSES</option><option value="A">CLASS A</option><option value="B">CLASS B</option><option value="C">CLASS C</option><option value="D">CLASS D</option><option value="E">CLASS E</option></select></div>
+<div><label>📕 Has Textbooks? — Dropdown</label><select id="filterHasBooks" onchange="renderLearners()"><option value="">📚 ALL LEARNERS</option><option value="yes">📕 WITH TEXTBOOKS</option><option value="no">📗 WITHOUT TEXTBOOKS</option></select></div>
 </div>
-<div id="learnerList"></div>
-</div>
-
-<div id="tab-add" style="display:none">
-<h3>➕ Add 1 Learner — Dropdowns Required</h3>
-<div class="step" id="stepAdd1">
-<div class="stepTitle">STEP 1 — Pick Grade + Class — REQUIRED ▼</div>
-<div class="grid2">
-<div><label>📚 Grade * — Dropdown — REQUIRED</label><select id="addGrade" class="required" onchange="validateAddDropdowns()"><option value="">-- Pick Grade -- ▼</option><option value="1">Grade 1</option><option value="2">Grade 2</option><option value="3">Grade 3</option><option value="4">Grade 4</option><option value="5">Grade 5</option><option value="6">Grade 6</option><option value="7">Grade 7</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option></select><div id="addGradeHint" class="small">⚠️ Pick Grade</div></div>
-<div><label>🏫 Class * — Dropdown — REQUIRED</label><select id="addClass" class="required" onchange="validateAddDropdowns()"><option value="">-- Pick Class -- ▼</option><option value="A">Class A</option><option value="B">Class B</option><option value="C">Class C</option><option value="D">Class D</option><option value="E">Class E</option><option value="F">Class F</option></select><div id="addClassHint" class="small">⚠️ Pick Class</div></div>
-</div>
-<div id="addDropdownStatus" class="warn">⚠️ Pick Grade + Class above to unlock Add.</div>
-<div id="addPreview" class="ok">Preview: — Pick Grade + Class</div>
-</div>
-<div class="step" id="stepAdd2">
-<div class="stepTitle">STEP 2 — Fill Name + Optional</div>
-<label>Full Name * — e.g. Thabo Chauke</label><input id="addName" placeholder="e.g. Thabo Chauke">
-<div class="grid2">
-<div><label>Gender — Dropdown — Optional</label><select id="addGender"><option value="">-- Pick Gender -- ▼</option><option>Male</option><option>Female</option></select></div>
-<div><label>Parent Phone — Optional</label><input id="addPhone" placeholder="e.g. 0780233263"></div>
-</div>
-<label>Learner ID * — Auto: Grade + Class + 3 Digits</label><input id="addCode" placeholder="e.g. 10A001" readonly>
-<button class="btn btn-blue btn-full" onclick="autoNext()">🔢 Auto Next Learner ID →</button>
-<button class="btn btn-green btn-full" id="addLearnerBtn" onclick="addLearner()" disabled>👩‍🎓 ADD LEARNER → (Pick Grade + Class First)</button>
-<div id="addMsg"></div>
-</div>
-<div class="info"><b>Re-print label?</b> Same Name + Same ID → Print again. Do NOT make new ID.<br><b>New learner?</b> Click Auto Next → Use next number in that class.</div>
-</div>
-
-<div id="tab-bulk" style="display:none">
-<h3>➕➕ Add Many Learners — Dropdowns Required</h3>
-<div class="step" id="stepBulk1">
-<div class="stepTitle">STEP 1 — Pick Grade + Class — REQUIRED ▼ — Applies To ALL Names</div>
-<div class="grid2">
-<div><label>📚 Grade * — Dropdown — REQUIRED</label><select id="bulkGrade" class="required" onchange="validateBulkDropdowns()"><option value="">-- Pick Grade -- ▼</option><option value="1">Grade 1</option><option value="2">Grade 2</option><option value="3">Grade 3</option><option value="4">Grade 4</option><option value="5">Grade 5</option><option value="6">Grade 6</option><option value="7">Grade 7</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option></select><div id="bulkGradeHint" class="small">⚠️ Pick Grade</div></div>
-<div><label>🏫 Class * — Dropdown — REQUIRED</label><select id="bulkClass" class="required" onchange="validateBulkDropdowns()"><option value="">-- Pick Class -- ▼</option><option value="A">Class A</option><option value="B">Class B</option><option value="C">Class C</option><option value="D">Class D</option><option value="E">Class E</option><option value="F">Class F</option></select><div id="bulkClassHint" class="small">⚠️ Pick Class</div></div>
-</div>
-<div id="bulkDropdownStatus" class="warn">⚠️ Pick Grade + Class above to unlock Bulk Add.</div>
-<div id="bulkPreview" class="goldBox">Preview: — Pick Grade + Class → e.g. Grade 10 + Class A = 10A001 to 10A030</div>
-</div>
-<div class="step">
-<div class="stepTitle">STEP 2 — Paste Names — 1 Per Line</div>
-<label>Names — 1 Name Per Line *</label><textarea id="bulkNames" rows="8" placeholder="Thabo Chauke&#10;Lerato Mokoena&#10;Sipho Dlamini"></textarea>
-<label>Start Number — Auto Filled</label><input id="bulkStart" type="number" value="1">
-<button class="btn btn-blue btn-full" onclick="autoBulkStart()">🔢 Auto Next Start Number →</button>
-<button class="btn btn-green btn-full" id="bulkAddBtn" onclick="addBulk()" disabled>➕➕ ADD MANY LEARNERS → (Pick Grade + Class First)</button>
-<div id="bulkMsg"></div>
-</div>
-</div>
-
-<div id="tab-issue" style="display:none">
-<h3>📕 Issue Textbook To Learner — Pick Learner + Textbook Dropdowns</h3>
-<div class="grid2">
-<div><label>Learner — Search / Pick Dropdown</label><input id="issueLearnerSearch" placeholder="e.g. 10A001 or Thabo" oninput="filterIssueLearners()"><div id="issueLearnerDrop"></div><div id="issueLearnerSelected" class="ok" style="display:none"></div></div>
-<div><label>Textbook — Search / Pick Dropdown</label><input id="issueBookSearch" placeholder="e.g. MPS000001 or Maths" oninput="filterIssueBooks()"><div id="issueBookDrop"></div><div id="issueBookSelected" class="ok" style="display:none"></div></div>
-</div>
-<button class="btn btn-green btn-full" onclick="issueBook()">📕 ISSUE TEXTBOOK →</button>
-<button class="btn btn-gold btn-full" onclick="printCombinedPack()">🔄 Print Combined Pack →</button>
-<div id="issueMsg"></div>
-</div>
-</div>
-
-<div class="card">
-<h2>⚡ Quick Rules — Learners — Dropdowns Required</h2>
-<ul>
-<li><b>Grade ▼ + Class ▼ are REQUIRED.</b> Add button is DISABLED until you pick both. Dropdown turns GREEN ✅ when picked.</li>
-<li><b>Learner ID = Grade + Class + 3 Digits.</b> Grade 10 Class A = <b>10A001</b>, Grade 8 Class B = <b>8B001</b>.</li>
-<li><b>1 learner = 1 ID.</b> Never give 2 learners same ID.</li>
-<li><b>Next ID is per class:</b> If last in 10A is 10A015, new in 10A is 10A016. 10B starts again at 10B001.</li>
-<li><b>Bulk:</b> Pick Grade + Class in dropdowns FIRST → Paste names → All get that Grade/Class.</li>
-</ul>
-</div>
-</main>
-
-<div id="issueModal" class="modal"><div class="box">
-<h3>📕 Issue Textbook To This Learner</h3>
-<div id="issueModalBody"></div>
-<div style="display:flex;gap:8px"><button class="btn btn-green" style="flex:1" onclick="confirmIssueFromModal()">📕 Issue →</button><button class="btn btn-grey" style="flex:1" onclick="closeModal()">Cancel</button></div>
-<div id="issueModalMsg"></div>
+<label>🔍 Search — Name / Learner ID</label><input id="searchInput" placeholder="e.g. THABO or 10A001" oninput="renderLearners()" style="text-transform:uppercase">
+<div id="listInfo" class="info">Loading...</div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Learner ID</th><th>Name</th><th>Grade / Class</th><th>Textbooks</th><th>Action</th></tr></thead><tbody id="learnerTable"></tbody></table></div>
 </div></div>
 
+<div id="tab-add" class="tab"><div class="card">
+<h2>➕ Add Learner — WORDSWORTH Only</h2>
+<div class="info">Learner ID Format: <b>Grade + Class + Number</b> — e.g. <b>10A001</b> = Grade 10 Class A Number 001<br>Next IDs: <b id="nextIds">10A001</b></div>
+<label>👤 Full Name * — Will Be Saved In ALL CAPS</label><input id="learnerName" placeholder="e.g. THABO MOKOENA">
+<label>📚 Grade * — Dropdown — REQUIRED ▼</label><select id="learnerGrade" onchange="updateNextId()"><option value="">-- PICK GRADE * --</option><option value="8">GRADE 8</option><option value="9">GRADE 9</option><option value="10">GRADE 10</option><option value="11">GRADE 11</option><option value="12">GRADE 12</option></select>
+<label>🏫 Class * — Dropdown — REQUIRED ▼</label><select id="learnerClass" onchange="updateNextId()"><option value="">-- PICK CLASS * --</option><option value="A">CLASS A</option><option value="B">CLASS B</option><option value="C">CLASS C</option><option value="D">CLASS D</option><option value="E">CLASS E</option></select>
+<label>🔢 Learner Number — Auto — Or Type Your Own</label><input id="learnerNumber" placeholder="e.g. 001 — Leave blank for auto" value="">
+<div id="previewId" class="info" style="display:none"></div>
+<button class="btn btn-green btn-full" onclick="addLearner()">➕ ADD LEARNER →</button>
+<div id="addMsg"></div>
+</div></div>
+
+<div id="tab-bulk" class="tab"><div class="card">
+<h2>📋 Bulk Add — Paste Names — One Per Line</h2>
+<div class="info">Paste names, one per line. e.g.<br><b>THABO MOKOENA<br>LERATO KHUMALO<br>SIPHO NKOSI</b><br>All will get IDs in the Grade + Class you pick.</div>
+<label>📚 Grade * — Dropdown</label><select id="bulkGrade"><option value="8">GRADE 8</option><option value="9">GRADE 9</option><option value="10" selected>GRADE 10</option><option value="11">GRADE 11</option><option value="12">GRADE 12</option></select>
+<label>🏫 Class * — Dropdown</label><select id="bulkClass"><option value="A" selected>CLASS A</option><option value="B">CLASS B</option><option value="C">CLASS C</option><option value="D">CLASS D</option><option value="E">CLASS E</option></select>
+<label>📋 Names — One Per Line *</label><textarea id="bulkNames" rows="6" style="width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:15px;font-weight:700;text-transform:uppercase" placeholder="THABO MOKOENA&#10;LERATO KHUMALO&#10;SIPHO NKOSI"></textarea>
+<button class="btn btn-green btn-full" onclick="bulkAdd()">📋 ADD ALL →</button>
+<div id="bulkMsg"></div>
+</div></div>
+</div>
 <script>
-let ALL_LEARNERS=[],ALL_BOOKS=[],ISSUED=[];
-let SCHOOL_ID='',SCHOOL_NAME='',PREFIX='MPS';
-let SEL_ISSUE_LEARNER=null,SEL_ISSUE_BOOK=null,MODAL_LEARNER=null,MODAL_BOOK=null;
-let sLearnerName='',sLearnerGrade='',sLearnerClass='',sLearnerCode='',sBookCode='',sBookTitle='';
-function esc(s){return String(s||'').replace(/</g,'&lt;');}
-function showTab(n){['list','add','bulk','issue'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===n?'block':'none';document.getElementById('tabBtn-'+t).classList.toggle('active',t===n);});if(n==='list')renderLearners();}
-function schoolInitials(name){const w=String(name||'').trim().split(/\s+/).filter(x=>/[A-Za-z]/.test(x));return w.length?w.map(x=>x.replace(/[^A-Za-z]/g,'').charAt(0).toUpperCase()).join(''):'MPS';}
-function learnerId(grade,cls,num){return String(grade||'').trim()+String(cls||'').trim().toUpperCase()+String(num).padStart(3,'0');}
-function parseLearnerCode(c){const m=String(c||'').trim().toUpperCase().match(/^(\d+)([A-Z])(\d+)?$/);return m?{grade:m[1],cls:m[2],num:m[3]?parseInt(m[3]):0}:{grade:'',cls:'',num:0};}
-function maxLearnerNumber(grade,cls){let max=0;ALL_LEARNERS.forEach(l=>{const p=parseLearnerCode(l.code||'');if(String(p.grade)===String(grade)&&p.cls===String(cls).toUpperCase())max=Math.max(max,p.num);});return max;}
-function closeModal(){document.getElementById('issueModal').classList.remove('open');}
-function markSelect(id,ok){const el=document.getElementById(id);el.classList.toggle('ok',!!ok);el.classList.toggle('required',!ok);}
-function validateAddDropdowns(){
-  const g=document.getElementById('addGrade').value;
-  const c=document.getElementById('addClass').value;
-  markSelect('addGrade',!!g);markSelect('addClass',!!c);
-  document.getElementById('addGradeHint').textContent=g?'✅ Grade '+g:'⚠️ Pick Grade';
-  document.getElementById('addClassHint').textContent=c?'✅ Class '+c:'⚠️ Pick Class';
-  const all=!!g&&!!c;
-  const btn=document.getElementById('addLearnerBtn');btn.disabled=!all;btn.textContent=all?'👩‍🎓 ADD LEARNER →':'👩‍🎓 ADD LEARNER → (Pick Grade + Class First)';
-  const st=document.getElementById('addDropdownStatus');st.className=all?'ok':'warn';st.textContent=all?`✅ Ready — Grade ${g} + Class ${c} picked.`:'⚠️ Pick Grade + Class above to unlock Add.';
-  document.getElementById('stepAdd1').classList.toggle('done',all);
-  if(all){const next=maxLearnerNumber(g,c)+1;document.getElementById('addPreview').innerHTML=`Preview: <b>${esc(learnerId(g,c,next))}</b> — Grade ${esc(g)} + Class ${esc(c)} + ${String(next).padStart(3,'0')} &nbsp;|&nbsp; Last: <b>${esc(learnerId(g,c,maxLearnerNumber(g,c)))}</b>`;document.getElementById('addCode').value=learnerId(g,c,next);}else{document.getElementById('addPreview').innerHTML='Preview: — Pick Grade + Class';}
-  return all;
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const rtdb=firebase.database();
+function toCaps(s){return String(s||'').trim().toUpperCase();}
+let user=null,schoolId='WHS',prefix='WHS',schoolName='WORDSWORTH HIGH SCHOOL (WHS)';
+try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null'); if(user){schoolId=user.schoolId||'WHS';prefix=user.prefix||'WHS';schoolName=user.schoolName||schoolName;}}catch(e){}
+document.getElementById('schoolLine').textContent=schoolName+' • Prefix '+prefix+' • EMIS 700310854 • Grades 8-12';
+let learners=[],books=[];
+function showTab(t){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');}
+// TEACHER FILTER - MULTIPLE GRADES / CLASSES
+function canTeacherSee(l){
+  if(!user || user.role!=='Teacher') return true;
+  if(user.teachingClasses && user.teachingClasses.length){
+    if(user.teachingClasses.includes('All Classes')) return true;
+    return user.teachingClasses.includes(String(l.grade)+String(l.className));
+  }
+  if(user.grade && user.className) return String(l.grade)===String(user.grade) && String(l.className)===String(user.className);
+  return true;
 }
-function validateBulkDropdowns(){
-  const g=document.getElementById('bulkGrade').value;
-  const c=document.getElementById('bulkClass').value;
-  markSelect('bulkGrade',!!g);markSelect('bulkClass',!!c);
-  document.getElementById('bulkGradeHint').textContent=g?'✅ Grade '+g:'⚠️ Pick Grade';
-  document.getElementById('bulkClassHint').textContent=c?'✅ Class '+c:'⚠️ Pick Class';
-  const all=!!g&&!!c;
-  const btn=document.getElementById('bulkAddBtn');btn.disabled=!all;btn.textContent=all?'➕➕ ADD MANY LEARNERS →':'➕➕ ADD MANY LEARNERS → (Pick Grade + Class First)';
-  const st=document.getElementById('bulkDropdownStatus');st.className=all?'ok':'warn';st.textContent=all?`✅ Ready — Grade ${g} + Class ${c} picked. Paste names below.`:'⚠️ Pick Grade + Class above to unlock Bulk Add.';
-  document.getElementById('stepBulk1').classList.toggle('done',all);
-  document.getElementById('bulkPreview').innerHTML=all?`Preview: Grade ${esc(g)} + Class ${esc(c)} → Next ID <b>${esc(learnerId(g,c,maxLearnerNumber(g,c)+1))}</b>`:`Preview: — Pick Grade + Class → e.g. Grade 10 + Class A = 10A001 to 10A030`;
-  if(all) document.getElementById('bulkStart').value=maxLearnerNumber(g,c)+1;
-  return all;
+function onGradeFilter(){
+  // Teacher: if they pick a grade they don't teach, show warning in list
+  renderLearners();
 }
-async function loadAll(){
-  let u=null;try{u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-  if(!u){document.getElementById('authMsg').innerHTML='<div class="warn">⚠️ Login first in <b>index.html</b>. Demo: teacher@thuto.co.za / 1234<br><button class="btn btn-blue" onclick="location.href=\'index.html\'">Go To Login →</button></div>';return;}
-  SCHOOL_ID=u.schoolId||'';SCHOOL_NAME=u.schoolName||'Makhanani Primary School';PREFIX=schoolInitials(SCHOOL_NAME);
-  document.getElementById('authMsg').innerHTML=`<div class="ok">✅ Logged in as <b>${esc(u.name)}</b> — ${esc(u.role)} — ${esc(SCHOOL_NAME)}</div>`;
-  document.getElementById('schoolLine').textContent=SCHOOL_NAME+' • Prefix '+PREFIX+' • EMIS '+(u.emis||'—');
-  ALL_LEARNERS=[];ALL_BOOKS=[];ISSUED=[];
-  try{const s=await db.collection('schools').doc(SCHOOL_ID).collection('learners').get();s.forEach(d=>{const l=d.data();const code=l.barcode||l.code||l.learnerCode||d.id;const p=parseLearnerCode(code);ALL_LEARNERS.push({id:d.id,name:l.name||'',code,grade:l.grade||p.grade||'',className:l.className||l.class||p.cls||'',gender:l.gender||'',phone:l.phone||l.parentPhone||''});});}catch(e){}
-  try{const rs=await rtdb.ref('schools/'+SCHOOL_ID+'/learners').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,l])=>{if(!ALL_LEARNERS.find(x=>x.id===id)){const code=l.barcode||l.code||id;const p=parseLearnerCode(code);ALL_LEARNERS.push({id,name:l.name||'',code,grade:l.grade||p.grade||'',className:l.className||l.class||p.cls||'',gender:l.gender||'',phone:l.phone||l.parentPhone||''});}});}catch(e){}
-  if(ALL_LEARNERS.length===0){try{ALL_LEARNERS=JSON.parse(localStorage.getItem('makhanani_learners')||'[]').map(x=>{const p=parseLearnerCode(x.code||'');return {id:x.id,name:x.name||'',code:x.code||'',grade:x.grade||p.grade||'',className:x.className||x.class||p.cls||'',gender:x.gender||'',phone:x.phone||''};});}catch(e){}}
-  try{const s=await db.collection('schools').doc(SCHOOL_ID).collection('books').get();s.forEach(d=>{const b=d.data();ALL_BOOKS.push({id:d.id,title:b.title||'',code:b.barcode||b.code||b.textbookNumber||d.id,category:b.category||b.subject||'',status:b.status||'AVAILABLE',issuedTo:b.issuedTo||'',issuedToCode:b.issuedToCode||''});});}catch(e){}
-  try{const rs=await rtdb.ref('schools/'+SCHOOL_ID+'/books').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,b])=>{if(!ALL_BOOKS.find(x=>x.id===id))ALL_BOOKS.push({id,title:b.title||'',code:b.barcode||b.code||b.textbookNumber||id,category:b.category||b.subject||'',status:b.status||'AVAILABLE',issuedTo:b.issuedTo||'',issuedToCode:b.issuedToCode||''});});}catch(e){}
-  if(ALL_BOOKS.length===0){try{ALL_BOOKS=JSON.parse(localStorage.getItem('makhanani_books')||'[]');}catch(e){}}
-  try{const s=await db.collection('schools').doc(SCHOOL_ID).collection('issues').get();s.forEach(d=>{const i=d.data();if(i.status!=='RETURNED')ISSUED.push({id:d.id,...i});});}catch(e){}
-  try{const rs=await rtdb.ref('schools/'+SCHOOL_ID+'/issues').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,i])=>{if(i.status!=='RETURNED'&&!ISSUED.find(x=>x.id===id))ISSUED.push({id,...i});});}catch(e){}
-  ALL_LEARNERS.sort((a,b)=>String(a.code||'').localeCompare(String(b.code||'')));
-  // Filter dropdowns: Grade 1-12 + Class A-F, but only show grades/classes that exist, plus keep All option
-  const grades=[...new Set(ALL_LEARNERS.map(l=>l.grade).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
-  const classes=[...new Set(ALL_LEARNERS.map(l=>l.className).filter(Boolean))].sort();
-  document.getElementById('filterGrade').innerHTML='<option value="">-- All Grades -- ▼</option>'+grades.map(g=>`<option value="${esc(g)}">Grade ${esc(g)}</option>`).join('');
-  document.getElementById('filterClass').innerHTML='<option value="">-- All Classes -- ▼</option>'+classes.map(c=>`<option value="${esc(c)}">Class ${esc(c)}</option>`).join('');
-  document.getElementById('formatBox').innerHTML=`<b>Your School:</b> ${esc(SCHOOL_NAME.toUpperCase())} → Initials: <b>${esc(PREFIX)}</b><br><b>👩‍🎓 Learner ID:</b> Grade + Class + 3 Digits = <b>10A001</b> &nbsp;|&nbsp; <b>📚 Textbook:</b> ${esc(PREFIX)} + 6 Digits = <b>${esc(PREFIX)}000001</b> &nbsp;|&nbsp; <b>Next in 10A:</b> <b>${esc(learnerId(10,'A',maxLearnerNumber(10,'A')+1))}</b>`;
-  const withBook=new Set(ISSUED.map(i=>i.learnerId||i.learnerCode));
-  const withCount=ALL_LEARNERS.filter(l=>withBook.has(l.id)||withBook.has(l.code)).length;
-  document.getElementById('kTotal').textContent=ALL_LEARNERS.length;
-  document.getElementById('kWithBook').textContent=withCount;
-  document.getElementById('kNoBook').textContent=ALL_LEARNERS.length-withCount;
-  document.getElementById('kNext').textContent=learnerId(10,'A',maxLearnerNumber(10,'A')+1);
-  validateAddDropdowns();validateBulkDropdowns();renderLearners();
+function nextLearnerId(grade,cls){
+  let max=0; learners.filter(l=>String(l.grade)===String(grade)&&String(l.className)===String(cls)).forEach(l=>{let n=parseInt(String(l.learnerId||'').slice(-3)); if(!isNaN(n)&&n>max) max=n;});
+  return String(grade)+String(cls)+String(max+1).padStart(3,'0');
 }
+function updateNextId(){
+  let g=document.getElementById('learnerGrade').value,c=document.getElementById('learnerClass').value,prev=document.getElementById('previewId');
+  if(g&&c){ prev.style.display='block'; prev.innerHTML=`✅ Learner ID will be: <b>${nextLearnerId(g,c)}</b> — Grade ${g} Class ${c}`; } else prev.style.display='none';
+}
+async function loadData(){
+  try{let ls=await rtdb.ref('learners/'+schoolId).once('value');learners=Object.entries(ls.val()||{}).map(([id,v])=>({id,...v,name:toCaps(v.name)}));let bs=await rtdb.ref('textbooks/'+schoolId).once('value');books=Object.entries(bs.val()||{}).map(([id,v])=>({id,...v,category:toCaps(v.category)}));}catch(e){console.log(e);}
+  if(learners.length===0){
+    learners=[
+      {id:'1',learnerId:'10A001',name:'THABO M',grade:'10',className:'A'},
+      {id:'2',learnerId:'10B001',name:'LERATO K',grade:'10',className:'B'},
+      {id:'3',learnerId:'11A001',name:'SIPHO N',grade:'11',className:'A'},
+      {id:'4',learnerId:'10C001',name:'HIDDEN C',grade:'10',className:'C'},
+    ];
+    books=[
+      {id:'1',number:prefix+'000001',title:'MATHS GRADE 10 TEXTBOOK',category:'MATHS',grade:'10',status:'Issued',learnerName:'10A001 - THABO M'},
+      {id:'2',number:prefix+'000002',title:'ENGLISH GRADE 10 TEXTBOOK',category:'ENGLISH',grade:'10',status:'Free',learnerName:''},
+    ];
+  }
+  if(user && user.role==='Teacher' && !user.teachingClasses){ user.teachingClasses=['10A','10B','11A']; user.teachingGrades=['10','11']; }
+  document.getElementById('roleInfo').innerHTML = user?.role==='Teacher'
+    ? `👩‍🏫 <b>${toCaps(user.name)}</b> — Subject: <b>${toCaps(user.subject||'ALL SUBJECTS')}</b> — You teach: <b>${(user.teachingClasses||[]).join(' • ')}</b> — Showing ONLY your classes. Other classes hidden.`
+    : `✅ <b>${toCaps(user?.role||'USER')}</b> — <b>${toCaps(user?.name||'')}</b> — Showing <b>ALL CLASSES — Whole School</b> — Prefix <b>${prefix}</b>`;
+  // Teacher: restrict Grade filter to only grades they teach - keep All option but warn
+  if(user?.role==='Teacher' && user.teachingGrades){
+    let sel=document.getElementById('filterGrade');
+    sel.innerHTML='<option value="">📚 ALL MY GRADES</option>'+user.teachingGrades.map(g=>`<option value="${g}">GRADE ${g}</option>`).join('');
+    let addSel=document.getElementById('learnerGrade');
+    addSel.innerHTML='<option value="">-- PICK GRADE * --</option>'+user.teachingGrades.map(g=>`<option value="${g}">GRADE ${g}</option>`).join('');
+    let bulkSel=document.getElementById('bulkGrade');
+    bulkSel.innerHTML=user.teachingGrades.map(g=>`<option value="${g}" ${g==='10'?'selected':''}>GRADE ${g}</option>`).join('');
+  }
+  renderLearners(); updateNextIdsLabel();
+}
+function updateNextIdsLabel(){
+  let my=learners.filter(l=>canTeacherSee(l));
+  document.getElementById('nextIds').textContent = my.length? nextLearnerId(my[0].grade,my[0].className) : '10A001';
+}
+function booksForLearner(lid){
+  return books.filter(b=>b.learnerName && b.learnerName.includes(lid));
+}
+function visibleLearners(){ return learners.filter(l=>canTeacherSee(l)); }
 function renderLearners(){
-  const q=(document.getElementById('searchBox').value||'').toLowerCase();
-  const fg=document.getElementById('filterGrade').value||'';
-  const fc=document.getElementById('filterClass').value||'';
-  let list=ALL_LEARNERS.filter(l=>{
-    if(q && !((l.name||'').toLowerCase().includes(q)||(l.code||'').toLowerCase().includes(q))) return false;
-    if(fg && String(l.grade)!==fg) return false;
-    if(fc && (l.className||'')!==fc) return false;
-    return true;
-  });
-  if(list.length===0){document.getElementById('learnerList').innerHTML='<div class="info">No learners found. Pick Grade + Class in Add Learner tab, or Upload.</div>';return;}
-  let html=`<div class="info">Showing <b>${list.length}</b> learners</div><table><tr><th>Learner ID</th><th>Name</th><th>Grade / Class</th><th>Textbooks</th><th>Actions</th></tr>`;
-  list.forEach(l=>{
-    const myIssues=ISSUED.filter(i=>i.learnerId===l.id||i.learnerCode===l.code);
-    const booksHtml=myIssues.length?myIssues.map(i=>`<span class="badge badge-orange">📕 ${esc(i.bookTitle||'')} (${esc(i.bookCode||'')})</span>`).join('<br>'):'<span class="badge badge-grey">No Textbook Yet</span>';
-    html+=`<tr><td><b>${esc(l.code)}</b></td><td><b>${esc(l.name)}</b><br><span class="small">${esc(l.gender||'')} ${esc(l.phone||'')}</span></td><td>Grade ${esc(l.grade)} Class ${esc(l.className)}</td><td>${booksHtml}</td><td><button class="btn btn-green btn-small" onclick="printLearner('${esc(l.code)}','${esc(l.name)}','${esc(l.grade)}','${esc(l.className)}')">🏷️ Print Barcode</button><button class="btn btn-blue btn-small" onclick="openIssueModal('${esc(l.id)}')">📕 Issue →</button><button class="btn btn-gold btn-small" onclick="editLearner('${esc(l.id)}')">✏️ Edit</button><button class="btn btn-red btn-small" onclick="deleteLearner('${esc(l.id)}','${esc(l.name)}')">🗑️ Delete</button></td></tr>`;
-  });
-  html+='</table>';document.getElementById('learnerList').innerHTML=html;
-}
-function printLearner(code,name,grade,cls){localStorage.setItem('makhanani_print_learner',JSON.stringify({code,name,grade,cls}));location.href='learner_barcode.html';}
-function printCombinedPack(){localStorage.setItem('makhanani_print_combined',JSON.stringify({learnerName:sLearnerName||SEL_ISSUE_LEARNER?.name||'',learnerGrade:sLearnerGrade||SEL_ISSUE_LEARNER?.grade||'',learnerClass:sLearnerClass||SEL_ISSUE_LEARNER?.className||'',learnerCode:sLearnerCode||SEL_ISSUE_LEARNER?.code||'',bookCode:sBookCode||SEL_ISSUE_BOOK?.code||'',bookTitle:sBookTitle||SEL_ISSUE_BOOK?.title||''}));location.href='barcode.html';}
-function autoNext(){
-  if(!validateAddDropdowns()){alert('⚠️ Pick Grade + Class in dropdowns first');return;}
-  const g=document.getElementById('addGrade').value;const c=document.getElementById('addClass').value;
-  document.getElementById('addCode').value=learnerId(g,c,maxLearnerNumber(g,c)+1);
-}
-function autoBulkStart(){
-  if(!validateBulkDropdowns()){alert('⚠️ Pick Grade + Class in dropdowns first');return;}
-  const g=document.getElementById('bulkGrade').value;const c=document.getElementById('bulkClass').value;
-  document.getElementById('bulkStart').value=maxLearnerNumber(g,c)+1;
-}
-async function saveLearnerToDB(learner){
-  const id=learner.code;
-  const data={name:learner.name,code:learner.code,barcode:learner.code,learnerCode:learner.code,grade:learner.grade,className:learner.className,class:learner.className,gender:learner.gender||'',phone:learner.phone||'',parentPhone:learner.phone||'',schoolId:SCHOOL_ID,createdAt:new Date().toISOString()};
-  try{await db.collection('schools').doc(SCHOOL_ID).collection('learners').doc(id).set(data);try{await rtdb.ref('schools/'+SCHOOL_ID+'/learners/'+id).set(data);}catch(e){}}catch(e){let s=JSON.parse(localStorage.getItem('makhanani_learners')||'[]');s.push({id,...data});localStorage.setItem('makhanani_learners',JSON.stringify(s));}
+  let grade=document.getElementById('filterGrade').value,cls=document.getElementById('filterClass').value,has=document.getElementById('filterHasBooks').value,search=toCaps(document.getElementById('searchInput').value);
+  let list=visibleLearners();
+  if(grade) list=list.filter(l=>String(l.grade)===String(grade));
+  if(cls) list=list.filter(l=>String(l.className)===String(cls));
+  if(has==='yes') list=list.filter(l=>booksForLearner(l.learnerId).length>0);
+  if(has==='no') list=list.filter(l=>booksForLearner(l.learnerId).length===0);
+  if(search) list=list.filter(l=>toCaps(l.name).includes(search)||toCaps(l.learnerId).includes(search));
+  let all=visibleLearners();
+  document.getElementById('kpiTotal').textContent=all.length;
+  document.getElementById('kpiWithBooks').textContent=all.filter(l=>booksForLearner(l.learnerId).length>0).length;
+  document.getElementById('kpiNoBooks').textContent=all.filter(l=>booksForLearner(l.learnerId).length===0).length;
+  document.getElementById('listInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${all.length}</b> learners${grade?' — Grade '+grade:''}${cls?' — Class '+cls:''}${user?.role==='Teacher'?' — Your classes only':''}`;
+  document.getElementById('learnerTable').innerHTML=list.length?list.map(l=>{
+    let bl=booksForLearner(l.learnerId);
+    let titles=bl.map(b=>`<span class="badge badge-cat">${toCaps(b.category)} - ${toCaps(b.title).slice(0,20)}</span>`).join(' ');
+    return `<tr><td><b>${l.learnerId}</b></td><td>${toCaps(l.name)}</td><td>Grade ${l.grade}${l.className}</td><td>${bl.length?bl.length+' textbook(s)<br>'+titles:'<span class="badge badge-free">NO TEXTBOOKS</span>'}</td><td><button class="btn btn-grey" onclick="deleteLearner('${l.id}')">🗑️</button></td></tr>`;
+  }).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px">No learners for this filter${user?.role==='Teacher'?' — You see only your classes':''}.</td></tr>`;
 }
 async function addLearner(){
-  if(!validateAddDropdowns()){document.getElementById('addMsg').innerHTML='<div class="warn">⚠️ Pick Grade + Class in dropdowns first.</div>';return;}
-  const name=document.getElementById('addName').value.trim();
-  const grade=document.getElementById('addGrade').value;
-  const cls=document.getElementById('addClass').value;
-  const gender=document.getElementById('addGender').value;
-  const phone=document.getElementById('addPhone').value.trim();
-  let code=document.getElementById('addCode').value.trim().toUpperCase();
-  const msg=document.getElementById('addMsg');
-  if(!name){msg.innerHTML='<div class="warn">⚠️ Fill Name.</div>';return;}
-  if(!code) code=learnerId(grade,cls,maxLearnerNumber(grade,cls)+1);
-  const re=/^\d+[A-Z]\d{3}$/;
-  if(!re.test(code)){msg.innerHTML='<div class="warn">⚠️ Learner ID must be <b>Grade + Class + 3 Digits</b>, e.g. <b>10A001</b>.</div>';return;}
-  const p=parseLearnerCode(code);
-  if(String(p.grade)!==String(grade)||p.cls!==cls){msg.innerHTML='<div class="warn">⚠️ Learner ID <b>'+esc(code)+'</b> does not match Grade <b>'+esc(grade)+'</b> Class <b>'+esc(cls)+'</b>.</div>';return;}
-  if(ALL_LEARNERS.find(l=>l.code===code)){msg.innerHTML='<div class="warn">⚠️ Learner ID <b>'+esc(code)+'</b> already exists. Click Auto Next.</div>';return;}
-  await saveLearnerToDB({id:code,name,code,grade,className:cls,gender,phone});
-  msg.innerHTML=`<div class="ok">✅ Added: <b>${esc(name)}</b> — Learner ID <b>${esc(code)}</b> — Grade ${esc(grade)} Class ${esc(cls)}<br><button class="btn btn-green" onclick="printLearner('${esc(code)}','${esc(name)}','${esc(grade)}','${esc(cls)}')">🏷️ Print Barcode For This Learner →</button></div>`;
-  ['addName','addPhone'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('addCode').value=learnerId(grade,cls,maxLearnerNumber(grade,cls)+2);
-  loadAll();
+  let name=toCaps(document.getElementById('learnerName').value),grade=document.getElementById('learnerGrade').value,cls=document.getElementById('learnerClass').value,num=document.getElementById('learnerNumber').value.trim(),msg=document.getElementById('addMsg');
+  if(!name){msg.innerHTML='<div class="warn">⚠️ Type Full Name first.</div>';return;}
+  if(!grade){msg.innerHTML='<div class="warn">⚠️ Pick Grade first.</div>';return;}
+  if(!cls){msg.innerHTML='<div class="warn">⚠️ Pick Class first.</div>';return;}
+  if(user?.role==='Teacher' && !canTeacherSee({grade,className:cls})){msg.innerHTML=`<div class="warn">⚠️ You teach <b>${user.teachingClasses.join(' • ')}</b> — You cannot add learner to Grade ${grade}${cls}.</div>`;return;}
+  let learnerId = num ? String(grade)+String(cls)+String(num).padStart(3,'0') : nextLearnerId(grade,cls);
+  if(learners.some(l=>l.learnerId===learnerId)){msg.innerHTML=`<div class="warn">⚠️ Learner ID <b>${learnerId}</b> already exists — Pick different number.</div>`;return;}
+  let rec={learnerId,name,grade,className:cls,schoolId,prefix,schoolName,createdAt:Date.now()};
+  try{let ref=rtdb.ref('learners/'+schoolId).push();await ref.set(rec);rec.id=ref.key;}catch(e){rec.id='tmp'+Date.now();}
+  learners.push(rec);
+  msg.innerHTML=`<div class="ok">✅ Learner Added: <b>${learnerId} - ${name}</b> — Grade ${grade}${cls}</div>`;
+  document.getElementById('learnerName').value='';document.getElementById('learnerNumber').value='';
+  renderLearners(); updateNextId(); setTimeout(()=>showTab('list'),800);
 }
-async function addBulk(){
-  if(!validateBulkDropdowns()){document.getElementById('bulkMsg').innerHTML='<div class="warn">⚠️ Pick Grade + Class in dropdowns first.</div>';return;}
-  const grade=document.getElementById('bulkGrade').value;
-  const cls=document.getElementById('bulkClass').value;
-  const namesText=document.getElementById('bulkNames').value.trim();
-  let start=parseInt(document.getElementById('bulkStart').value||'1');
-  const msg=document.getElementById('bulkMsg');
-  if(!namesText){msg.innerHTML='<div class="warn">⚠️ Paste names — 1 name per line.</div>';return;}
-  const names=namesText.split('\n').map(n=>n.trim()).filter(Boolean);
-  if(names.length===0){msg.innerHTML='<div class="warn">⚠️ No names found.</div>';return;}
-  if(names.length>100){msg.innerHTML='<div class="warn">⚠️ Max 100 at once.</div>';return;}
-  let created=[];
-  for(let i=0;i<names.length;i++){
-    const num=start+i;const code=learnerId(grade,cls,num);
-    if(ALL_LEARNERS.find(l=>l.code===code)){msg.innerHTML='<div class="warn">⚠️ ID <b>'+esc(code)+'</b> already exists. Change Start Number to <b>'+esc(learnerId(grade,cls,maxLearnerNumber(grade,cls)+1))+'</b></div>';return;}
-    await saveLearnerToDB({id:code,name:names[i],code,grade,className:cls,gender:'',phone:''});
-    created.push(code);
+async function bulkAdd(){
+  let grade=document.getElementById('bulkGrade').value,cls=document.getElementById('bulkClass').value,names=document.getElementById('bulkNames').value.split('\n').map(s=>toCaps(s)).filter(s=>s),msg=document.getElementById('bulkMsg');
+  if(!names.length){msg.innerHTML='<div class="warn">⚠️ Paste at least 1 name.</div>';return;}
+  if(user?.role==='Teacher' && !canTeacherSee({grade,className:cls})){msg.innerHTML=`<div class="warn">⚠️ You teach <b>${user.teachingClasses.join(' • ')}</b> — You cannot add to Grade ${grade}${cls}.</div>`;return;}
+  let added=[];
+  for(let n of names){
+    let lid=nextLearnerId(grade,cls);
+    let rec={learnerId:lid,name:n,grade,className:cls,schoolId,prefix,schoolName,createdAt:Date.now()};
+    try{let ref=rtdb.ref('learners/'+schoolId).push();await ref.set(rec);rec.id=ref.key;}catch(e){rec.id='tmp'+Date.now()+added.length;}
+    learners.push(rec); added.push(lid+' - '+n);
   }
-  msg.innerHTML=`<div class="ok">✅ Added <b>${names.length}</b> learners — Grade ${esc(grade)} Class ${esc(cls)}<br>IDs: <b>${esc(created[0])}</b> to <b>${esc(created[created.length-1])}</b><br><button class="btn btn-gold" onclick="location.href='learner_barcode.html'">🏷️ Print Barcodes For These →</button></div>`;
+  msg.innerHTML=`<div class="ok">✅ Added <b>${added.length}</b> learners to Grade ${grade}${cls}:<br>${added.join('<br>')}</div>`;
   document.getElementById('bulkNames').value='';
-  loadAll();
+  renderLearners(); setTimeout(()=>showTab('list'),800);
 }
-function openIssueModal(id){
-  const l=ALL_LEARNERS.find(x=>x.id===id);if(!l)return;MODAL_LEARNER=l;
-  document.getElementById('issueModalBody').innerHTML=`<div class="goldBox"><b>${esc(l.name)}</b> — <b>${esc(l.code)}</b> — Grade ${esc(l.grade)} Class ${esc(l.className)}</div><label>Textbook — Search / Pick Dropdown</label><input id="modalBookSearch" placeholder="e.g. MPS000001 or Maths" oninput="filterModalBooks()"><div id="modalBookDrop"></div><div id="modalBookSelected" class="ok" style="display:none"></div>`;
-  document.getElementById('issueModalMsg').innerHTML='';
-  document.getElementById('issueModal').classList.add('open');
-}
-function filterModalBooks(){const q=(document.getElementById('modalBookSearch').value||'').toLowerCase().trim();const el=document.getElementById('modalBookDrop');if(!q){el.innerHTML='';return;}const list=ALL_BOOKS.filter(b=>((b.title||'').toLowerCase().includes(q)||(b.code||'').toLowerCase().includes(q))&&(b.status||'AVAILABLE')==='AVAILABLE').slice(0,5);el.innerHTML=list.map(b=>`<div class="goldBox" style="cursor:pointer" onclick="selectModalBook('${esc(b.id)}')"><b>${esc(b.title)}</b> — ${esc(b.code)} — ${esc(b.category)}</div>`).join('')||'<div class="info">No AVAILABLE textbook.</div>';}
-function selectModalBook(id){const b=ALL_BOOKS.find(x=>x.id===id);if(!b)return;MODAL_BOOK=b;document.getElementById('modalBookSearch').value=b.title+' — '+b.code;const el=document.getElementById('modalBookSelected');el.style.display='block';el.innerHTML=`<b>✅ Textbook:</b> ${esc(b.title)} — ${esc(b.code)}`;}
-async function confirmIssueFromModal(){
-  if(!MODAL_LEARNER||!MODAL_BOOK){document.getElementById('issueModalMsg').innerHTML='<div class="warn">⚠️ Pick Textbook first.</div>';return;}
-  await doIssue(MODAL_LEARNER,MODAL_BOOK);
-  document.getElementById('issueModalMsg').innerHTML=`<div class="ok">✅ ISSUED: <b>${esc(MODAL_BOOK.title)} (${esc(MODAL_BOOK.code)})</b> → <b>${esc(MODAL_LEARNER.name)} (${esc(MODAL_LEARNER.code)})</b></div>`;
-  MODAL_LEARNER=null;MODAL_BOOK=null;setTimeout(()=>{closeModal();loadAll();},800);
-}
-async function doIssue(learner,book){
-  const today=new Date().toISOString().slice(0,10);const due=new Date();due.setDate(due.getDate()+14);const dueStr=due.toISOString().slice(0,10);
-  const issue={learnerId:learner.id,learnerName:learner.name,learnerCode:learner.code,learnerGrade:learner.grade,learnerClass:learner.className,bookId:book.id,bookTitle:book.title,bookCode:book.code,bookCategory:book.category,issueDate:today,dueDate:dueStr,status:'ISSUED',schoolId:SCHOOL_ID};
-  try{const docRef=await db.collection('schools').doc(SCHOOL_ID).collection('issues').add(issue);await db.collection('schools').doc(SCHOOL_ID).collection('books').doc(book.id).set({status:'ISSUED',issuedTo:learner.name,issuedToCode:learner.code},{merge:true});try{await rtdb.ref('schools/'+SCHOOL_ID+'/issues/'+docRef.id).set(issue);}catch(e){}try{await rtdb.ref('schools/'+SCHOOL_ID+'/books/'+book.id).update({status:'ISSUED',issuedTo:learner.name,issuedToCode:learner.code});}catch(e){}}catch(e){}
-  return dueStr;
-}
-function selectLearnerForIssue(id){const l=ALL_LEARNERS.find(x=>x.id===id);if(!l)return;SEL_ISSUE_LEARNER=l;sLearnerName=l.name;sLearnerGrade=l.grade;sLearnerClass=l.className;sLearnerCode=l.code;document.getElementById('issueLearnerSearch').value=l.name+' — '+l.code;const el=document.getElementById('issueLearnerSelected');el.style.display='block';el.innerHTML=`<b>✅ Learner:</b> ${esc(l.name)} — ${esc(l.code)} — Grade ${esc(l.grade)} Class ${esc(l.className)}`;}
-function selectBookForIssue(id){const b=ALL_BOOKS.find(x=>x.id===id);if(!b)return;SEL_ISSUE_BOOK=b;sBookCode=b.code;sBookTitle=b.title;document.getElementById('issueBookSearch').value=b.title+' — '+b.code;const el=document.getElementById('issueBookSelected');el.style.display='block';el.innerHTML=`<b>✅ Textbook:</b> ${esc(b.title)} — ${esc(b.code)}`;}
-function filterIssueLearners(){const q=(document.getElementById('issueLearnerSearch').value||'').toLowerCase().trim();const el=document.getElementById('issueLearnerDrop');if(!q){el.innerHTML='';return;}const list=ALL_LEARNERS.filter(l=>(l.name||'').toLowerCase().includes(q)||(l.code||'').toLowerCase().includes(q)).slice(0,5);el.innerHTML=list.map(l=>`<div class="goldBox" style="cursor:pointer" onclick="selectLearnerForIssue('${esc(l.id)}')"><b>${esc(l.name)}</b> — ${esc(l.code)}</div>`).join('')||'<div class="info">No learner found.</div>';}
-function filterIssueBooks(){const q=(document.getElementById('issueBookSearch').value||'').toLowerCase().trim();const el=document.getElementById('issueBookDrop');if(!q){el.innerHTML='';return;}const list=ALL_BOOKS.filter(b=>((b.title||'').toLowerCase().includes(q)||(b.code||'').toLowerCase().includes(q))&&(b.status||'AVAILABLE')==='AVAILABLE').slice(0,5);el.innerHTML=list.map(b=>`<div class="goldBox" style="cursor:pointer" onclick="selectBookForIssue('${esc(b.id)}')"><b>${esc(b.title)}</b> — ${esc(b.code)}</div>`).join('')||'<div class="info">No AVAILABLE textbook.</div>';}
-async function issueBook(){
-  if(!SEL_ISSUE_LEARNER||!SEL_ISSUE_BOOK){document.getElementById('issueMsg').innerHTML='<div class="warn">⚠️ Pick Learner + Textbook first.</div>';return;}
-  const dueStr=await doIssue(SEL_ISSUE_LEARNER,SEL_ISSUE_BOOK);
-  document.getElementById('issueMsg').innerHTML=`<div class="ok">✅ ISSUED: <b>${esc(SEL_ISSUE_BOOK.title)} (${esc(SEL_ISSUE_BOOK.code)})</b> → <b>${esc(SEL_ISSUE_LEARNER.name)} (${esc(SEL_ISSUE_LEARNER.code)})</b> — Due ${dueStr}</div>`;
-  SEL_ISSUE_LEARNER=null;SEL_ISSUE_BOOK=null;document.getElementById('issueLearnerSearch').value='';document.getElementById('issueBookSearch').value='';document.getElementById('issueLearnerSelected').style.display='none';document.getElementById('issueBookSelected').style.display='none';loadAll();
-}
-function editLearner(id){
-  const l=ALL_LEARNERS.find(x=>x.id===id);if(!l)return;
-  const name=prompt('Full Name:',l.name);if(name===null)return;
-  const grade=prompt('Grade (1-12):',l.grade);if(grade===null)return;
-  const cls=prompt('Class (A-F):',l.className);if(cls===null)return;
-  const phone=prompt('Parent Phone:',l.phone||'');if(phone===null)return;
-  (async()=>{try{await db.collection('schools').doc(SCHOOL_ID).collection('learners').doc(id).set({name:name.trim(),grade:grade.trim(),className:cls.trim().toUpperCase(),class:cls.trim().toUpperCase(),phone:phone.trim(),parentPhone:phone.trim()},{merge:true});try{await rtdb.ref('schools/'+SCHOOL_ID+'/learners/'+id).update({name:name.trim(),grade:grade.trim(),className:cls.trim().toUpperCase(),phone:phone.trim()});}catch(e){}}catch(e){}loadAll();})();
-}
-async function deleteLearner(id,name){
-  if(!confirm('🗑️ Delete learner '+name+' ('+id+')?'))return;
-  try{await db.collection('schools').doc(SCHOOL_ID).collection('learners').doc(id).delete();try{await rtdb.ref('schools/'+SCHOOL_ID+'/learners/'+id).remove();}catch(e){}}catch(e){let s=JSON.parse(localStorage.getItem('makhanani_learners')||'[]').filter(x=>x.id!==id);localStorage.setItem('makhanani_learners',JSON.stringify(s));}
-  loadAll();
-}
-function exportCSV(){
-  let csv='Learner ID,Name,Grade,Class,Gender,Parent Phone,Textbooks Issued\n';
-  ALL_LEARNERS.forEach(l=>{
-    const myIssues=ISSUED.filter(i=>i.learnerId===l.id||i.learnerCode===l.code);
-    const books=myIssues.map(i=>i.bookCode+' '+i.bookTitle).join(' | ');
-    csv+=`${l.code},"${(l.name||'').replace(/"/g,'')}",${l.grade},${l.className},${l.gender||''},${l.phone||''},"${books.replace(/"/g,'')}"\n`;
-  });
-  const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(SCHOOL_NAME||'school').replace(/\s+/g,'_')+'_learners_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
-}
-window.onload=loadAll;
-</script>
-</body>
-</html>
+async function deleteLearner(id){if(!confirm('Delete this learner? Textbooks issued to them will need to be returned first.'))return;learners=learners.filter(l=>String(l.id)!==String(id));try{await rtdb.ref('learners/'+schoolId+'/'+id).remove();}catch(e){}renderLearners();}
+loadData();
+</script></body></html>
