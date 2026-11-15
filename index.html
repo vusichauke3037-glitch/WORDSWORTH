@@ -4,252 +4,303 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Makhanani LTSM — Login</title><meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
+<!-- Firebase Compat - Works on GitHub Pages -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const rtdb = firebase.database();
+</script>
 <style>
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#0a1f4d;color:#111;min-height:100vh}
-.topbar{background:#0a1f4d;color:#fff;padding:14px;text-align:center}
-.topbar img{width:92px;height:92px;object-fit:contain;background:#fff;border-radius:50%;padding:8px;display:block;margin:0 auto 8px;box-shadow:0 2px 10px rgba(0,0,0,.3)}
-.topbar h1{margin:0;font-size:24px}.topbar p{margin:6px 0 0;opacity:.9;font-size:13px;line-height:1.5}
-.wrap{max-width:520px;margin:16px auto;padding:0 14px 20px}
-.card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.2);margin-bottom:12px}
-.card h2{margin:0 0 4px;color:#0a1f4d;font-size:19px}.card p{margin:0 0 12px;color:#64748b;font-size:13px}
-label{display:block;font-weight:900;font-size:13px;color:#0a1f4d;margin:12px 0 6px}
-select,input{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:15px;background:#fff;outline:none}
-select:focus,input:focus{border-color:#0a1f4d}
-.btn{width:100%;padding:14px;border:none;border-radius:9px;font-weight:900;font-size:16px;cursor:pointer;margin-top:14px}
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
+header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:13px;line-height:1.5}
+header img{width:80px;height:80px;object-fit:contain;background:#fff;border-radius:50%;padding:7px;display:block;margin:0 auto 10px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+main{max-width:480px;margin:auto;padding:14px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+h2{margin:0 0 10px;color:#0a1f4d;font-size:18px}label{font-weight:900;font-size:13px;color:#0a1f4d;display:block;margin-top:12px}
+input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;font-size:15px;margin-top:6px}
+input:focus,select:focus{border-color:#0a1f4d;outline:none}
+.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
+.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px;display:none}
+.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px;display:none}
+.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px;line-height:1.6}
+.btn{width:100%;padding:14px;border:none;border-radius:8px;font-weight:900;font-size:16px;cursor:pointer;margin-top:12px}
 .btn-blue{background:#0a1f4d;color:#fff}.btn-green{background:#059669;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}
-.btn:disabled{opacity:.6;cursor:not-allowed}
-.row{display:flex;gap:8px}.row .btn{margin-top:0}
-.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:9px;padding:10px;font-size:13px;line-height:1.5;margin-top:12px}
-.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:9px;padding:10px;font-size:13px;line-height:1.5;margin-top:12px}
-.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:9px;padding:10px;font-size:13px;line-height:1.5;margin-top:12px}
-.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;font-size:13px;line-height:1.6}
-.small{font-size:12px;color:#64748b;text-align:center;margin-top:10px;line-height:1.5}
-.links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}.links a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
-.kpi{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}.kpi div{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px;text-align:center}.kpi b{font-size:20px;color:#0a1f4d;display:block}.kpi span{font-size:11px;color:#64748b}
-.passWrap{position:relative}.passWrap button{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:#e2e8f0;padding:8px 10px;border-radius:7px;font-weight:900;cursor:pointer}
-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
-details{margin-top:10px}summary{cursor:pointer;font-weight:900;color:#0a1f4d;font-size:13px}
-.forgot{text-align:right;margin-top:6px}.forgot a{font-size:12px;color:#2563eb;font-weight:900;text-decoration:none}
+.pwWrap{position:relative}.eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer}
+.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}.links a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
+.small{font-size:12px;color:#64748b;text-align:center;margin-top:8px}
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
+.demoBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 </style>
 </head>
 <body>
-<div class="topbar">
+<header>
 <img src="logo.png" alt="Makhanani LTSM Logo" onerror="this.style.display='none'">
-<h1>📚 Makhanani LTSM</h1>
-<p>Library & Textbook Management System<br><b>Xintimani Group (Pty) Ltd</b> • Issue in 3 Seconds • No Paper • No Lost Books</p>
-</div>
-
-<div class="wrap">
-
-<!-- LOGIN CARD -->
+<h1>📚 Makhanani LTSM</h1><p>Xintimani Group • Library + Textbooks<br>No More Lost Books • Login Below</p></header>
+<main>
 <div class="card">
-<h2>🔐 Login To Your School</h2>
-<p>Pick your school, enter your email + password.</p>
+<h2>🔐 Login</h2>
+<div id="statusBox" class="info">⏳ Loading schools from Firebase...</div>
+<div id="errorBox" class="warn"></div>
+<div id="successBox" class="ok"></div>
 
-<label for="schoolSel">1. School — Dropdown</label>
-<select id="schoolSel"><option value="">Loading schools...</option></select>
+<label>🏫 School — Pick From Dropdown</label>
+<select id="schoolSelect" onchange="onSchoolChange()"><option value="">-- Loading schools... --</option></select>
+<div id="schoolInfo" class="goldBox" style="display:none"></div>
 
-<label for="emailInput">2. Email</label>
-<input id="emailInput" type="email" placeholder="e.g. principal@school.co.za" autocomplete="email">
+<label>📧 Email</label>
+<input id="emailInput" type="email" placeholder="e.g. principal@wordsworth.co.za" autocomplete="email">
 
-<label for="passInput">3. Password</label>
-<div class="passWrap"><input id="passInput" type="password" placeholder="Enter your password" autocomplete="current-password"><button type="button" onclick="togglePass()">👁️</button></div>
-<div class="forgot"><a href="#" onclick="forgotPassword();return false;">Forgot Password?</a> • <a href="#" onclick="showDemo();return false;">Use Demo Login</a></div>
+<label>🔑 Password</label>
+<div class="pwWrap"><input id="passwordInput" type="password" placeholder="Your password - First time: 1234" autocomplete="current-password"><button class="eye" type="button" onclick="togglePw()">👁️</button></div>
 
-<button class="btn btn-blue" id="loginBtn" onclick="doLogin()">➡️ LOGIN</button>
-<div id="msg"></div>
+<button class="btn btn-blue" id="loginBtn" onclick="doLogin()">LOGIN →</button>
+<button class="btn btn-grey" onclick="forgotPassword()">❓ Forgot Password?</button>
+<p class="small">Press Enter to login • Password is case-sensitive • Do NOT share password with learners</p>
 
-<div class="row" style="margin-top:10px">
-<button class="btn btn-grey" onclick="fillDemo('principal')">👑 Demo Principal</button>
-<button class="btn btn-grey" onclick="fillDemo('librarian')">📚 Demo Librarian</button>
+<div class="demoBtns">
+<button class="btn btn-gold" onclick="fillDemo('WORDSWORTH')">Demo Principal</button>
+<button class="btn btn-gold" onclick="fillDemo('LIBRARIAN')">Demo Librarian</button>
 </div>
 
-<div class="info" id="schoolInfo" style="display:none"></div>
-<div class="info">✅ <b>New school?</b> Click <b>Request Access</b> below — Vusi will approve you today.<br>📱 <b>Help?</b> WhatsApp <b>078 023 3263</b></div>
-
-<div class="kpi"><div><b>3 sec</b><span>Issue Book</span></div><div><b>2 sec</b><span>Return Book</span></div><div><b>1 click</b><span>WhatsApp Parent</span></div></div>
+<div class="kpi"><div><b id="kpiSchools">-</b><span>Schools</span></div><div><b>3 sec</b><span>Issue Time</span></div><div><b>1 click</b><span>WhatsApp Parent</span></div><div><b>R500</b><span>/ Month Standard</span></div></div>
 </div>
 
-<!-- QUICK LINKS -->
 <div class="card">
-<h2>🚀 Quick Links</h2>
-<p>Go straight to your page after login.</p>
-<div class="row">
-<button class="btn btn-blue" onclick="go('principal.html')">📊 Principal</button>
-<button class="btn btn-green" onclick="go('librarian.html')">📚 Librarian</button>
-</div>
-<div class="row" style="margin-top:8px">
-<button class="btn btn-gold" onclick="go('issue.html')">📖 Issue / Return</button>
-<button class="btn btn-grey" onclick="go('teachers.html')">👩‍🏫 Teachers</button>
-</div>
-<div class="row" style="margin-top:8px">
-<button class="btn btn-grey" onclick="go('profile.html')">👤 Profile</button>
-<button class="btn btn-grey" onclick="go('subscriptions.html')">💳 Packages / Request Access</button>
-</div>
-<button class="btn btn-blue" onclick="go('super_admin.html')">👑 Super Admin (Vusi Only)</button>
+<h2>🚀 New School?</h2>
+<p style="font-size:13px;line-height:1.6">Principal — Request access, create your password, Vusi approves same day.</p>
+<button class="btn btn-green" onclick="location.href='subscriptions.html'">📝 Request Access / Subscribe</button>
+<button class="btn btn-blue" onclick="location.href='user-manual.html'">📖 User Manual</button>
 </div>
 
-<!-- PACKAGES -->
 <div class="card">
-<h2>💳 Packages</h2>
-<p>Most schools take STANDARD.</p>
-<table><tr><th>Package</th><th>Setup</th><th>Monthly</th><th>Total Month 1</th></tr>
-<tr><td><b>STARTER</b></td><td>R3 000</td><td>R350</td><td><b>R3 350</b></td></tr>
-<tr><td><b>STANDARD ⭐</b></td><td>R4 500</td><td>R500</td><td><b>R5 000</b></td></tr>
-<tr><td><b>PREMIUM</b></td><td>R5 500</td><td>R600</td><td><b>R6 100</b></td></tr></table>
-<div class="goldBox" style="margin-top:10px"><b>What you get:</b> Issue / Return in 3 sec, Overdue + WhatsApp Parent, Principal Dashboard, Librarian + Teachers + SGB, Free training, WhatsApp support.<br><b>Less than 2 lost textbooks = 1 month.</b></div>
-<button class="btn btn-gold" onclick="go('subscriptions.html')">📝 Request Access / Choose Package</button>
-</div>
-
-<!-- MANUALS -->
-<div class="card">
-<h2>📖 Manuals — Free To Read</h2>
-<p>Share User + Training with schools. Founder + Marketing are for Vusi only.</p>
+<h2>🔗 Quick Links</h2>
 <div class="links">
-<a href="user-manual.html">📖 User Manual</a>
-<a href="training-manual.html">🎓 Training Manual</a>
-<a href="founder-manual.html">👑 Founder Manual</a>
-<a href="marketing-manual.html">📣 Marketing Manual</a>
+<a href="issue.html">📖 Issue / Return</a>
+<a href="librarian.html">📚 Librarian</a>
+<a href="principal.html">📊 Principal</a>
+<a href="teachers.html">👩‍🏫 Teachers</a>
+<a href="profile.html">👤 Profile</a>
+<a href="super_admin.html">👑 Super Admin (Vusi Only)</a>
+<a href="training-manual.html">🎓 Training</a>
+<a href="founder-manual.html">👑 Founder</a>
+<a href="marketing-manual.html">📣 Marketing</a>
+<a href="https://wa.me/27780233263">📱 WhatsApp 078 023 3263</a>
 </div>
-<button class="btn btn-green" onclick="window.open('https://wa.me/27780233263?text='+encodeURIComponent('Hello Makhanani LTSM, I want a demo for my school.'),'_blank')">📱 WhatsApp Vusi — 078 023 3263</button>
-<details><summary>❓ Forgot Password / Blocked / No Users Found?</summary>
-<div class="info"><b>Forgot Password?</b> Click Forgot Password above → WhatsApp Vusi. Or ask Admin / Principal to reset to <b>1234</b> in Super Admin → Users → Reset to 1234.<br><b>Blocked?</b> Ask Admin to unblock you. Do not create new account.<br><b>No school found?</b> Pick correct School from dropdown first. If your school is not in list, click Request Access.<br><b>Still stuck?</b> WhatsApp 078 023 3263</div>
-</details>
+<p class="small">© 2026 Makhanani LTSM • Xintimani Group (Pty) Ltd • Vusi Chauke — 078 023 3263</p>
 </div>
+</main>
 
-<div class="card" style="text-align:center">
-<img src="logo.png" alt="Makhanani" style="width:56px;height:56px;object-fit:contain;background:#f8fafc;border-radius:50%;padding:6px" onerror="this.style.display='none'">
-<p class="small">© 2026 Makhanani LTSM • Xintimani Group (Pty) Ltd<br>Vusi Chauke — 078 023 3263<br>Works on any phone • No app to install • Data stays in your school</p>
-</div>
-
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// ▼▼▼ PASTE YOUR FIREBASE CONFIG HERE — Same as subscriptions.html + super_admin.html ▼▼▼
-const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_SENDER_ID",
-  appId: "PASTE_APP_ID"
-};
-const isDemoConfig = !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("PASTE_");
-let db=null;
-if(!isDemoConfig){ try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.log(e); } }
-
-// DEMO DATA — Works without Firebase. Password = 1234 for all demo users.
-const DEMO_SCHOOLS=[
-  {id:"demo-wordsworth", name:"WORDSWORTH PRIMARY", emis:"123456", package:"STANDARD", monthly:500, status:"ACTIVE", users:[
-    {email:"principal@wordsworth.co.za", name:"Mr. Chauke", role:"PRINCIPAL", password:"1234", pin:"1234"},
-    {email:"librarian@wordsworth.co.za", name:"Ms. Dube", role:"LIBRARIAN", password:"1234", pin:"1234"},
-    {email:"teacher@wordsworth.co.za", name:"Mr. Nkosi", role:"TEACHER", password:"1234", pin:"1234", className:"10A"}
+<script>
+// ===== DEMO FALLBACK (if Firebase has no schools yet) =====
+const DEMO_SCHOOLS = [
+  {id:"WORDSWORTH", name:"WORDSWORTH PRIMARY", emis:"123456", package:"STANDARD", monthly:500, status:"ACTIVE", users:[
+    {email:"principal@wordsworth.co.za", password:"1234", pin:"1234", name:"Principal Wordsworth", role:"PRINCIPAL", status:"ACTIVE"},
+    {email:"librarian@wordsworth.co.za", password:"1234", pin:"1234", name:"Librarian Wordsworth", role:"LIBRARIAN", status:"ACTIVE"},
+    {email:"teacher@wordsworth.co.za", password:"1234", pin:"1234", name:"Teacher Wordsworth", role:"TEACHER", className:"10A", status:"ACTIVE"}
   ]},
-  {id:"demo-thuto", name:"THUTO PRIMARY", emis:"234567", package:"STARTER", monthly:350, status:"ACTIVE", users:[
-    {email:"principal@thuto.co.za", name:"Mrs. Dube", role:"PRINCIPAL", password:"1234", pin:"1234"},
-    {email:"librarian@thuto.co.za", name:"Mr. Mokoena", role:"LIBRARIAN", password:"1234", pin:"1234"}
+  {id:"THUTO", name:"THUTO PRIMARY", emis:"789012", package:"STANDARD", monthly:500, status:"ACTIVE", users:[
+    {email:"principal@thuto.co.za", password:"1234", pin:"1234", name:"Principal Thuto", role:"PRINCIPAL", status:"ACTIVE"},
+    {email:"librarian@thuto.co.za", password:"1234", pin:"1234", name:"Librarian Thuto", role:"LIBRARIAN", status:"ACTIVE"}
   ]}
 ];
+let schools = [];
+let useDemo = false;
 
-let ALL_SCHOOLS=[];
-const $=id=>document.getElementById(id);
-function showMsg(html,cls){ const m=$("msg"); m.innerHTML=html; m.className=cls; }
-function saveSession(school,user){
-  localStorage.setItem("makhanani_schoolId", school.id);
-  localStorage.setItem("makhanani_schoolName", school.name);
-  localStorage.setItem("makhanani_emis", school.emis||"");
-  localStorage.setItem("makhanani_package", school.package||"");
-  localStorage.setItem("makhanani_userEmail", user.email);
-  localStorage.setItem("makhanani_userName", user.name||"");
-  localStorage.setItem("makhanani_role", (user.role||"").toUpperCase());
-  localStorage.setItem("makhanani_class", user.className||user.class||"");
-  localStorage.setItem("makhanani_password", user.password||user.pin||"");
-  localStorage.setItem("makhanani_pin", user.password||user.pin||"");
-  localStorage.setItem("makhanani_loginAt", new Date().toISOString());
+function showErr(msg){ const b=document.getElementById('errorBox'); b.style.display='block'; b.innerHTML=msg; }
+function hideErr(){ document.getElementById('errorBox').style.display='none'; }
+function showOk(msg){ const b=document.getElementById('successBox'); b.style.display='block'; b.innerHTML=msg; }
+
+function togglePw(){ const p=document.getElementById('passwordInput'); p.type = p.type==='password' ? 'text' : 'password'; }
+
+function fillDemo(type){
+  const s = schools.find(x=>x.id==='WORDSWORTH') || DEMO_SCHOOLS[0];
+  document.getElementById('schoolSelect').value = s.id;
+  onSchoolChange();
+  if(type==='LIBRARIAN'){ document.getElementById('emailInput').value='librarian@wordsworth.co.za'; }
+  else { document.getElementById('emailInput').value='principal@wordsworth.co.za'; }
+  document.getElementById('passwordInput').value='1234';
 }
-function fillSchools(){
-  const sel=$("schoolSel"); sel.innerHTML='<option value="">-- Select Your School --</option>';
-  ALL_SCHOOLS.forEach(s=>{ const o=document.createElement("option"); o.value=s.id; o.textContent=s.name+" ("+(s.emis||"")+") — "+(s.package||""); sel.appendChild(o); });
-  if(ALL_SCHOOLS.length===0){ sel.innerHTML='<option value="">No schools found — Click Request Access below</option>'; }
-}
+
 function onSchoolChange(){
-  const sid=$("schoolSel").value; const info=$("schoolInfo");
-  if(!sid){ info.style.display="none"; return; }
-  const school=ALL_SCHOOLS.find(s=>s.id===sid); if(!school) return;
-  info.style.display="block";
-  info.innerHTML="🏫 <b>"+school.name+"</b> • EMIS: "+(school.emis||"-")+" • Package: <b>"+(school.package||"-")+"</b> • Monthly: R"+(school.monthly||"-")+" • Status: <b>"+(school.status||"ACTIVE")+"</b>";
-  if((school.status||"").toUpperCase()==="SUSPENDED"){ showMsg("⚠️ This school is SUSPENDED. WhatsApp Vusi — 078 023 3263 to reactivate.","warn"); }
+  const id=document.getElementById('schoolSelect').value;
+  const box=document.getElementById('schoolInfo');
+  if(!id){ box.style.display='none'; return; }
+  const s=schools.find(x=>x.id===id);
+  if(!s){ box.style.display='none'; return; }
+  box.style.display='block';
+  box.innerHTML=`<b>${s.name}</b><br>EMIS: ${s.emis||'-'} • Package: ${s.package||'STANDARD'} • Monthly: R${s.monthly||500} • Status: <b>${s.status||'ACTIVE'}</b>`;
 }
+
+// ===== LOAD SCHOOLS FROM FIREBASE =====
 async function loadSchools(){
-  if(db){
-    try{
-      const snap=await getDocs(collection(db,"schools"));
-      let list=[];
-      for(const docSnap of snap.docs){
-        const d=docSnap.data();
-        let users=d.users||[];
-        try{ const uSnap=await getDocs(collection(db,"schools",docSnap.id,"users")); if(!uSnap.empty) users=uSnap.docs.map(x=>({id:x.id,...x.data()})); }catch(e){}
-        if(users.length===0){
-          try{ const q2=query(collection(db,"users"), where("schoolId","==",docSnap.id)); const u2=await getDocs(q2); if(!u2.empty) users=u2.docs.map(x=>({id:x.id,...x.data()})); }catch(e){}
-        }
-        // Normalize: password OR pin both work
-        users=users.map(u=>({...u, password:u.password||u.pin||"", pin:u.pin||u.password||""}));
-        list.push({id:docSnap.id, name:d.name||d.schoolName||"Unnamed School", emis:d.emis||d.EMIS||"", package:d.package||d.plan||"", monthly:d.monthly||d.monthlyFee||"", status:d.status||"ACTIVE", users});
-      }
-      if(list.length>0){ ALL_SCHOOLS=list; fillSchools(); return; }
-    }catch(e){ console.log("Firebase load failed, using demo",e); }
+  const statusBox=document.getElementById('statusBox');
+  try{
+    // Try Firestore first
+    const snap = await db.collection('schools').get();
+    if(!snap.empty){
+      schools = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      statusBox.innerHTML = `✅ Connected to Firebase Firestore — ${schools.length} school(s) found.`;
+      renderSchools();
+      return;
+    }
+    // Try Realtime Database
+    const rsnap = await rtdb.ref('schools').once('value');
+    const rval = rsnap.val();
+    if(rval){
+      schools = Object.keys(rval).map(k=>({id:k, ...rval[k]}));
+      statusBox.innerHTML = `✅ Connected to Firebase Realtime Database — ${schools.length} school(s) found.`;
+      renderSchools();
+      return;
+    }
+    // No schools in Firebase yet -> Demo
+    throw new Error('No schools in Firebase');
+  }catch(e){
+    console.log('Firebase load failed, using demo:', e.message);
+    useDemo = true;
+    schools = DEMO_SCHOOLS;
+    statusBox.innerHTML = `⚠️ Firebase has no schools yet — Showing Demo Schools. Vusi: Add schools in Super Admin. (Error: ${e.message})`;
+    renderSchools();
   }
-  ALL_SCHOOLS=DEMO_SCHOOLS;
-  fillSchools();
-  if(isDemoConfig){ showMsg("ℹ️ <b>Demo Mode:</b> Firebase not connected yet. Pick WORDSWORTH → principal@wordsworth.co.za → Password 1234 to test.","info"); }
 }
-window.togglePass=()=>{ const i=$("passInput"); i.type=i.type==="password"?"text":"password"; };
-window.showDemo=()=>{ fillDemo('principal'); };
-window.fillDemo=(role)=>{
-  $("schoolSel").value="demo-wordsworth"; onSchoolChange();
-  setTimeout(()=>{ $("emailInput").value= role==="principal" ? "principal@wordsworth.co.za" : "librarian@wordsworth.co.za"; $("passInput").value="1234"; showMsg("✅ Demo filled — Click LOGIN","ok"); },50);
-};
-window.forgotPassword=()=>{
-  const email=($("emailInput").value||"").trim();
-  const schoolId=$("schoolSel").value;
-  const school=ALL_SCHOOLS.find(s=>s.id===schoolId);
-  const text="Hello Vusi, I forgot my password.\n\nSchool: "+(school?.name||"-")+"\nEmail: "+(email||"-")+"\nPlease reset my password to 1234.";
-  window.open("https://wa.me/27780233263?text="+encodeURIComponent(text),"_blank");
-  showMsg("📱 WhatsApp opened — Send it, Vusi will reset your password to 1234.","info");
-};
-window.go=(page)=>{ location.href=page; };
-window.doLogin=async ()=>{
-  const sid=$("schoolSel").value, email=($("emailInput").value||"").trim().toLowerCase(), pass=($("passInput").value||"").trim();
-  if(!sid){ showMsg("⚠️ Please select your school from the dropdown.","warn"); return; }
-  if(!email || !email.includes("@")){ showMsg("⚠️ Enter a valid email.","warn"); return; }
-  if(!pass){ showMsg("⚠️ Enter your password.","warn"); return; }
-  const school=ALL_SCHOOLS.find(s=>s.id===sid);
-  if(!school){ showMsg("⚠️ School not found.","warn"); return; }
-  if((school.status||"").toUpperCase()==="SUSPENDED"){ showMsg("⛔ This school is SUSPENDED. WhatsApp Vusi — 078 023 3263 to reactivate.","warn"); return; }
-  const user=(school.users||[]).find(u=>(u.email||"").toLowerCase()===email);
-  if(!user){ showMsg("⚠️ No user found for that email in this school. Ask Admin to add you, or pick correct school.","warn"); return; }
-  const correctPass=String(user.password||user.pin||"");
-  if(String(pass)!==correctPass){ showMsg("❌ Wrong password. Click Forgot Password to reset.","warn"); return; }
-  if((user.status||"").toUpperCase()==="BLOCKED"){ showMsg("⛔ You are BLOCKED. Ask Admin to unblock you.","warn"); return; }
-  saveSession(school,user);
-  showMsg("✅ Welcome "+(user.name||"")+" — Logging you in...","ok");
-  const role=(user.role||"").toUpperCase();
-  setTimeout(()=>{
-    if(role==="PRINCIPAL"||role==="ADMIN") location.href="principal.html";
-    else if(role==="LIBRARIAN") location.href="librarian.html";
-    else if(role==="TEACHER") location.href="teachers.html";
-    else if(role==="SGB") location.href="principal.html";
-    else if(role==="SUPER ADMIN"||role==="SUPERADMIN") location.href="super_admin.html";
-    else location.href="profile.html";
-  },600);
-};
-$("schoolSel").addEventListener("change", onSchoolChange);
+
+function renderSchools(){
+  const sel=document.getElementById('schoolSelect');
+  sel.innerHTML='<option value="">-- Pick Your School --</option>';
+  schools.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s.id; o.textContent=`${s.name} (${s.emis||''}) — ${s.package||'STANDARD'}`;
+    sel.appendChild(o);
+  });
+  document.getElementById('kpiSchools').textContent=schools.length;
+}
+
+// ===== LOGIN - Firestore + Realtime + Demo =====
+async function doLogin(){
+  hideErr();
+  const schoolId=document.getElementById('schoolSelect').value;
+  const email=document.getElementById('emailInput').value.trim().toLowerCase();
+  const password=document.getElementById('passwordInput').value.trim();
+  const btn=document.getElementById('loginBtn');
+
+  if(!schoolId){ showErr('⚠️ Pick your School from Dropdown first.'); return; }
+  if(!email){ showErr('⚠️ Type your Email.'); return; }
+  if(!password){ showErr('⚠️ Type your Password. First time: 1234'); return; }
+
+  btn.textContent='⏳ Checking...'; btn.disabled=true;
+
+  try{
+    let user = null;
+    let school = schools.find(s=>s.id===schoolId);
+
+    if(useDemo){
+      const demoSchool = DEMO_SCHOOLS.find(s=>s.id===schoolId);
+      if(demoSchool) user = demoSchool.users.find(u=>u.email.toLowerCase()===email);
+    } else {
+      // 1. Try Firestore: schools/{schoolId}/users where email == email
+      try{
+        const snap = await db.collection('schools').doc(schoolId).collection('users').where('email','==',email).get();
+        if(!snap.empty){ user = {id:snap.docs[0].id, ...snap.docs[0].data()}; }
+      }catch(e){ console.log('Firestore users lookup failed:', e.message); }
+
+      // 2. Try Firestore: schools/{schoolId}/users docId = email with _ 
+      if(!user){
+        try{
+          const docId = email.replace(/[@.]/g,'_');
+          const doc = await db.collection('schools').doc(schoolId).collection('users').doc(docId).get();
+          if(doc.exists) user = {id:doc.id, ...doc.data()};
+        }catch(e){}
+      }
+
+      // 3. Try Realtime: schools/{schoolId}/users
+      if(!user){
+        try{
+          const rsnap = await rtdb.ref('schools/'+schoolId+'/users').once('value');
+          const vals = rsnap.val() || {};
+          user = Object.values(vals).find(u=> (u.email||'').toLowerCase()===email) || null;
+        }catch(e){ console.log('RTDB lookup failed:', e.message); }
+      }
+
+      // 4. Try top-level users collection
+      if(!user){
+        try{
+          const snap2 = await db.collection('users').where('email','==',email).where('schoolId','==',schoolId).get();
+          if(!snap2.empty) user = {id:snap2.docs[0].id, ...snap2.docs[0].data()};
+        }catch(e){}
+      }
+    }
+
+    if(!user){
+      showErr(`⚠️ No user found for <b>${email}</b> in <b>${school ? school.name : schoolId}</b>.<br>Ask Admin to add you, or pick correct school.<br><br>Tip: If your email is in WORDSWORTH, pick WORDSWORTH, not THUTO.`);
+      btn.textContent='LOGIN →'; btn.disabled=false; return;
+    }
+
+    const correctPw = user.password || user.pin || '1234';
+    if(password !== String(correctPw)){
+      showErr('⚠️ Wrong password.<br>Click Forgot Password? below, or ask Vusi to Reset to 1234.');
+      btn.textContent='LOGIN →'; btn.disabled=false; return;
+    }
+
+    if(user.status && String(user.status).toUpperCase()==='BLOCKED'){
+      showErr('⛔ Your account is BLOCKED. WhatsApp Vusi — 078 023 3263');
+      btn.textContent='LOGIN →'; btn.disabled=false; return;
+    }
+    if(school && school.status && String(school.status).toUpperCase()==='SUSPENDED'){
+      showErr('⛔ School is SUSPENDED — Monthly not paid. Principal must pay, Vusi reactivates.');
+      btn.textContent='LOGIN →'; btn.disabled=false; return;
+    }
+
+    // SUCCESS - Save session
+    const session = {
+      id: user.id || email, name: user.name || email, email: user.email || email,
+      role: (user.role||'LIBRARIAN').toUpperCase(), schoolId: schoolId,
+      schoolName: school ? school.name : schoolId, className: user.className || user.class || '',
+      package: school ? (school.package||'STANDARD') : 'STANDARD',
+      loginAt: new Date().toISOString()
+    };
+    localStorage.setItem('makhanani_user', JSON.stringify(session));
+    localStorage.setItem('makhanani_school', schoolId);
+
+    showOk(`✅ Welcome ${session.name}! Going to ${session.role} Dashboard...`);
+    setTimeout(()=>{
+      if(session.role==='PRINCIPAL') location.href='principal.html';
+      else if(session.role==='TEACHER') location.href='teachers.html';
+      else if(session.role==='SUPER_ADMIN' || session.role==='ADMIN') location.href='super_admin.html';
+      else location.href='librarian.html';
+    }, 800);
+
+  }catch(e){
+    console.error(e);
+    showErr('⚠️ Login error: '+e.message+'<br>Check data / WiFi, then try again.');
+    btn.textContent='LOGIN →'; btn.disabled=false;
+  }
+}
+
+function forgotPassword(){
+  const schoolId=document.getElementById('schoolSelect').value;
+  const email=document.getElementById('emailInput').value.trim();
+  const school = schools.find(s=>s.id===schoolId);
+  const msg=`Hello Vusi, I forgot my password. School: ${school?school.name:schoolId||'(not picked)'} Email: ${email||'(not typed)'} Please reset to 1234.`;
+  window.open('https://wa.me/27780233263?text='+encodeURIComponent(msg),'_blank');
+}
+
 // Enter key = Login
-$("passInput").addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(); });
-$("emailInput").addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(); });
+document.getElementById('passwordInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('emailInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+// Auto-login if already logged in? No - force login each time for schools
 loadSchools();
 </script>
 </body>
