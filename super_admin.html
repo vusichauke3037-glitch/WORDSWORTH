@@ -44,30 +44,45 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 .kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
 .kpi .red b{color:#dc2626}.kpi .green b{color:#059669}.kpi .orange b{color:#d97706}
 input,select,textarea{width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px}label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:10px}
-.filterRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.filterRow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+.filterRow2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
 .badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}
 .badge-green{background:#dcfce7;color:#166534}.badge-red{background:#fee2e2;color:#991b1b}.badge-orange{background:#fef3c7;color:#92400e}.badge-blue{background:#dbeafe;color:#1e40af}.badge-grey{background:#e2e8f0;color:#334155}
 .small{font-size:12px;color:#64748b}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{padding:10px 14px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
-@media(max-width:700px){.kpi{grid-template-columns:1fr 1fr}.filterRow{grid-template-columns:1fr}table{font-size:12px}}
-@media print{.btn,.topnav,.tabs{display:none!important}.card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}}
+.searchDrop{position:relative}.searchDrop input{padding:12px;border:2px solid #0a1f4d;border-radius:10px}
+.dropList{position:absolute;top:100%;left:0;right:0;background:#fff;border:2px solid #0a1f4d;border-top:none;border-radius:0 0 10px 10px;max-height:240px;overflow-y:auto;z-index:99;display:none;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.dropList div{padding:11px;border-bottom:1px solid #e2e8f0;cursor:pointer;font-size:14px;line-height:1.5}
+.dropList div:hover{background:#fef3c7}.dropList div b{color:#0a1f4d}
+.dropList .empty{color:#64748b;cursor:default}
+.selectedSchool{background:#dcfce7;border:2px solid #059669;border-radius:10px;padding:10px;margin-top:10px;display:none;line-height:1.6}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:999;padding:16px}
+.modal .box{background:#fff;border-radius:16px;padding:18px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
+.townChips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.townChips button{padding:7px 11px;border:2px solid #0a1f4d;background:#fff;color:#0a1f4d;border-radius:20px;font-weight:900;font-size:11px;cursor:pointer}
+.townChips button.active{background:#0a1f4d;color:#fff}
+.townChips button.clear{background:#fee2e2;border-color:#dc2626;color:#991b1b}
+@media(max-width:700px){.kpi{grid-template-columns:1fr 1fr}.filterRow,.filterRow2{grid-template-columns:1fr 1fr}table{font-size:12px}}
+@media print{.btn,.topnav,.tabs,.modal{display:none!important}.card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}}
 </style>
 </head>
 <body>
 <header>
 <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
 <h1>👑 Makhanani LTSM — Super Admin — PRIVATE</h1>
-<p><b>For Vusi Chauke Only — Do NOT Send To Schools</b><br>Xintimani Group • 078 023 3263<br>All Schools • All Money • All Expiries • All Users</p>
-<div class="topnav"><a href="index.html">🏠 Login</a><a href="founder.html">👑 Founder</a><a href="financials.html">💰 Financials</a><a href="schools.html">🏫 Schools Admin</a><a href="marketing.html">💰 Marketing</a><a href="manual.html">📖 Manual</a></div>
+<p><b>For Vusi Chauke Only — Do NOT Send To Schools</b><br>Xintimani Group • 078 023 3263<br>All Schools • All Money • All Expiries • Town Filter</p>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="home.html">🏠 Home</a><a href="dbe_upload.html">🏫 Upload DBE</a><a href="founder.html">👑 Founder</a><a href="financials.html">💰 Financials</a><a href="schools.html">🏫 Schools Admin</a></div>
 </header>
 <main>
 
 <div class="card">
-<div class="warn"><b>⚠️ PRIVATE:</b> This page shows ALL schools, ALL revenue, ALL passwords resets, Block / Approve. <b>Do NOT send to principals.</b> Principals get <b>marketing.html</b> only.</div>
+<div class="warn"><b>⚠️ PRIVATE:</b> This page shows ALL schools, ALL revenue, ALL password resets, Block / Approve. <b>Do NOT send to principals.</b></div>
 <div style="display:flex;gap:8px;flex-wrap:wrap">
 <button class="btn btn-blue" onclick="loadAll()">🔄 Refresh All Data</button>
-<button class="btn btn-green" onclick="exportCSV()">📥 Export Schools CSV</button>
+<button class="btn btn-green" onclick="exportCSV()">📥 Export All Schools CSV</button>
+<button class="btn btn-gold" onclick="exportVisibleCSV()">📥 Export Visible (Filtered) CSV</button>
 <button class="btn btn-gold" onclick="window.print()">🖨️ Print Dashboard</button>
+<button class="btn btn-grey" onclick="location.href='dbe_upload.html'">🏫 Upload DBE Schools →</button>
 <button class="btn btn-grey" onclick="logout()">🚪 Logout</button>
 </div>
 <div id="authMsg"></div>
@@ -80,17 +95,19 @@ input,select,textarea{width:100%;padding:11px;border:2px solid #e2e8f0;border-ra
 <div class="green"><b id="kActive">—</b><span>Active / Paid</span></div>
 <div class="red"><b id="kExpired">—</b><span>Expired / Blocked</span></div>
 <div class="orange"><b id="kTrial">—</b><span>DEMO Trial</span></div>
-<div><b id="kRevenue">—</b><span>Est. Year 1 Revenue<br>(Active × Avg)</span></div>
-<div class="green"><b id="kRenewal">—</b><span>Est. Renewal / Year<br>(Active × Avg Renewal)</span></div>
+<div><b id="kRevenue">—</b><span>Est. Year 1 Revenue</span></div>
+<div class="green"><b id="kRenewal">—</b><span>Est. Renewal / Year</span></div>
 <div><b id="kExpiring">—</b><span>Expiring in 7 Days</span></div>
 <div><b id="kNew7">—</b><span>New in Last 7 Days</span></div>
 </div>
 <div id="alertBox"></div>
+<div id="townKpiBox"></div>
 </div>
 
 <div class="card">
 <div class="tabs">
-<button id="tabBtn-schools" class="active" onclick="showTab('schools')">🏫 All Schools</button>
+<button id="tabBtn-schools" class="active" onclick="showTab('schools')">🏫 All Schools + Town Filter</button>
+<button id="tabBtn-sub" onclick="showTab('sub')">💰 Add Subscription</button>
 <button id="tabBtn-expiring" onclick="showTab('expiring')">⏰ Expiring Soon</button>
 <button id="tabBtn-expired" onclick="showTab('expired')">⛔ Expired / Blocked</button>
 <button id="tabBtn-revenue" onclick="showTab('revenue')">💰 Revenue</button>
@@ -99,80 +116,179 @@ input,select,textarea{width:100%;padding:11px;border:2px solid #e2e8f0;border-ra
 
 <div id="tab-schools">
 <div class="filterRow">
-<div><label>🔍 Search School / Principal / Email</label><input id="searchBox" placeholder="e.g. THUTO, Chauke" oninput="renderSchools()"></div>
-<div><label>Filter By Plan</label><select id="filterPlan" onchange="renderSchools()"><option value="">All Plans</option><option value="DEMO">DEMO</option><option value="STARTER">STARTER</option><option value="STANDARD">STANDARD</option><option value="PREMIUM">PREMIUM</option></select></div>
-<div><label>Filter By Status</label><select id="filterStatus" onchange="renderSchools()"><option value="">All Status</option><option value="ACTIVE">ACTIVE</option><option value="EXPIRED">EXPIRED</option><option value="BLOCKED">BLOCKED</option><option value="TRIAL">TRIAL / DEMO</option></select></div>
+<div><label>🔍 Search School / Principal / Email / Town</label><input id="searchBox" placeholder="e.g. THUTO, Chauke, Soweto" oninput="renderSchools()"></div>
+<div><label>📍 Filter Province — Dropdown</label><select id="filterProvince" onchange="renderSchools()"><option value="">All Provinces</option><option>GAUTENG</option><option>LIMPOPO</option><option>MPUMALANGA</option><option>NORTH WEST</option><option>FREE STATE</option><option>KWA-ZULU NATAL</option><option>EASTERN CAPE</option><option>WESTERN CAPE</option><option>NORTHERN CAPE</option></select></div>
+<div><label>🏘️ Filter TOWN — Dropdown (Auto)</label><select id="filterTown" onchange="setTownFilter(this.value)"><option value="">All Towns</option></select></div>
+<div><label>Filter By Status — Dropdown</label><select id="filterStatus" onchange="renderSchools()"><option value="">All Status</option><option value="ACTIVE">✅ ACTIVE</option><option value="EXPIRED">⛔ EXPIRED</option><option value="BLOCKED">🚫 BLOCKED</option><option value="TRIAL">🆓 TRIAL / DEMO</option></select></div>
 </div>
+<div class="filterRow2">
+<div><label>Filter By Plan — Dropdown</label><select id="filterPlan" onchange="renderSchools()"><option value="">All Plans</option><option value="DEMO">🆓 DEMO — 7 days FREE</option><option value="STARTER">STARTER — Setup R3 000</option><option value="STANDARD">STANDARD ⭐ — Setup R4 500</option><option value="PREMIUM">PREMIUM — Setup R5 500</option></select></div>
+<div><label>Filter By Billing — Dropdown</label><select id="filterBilling" onchange="renderSchools()"><option value="">All Billing</option><option value="FREE">FREE / DEMO</option><option value="MONTHLY">MONTHLY</option><option value="YEARLY">YEARLY</option></select></div>
+<div><label>&nbsp;</label><button class="btn btn-grey btn-full" onclick="clearAllFilters()" style="margin-top:0">✖️ Clear All Filters</button></div>
+</div>
+<div class="goldBox" style="margin-top:10px"><b>🏘️ Quick Town Chips — Tap a town to filter active schools:</b></div>
+<div id="townChips" class="townChips"></div>
+<div id="filterSummary" class="info" style="display:none"></div>
 <div id="schoolsList"></div>
+</div>
+
+<div id="tab-sub" style="display:none">
+<h3>💰 Add Subscription — Search School + Dropdown Plan + Dropdown Billing</h3>
+<div class="goldBox"><b>How to use:</b> 1) Type school name / town in Search box → Tap school in dropdown → 2) Pick Plan from dropdown → 3) Pick Billing → 4) Pick Duration / Expiry → 5) Type Amount Paid → 6) Click Add Subscription. No typing plan names, no typos.</div>
+<label>🔍 Search School — Type Name / Principal / Email / TOWN (Dropdown)</label>
+<div class="searchDrop">
+<input id="subSearch" placeholder="Type school name or town... e.g. THUTO, Soweto" autocomplete="off" oninput="filterSubSchools()" onfocus="filterSubSchools()">
+<div id="subDropList" class="dropList"></div>
+</div>
+<div id="subSelected" class="selectedSchool"></div>
+<label>📦 Plan — Dropdown (Pick One)</label>
+<select id="subPlan" onchange="updateSubPreview()">
+<option value="">-- Pick Plan --</option>
+<option value="DEMO">🆓 DEMO — 7 days FREE — Setup FREE — R0</option>
+<option value="STARTER">STARTER — Setup R3 000 — Monthly R350 / Yearly R4 500</option>
+<option value="STANDARD" selected>STANDARD ⭐ — Setup R4 500 — Monthly R500 / Yearly R7 500 — Most Popular</option>
+<option value="PREMIUM">PREMIUM — Setup R5 500 — Monthly R600 / Yearly R9 000</option>
+</select>
+<label>💳 Billing — Dropdown (Pick One)</label>
+<select id="subBilling" onchange="updateSubPreview()">
+<option value="YEARLY">YEARLY — Once-off / Year (Recommended — 1 payment)</option>
+<option value="MONTHLY">MONTHLY — Pay Every Month</option>
+<option value="FREE">FREE — DEMO / No Payment</option>
+</select>
+<label>📅 Duration — Dropdown (Auto Expiry)</label>
+<select id="subDuration" onchange="updateSubPreview()">
+<option value="auto">Auto — YEARLY = 365 days, MONTHLY = 30 days, FREE = 7 days</option>
+<option value="7">7 days — DEMO / Grace</option>
+<option value="30">30 days — 1 Month</option>
+<option value="90">90 days — 3 Months</option>
+<option value="180">180 days — 6 Months</option>
+<option value="365">365 days — 1 Year</option>
+<option value="730">730 days — 2 Years</option>
+<option value="custom">Custom — Pick Date Below</option>
+</select>
+<label>📅 Expiry Date — Or Pick Custom Date (If Duration = Custom)</label>
+<input id="subExpiry" type="date">
+<label>💵 Amount Paid? (e.g. 12000 for STANDARD Yearly, 7500 for renewal, 0 if not paid)</label>
+<input id="subAmount" type="number" placeholder="e.g. 12000">
+<label>✅ Setup Paid? — Dropdown</label>
+<select id="subSetupPaid">
+<option value="YES">YES — Setup Paid</option>
+<option value="NO">NO — Not Paid Yet</option>
+<option value="N/A">N/A — Renewal / No Setup</option>
+</select>
+<label>📝 Notes (Optional)</label>
+<input id="subNotes" placeholder="e.g. Paid via EFT, Proof on WhatsApp 15 Nov">
+<div id="subPreview" class="goldBox"></div>
+<button class="btn btn-green btn-full" onclick="addSubscription()">💰 ADD SUBSCRIPTION →</button>
+<div id="subMsg"></div>
 </div>
 
 <div id="tab-expiring" style="display:none">
 <h3>⏰ Expiring In Next 7 Days — WhatsApp These Principals TODAY</h3>
-<p class="small">These schools will block soon. Send renewal WhatsApp now. Template below each school.</p>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+<label style="width:100%">🏘️ Filter Expiring By Town</label>
+<select id="filterTownExpiring" onchange="renderExpiring()"><option value="">All Towns</option></select>
+</div>
 <div id="expiringList"></div>
 </div>
 
 <div id="tab-expired" style="display:none">
 <h3>⛔ Expired / Blocked — Pay To Reactivate</h3>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+<label style="width:100%">🏘️ Filter Expired By Town</label>
+<select id="filterTownExpired" onchange="renderExpired()"><option value="">All Towns</option></select>
+</div>
 <div id="expiredList"></div>
 </div>
 
 <div id="tab-revenue" style="display:none">
 <h3>💰 Revenue Breakdown</h3>
 <div id="revenueBox"></div>
-<table><tr><th>Plan</th><th>Count</th><th>Year 1 Value (Setup+Yearly)</th><th>Renewal Value / Year</th></tr><tbody id="revenueTable"></tbody></table>
-<div class="goldBox"><b>How revenue is estimated:</b> STANDARD Yearly = R12 000 Year 1 / R7 500 renewal. STARTER Yearly = R7 500 / R4 500. PREMIUM Yearly = R14 500 / R9 000. DEMO = R0. Monthly schools counted as Yearly average for estimate. Actual cash = Check your bank + schools.html Last Payment. This is an estimate to see business health, not bank statement.</div>
+<table><tr><th>Plan</th><th>Count</th><th>Year 1 Value</th><th>Renewal Value / Year</th></tr><tbody id="revenueTable"></tbody></table>
+<div id="revenueByTown"></div>
+<div class="goldBox"><b>How revenue is estimated:</b> STANDARD Yearly = R12 000 Year 1 / R7 500 renewal. STARTER Yearly = R7 500 / R4 500. PREMIUM Yearly = R14 500 / R9 000. DEMO = R0.</div>
 <label>Actual Cash Collected This Month? (Type it, for your record)</label><input id="cashMonth" type="number" placeholder="e.g. 45000" oninput="localStorage.setItem('makhanani_cash_month',this.value)">
-<p class="small">Saved in this browser only. Not in Firebase. For your Excel, use this + bank.</p>
 </div>
 
 <div id="tab-add" style="display:none">
-<h3>➕ Add School Manually — You Create School For Principal</h3>
+<h3>➕ Add School Manually — Dropdowns + Town</h3>
 <label>School Name *</label><input id="addSchool" placeholder="e.g. THUTO PRIMARY">
 <label>Principal Name *</label><input id="addName" placeholder="e.g. Mr. Chauke">
 <label>Principal Email — Will Be Login *</label><input id="addEmail" type="email" placeholder="e.g. principal@thuto.co.za">
 <label>Principal Password *</label><input id="addPass" placeholder="Min 6 characters">
 <label>Principal Phone (WhatsApp)</label><input id="addPhone" placeholder="e.g. 0780233263">
-<label>Plan</label><select id="addPlan"><option value="DEMO">DEMO — 7 days FREE</option><option value="STARTER">STARTER</option><option value="STANDARD" selected>STANDARD ⭐</option><option value="PREMIUM">PREMIUM</option></select>
-<label>Billing</label><select id="addBilling"><option value="FREE">FREE / DEMO</option><option value="MONTHLY">MONTHLY</option><option value="YEARLY" selected>YEARLY (Once-off / Year)</option></select>
-<label>Setup Paid? (Tick if Setup paid)</label><select id="addSetupPaid"><option value="YES">YES — Setup Paid</option><option value="NO">NO — Not Paid Yet</option></select>
+<label>🏘️ Town * — Type town, or pick from existing towns</label><input id="addTown" placeholder="e.g. Alexandra" list="townListAdd">
+<datalist id="townListAdd"></datalist>
+<label>📍 Province — Dropdown</label><select id="addProvince"><option value="">-- Select Province --</option><option>GAUTENG</option><option>LIMPOPO</option><option>MPUMALANGA</option><option>NORTH WEST</option><option>FREE STATE</option><option>KWA-ZULU NATAL</option><option>EASTERN CAPE</option><option>WESTERN CAPE</option><option>NORTHERN CAPE</option></select>
+<label>Plan — Dropdown</label><select id="addPlan"><option value="DEMO">🆓 DEMO — 7 days FREE</option><option value="STARTER">STARTER — Setup R3 000</option><option value="STANDARD" selected>STANDARD ⭐ — Setup R4 500</option><option value="PREMIUM">PREMIUM — Setup R5 500</option></select>
+<label>Billing — Dropdown</label><select id="addBilling"><option value="FREE">FREE / DEMO</option><option value="MONTHLY">MONTHLY</option><option value="YEARLY" selected>YEARLY (Once-off / Year)</option></select>
+<label>Setup Paid? — Dropdown</label><select id="addSetupPaid"><option value="YES">YES — Setup Paid</option><option value="NO">NO — Not Paid Yet</option></select>
 <label>Expiry Date (Leave blank = Auto: DEMO 7 days, MONTHLY 30 days, YEARLY 365 days)</label><input id="addExpiry" type="date">
 <button class="btn btn-green btn-full" onclick="addSchoolManually()">➕ CREATE SCHOOL →</button>
 <div id="addMsg"></div>
-<div class="goldBox"><b>After creating:</b> Send Principal WhatsApp with Login + Password + Prefix + Plan + Expiry + Training date. Use template in <a href="founder.html">Founder Manual</a> Section 4.</div>
 </div>
 </div>
 
 <div class="card">
 <h2>⚡ Quick Actions — Per School</h2>
-<p>From All Schools list, you can:</p>
 <ul>
-<li><b>✅ Approve / Activate:</b> Set Plan + Billing + Expiry (30 days Monthly, 365 days Yearly, 7 days DEMO) + Status ACTIVE. Use when Principal pays.</li>
-<li><b>⏰ Extend +7 Days:</b> Give 7 days grace. Expiry +7 days. Use once, not every week.</li>
-<li><b>🚫 Block:</b> Status BLOCKED. Login blocks for whole school. Use when not paying + no grace, or abuse.</li>
-<li><b>🔓 Unblock:</b> Status ACTIVE. Use after payment.</li>
-<li><b>🔑 Reset Principal Password to 1234:</b> Principal can login with 1234, then change it.</li>
-<li><b>📱 WhatsApp Principal:</b> Opens WhatsApp with pre-filled message (Renewal / Expired / Welcome).</li>
-<li><b>👀 View School:</b> Opens Principal page as that school? No — Opens schools.html detail. To view as school, login with Principal email + password in index.html.</li>
-<li><b>🗑️ Delete School:</b> Deletes school doc + users. <b>Irreversible.</b> Only if school was fake / duplicate. Never delete real school without export.</li>
+<li><b>💰 Add Subscription:</b> Use Tab <b>Add Subscription</b> — Search school (by name / town), pick Plan + Billing from dropdowns, auto-expiry. No prompts.</li>
+<li><b>🏘️ Town Filter:</b> Pick Town from dropdown or tap Town Chip → Shows only that town. Combine with Province + Plan + Status.</li>
+<li><b>✅ Approve:</b> Opens same Add Subscription form pre-filled with that school. Pick Plan + Billing, click Add.</li>
+<li><b>⏰ Extend +7 Days:</b> Expiry +7 days.</li>
+<li><b>🚫 Block / 🔓 Unblock:</b> Block login for whole school / Unblock after payment.</li>
+<li><b>🔑 Reset Principal Password to 1234:</b> 1 click.</li>
+<li><b>📱 WhatsApp Principal:</b> Pre-filled Renewal / Expired message.</li>
+<li><b>🗑️ Delete School:</b> Irreversible. Only fake / duplicate.</li>
 </ul>
 </div>
 
-<div class="card">
-<h2>📞 Daily Routine — Super Admin</h2>
-<table><tr><th>Day</th><th>Do (15 min)</th></tr>
-<tr><td><b>Monday</b></td><td>Open this page → Tab Expiring Soon → WhatsApp all expiring principals. Tab Expired → WhatsApp expired principals.</td></tr>
-<tr><td><b>Wednesday</b></td><td>Check WhatsApp support — Any school stuck? Reply within 2 hours.</td></tr>
-<tr><td><b>Friday</b></td><td>Check New in Last 7 Days → Follow up DEMO schools: <i>"How is demo going?"</i></td></tr>
-<tr><td><b>End of Month</b></td><td>Export CSV → Save to Excel → Count Revenue → Backup Firebase (Export Firestore + Download RTDB).</td></tr>
-</table>
+</main>
+
+<div id="approveModal" class="modal">
+<div class="box">
+<h3 style="margin:0 0 10px;color:#0a1f4d">💰 Add / Approve Subscription</h3>
+<p id="approveSchoolName" style="font-size:14px;line-height:1.6;margin:0 0 10px"></p>
+<label>📦 Plan — Dropdown</label>
+<select id="modalPlan">
+<option value="DEMO">🆓 DEMO — 7 days FREE</option>
+<option value="STARTER">STARTER — Setup R3 000 — Monthly R350 / Yearly R4 500</option>
+<option value="STANDARD" selected>STANDARD ⭐ — Setup R4 500 — Monthly R500 / Yearly R7 500</option>
+<option value="PREMIUM">PREMIUM — Setup R5 500 — Monthly R600 / Yearly R9 000</option>
+</select>
+<label>💳 Billing — Dropdown</label>
+<select id="modalBilling">
+<option value="YEARLY">YEARLY — Once-off / Year</option>
+<option value="MONTHLY">MONTHLY — Pay Every Month</option>
+<option value="FREE">FREE — DEMO</option>
+</select>
+<label>📅 Duration — Dropdown</label>
+<select id="modalDuration">
+<option value="auto">Auto — YEARLY 365d / MONTHLY 30d / FREE 7d</option>
+<option value="7">7 days</option>
+<option value="30">30 days</option>
+<option value="90">90 days</option>
+<option value="365">365 days — 1 Year</option>
+</select>
+<label>💵 Amount Paid?</label>
+<input id="modalAmount" type="number" placeholder="e.g. 12000">
+<label>✅ Setup Paid?</label>
+<select id="modalSetupPaid"><option value="YES">YES — Setup Paid</option><option value="NO">NO — Not Paid Yet</option><option value="N/A">N/A — Renewal</option></select>
+<div id="modalPreview" class="goldBox"></div>
+<button class="btn btn-green btn-full" onclick="confirmApprove()">💰 CONFIRM SUBSCRIPTION →</button>
+<button class="btn btn-grey btn-full" onclick="closeApproveModal()">Cancel</button>
+</div>
 </div>
 
-</main>
 <script>
 let ALL_SCHOOLS = [];
+let SELECTED_SUB_SCHOOL = null;
+let APPROVE_SCHOOL_ID = null;
+let CURRENT_TOWN = '';
 function esc(s){ return String(s||'').replace(/</g,'&lt;'); }
 function getPrefix(name){ return (name||'SCHOOL').trim().split(/\s+/).map(w=>w.replace(/[^A-Za-z]/g,'').charAt(0).toUpperCase()).join('') || 'SC'; }
+function normTown(t){ const s=String(t||'').trim().replace(/\s+/g,' '); if(!s) return ''; return s.toUpperCase(); }
+function displayTown(t){ const s=String(t||'').trim(); if(!s) return '—'; return s.toLowerCase().replace(/\b\w/g, c=>c.toUpperCase()); }
 function daysLeft(expiry){
   if(!expiry) return null;
   const today=new Date(); today.setHours(0,0,0,0);
@@ -196,19 +312,36 @@ function planBadge(plan){
   if(p==='STARTER') return '<span class="badge badge-grey">STARTER</span>';
   return '<span class="badge badge-blue">DEMO</span>';
 }
+function priceFor(plan, billing){
+  const p=(plan||'').toUpperCase(), b=(billing||'').toUpperCase();
+  if(p==='DEMO' || b==='FREE') return {setup:0, fee:0, total:0, label:'FREE'};
+  if(p==='STARTER') return b==='MONTHLY' ? {setup:3000, fee:350, total:3350, label:'Setup R3 000 + R350/mo = R3 350 first month'} : {setup:3000, fee:4500, total:7500, label:'Setup R3 000 + R4 500/yr = R7 500 first year'};
+  if(p==='STANDARD') return b==='MONTHLY' ? {setup:4500, fee:500, total:5000, label:'Setup R4 500 + R500/mo = R5 000 first month'} : {setup:4500, fee:7500, total:12000, label:'Setup R4 500 + R7 500/yr = R12 000 first year'};
+  if(p==='PREMIUM') return b==='MONTHLY' ? {setup:5500, fee:600, total:6100, label:'Setup R5 500 + R600/mo = R6 100 first month'} : {setup:5500, fee:9000, total:14500, label:'Setup R5 500 + R9 000/yr = R14 500 first year'};
+  return {setup:0, fee:0, total:0, label:''};
+}
+function calcExpiry(billing, duration){
+  if(duration==='custom') return document.getElementById('subExpiry')?.value || '';
+  if(duration && duration!=='auto'){ const d=new Date(); d.setDate(d.getDate()+parseInt(duration)); return d.toISOString().slice(0,10); }
+  const d=new Date();
+  if(billing==='MONTHLY') d.setDate(d.getDate()+30);
+  else if(billing==='YEARLY') d.setFullYear(d.getFullYear()+1);
+  else d.setDate(d.getDate()+7);
+  return d.toISOString().slice(0,10);
+}
 function showTab(name){
-  ['schools','expiring','expired','revenue','add'].forEach(t=>{
+  ['schools','sub','expiring','expired','revenue','add'].forEach(t=>{
     document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none';
     document.getElementById('tabBtn-'+t).classList.toggle('active', t===name);
   });
   if(name==='expiring') renderExpiring();
   if(name==='expired') renderExpired();
   if(name==='revenue') renderRevenue();
+  if(name==='sub') updateSubPreview();
 }
 function logout(){ localStorage.removeItem('makhanani_user'); location.href='index.html'; }
 async function loadAll(){
   const msg=document.getElementById('authMsg');
-  // Check Super Admin
   try{
     const u=JSON.parse(localStorage.getItem('makhanani_user')||'null');
     if(!u || !['ADMIN','SUPER_ADMIN'].includes((u.role||'').toUpperCase())){
@@ -224,7 +357,6 @@ async function loadAll(){
     const snap=await db.collection('schools').get();
     for(const doc of snap.docs){
       const d=doc.data()||{};
-      // Try to get principal + users count + last payment
       let principalEmail=d.principalEmail||'', principalPhone=d.principalPhone||'', principalName=d.principalName||'';
       let usersCount=0;
       try{
@@ -232,12 +364,9 @@ async function loadAll(){
         usersCount=us.size;
         us.forEach(ud=>{ const u=ud.data(); if((u.role||'').toUpperCase()==='PRINCIPAL'){ principalEmail=u.email||principalEmail; principalPhone=u.phone||principalPhone; principalName=u.name||principalName; } });
       }catch(e){}
-      ALL_SCHOOLS.push({id:doc.id, schoolName:d.schoolName||doc.id, prefix:d.prefix||getPrefix(d.schoolName||doc.id), principalName, principalEmail, principalPhone, plan:d.plan||d.planKey||'DEMO', billing:d.billing||'FREE', status:d.status||'ACTIVE', expiryDate:d.expiryDate||d.expiry||'', lastPaymentDate:d.lastPaymentDate||'', lastPaymentAmount:d.lastPaymentAmount||'', setupPaid:d.setupPaid||'', createdAt:d.createdAt||'', usersCount});
+      ALL_SCHOOLS.push({id:doc.id, schoolName:d.schoolName||doc.id, prefix:d.prefix||getPrefix(d.schoolName||doc.id), principalName, principalEmail, principalPhone, plan:d.plan||d.planKey||'DEMO', billing:d.billing||'FREE', status:d.status||'ACTIVE', expiryDate:d.expiryDate||d.expiry||'', lastPaymentDate:d.lastPaymentDate||'', lastPaymentAmount:d.lastPaymentAmount||'', setupPaid:d.setupPaid||'', createdAt:d.createdAt||'', usersCount, town:d.town||d.district||d.circuit||'', province:d.province||'', emis:d.emis||''});
     }
-  }catch(e){
-    document.getElementById('schoolsList').innerHTML='<div class="warn">⚠️ Could not load from Firestore: '+esc(e.message)+'<br>Trying RTDB...</div>';
-  }
-  // RTDB fallback / merge
+  }catch(e){}
   try{
     const rs=await rtdb.ref('schools').once('value'); const rv=rs.val()||{};
     for(const sid of Object.keys(rv)){
@@ -247,22 +376,33 @@ async function loadAll(){
         const usersObj=rv[sid].users||{};
         let pEmail='', pPhone='', pName='';
         Object.values(usersObj).forEach(u=>{ if((u.role||'').toUpperCase()==='PRINCIPAL'){ pEmail=u.email||''; pPhone=u.phone||''; pName=u.name||''; } });
-        ALL_SCHOOLS.push({id:sid, schoolName:info.schoolName||sid, prefix:info.prefix||getPrefix(info.schoolName||sid), principalName:pName, principalEmail:pEmail, principalPhone:pPhone, plan:info.plan||'DEMO', billing:info.billing||'FREE', status:info.status||'ACTIVE', expiryDate:info.expiryDate||info.expiry||'', lastPaymentDate:info.lastPaymentDate||'', lastPaymentAmount:info.lastPaymentAmount||'', setupPaid:info.setupPaid||'', createdAt:info.createdAt||'', usersCount:Object.keys(usersObj).length});
+        ALL_SCHOOLS.push({id:sid, schoolName:info.schoolName||sid, prefix:info.prefix||getPrefix(info.schoolName||sid), principalName:pName, principalEmail:pEmail, principalPhone:pPhone, plan:info.plan||'DEMO', billing:info.billing||'FREE', status:info.status||'ACTIVE', expiryDate:info.expiryDate||info.expiry||'', lastPaymentDate:info.lastPaymentDate||'', lastPaymentAmount:info.lastPaymentAmount||'', setupPaid:info.setupPaid||'', createdAt:info.createdAt||'', usersCount:Object.keys(usersObj).length, town:info.town||info.district||info.circuit||'', province:info.province||'', emis:info.emis||''});
+      } else {
+        // Fill town / province if missing from Firestore but present in RTDB
+        if(!existing.town) existing.town=info.town||info.district||info.circuit||'';
+        if(!existing.province) existing.province=info.province||'';
+        if(!existing.emis) existing.emis=info.emis||'';
       }
     }
   }catch(e){}
-  // Sort: Expiring first, then Expired, then Active
+  // Fill town from DBE leads if still missing (matched by schoolName or EMIS)
+  try{
+    const leadsSnap=await db.collection('dbe_leads').get();
+    const leads=leadsSnap.docs.map(d=>d.data());
+    ALL_SCHOOLS.forEach(s=>{
+      if(!s.town){
+        const match=leads.find(l=> (l.emis && s.emis && String(l.emis)===String(s.emis)) || (l.schoolName && s.schoolName && l.schoolName.toUpperCase()===s.schoolName.toUpperCase()));
+        if(match){ s.town=match.town||match.district||match.circuit||''; if(!s.province) s.province=match.province||''; if(!s.emis) s.emis=match.emis||''; }
+      }
+    });
+  }catch(e){}
   ALL_SCHOOLS.sort((a,b)=>{
     const da=daysLeft(a.expiryDate); const db2=daysLeft(b.expiryDate);
     const sa = a.status==='BLOCKED' ? 0 : (da!==null && da<0 ? 1 : (da!==null && da<=7 ? 2 : 3));
     const sb = b.status==='BLOCKED' ? 0 : (db2!==null && db2<0 ? 1 : (db2!==null && db2<=7 ? 2 : 3));
     return sa-sb;
   });
-  updateKPIs();
-  renderSchools();
-  renderExpiring();
-  renderExpired();
-  renderRevenue();
+  updateKPIs(); buildTownFilter(); renderSchools(); renderExpiring(); renderExpired(); renderRevenue(); updateSubPreview();
   const savedCash=localStorage.getItem('makhanani_cash_month')||'';
   if(savedCash) document.getElementById('cashMonth').value=savedCash;
 }
@@ -274,15 +414,12 @@ function updateKPIs(){
   const expiring=ALL_SCHOOLS.filter(s=>{ const dl=daysLeft(s.expiryDate); return dl!==null && dl>=0 && dl<=7 && (s.status||'').toUpperCase()!=='BLOCKED'; }).length;
   const now=new Date(); const sevenAgo=new Date(); sevenAgo.setDate(now.getDate()-7);
   const new7=ALL_SCHOOLS.filter(s=>{ if(!s.createdAt) return false; try{ return new Date(s.createdAt)>=sevenAgo; }catch(e){ return false; } }).length;
-  // Revenue estimate — Yearly prices
   const priceY1={STARTER:7500, STANDARD:12000, PREMIUM:14500, DEMO:0};
   const priceRen={STARTER:4500, STANDARD:7500, PREMIUM:9000, DEMO:0};
   let revY1=0, revRen=0;
   ALL_SCHOOLS.forEach(s=>{
     const p=(s.plan||'DEMO').toUpperCase();
-    if((s.status||'').toUpperCase()!=='BLOCKED' && daysLeft(s.expiryDate)!==null && daysLeft(s.expiryDate)>=0){
-      revY1+=priceY1[p]||0; revRen+=priceRen[p]||0;
-    }
+    if((s.status||'').toUpperCase()!=='BLOCKED' && daysLeft(s.expiryDate)!==null && daysLeft(s.expiryDate)>=0){ revY1+=priceY1[p]||0; revRen+=priceRen[p]||0; }
   });
   document.getElementById('kTotal').textContent=total;
   document.getElementById('kActive').textContent=active;
@@ -295,17 +432,74 @@ function updateKPIs(){
   let alerts=[];
   if(expiring>0) alerts.push(`<div class="warn">⏰ <b>${expiring} school(s) expiring in 7 days.</b> Go to Tab Expiring Soon → WhatsApp them today.</div>`);
   if(expired>0) alerts.push(`<div class="warn">⛔ <b>${expired} school(s) expired / blocked.</b> Go to Tab Expired → WhatsApp them to pay.</div>`);
-  if(trial>0) alerts.push(`<div class="info">🆓 <b>${trial} school(s) on DEMO.</b> Follow up: <i>"How is demo going? Did you add 1 book + 1 learner?"</i></div>`);
+  if(trial>0) alerts.push(`<div class="info">🆓 <b>${trial} school(s) on DEMO.</b> Follow up: <i>"How is demo going?"</i></div>`);
   if(alerts.length===0) alerts.push('<div class="ok">✅ No expiring / expired schools. All good.</div>');
   document.getElementById('alertBox').innerHTML=alerts.join('');
+  const townCounts=getTownCounts();
+  const topTowns=Object.entries(townCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(topTowns.length>0){
+    document.getElementById('townKpiBox').innerHTML=`<div class="goldBox"><b>🏘️ Top Towns (Active Schools):</b> ${topTowns.map(([t,c])=>`${displayTown(t)} (${c})`).join(' • ')}<br><span class="small">Total towns: ${Object.keys(townCounts).length} • Towns with no town yet: ${ALL_SCHOOLS.filter(s=>!normTown(s.town)).length} — Edit those schools to add Town, or they came from old registration without Town.</span></div>`;
+  } else {
+    document.getElementById('townKpiBox').innerHTML=`<div class="goldBox"><b>🏘️ Top Towns:</b> No towns yet — Add Town when you Add School, or Convert from DBE Leads (Town auto-copies). Old schools without Town will show "—".</div>`;
+  }
 }
-function renderSchools(){
+function getTownCounts(){
+  const counts={};
+  ALL_SCHOOLS.forEach(s=>{ const t=normTown(s.town); if(t) counts[t]=(counts[t]||0)+1; });
+  return counts;
+}
+function buildTownFilter(){
+  const counts=getTownCounts();
+  const towns=Object.keys(counts).sort();
+  const sel=document.getElementById('filterTown');
+  if(sel){
+    const prev=sel.value;
+    sel.innerHTML='<option value="">All Towns</option>' + towns.map(t=>`<option value="${esc(t)}">${displayTown(t)} (${counts[t]})</option>`).join('');
+    if(prev && towns.includes(prev)) sel.value=prev;
+    else if(CURRENT_TOWN && towns.includes(CURRENT_TOWN)) sel.value=CURRENT_TOWN;
+  }
+  const selExp=document.getElementById('filterTownExpiring');
+  if(selExp){ const prev=selExp.value; selExp.innerHTML='<option value="">All Towns</option>' + towns.map(t=>`<option value="${esc(t)}">${displayTown(t)} (${counts[t]})</option>`).join(''); if(prev) selExp.value=prev; }
+  const selExpired=document.getElementById('filterTownExpired');
+  if(selExpired){ const prev=selExpired.value; selExpired.innerHTML='<option value="">All Towns</option>' + towns.map(t=>`<option value="${esc(t)}">${displayTown(t)} (${counts[t]})</option>`).join(''); if(prev) selExpired.value=prev; }
+  const dl=document.getElementById('townListAdd');
+  if(dl) dl.innerHTML=towns.map(t=>`<option value="${displayTown(t)}">`).join('');
+  const chipsEl=document.getElementById('townChips');
+  if(chipsEl){
+    if(towns.length===0){ chipsEl.innerHTML='<span class="small">No towns yet — Add Town when you Add School, or Convert from DBE Leads.</span>'; return; }
+    chipsEl.innerHTML = towns.map(t=>`<button class="${CURRENT_TOWN===t?'active':''}" onclick="setTownFilter('${esc(t)}')">🏘️ ${displayTown(t)} (${counts[t]})</button>`).join('') + (CURRENT_TOWN ? `<button class="clear" onclick="clearTownFilter()">✖️ Clear Town</button>` : '');
+  }
+}
+function setTownFilter(town){
+  CURRENT_TOWN = town || '';
+  const sel=document.getElementById('filterTown');
+  if(sel) sel.value=CURRENT_TOWN;
+  buildTownFilter(); renderSchools();
+}
+function clearTownFilter(){ setTownFilter(''); }
+function clearAllFilters(){
+  CURRENT_TOWN='';
+  document.getElementById('searchBox').value='';
+  document.getElementById('filterProvince').value='';
+  document.getElementById('filterTown').value='';
+  document.getElementById('filterStatus').value='';
+  document.getElementById('filterPlan').value='';
+  document.getElementById('filterBilling').value='';
+  buildTownFilter(); renderSchools();
+}
+function getFilteredSchools(){
   const q=(document.getElementById('searchBox').value||'').toLowerCase();
-  const fp=document.getElementById('filterPlan').value;
+  const fp=document.getElementById('filterProvince').value;
   const fs=document.getElementById('filterStatus').value;
-  let list=ALL_SCHOOLS.filter(s=>{
-    if(q && !( (s.schoolName||'').toLowerCase().includes(q) || (s.principalName||'').toLowerCase().includes(q) || (s.principalEmail||'').toLowerCase().includes(q) )) return false;
-    if(fp && (s.plan||'').toUpperCase()!==fp) return false;
+  const fplan=document.getElementById('filterPlan').value;
+  const fbill=document.getElementById('filterBilling').value;
+  const ft=CURRENT_TOWN || document.getElementById('filterTown')?.value || '';
+  return ALL_SCHOOLS.filter(s=>{
+    if(q && !( (s.schoolName||'').toLowerCase().includes(q) || (s.principalName||'').toLowerCase().includes(q) || (s.principalEmail||'').toLowerCase().includes(q) || (s.town||'').toLowerCase().includes(q) )) return false;
+    if(fp && (s.province||'').toUpperCase()!==fp) return false;
+    if(ft && normTown(s.town)!==ft) return false;
+    if(fplan && (s.plan||'').toUpperCase()!==fplan) return false;
+    if(fbill && (s.billing||'').toUpperCase()!==fbill) return false;
     if(fs){
       if(fs==='ACTIVE' && !((s.status||'').toUpperCase()!=='BLOCKED' && (daysLeft(s.expiryDate)===null || daysLeft(s.expiryDate)>=0))) return false;
       if(fs==='EXPIRED' && !(daysLeft(s.expiryDate)!==null && daysLeft(s.expiryDate)<0)) return false;
@@ -314,26 +508,39 @@ function renderSchools(){
     }
     return true;
   });
+}
+function renderSchools(){
+  const list=getFilteredSchools();
+  const summary=document.getElementById('filterSummary');
+  if(summary){
+    const q=(document.getElementById('searchBox').value||'');
+    const fp=document.getElementById('filterProvince').value;
+    const fs=document.getElementById('filterStatus').value;
+    const fplan=document.getElementById('filterPlan').value;
+    const fbill=document.getElementById('filterBilling').value;
+    const ft=CURRENT_TOWN;
+    if(q || fp || ft || fs || fplan || fbill){
+      summary.style.display='block';
+      summary.innerHTML=`<b>Showing ${list.length} of ${ALL_SCHOOLS.length} schools</b> — ${q?`Search "${esc(q)}" • `:''}${fp?`Province ${esc(fp)} • `:''}${ft?`🏘️ Town <b>${displayTown(ft)}</b> • `:''}${fplan?`Plan ${esc(fplan)} • `:''}${fbill?`Billing ${esc(fbill)} • `:''}${fs?`Status ${esc(fs)}`:''} <button class="btn btn-grey btn-small" onclick="clearAllFilters()">✖️ Clear</button>`;
+    } else summary.style.display='none';
+  }
   if(list.length===0){ document.getElementById('schoolsList').innerHTML='<div class="info">No schools found. Try clear filters, or Add School.</div>'; return; }
-  let html='<table><tr><th>School</th><th>Principal</th><th>Plan / Billing</th><th>Expiry / Days Left</th><th>Users / Last Payment</th><th>Actions</th></tr>';
+  let html='<table><tr><th>School</th><th>🏘️ Town / Province</th><th>Principal</th><th>Plan / Billing</th><th>Expiry / Days Left</th><th>Users / Last Payment</th><th>Actions</th></tr>';
   list.forEach(s=>{
     const dl=daysLeft(s.expiryDate);
     const dlText = dl===null ? 'No expiry' : (dl<0 ? `<b style="color:#dc2626">${dl} days (EXPIRED)</b>` : dl===0 ? '<b>Today</b>' : `<b>${dl} days left</b>`);
-    const waMsg = dl!==null && dl<0
-      ? `Hello ${s.principalName||'Principal'}, your Makhanani subscription expired on ${s.expiryDate}. Your data is safe. Pay to reactivate — STANDARD Yearly R12 000 or Monthly R4 500 + R500/mo. Reply YES and I will send details. Vusi — 078 023 3263`
-      : dl!==null && dl<=7
-      ? `Hello ${s.principalName||'Principal'}, your Makhanani subscription ends in ${dl} days (${s.expiryDate}). Renew: STANDARD Yearly R7 500 (no setup again). Reply YES to renew. Vusi — 078 023 3263`
-      : `Hello ${s.principalName||'Principal'}, how is Makhanani going? Did you add 1 book + 1 learner? Any problems? Vusi — 078 023 3263`;
+    const waMsg = dl!==null && dl<0 ? `Hello ${s.principalName||'Principal'}, your Makhanani subscription expired on ${s.expiryDate}. Your data is safe. Pay to reactivate — STANDARD Yearly R12 000 or Monthly R4 500 + R500/mo. Reply YES and I will send details. Vusi — 078 023 3263` : dl!==null && dl<=7 ? `Hello ${s.principalName||'Principal'}, your Makhanani subscription ends in ${dl} days (${s.expiryDate}). Renew: STANDARD Yearly R7 500 (no setup again). Reply YES to renew. Vusi — 078 023 3263` : `Hello ${s.principalName||'Principal'}, how is Makhanani going? Did you add 1 book + 1 learner? Any problems? Vusi — 078 023 3263`;
     const phoneClean=(s.principalPhone||'').replace(/\D/g,'');
     const waLink = phoneClean ? `https://wa.me/27${phoneClean.replace(/^0/,'')}?text=${encodeURIComponent(waMsg)}` : `https://wa.me/27780233263?text=${encodeURIComponent(waMsg)}`;
     html+=`<tr>
-      <td><b>${esc(s.schoolName)}</b><br><span class="small">Prefix: ${esc(s.prefix)} • ID: ${esc(s.id)}</span><br>${statusBadge(s)} ${planBadge(s.plan)}</td>
+      <td><b>${esc(s.schoolName)}</b><br><span class="small">Prefix: ${esc(s.prefix)} • ID: ${esc(s.id)}${s.emis?` • EMIS: ${esc(s.emis)}`:''}</span><br>${statusBadge(s)} ${planBadge(s.plan)}</td>
+      <td><b>🏘️ ${displayTown(s.town)}</b><br><span class="small">${esc(s.province||'—')}</span></td>
       <td>${esc(s.principalName||'—')}<br><span class="small">${esc(s.principalEmail||'—')}<br>${esc(s.principalPhone||'—')}</span></td>
       <td>${planBadge(s.plan)}<br><span class="small">Billing: ${esc(s.billing||'—')}<br>Setup: ${esc(s.setupPaid||'—')}</span></td>
       <td>${esc(s.expiryDate||'—')}<br>${dlText}</td>
       <td><span class="small">Users: ${s.usersCount}<br>Last Pay: ${esc(s.lastPaymentDate||'—')}<br>Amount: ${s.lastPaymentAmount ? 'R'+s.lastPaymentAmount : '—'}</span></td>
       <td>
-        <button class="btn btn-green btn-small" onclick="approveSchool('${esc(s.id)}')">✅ Approve</button>
+        <button class="btn btn-green btn-small" onclick="openApproveModal('${esc(s.id)}')">💰 Add Subscription</button>
         <button class="btn btn-gold btn-small" onclick="extendSchool('${esc(s.id)}')">⏰ +7 Days</button>
         <button class="btn btn-blue btn-small" onclick="window.open('${waLink}','_blank')">📱 WhatsApp</button><br>
         <button class="btn btn-grey btn-small" onclick="resetPrincipalPw('${esc(s.id)}','${esc(s.principalEmail)}')">🔑 Reset 1234</button>
@@ -346,28 +553,138 @@ function renderSchools(){
   html+='</table>';
   document.getElementById('schoolsList').innerHTML=html;
 }
+function filterSubSchools(){
+  const q=(document.getElementById('subSearch').value||'').toLowerCase().trim();
+  const listEl=document.getElementById('subDropList');
+  if(!q){ listEl.style.display='none'; return; }
+  const matches=ALL_SCHOOLS.filter(s=> (s.schoolName||'').toLowerCase().includes(q) || (s.principalName||'').toLowerCase().includes(q) || (s.principalEmail||'').toLowerCase().includes(q) || (s.town||'').toLowerCase().includes(q)).slice(0,20);
+  if(matches.length===0){ listEl.innerHTML='<div class="empty">No school found for "'+esc(q)+'" — Try another spelling, or Add School in Tab Add School.</div>'; listEl.style.display='block'; return; }
+  listEl.innerHTML=matches.map(s=>`<div onclick="selectSubSchool('${esc(s.id)}')"><b>${esc(s.schoolName)}</b> — ${esc(s.principalName||'')} — ${esc(s.principalEmail||'')}<br><span class="small">🏘️ ${displayTown(s.town)} • ${esc(s.province||'')} • ${planBadge(s.plan)} • Expiry ${esc(s.expiryDate||'—')} • ${esc(s.status||'')}</span></div>`).join('');
+  listEl.style.display='block';
+}
+function selectSubSchool(schoolId){
+  const s=ALL_SCHOOLS.find(x=>x.id===schoolId); if(!s) return;
+  SELECTED_SUB_SCHOOL=s;
+  document.getElementById('subSearch').value=s.schoolName;
+  document.getElementById('subDropList').style.display='none';
+  const sel=document.getElementById('subSelected');
+  sel.style.display='block';
+  sel.innerHTML=`<b>✅ Selected: ${esc(s.schoolName)}</b> — ${esc(s.principalName)} — ${esc(s.principalEmail)} — ${esc(s.principalPhone||'No phone')}<br>🏘️ Town: <b>${displayTown(s.town)}</b> • Province: ${esc(s.province||'—')}<br>Current: ${planBadge(s.plan)} • Billing ${esc(s.billing)} • Expiry ${esc(s.expiryDate||'—')} • Status ${esc(s.status)}<br><button class="btn btn-grey btn-small" onclick="clearSubSchool()">✖️ Clear / Pick Another School</button>`;
+  updateSubPreview();
+}
+function clearSubSchool(){
+  SELECTED_SUB_SCHOOL=null;
+  document.getElementById('subSearch').value='';
+  document.getElementById('subSelected').style.display='none';
+  updateSubPreview();
+}
+function updateSubPreview(){
+  const plan=document.getElementById('subPlan')?.value||'STANDARD';
+  const billing=document.getElementById('subBilling')?.value||'YEARLY';
+  const duration=document.getElementById('subDuration')?.value||'auto';
+  const price=priceFor(plan,billing);
+  const expiry=calcExpiry(billing,duration);
+  const schoolName=SELECTED_SUB_SCHOOL ? SELECTED_SUB_SCHOOL.schoolName : '— Pick school above —';
+  const preview=document.getElementById('subPreview');
+  if(preview) preview.innerHTML=`<b>📋 Preview:</b><br>School: <b>${esc(schoolName)}</b>${SELECTED_SUB_SCHOOL?` • 🏘️ ${displayTown(SELECTED_SUB_SCHOOL.town)} • ${esc(SELECTED_SUB_SCHOOL.province||'')}`:''}<br>Plan: <b>${esc(plan)}</b> • Billing: <b>${esc(billing)}</b> • Duration: <b>${esc(duration==='auto'?'Auto':duration+' days')}</b><br>New Expiry: <b>${expiry||'Pick custom date below'}</b><br>Price: <b>${price.label}</b><br><span class="small">If Amount Paid is blank, we save Amount = Price Total. If you type Amount, we save your typed amount.</span>`;
+  const modalPreview=document.getElementById('modalPreview');
+  if(modalPreview && APPROVE_SCHOOL_ID){
+    const mPlan=document.getElementById('modalPlan')?.value||'STANDARD';
+    const mBill=document.getElementById('modalBilling')?.value||'YEARLY';
+    const mDur=document.getElementById('modalDuration')?.value||'auto';
+    const mPrice=priceFor(mPlan,mBill);
+    let mExpiry=''; if(mDur==='auto'){ const d=new Date(); if(mBill==='MONTHLY') d.setDate(d.getDate()+30); else if(mBill==='YEARLY') d.setFullYear(d.getFullYear()+1); else d.setDate(d.getDate()+7); mExpiry=d.toISOString().slice(0,10); } else { const d=new Date(); d.setDate(d.getDate()+parseInt(mDur)); mExpiry=d.toISOString().slice(0,10); }
+    modalPreview.innerHTML=`<b>Preview:</b> ${esc(mPlan)} • ${esc(mBill)} • Expiry <b>${mExpiry}</b><br>${mPrice.label}`;
+  }
+}
+document.addEventListener('click', e=>{
+  const drop=document.getElementById('subDropList');
+  if(drop && !e.target.closest('.searchDrop')) drop.style.display='none';
+});
+async function addSubscription(){
+  if(!SELECTED_SUB_SCHOOL){ document.getElementById('subMsg').innerHTML='<div class="warn">⚠️ Pick a school first — Type in Search box above, then tap school in dropdown.</div>'; return; }
+  const plan=document.getElementById('subPlan').value;
+  const billing=document.getElementById('subBilling').value;
+  const duration=document.getElementById('subDuration').value;
+  let expiry='';
+  if(duration==='custom'){ expiry=document.getElementById('subExpiry').value; if(!expiry){ document.getElementById('subMsg').innerHTML='<div class="warn">⚠️ Pick Custom Expiry Date below.</div>'; return; } }
+  else expiry=calcExpiry(billing,duration);
+  const amount=document.getElementById('subAmount').value || priceFor(plan,billing).total;
+  const setupPaid=document.getElementById('subSetupPaid').value;
+  const notes=document.getElementById('subNotes').value;
+  const today=new Date().toISOString().slice(0,10);
+  const schoolId=SELECTED_SUB_SCHOOL.id;
+  const schoolName=SELECTED_SUB_SCHOOL.schoolName;
+  try{
+    await db.collection('schools').doc(schoolId).set({plan:plan, planKey:plan, billing:billing, status:'ACTIVE', expiryDate:expiry, lastPaymentDate:today, lastPaymentAmount:String(amount), setupPaid:setupPaid, subscriptionNotes:notes}, {merge:true});
+    try{ await rtdb.ref('schools/'+schoolId+'/info').update({plan:plan, billing:billing, status:'ACTIVE', expiryDate:expiry, lastPaymentDate:today, lastPaymentAmount:String(amount)}); }catch(e){}
+    try{ await rtdb.ref('schools/'+schoolId+'/subscription').update({plan:plan, billing:billing, status:'ACTIVE', expiryDate:expiry}); }catch(e){}
+    try{ await db.collection('schools').doc(schoolId).collection('subscriptions').add({plan, billing, expiryDate:expiry, amount:String(amount), setupPaid, notes, createdAt:new Date().toISOString(), createdBy:'Vusi'}); }catch(e){}
+    document.getElementById('subMsg').innerHTML=`<div class="ok">✅ Subscription added for <b>${esc(schoolName)}</b><br>Plan ${esc(plan)} • ${esc(billing)} • Expiry ${expiry} • Amount R${amount}<br>School is now ACTIVE. WhatsApp Principal: "✅ Payment received — Active until ${expiry}"</div>`;
+    SELECTED_SUB_SCHOOL=null; document.getElementById('subSearch').value=''; document.getElementById('subSelected').style.display='none'; document.getElementById('subAmount').value=''; document.getElementById('subNotes').value='';
+    loadAll();
+  }catch(e){ document.getElementById('subMsg').innerHTML='<div class="warn">⚠️ Add Subscription failed: '+esc(e.message)+'</div>'; }
+}
+function openApproveModal(schoolId){
+  const s=ALL_SCHOOLS.find(x=>x.id===schoolId); if(!s) return;
+  APPROVE_SCHOOL_ID=schoolId;
+  document.getElementById('approveSchoolName').innerHTML=`School: <b>${esc(s.schoolName)}</b><br>Principal: ${esc(s.principalName)} — ${esc(s.principalEmail)}<br>🏘️ Town: <b>${displayTown(s.town)}</b> • Province: ${esc(s.province||'—')}<br>Current: ${planBadge(s.plan)} • ${esc(s.billing)} • Expiry ${esc(s.expiryDate||'—')}`;
+  document.getElementById('modalPlan').value=s.plan||'STANDARD';
+  document.getElementById('modalBilling').value=s.billing||'YEARLY';
+  document.getElementById('modalDuration').value='auto';
+  document.getElementById('modalAmount').value='';
+  document.getElementById('approveModal').style.display='flex';
+  updateSubPreview();
+  document.getElementById('modalPlan').onchange=updateSubPreview;
+  document.getElementById('modalBilling').onchange=updateSubPreview;
+  document.getElementById('modalDuration').onchange=updateSubPreview;
+}
+function closeApproveModal(){ document.getElementById('approveModal').style.display='none'; APPROVE_SCHOOL_ID=null; }
+async function confirmApprove(){
+  if(!APPROVE_SCHOOL_ID) return;
+  const s=ALL_SCHOOLS.find(x=>x.id===APPROVE_SCHOOL_ID); if(!s) return;
+  const plan=document.getElementById('modalPlan').value;
+  const billing=document.getElementById('modalBilling').value;
+  const duration=document.getElementById('modalDuration').value;
+  let expiry=''; if(duration==='auto'){ const d=new Date(); if(billing==='MONTHLY') d.setDate(d.getDate()+30); else if(billing==='YEARLY') d.setFullYear(d.getFullYear()+1); else d.setDate(d.getDate()+7); expiry=d.toISOString().slice(0,10); } else { const d=new Date(); d.setDate(d.getDate()+parseInt(duration)); expiry=d.toISOString().slice(0,10); }
+  const amount=document.getElementById('modalAmount').value || priceFor(plan,billing).total;
+  const setupPaid=document.getElementById('modalSetupPaid').value;
+  const today=new Date().toISOString().slice(0,10);
+  try{
+    await db.collection('schools').doc(APPROVE_SCHOOL_ID).set({plan, planKey:plan, billing, status:'ACTIVE', expiryDate:expiry, lastPaymentDate:today, lastPaymentAmount:String(amount), setupPaid}, {merge:true});
+    try{ await rtdb.ref('schools/'+APPROVE_SCHOOL_ID+'/info').update({plan, billing, status:'ACTIVE', expiryDate:expiry, lastPaymentDate:today, lastPaymentAmount:String(amount)}); }catch(e){}
+    try{ await rtdb.ref('schools/'+APPROVE_SCHOOL_ID+'/subscription').update({plan, billing, status:'ACTIVE', expiryDate:expiry}); }catch(e){}
+    try{ await db.collection('schools').doc(APPROVE_SCHOOL_ID).collection('subscriptions').add({plan, billing, expiryDate:expiry, amount:String(amount), setupPaid, createdAt:new Date().toISOString(), createdBy:'Vusi'}); }catch(e){}
+    alert(`✅ Approved ${s.schoolName}\nPlan ${plan} • ${billing} • Expiry ${expiry} • R${amount}`);
+    closeApproveModal(); loadAll();
+  }catch(e){ alert('⚠️ Approve failed: '+e.message); }
+}
 function renderExpiring(){
+  const townFilter=document.getElementById('filterTownExpiring')?.value||'';
   let list=ALL_SCHOOLS.filter(s=>{ const dl=daysLeft(s.expiryDate); return dl!==null && dl>=0 && dl<=7 && (s.status||'').toUpperCase()!=='BLOCKED'; });
-  if(list.length===0){ document.getElementById('expiringList').innerHTML='<div class="ok">✅ No schools expiring in 7 days.</div>'; return; }
+  if(townFilter) list=list.filter(s=>normTown(s.town)===townFilter);
+  if(list.length===0){ document.getElementById('expiringList').innerHTML='<div class="ok">✅ No schools expiring in 7 days'+(townFilter?` in ${displayTown(townFilter)}`:'')+'.</div>'; return; }
   let html='';
   list.forEach(s=>{
     const dl=daysLeft(s.expiryDate);
-    const msg=`Hello ${s.principalName||'Principal'}, your Makhanani subscription ends in ${dl} days (${s.expiryDate}). Renew: STANDARD Yearly R7 500 (no setup again, only yearly fee). Reply YES to renew. Vusi — 078 023 3263`;
+    const msg=`Hello ${s.principalName||'Principal'}, your Makhanani subscription ends in ${dl} days (${s.expiryDate}). Renew: STANDARD Yearly R7 500 (no setup again). Reply YES to renew. Vusi — 078 023 3263`;
     const phoneClean=(s.principalPhone||'').replace(/\D/g,'');
     const waLink = phoneClean ? `https://wa.me/27${phoneClean.replace(/^0/,'')}?text=${encodeURIComponent(msg)}` : `https://wa.me/27780233263?text=${encodeURIComponent(msg)}`;
-    html+=`<div class="goldBox"><b>${esc(s.schoolName)}</b> — ${esc(s.principalName)} — ${esc(s.principalPhone||'No phone')}<br>Plan ${esc(s.plan)} • Expiry ${esc(s.expiryDate)} • <b>${dl} days left</b><br><button class="btn btn-green" onclick="window.open('${waLink}','_blank')">📱 WhatsApp Renewal →</button> <button class="btn btn-blue" onclick="approveSchool('${esc(s.id)}')">✅ Approve Renewal</button></div>`;
+    html+=`<div class="goldBox"><b>${esc(s.schoolName)}</b> — 🏘️ ${displayTown(s.town)} • ${esc(s.province||'')} — ${esc(s.principalName)} — ${esc(s.principalPhone||'No phone')}<br>Plan ${esc(s.plan)} • Expiry ${esc(s.expiryDate)} • <b>${dl} days left</b><br><button class="btn btn-green" onclick="window.open('${waLink}','_blank')">📱 WhatsApp Renewal →</button> <button class="btn btn-blue" onclick="openApproveModal('${esc(s.id)}')">💰 Add Subscription</button></div>`;
   });
   document.getElementById('expiringList').innerHTML=html;
 }
 function renderExpired(){
+  const townFilter=document.getElementById('filterTownExpired')?.value||'';
   let list=ALL_SCHOOLS.filter(s=> (s.status||'').toUpperCase()==='BLOCKED' || (daysLeft(s.expiryDate)!==null && daysLeft(s.expiryDate)<0));
-  if(list.length===0){ document.getElementById('expiredList').innerHTML='<div class="ok">✅ No expired / blocked schools.</div>'; return; }
+  if(townFilter) list=list.filter(s=>normTown(s.town)===townFilter);
+  if(list.length===0){ document.getElementById('expiredList').innerHTML='<div class="ok">✅ No expired / blocked schools'+(townFilter?` in ${displayTown(townFilter)}`:'')+'.</div>'; return; }
   let html='';
   list.forEach(s=>{
     const msg=`Hello ${s.principalName||'Principal'}, your Makhanani subscription expired on ${s.expiryDate}. Your data is safe. Pay to reactivate — STANDARD Yearly R12 000 or Monthly R4 500 + R500/mo. Reply YES and I will send details. Vusi — 078 023 3263`;
     const phoneClean=(s.principalPhone||'').replace(/\D/g,'');
     const waLink = phoneClean ? `https://wa.me/27${phoneClean.replace(/^0/,'')}?text=${encodeURIComponent(msg)}` : `https://wa.me/27780233263?text=${encodeURIComponent(msg)}`;
-    html+=`<div class="warn"><b>${esc(s.schoolName)}</b> — ${esc(s.principalName)} — ${esc(s.principalPhone||'No phone')}<br>Plan ${esc(s.plan)} • Expiry ${esc(s.expiryDate)} • Status ${esc(s.status)}<br><button class="btn btn-green" onclick="window.open('${waLink}','_blank')">📱 WhatsApp Expired →</button> <button class="btn btn-blue" onclick="approveSchool('${esc(s.id)}')">✅ Approve After Payment</button> <button class="btn btn-grey" onclick="unblockSchool('${esc(s.id)}')">🔓 Unblock</button></div>`;
+    html+=`<div class="warn"><b>${esc(s.schoolName)}</b> — 🏘️ ${displayTown(s.town)} • ${esc(s.province||'')} — ${esc(s.principalName)} — ${esc(s.principalPhone||'No phone')}<br>Plan ${esc(s.plan)} • Expiry ${esc(s.expiryDate)} • Status ${esc(s.status)}<br><button class="btn btn-green" onclick="window.open('${waLink}','_blank')">📱 WhatsApp Expired →</button> <button class="btn btn-blue" onclick="openApproveModal('${esc(s.id)}')">💰 Add Subscription</button> <button class="btn btn-grey" onclick="unblockSchool('${esc(s.id)}')">🔓 Unblock</button></div>`;
   });
   document.getElementById('expiredList').innerHTML=html;
 }
@@ -384,90 +701,75 @@ function renderRevenue(){
   });
   html+=`<tr><td><b>TOTAL</b></td><td><b>${ALL_SCHOOLS.length}</b></td><td><b>R${totalY1.toLocaleString()}</b></td><td><b>R${totalRen.toLocaleString()}</b></td></tr>`;
   document.getElementById('revenueTable').innerHTML=html;
-  document.getElementById('revenueBox').innerHTML=`<div class="goldBox"><b>Estimated Year 1 Value (if all paid Yearly): R${totalY1.toLocaleString()}</b><br><b>Estimated Renewal / Year: R${totalRen.toLocaleString()}</b><br>Actual cash may differ if schools pay Monthly. Check bank + Last Payment in table.</div>`;
-}
-async function approveSchool(schoolId){
-  const s=ALL_SCHOOLS.find(x=>x.id===schoolId); if(!s) return;
-  const plan=prompt(`Approve ${s.schoolName}\n\nPlan? (DEMO / STARTER / STANDARD / PREMIUM)`, s.plan||'STANDARD');
-  if(!plan) return;
-  const billing=prompt(`Billing for ${s.schoolName}?\n\nMONTHLY or YEARLY or FREE`, s.billing||'YEARLY');
-  if(!billing) return;
-  let expiry='';
-  const b=(billing||'').toUpperCase();
-  if(b==='MONTHLY'){ const d=new Date(); d.setDate(d.getDate()+30); expiry=d.toISOString().slice(0,10); }
-  else if(b==='YEARLY'){ const d=new Date(); d.setFullYear(d.getFullYear()+1); expiry=d.toISOString().slice(0,10); }
-  else if(b==='FREE'){ const d=new Date(); d.setDate(d.getDate()+7); expiry=d.toISOString().slice(0,10); }
-  else { expiry=prompt('Expiry Date? (YYYY-MM-DD)', s.expiryDate||''); if(!expiry) return; }
-  const amount=prompt(`Amount Paid? (e.g. 12000 for STANDARD Yearly, 4500 for Setup only, 0 if not paid yet)`, '');
-  const today=new Date().toISOString().slice(0,10);
-  try{
-    await db.collection('schools').doc(schoolId).set({plan:plan.toUpperCase(), planKey:plan.toUpperCase(), billing:b, status:'ACTIVE', expiryDate:expiry, lastPaymentDate: today, lastPaymentAmount: amount||'', setupPaid:'YES'}, {merge:true});
-    try{ await rtdb.ref('schools/'+schoolId+'/info').update({plan:plan.toUpperCase(), billing:b, status:'ACTIVE', expiryDate:expiry, lastPaymentDate:today, lastPaymentAmount:amount||''}); }catch(e){}
-    try{ await rtdb.ref('schools/'+schoolId+'/subscription').update({plan:plan.toUpperCase(), billing:b, status:'ACTIVE', expiryDate:expiry}); }catch(e){}
-    alert(`✅ Approved ${s.schoolName}\nPlan ${plan.toUpperCase()} • ${b} • Expiry ${expiry}\n\nNow WhatsApp Principal: "✅ Payment received — Active until ${expiry}"`);
-    loadAll();
-  }catch(e){ alert('⚠️ Approve failed: '+e.message); }
+  document.getElementById('revenueBox').innerHTML=`<div class="goldBox"><b>Estimated Year 1 Value: R${totalY1.toLocaleString()}</b><br><b>Estimated Renewal / Year: R${totalRen.toLocaleString()}</b></div>`;
+  // Revenue by Town
+  const townRev={};
+  ALL_SCHOOLS.forEach(s=>{
+    const t=normTown(s.town)||'NO TOWN';
+    const p=(s.plan||'DEMO').toUpperCase();
+    if(!townRev[t]) townRev[t]={count:0, y1:0, ren:0};
+    townRev[t].count++;
+    if((s.status||'').toUpperCase()!=='BLOCKED' && daysLeft(s.expiryDate)!==null && daysLeft(s.expiryDate)>=0){ townRev[t].y1+=priceY1[p]||0; townRev[t].ren+=priceRen[p]||0; }
+  });
+  const sortedTowns=Object.entries(townRev).sort((a,b)=>b[1].y1-a[1].y1);
+  if(sortedTowns.length>0){
+    let th='<h3>💰 Revenue By Town</h3><table><tr><th>Town</th><th>Schools</th><th>Year 1 Value</th><th>Renewal / Year</th></tr>';
+    sortedTowns.forEach(([t,v])=>{ th+=`<tr><td><b>🏘️ ${t==='NO TOWN'?'— No Town —':displayTown(t)}</b></td><td>${v.count}</td><td>R${v.y1.toLocaleString()}</td><td>R${v.ren.toLocaleString()}</td></tr>`; });
+    th+='</table>';
+    document.getElementById('revenueByTown').innerHTML=th;
+  } else document.getElementById('revenueByTown').innerHTML='';
 }
 async function extendSchool(schoolId){
   const s=ALL_SCHOOLS.find(x=>x.id===schoolId); if(!s) return;
-  if(!confirm(`Extend ${s.schoolName} +7 days?\nCurrent expiry: ${s.expiryDate}\nNew expiry will be +7 days.`)) return;
-  const cur=s.expiryDate ? new Date(s.expiryDate) : new Date();
-  cur.setDate(cur.getDate()+7);
+  if(!confirm(`Extend ${s.schoolName} +7 days?\nCurrent expiry: ${s.expiryDate}`)) return;
+  const cur=s.expiryDate ? new Date(s.expiryDate) : new Date(); cur.setDate(cur.getDate()+7);
   const expiry=cur.toISOString().slice(0,10);
   try{
     await db.collection('schools').doc(schoolId).set({expiryDate:expiry, status:'ACTIVE'}, {merge:true});
     try{ await rtdb.ref('schools/'+schoolId+'/info').update({expiryDate:expiry, status:'ACTIVE'}); }catch(e){}
     try{ await rtdb.ref('schools/'+schoolId+'/subscription').update({expiryDate:expiry, status:'ACTIVE'}); }catch(e){}
-    alert(`✅ Extended ${s.schoolName} to ${expiry}`);
-    loadAll();
+    alert(`✅ Extended ${s.schoolName} to ${expiry}`); loadAll();
   }catch(e){ alert('⚠️ Extend failed: '+e.message); }
 }
 async function blockSchool(schoolId){
   const s=ALL_SCHOOLS.find(x=>x.id===schoolId); if(!s) return;
-  if(!confirm(`🚫 Block ${s.schoolName}?\n\nLogin will block for whole school.\nUse when not paying + no grace, or abuse.`)) return;
+  if(!confirm(`🚫 Block ${s.schoolName}?`)) return;
   try{
     await db.collection('schools').doc(schoolId).set({status:'BLOCKED'}, {merge:true});
     try{ await rtdb.ref('schools/'+schoolId+'/info').update({status:'BLOCKED'}); }catch(e){}
     try{ await rtdb.ref('schools/'+schoolId+'/subscription').update({status:'BLOCKED'}); }catch(e){}
-    alert(`🚫 Blocked ${s.schoolName}`);
-    loadAll();
+    alert(`🚫 Blocked ${s.schoolName}`); loadAll();
   }catch(e){ alert('⚠️ Block failed: '+e.message); }
 }
 async function unblockSchool(schoolId){
   const s=ALL_SCHOOLS.find(x=>x.id===schoolId); if(!s) return;
-  if(!confirm(`🔓 Unblock ${s.schoolName}?\n\nStatus will become ACTIVE. Make sure they paid, or use Approve to set new expiry.`)) return;
+  if(!confirm(`🔓 Unblock ${s.schoolName}?`)) return;
   try{
     await db.collection('schools').doc(schoolId).set({status:'ACTIVE'}, {merge:true});
     try{ await rtdb.ref('schools/'+schoolId+'/info').update({status:'ACTIVE'}); }catch(e){}
     try{ await rtdb.ref('schools/'+schoolId+'/subscription').update({status:'ACTIVE'}); }catch(e){}
-    alert(`✅ Unblocked ${s.schoolName}`);
-    loadAll();
+    alert(`✅ Unblocked ${s.schoolName}`); loadAll();
   }catch(e){ alert('⚠️ Unblock failed: '+e.message); }
 }
 async function resetPrincipalPw(schoolId, principalEmail){
   if(!principalEmail){ alert('⚠️ No Principal Email for this school.'); return; }
-  if(!confirm(`🔑 Reset Principal password to 1234?\n\nSchool: ${schoolId}\nEmail: ${principalEmail}\n\nPrincipal can login with 1234, then change it.`)) return;
+  if(!confirm(`🔑 Reset Principal password to 1234?\n\nSchool: ${schoolId}\nEmail: ${principalEmail}`)) return;
   const docId=principalEmail.replace(/[@.]/g,'_');
   try{
     await db.collection('schools').doc(schoolId).collection('users').doc(docId).set({password:'1234', pin:'1234'}, {merge:true});
     try{ await rtdb.ref('schools/'+schoolId+'/users/'+docId).update({password:'1234', pin:'1234'}); }catch(e){}
-    alert(`✅ Reset to 1234 for ${principalEmail}\n\nWhatsApp Principal: "Your password is now 1234. Login and change it in Profile."`);
+    alert(`✅ Reset to 1234 for ${principalEmail}`);
   }catch(e){ alert('⚠️ Reset failed: '+e.message); }
 }
 async function deleteSchool(schoolId, schoolName){
-  if(!confirm(`🗑️ DELETE ${schoolName}?\n\nThis deletes school + users. IRREVERSIBLE.\nOnly if fake / duplicate. Export first if real school.`)) return;
+  if(!confirm(`🗑️ DELETE ${schoolName}?\n\nIrreversible. Only fake / duplicate.`)) return;
   const confirm2=prompt(`Type DELETE to confirm deleting ${schoolName}`, '');
   if(confirm2!=='DELETE'){ alert('Cancelled.'); return; }
   try{
-    // Delete users subcollection (best effort)
-    try{
-      const us=await db.collection('schools').doc(schoolId).collection('users').get();
-      for(const d of us.docs){ await db.collection('schools').doc(schoolId).collection('users').doc(d.id).delete(); }
-    }catch(e){}
+    try{ const us=await db.collection('schools').doc(schoolId).collection('users').get(); for(const d of us.docs){ await db.collection('schools').doc(schoolId).collection('users').doc(d.id).delete(); } }catch(e){}
     await db.collection('schools').doc(schoolId).delete();
     try{ await rtdb.ref('schools/'+schoolId).remove(); }catch(e){}
-    alert(`🗑️ Deleted ${schoolName}`);
-    loadAll();
+    alert(`🗑️ Deleted ${schoolName}`); loadAll();
   }catch(e){ alert('⚠️ Delete failed: '+e.message); }
 }
 async function addSchoolManually(){
@@ -476,6 +778,8 @@ async function addSchoolManually(){
   const email=document.getElementById('addEmail').value.trim().toLowerCase();
   const password=document.getElementById('addPass').value.trim();
   const phone=document.getElementById('addPhone').value.trim();
+  const town=document.getElementById('addTown').value.trim();
+  const province=document.getElementById('addProvince').value;
   const plan=document.getElementById('addPlan').value;
   const billing=document.getElementById('addBilling').value;
   const setupPaid=document.getElementById('addSetupPaid').value;
@@ -483,37 +787,42 @@ async function addSchoolManually(){
   const msg=document.getElementById('addMsg');
   if(!schoolName || !name || !email || !password){ msg.innerHTML='<div class="warn">⚠️ Fill School Name + Principal Name + Email + Password.</div>'; return; }
   if(password.length<6){ msg.innerHTML='<div class="warn">⚠️ Password min 6.</div>'; return; }
-  if(!expiry){
-    const d=new Date();
-    if(plan==='DEMO' || billing==='FREE') d.setDate(d.getDate()+7);
-    else if(billing==='MONTHLY') d.setDate(d.getDate()+30);
-    else d.setFullYear(d.getFullYear()+1);
-    expiry=d.toISOString().slice(0,10);
-  }
+  if(!expiry){ const d=new Date(); if(plan==='DEMO' || billing==='FREE') d.setDate(d.getDate()+7); else if(billing==='MONTHLY') d.setDate(d.getDate()+30); else d.setFullYear(d.getFullYear()+1); expiry=d.toISOString().slice(0,10); }
   const schoolId=schoolName.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
   const prefix=getPrefix(schoolName);
   const principal={name, email, password, pin:password, role:'PRINCIPAL', subject:'', className:'', schoolId, schoolName, phone, status:'ACTIVE', plan, planKey:plan, billing, expiryDate:expiry, setupPaid, createdAt:new Date().toISOString()};
   msg.innerHTML='<div class="info">⏳ Creating school...</div>';
   try{
     await db.collection('schools').doc(schoolId).collection('users').doc(email.replace(/[@.]/g,'_')).set(principal);
-    await db.collection('schools').doc(schoolId).set({schoolName, schoolId, prefix, principalName:name, principalEmail:email, principalPhone:phone, plan, planKey:plan, billing, status:'ACTIVE', expiryDate:expiry, setupPaid, createdAt:new Date().toISOString()}, {merge:true});
+    await db.collection('schools').doc(schoolId).set({schoolName, schoolId, prefix, principalName:name, principalEmail:email, principalPhone:phone, plan, planKey:plan, billing, status:'ACTIVE', expiryDate:expiry, setupPaid, town, province, createdAt:new Date().toISOString()}, {merge:true});
     try{ await rtdb.ref('schools/'+schoolId+'/users/'+email.replace(/[@.]/g,'_')).set(principal); }catch(e){}
-    try{ await rtdb.ref('schools/'+schoolId+'/info').set({schoolName, schoolId, prefix, principalName:name, principalEmail:email, principalPhone:phone, plan, billing, status:'ACTIVE', expiryDate:expiry, setupPaid}); }catch(e){}
+    try{ await rtdb.ref('schools/'+schoolId+'/info').set({schoolName, schoolId, prefix, principalName:name, principalEmail:email, principalPhone:phone, plan, billing, status:'ACTIVE', expiryDate:expiry, setupPaid, town, province}); }catch(e){}
     try{ await rtdb.ref('schools/'+schoolId+'/subscription').set({plan, billing, status:'ACTIVE', expiryDate:expiry}); }catch(e){}
-    msg.innerHTML=`<div class="ok">✅ Created: <b>${schoolName}</b><br>Prefix: <b>${prefix}</b> • Plan ${plan} • ${billing} • Expiry ${expiry}<br>Login: ${email} / ${password}<br><br>Now WhatsApp Principal with login + training date.</div>`;
-    document.getElementById('addSchool').value=''; document.getElementById('addName').value=''; document.getElementById('addEmail').value=''; document.getElementById('addPass').value=''; document.getElementById('addPhone').value='';
+    msg.innerHTML=`<div class="ok">✅ Created: <b>${schoolName}</b><br>🏘️ Town: <b>${town||'—'}</b> • Province: ${province||'—'}<br>Prefix: <b>${prefix}</b> • Plan ${plan} • ${billing} • Expiry ${expiry}<br>Login: ${email} / ${password}</div>`;
+    ['addSchool','addName','addEmail','addPass','addPhone','addTown'].forEach(id=>document.getElementById(id).value='');
     loadAll();
   }catch(e){ msg.innerHTML='<div class="warn">⚠️ Create failed: '+esc(e.message)+'</div>'; }
 }
 function exportCSV(){
   if(ALL_SCHOOLS.length===0){ alert('No schools to export. Click Refresh first.'); return; }
-  let csv='School Name,Prefix,School ID,Principal Name,Principal Email,Principal Phone,Plan,Billing,Status,Expiry Date,Days Left,Users Count,Last Payment Date,Last Payment Amount,Setup Paid,Created At\n';
+  let csv='School Name,Prefix,School ID,EMIS,Town,Province,Principal Name,Principal Email,Principal Phone,Plan,Billing,Status,Expiry Date,Days Left,Users Count,Last Payment Date,Last Payment Amount,Setup Paid,Created At\n';
   ALL_SCHOOLS.forEach(s=>{
-    const row=[s.schoolName,s.prefix,s.id,s.principalName,s.principalEmail,s.principalPhone,s.plan,s.billing,s.status,s.expiryDate,daysLeft(s.expiryDate),s.usersCount,s.lastPaymentDate,s.lastPaymentAmount,s.setupPaid,s.createdAt];
+    const row=[s.schoolName,s.prefix,s.id,s.emis,s.town,s.province,s.principalName,s.principalEmail,s.principalPhone,s.plan,s.billing,s.status,s.expiryDate,daysLeft(s.expiryDate),s.usersCount,s.lastPaymentDate,s.lastPaymentAmount,s.setupPaid,s.createdAt];
     csv+=row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')+'\n';
   });
   const blob=new Blob([csv], {type:'text/csv'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='makhanani_schools_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+function exportVisibleCSV(){
+  const list=getFilteredSchools();
+  if(list.length===0){ alert('No visible schools to export.'); return; }
+  let csv='School Name,Prefix,School ID,EMIS,Town,Province,Principal Name,Principal Email,Principal Phone,Plan,Billing,Status,Expiry Date,Days Left,Users Count,Last Payment Date,Last Payment Amount\n';
+  list.forEach(s=>{
+    const row=[s.schoolName,s.prefix,s.id,s.emis,s.town,s.province,s.principalName,s.principalEmail,s.principalPhone,s.plan,s.billing,s.status,s.expiryDate,daysLeft(s.expiryDate),s.usersCount,s.lastPaymentDate,s.lastPaymentAmount];
+    csv+=row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')+'\n';
+  });
+  const blob=new Blob([csv], {type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='makhanani_schools_filtered_'+(CURRENT_TOWN||'all')+'_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
 }
 window.onload=loadAll;
 </script>
