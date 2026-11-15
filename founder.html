@@ -2,219 +2,306 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Founder Manual — PRIVATE</title><meta name="theme-color" content="#0a1f4d">
+<title>Makhanani LTSM — Founder — PRIVATE</title><meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const rtdb = firebase.database();
+</script>
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#111827;color:#111}
 header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;line-height:1.6;font-size:13px}
 header img{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;display:block;margin:0 auto 10px}
-main{max-width:950px;margin:auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+main{max-width:1100px;margin:auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}h3{color:#0a1f4d;margin:14px 0 6px;font-size:15px}
 p,li{font-size:14px;line-height:1.6}ul,ol{padding-left:20px}li{margin-bottom:6px}
-.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
+.btn{padding:11px 14px;border:none;border-radius:8px;font-weight:900;font-size:13px;cursor:pointer;margin-top:8px}
 .btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}
+.btn-full{width:100%}.btn-small{padding:6px 9px;font-size:11px;margin:2px}
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
 .info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
 .goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:10px;line-height:1.6;margin-top:10px}
 .topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
-.secret{background:#111827;color:#fff;padding:12px;border-radius:10px;font-size:13px;line-height:1.7;margin-top:10px}
-.secret b{color:#fde68a}.small{font-size:12px;color:#64748b}.step{border-left:4px solid #d4af37;padding-left:12px;margin:10px 0}
 .kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
-input,textarea,select{width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px}label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:10px}
-@media print{.btn,.topnav{display:none!important}.card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}}
+.kpi .red b{color:#dc2626}.kpi .green b{color:#059669}.kpi .orange b{color:#d97706}
+input,select,textarea{width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px}label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:10px}
+.filterRow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}
+.badge-green{background:#dcfce7;color:#166534}.badge-red{background:#fee2e2;color:#991b1b}.badge-orange{background:#fef3c7;color:#92400e}.badge-blue{background:#dbeafe;color:#1e40af}.badge-grey{background:#e2e8f0;color:#334155}
+.small{font-size:12px;color:#64748b}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{padding:10px 14px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
+.townChips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.townChips button{padding:7px 11px;border:2px solid #0a1f4d;background:#fff;color:#0a1f4d;border-radius:20px;font-weight:900;font-size:11px;cursor:pointer}
+.townChips button.active{background:#0a1f4d;color:#fff}
+.townChips button.clear{background:#fee2e2;border-color:#dc2626;color:#991b1b}
+@media(max-width:700px){.kpi{grid-template-columns:1fr 1fr}.filterRow{grid-template-columns:1fr 1fr}table{font-size:12px}}
+@media print{.btn,.topnav,.tabs{display:none!important}.card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}}
 </style>
 </head>
 <body>
 <header>
 <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
-<h1>👑 Makhanani LTSM — Founder Manual — PRIVATE</h1>
-<p><b>For Vusi Chauke Only — Do NOT Send This To Schools</b><br>Xintimani Group • 078 023 3263<br>How To Sell, Setup, Support, Get Paid, Grow</p>
-<div class="topnav"><a href="index.html">🏠 Login</a><a href="schools.html">🏫 Schools Admin</a><a href="marketing.html">💰 Marketing</a><a href="training.html">🎓 Training</a><a href="manual.html">📖 User Manual</a></div>
+<h1>👑 Makhanani LTSM — Founder — PRIVATE</h1>
+<p><b>For Vusi Chauke Only — Do NOT Send To Schools</b><br>Xintimani Group • 078 023 3263<br>Owner View • All Schools • All Money • Town Filter</p>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="home.html">🏠 Home</a><a href="super_admin.html">👑 Super Admin</a><a href="dbe_upload.html">🏫 Upload DBE</a><a href="financials.html">💰 Financials</a><a href="schools.html">🏫 Schools Admin</a></div>
 </header>
 <main>
 
 <div class="card">
-<div class="warn"><b>⚠️ PRIVATE:</b> This page has your business secrets — Prices, costs, sales scripts, admin logins, what to do when school doesn't pay. <b>Do NOT send link to principals.</b> Send them <b>marketing.html</b> instead. If a principal opens this, they will see your margins.</div>
-<button class="btn btn-gold" onclick="window.print()">🖨️ Print Founder Manual (Keep In Office)</button>
+<div class="warn"><b>⚠️ PRIVATE — FOUNDER ONLY:</b> This is your owner dashboard. Shows ALL schools, ALL money, ALL towns. <b>Do NOT send to schools, staff, or anyone.</b></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh All Data</button>
+<button class="btn btn-green" onclick="exportCSV()">📥 Export All CSV</button>
+<button class="btn btn-gold" onclick="exportVisibleCSV()">📥 Export Visible (Filtered) CSV</button>
+<button class="btn btn-gold" onclick="window.print()">🖨️ Print</button>
+<button class="btn btn-grey" onclick="logout()">🚪 Logout</button>
+</div>
+<div id="authMsg"></div>
 </div>
 
 <div class="card">
-<h2>📑 Contents</h2>
-<ol>
-<li><a href="#model">Business Model — How You Make Money</a></li>
-<li><a href="#costs">Costs — What You Pay</a></li>
-<li><a href="#sales">Sales Process — Lead To Paid</a></li>
-<li><a href="#setup">Setup New School — Admin Checklist</a></li>
-<li><a href="#support">Support — Common Problems</a></li>
-<li><a href="#money">Money — Collect + Track + Renewals</a></li>
-<li><a href="#growth">Growth — How To Get 20 Schools</a></li>
-<li><a href="#admin">Admin Logins — Keep Safe</a></li>
-<li><a href="#routine">Weekly Founder Routine</a></li>
-<li><a href="#calculator">Calculator — Your Revenue</a></li>
-<li><a href="#launch">Launch Checklist</a></li>
-</ol>
+<h2>📊 Founder At A Glance — Today</h2>
+<div class="kpi">
+<div><b id="kTotal">—</b><span>Total Schools</span></div>
+<div class="green"><b id="kActive">—</b><span>Active / Paid</span></div>
+<div class="red"><b id="kExpired">—</b><span>Expired / Blocked</span></div>
+<div class="orange"><b id="kTrial">—</b><span>DEMO Trial</span></div>
+<div><b id="kRevenue">—</b><span>Est. Year 1 Revenue</span></div>
+<div class="green"><b id="kRenewal">—</b><span>Est. Renewal / Year</span></div>
+<div><b id="kExpiring">—</b><span>Expiring in 7 Days</span></div>
+<div><b id="kNew7">—</b><span>New in Last 7 Days</span></div>
+</div>
+<div id="alertBox"></div>
+<div id="townKpiBox"></div>
 </div>
 
-<div class="card" id="model">
-<h2>1. Business Model — How You Make Money</h2>
-<table><tr><th>Plan</th><th>Setup (Once)</th><th>Monthly</th><th>Once-off / Year</th><th>First Year Total</th><th>Year 2+ / Year</th></tr>
-<tr><td><b>DEMO</b><br>7 days free trial</td><td>FREE</td><td>FREE</td><td>FREE</td><td>R0</td><td>R0 — Must convert in 7 days</td></tr>
-<tr><td><b>STARTER</b><br>1 school</td><td>R3 000</td><td>R350 / month</td><td>R4 500 / year</td><td>Monthly: R3 000 + (R350×12) = <b>R7 200</b><br>Yearly: R3 000 + R4 500 = <b>R7 500</b></td><td>Monthly: R4 200/yr<br>Yearly: R4 500/yr</td></tr>
-<tr><td><b>STANDARD ⭐</b><br>Most popular</td><td>R4 500</td><td>R500 / month</td><td>R7 500 / year</td><td>Monthly: R4 500 + (R500×12) = <b>R10 500</b><br>Yearly: R4 500 + R7 500 = <b>R12 000</b></td><td>Monthly: R6 000/yr<br>Yearly: R7 500/yr</td></tr>
-<tr><td><b>PREMIUM</b><br>Premium</td><td>R5 500</td><td>R600 / month</td><td>R9 000 / year</td><td>Monthly: R5 500 + (R600×12) = <b>R12 700</b><br>Yearly: R5 500 + R9 000 = <b>R14 500</b></td><td>Monthly: R7 200/yr<br>Yearly: R9 000/yr</td></tr>
-</table>
-<div class="goldBox"><b>Push STANDARD Yearly.</b> Best for school (saves vs monthly) + best for you (R12 000 upfront, less chasing).<br><b>Push Yearly over Monthly:</b> Monthly = Chasing R350–R600 every month. Yearly = 1 payment, 1 approval, done for year.<br><b>Never give Setup free</b> except DEMO. Setup is your work: school setup + training + first import.</div>
-<div class="kpi" style="margin-top:10px">
-<div><b>10 Schools</b><span>STANDARD Yearly = R120 000 Year 1</span></div>
-<div><b>10 Schools</b><span>Year 2+ = R75 000 / year</span></div>
-<div><b>20 Schools</b><span>STANDARD Yearly = R240 000 Year 1</span></div>
-<div><b>20 Schools</b><span>Year 2+ = R150 000 / year</span></div>
+<div class="card">
+<div class="tabs">
+<button id="tabBtn-schools" class="active" onclick="showTab('schools')">🏫 All Schools + Town Filter</button>
+<button id="tabBtn-towns" onclick="showTab('towns')">🏘️ Revenue By Town</button>
+<button id="tabBtn-expiring" onclick="showTab('expiring')">⏰ Expiring Soon</button>
+<button id="tabBtn-expired" onclick="showTab('expired')">⛔ Expired / Blocked</button>
+<button id="tabBtn-goals" onclick="showTab('goals')">🎯 Goals</button>
+</div>
+
+<div id="tab-schools">
+<div class="filterRow">
+<div><label>🔍 Search School / Principal / Town</label><input id="searchBox" placeholder="e.g. THUTO, Soweto" oninput="renderSchools()"></div>
+<div><label>📍 Filter Province — Dropdown</label><select id="filterProvince" onchange="renderSchools()"><option value="">All Provinces</option><option>GAUTENG</option><option>LIMPOPO</option><option>MPUMALANGA</option><option>NORTH WEST</option><option>FREE STATE</option><option>KWA-ZULU NATAL</option><option>EASTERN CAPE</option><option>WESTERN CAPE</option><option>NORTHERN CAPE</option></select></div>
+<div><label>🏘️ Filter TOWN — Dropdown (Auto)</label><select id="filterTown" onchange="setTownFilter(this.value)"><option value="">All Towns</option></select></div>
+<div><label>Filter By Plan — Dropdown</label><select id="filterPlan" onchange="renderSchools()"><option value="">All Plans</option><option value="DEMO">🆓 DEMO</option><option value="STARTER">STARTER</option><option value="STANDARD">STANDARD ⭐</option><option value="PREMIUM">PREMIUM</option></select></div>
+</div>
+<div class="goldBox" style="margin-top:10px"><b>🏘️ Quick Town Chips — Tap a town:</b></div>
+<div id="townChips" class="townChips"></div>
+<div id="filterSummary" class="info" style="display:none"></div>
+<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+<button class="btn btn-grey" onclick="clearAllFilters()">✖️ Clear All Filters</button>
+<button class="btn btn-green" onclick="exportVisibleCSV()">📥 Export Visible CSV</button>
+</div>
+<div id="schoolsList"></div>
+</div>
+
+<div id="tab-towns" style="display:none">
+<h3>🏘️ Revenue By Town — Where Is Your Money?</h3>
+<p class="small">This shows which town makes you most money. Focus visits on top towns first.</p>
+<div id="revenueByTown"></div>
+<div id="townDetail"></div>
+</div>
+
+<div id="tab-expiring" style="display:none">
+<h3>⏰ Expiring In Next 7 Days</h3>
+<div style="margin-bottom:10px"><label>🏘️ Filter Expiring By Town</label><select id="filterTownExpiring" onchange="renderExpiring()"><option value="">All Towns</option></select></div>
+<div id="expiringList"></div>
+</div>
+
+<div id="tab-expired" style="display:none">
+<h3>⛔ Expired / Blocked</h3>
+<div style="margin-bottom:10px"><label>🏘️ Filter Expired By Town</label><select id="filterTownExpired" onchange="renderExpired()"><option value="">All Towns</option></select></div>
+<div id="expiredList"></div>
+</div>
+
+<div id="tab-goals" style="display:none">
+<h3>🎯 Founder Goals — Set Your Target</h3>
+<label>Target Schools This Year? (e.g. 100)</label><input id="goalSchools" type="number" placeholder="e.g. 100" oninput="localStorage.setItem('makhanani_goal_schools',this.value);renderGoals()">
+<label>Target Revenue This Year? (e.g. 1200000)</label><input id="goalRevenue" type="number" placeholder="e.g. 1200000" oninput="localStorage.setItem('makhanani_goal_revenue',this.value);renderGoals()">
+<label>Target Town? (e.g. Soweto — Focus town)</label><input id="goalTown" placeholder="e.g. Soweto" oninput="localStorage.setItem('makhanani_goal_town',this.value);renderGoals()">
+<div id="goalsBox"></div>
+<div class="goldBox"><b>Example Goal:</b> 100 schools × STANDARD Yearly R12 000 = R1 200 000 Year 1. Renewal Year 2: 100 × R7 500 = R750 000 / year.</div>
 </div>
 </div>
 
-<div class="card" id="costs">
-<h2>2. Costs — What You Pay</h2>
-<table><tr><th>Cost</th><th>Amount</th><th>When</th></tr>
-<tr><td>Firebase (Firestore + RTDB)</td><td>Free tier — Up to ~50 schools small usage. Pay if usage grows (~R200–R500/mo after)</td><td>Monthly</td></tr>
-<tr><td>GitHub Pages (Hosting)</td><td>FREE</td><td>—</td></tr>
-<tr><td>Domain (optional, e.g. makhanani.co.za)</td><td>~R150 / year</td><td>Yearly</td></tr>
-<tr><td>Your time — Setup + Training</td><td>1 day per school</td><td>Per school</td></tr>
-<tr><td>WhatsApp / Data / Transport to school</td><td>Your phone + taxi / petrol</td><td>Per visit</td></tr>
-</table>
-<div class="ok"><b>Margin is high.</b> After setup, system runs itself. Your main work is sales + 1-day training + WhatsApp support.</div>
-</div>
-
-<div class="card" id="sales">
-<h2>3. Sales Process — From Lead To Paid</h2>
-<div class="step"><b>Step 1 — Lead:</b> Principal hears about you / You visit school / WhatsApp / Circuit meeting. Send <b>marketing.html</b> link + <i>"Try DEMO 7 days free"</i>.</div>
-<div class="step"><b>Step 2 — Demo:</b> Principal registers in <b>index.html</b> → Gets DEMO 7 days. Or you create Demo in <b>schools.html</b> → Add School → DEMO.</div>
-<div class="step"><b>Step 3 — Day 2:</b> WhatsApp: <i>"How is demo going? Did you add 1 book + 1 learner?"</i> If no, offer 10-min call.</div>
-<div class="step"><b>Step 4 — Day 5:</b> WhatsApp: <i>"Demo ends in 2 days. Which plan? STANDARD Yearly is most popular — R12 000 first year."</i></div>
-<div class="step"><b>Step 5 — Day 7:</b> If paid → Approve in <b>schools.html</b> → Click ✅ STANDARD Yearly → Send WhatsApp <i>"✅ Payment received — Active until [date]"</i>. If not paid → Login blocks automatically. WhatsApp: <i>"Your demo expired. Pay to reactivate."</i></div>
-<div class="step"><b>Step 6 — Training:</b> Book 1-day training. Use <b>training.html</b> checklist. Get Principal + Librarian + 2 Teachers in room. Use real books.</div>
-<div class="step"><b>Step 7 — After Training:</b> WhatsApp Principal next Monday: <i>"How is % Retrieval? Any problems?"</i></div>
-<div class="goldBox"><b>Sales Scripts — Copy-Paste To WhatsApp:</b><br><br><b>First message:</b><br><i>Hello Principal, I am Vusi from Xintimani Group — Makhanani LTSM. We help schools stop losing books. 7 days free demo, no payment. Can I send you link?</i><br><br><b>After demo (Day 5):</b><br><i>Hello Principal, your demo ends in 2 days. Most schools choose STANDARD — Setup R4 500 + R7 500/year = R12 000 first year. That is less than 40 lost books. Shall I send payment details?</i><br><br><b>Expired:</b><br><i>Hello Principal, your demo expired. Your data is safe. Pay to reactivate — STANDARD Yearly R12 000 or Monthly R4 500 + R500/mo. Reply YES and I will send details.</i><br><br><b>Renewal (7 days before expiry):</b><br><i>Hello Principal, your subscription ends in 7 days ([date]). Renew: STANDARD Yearly R7 500 (no setup again, only yearly fee). Reply YES to renew.</i></div>
-<button class="btn btn-green" onclick="window.open('https://wa.me/27780233263?text='+encodeURIComponent('Hello, I want REQUEST DEMO for Makhanani LTSM.'),'_blank')">📱 Test WhatsApp — Send To Yourself</button>
-</div>
-
-<div class="card" id="setup">
-<h2>4. Setup New School — Admin Checklist (You Do This)</h2>
-<ol>
-<li><b>schools.html</b> → Add School Manually → School Name + Principal Name + Email + Password + Plan + Setup Paid? → CREATE</li>
-<li>Check Prefix: THUTO PRIMARY → TP. If wrong, edit in Firebase.</li>
-<li>Send Principal WhatsApp: Login + Password + Prefix + Plan + Expiry + Training date. Use template below.</li>
-<li>Principal logs in → Adds Teachers → Adds Learners (Bulk) → Adds Books (Quantity) → Prints Barcodes</li>
-<li>Book Training Day — Use <b>training.html</b></li>
-<li>After Training: Get signed checklist (photo) + Get testimonial: <i>"Makhanani helped us..."</i> — Use for next school.</li>
-</ol>
-<div class="goldBox"><b>WhatsApp Template — New School:</b><br><i>Hello [Principal Name], welcome to Makhanani LTSM! 🏫 [School Name]<br>Login: [Email] / Password: [Password]<br>Prefix: [TP] — Books will be TP000001...<br>Plan: [STANDARD Yearly] — Active until [Date]<br>Training: [Date] at [School]<br>Please login today and add 1 teacher to test. Help: Vusi 078 023 3263</i></div>
-<div class="warn"><b>Never give Principal Admin / Super Admin role.</b> Principal = PRINCIPAL only. Admin = You only. If Principal gets Admin, they can see all schools + change prices.</div>
-</div>
-
-<div class="card" id="support">
-<h2>5. Support — How To Handle Common Problems</h2>
-<table><tr><th>Principal Says</th><th>You Do</th></tr>
-<tr><td>Forgot password (Principal)</td><td><b>schools.html</b> → Find school → WhatsApp Principal → You reset in Firebase: Users → Principal → Password = 1234. Or tell Principal to use Reset in Principal page if they can login.</td></tr>
-<tr><td>Forgot password (Teacher)</td><td>Tell Principal: Principal → Teachers → 🔑 Reset 1234. Do NOT do it for them every time — Teach Principal to do it.</td></tr>
-<tr><td>Login blocked — Subscription Expired</td><td>Check <b>schools.html</b> → Expiry date. If paid, click ✅ Approve. If not paid, send payment details. Do NOT extend free unless you decide to give grace (max +7 days).</td></tr>
-<tr><td>Books / Learners deleted by mistake</td><td>Check Firebase Firestore → schools → [school] → books / learners — If deleted, it is gone. Restore from RTDB if RTDB still has it (RTDB mirrors). Teach Librarian: Don't delete, use Edit.</td></tr>
-<tr><td>New subject needed</td><td>Add subject to SUBJECTS list in <b>librarian.html</b>, <b>teachers.html</b>, <b>principal.html</b>, <b>stock.html</b> — Same spelling, ALL CAPS. Commit all files. Tell school to hard refresh (Ctrl+F5).</td></tr>
-<tr><td>Camera not working</td><td>Ask: Chrome or Safari? Allow camera? If still fails, type barcode manually. Don't spend 1 hour — Type is backup.</td></tr>
-<tr><td>Want refund</td><td>Setup is non-refundable (you did work). Monthly / Yearly: Offer to extend +7 days free, or pause. No refund after training done. Put this in writing when they pay.</td></tr>
-<tr><td>Want to cancel</td><td>Ask why. Offer downgrade to STARTER Monthly. If still cancel, Block school in <b>schools.html</b>. Data stays, can reactivate later if they pay.</td></tr>
-<tr><td>Want new feature</td><td>Write it down. Don't promise date. Say: <i>"I will add to list, will tell you when ready."</i> Don't change code for 1 school without thinking if all schools need it.</td></tr>
-</table>
-</div>
-
-<div class="card" id="money">
-<h2>6. Money — How To Collect + Track + Renewals</h2>
+<div class="card">
+<h2>⚡ Founder Quick Decisions</h2>
 <ul>
-<li><b>Payment methods:</b> EFT (bank), Cash (receipt), SnapScan / Yoco (if you have), Capitec Pay? — Pick 2, tell all schools same.</li>
-<li><b>Proof:</b> Principal sends proof on WhatsApp → You check bank → Approve in <b>schools.html</b> → Send <i>"✅ Payment received"</i> WhatsApp.</li>
-<li><b>Track:</b> In <b>schools.html</b> — Last Payment Date + Amount shows per school. Also keep Excel / Notebook: School | Plan | Setup Paid? | Expiry | Amount Paid | Date.</li>
-<li><b>Renewal:</b> 7 days before expiry, WhatsApp Principal: <i>"Your subscription ends in 7 days (date). Renew: STANDARD Yearly R7 500 (after first year, no setup again)."</i></li>
-<li><b>Never:</b> Approve before payment. If you approve before payment, school will use free and delay.</li>
+<li><b>Which town to visit next?</b> Go to Tab <b>Revenue By Town</b> → Top town = Most money. Visit that town first.</li>
+<li><b>Which town has most leads?</b> Go to `dbe_upload.html` → Top Towns → That town has most DBE leads not yet converted.</li>
+<li><b>Which town has most expiring?</b> Tab Expiring Soon → Filter Town → WhatsApp that town's principals today.</li>
 </ul>
-<div class="goldBox"><b>Year 2 Renewal Prices (No Setup Again):</b><br>STARTER Monthly: R350/mo • STARTER Yearly: R4 500/yr<br>STANDARD Monthly: R500/mo • STANDARD Yearly: R7 500/yr<br>PREMIUM Monthly: R600/mo • PREMIUM Yearly: R9 000/yr<br>Tell Principal this at sale: <i>"First year includes setup. After that, only yearly fee."</i></div>
-<h3>Tracker — Copy To Excel / Notebook</h3>
-<table><tr><th>School</th><th>Plan</th><th>Setup Paid?</th><th>Expiry</th><th>Amount Paid</th><th>Date Paid</th><th>Next Renewal</th></tr>
-<tr><td>Example: THUTO PRIMARY</td><td>STANDARD Yearly</td><td>YES R4 500</td><td>2027-01-01</td><td>R12 000</td><td>2026-01-01</td><td>2026-12-25 (7 days before)</td></tr>
-<tr><td>_______________</td><td>_______________</td><td>_______________</td><td>_______________</td><td>_______________</td><td>_______________</td><td>_______________</td></tr>
-<tr><td>_______________</td><td>_______________</td><td>_______________</td><td>_______________</td><td>_______________</td><td>_______________</td><td>_______________</td></tr>
-</table>
-</div>
-
-<div class="card" id="growth">
-<h2>7. Growth — How To Get 20 Schools</h2>
-<ol>
-<li><b>1st school:</b> Your best school — Make it perfect, get testimonial + photos + % Retrieval screenshot.</li>
-<li><b>Circuit meeting:</b> Ask Principal to show Makhanani to other Principals. Offer Principal R500 referral if new school signs? (Your decision)</li>
-<li><b>WhatsApp groups:</b> Principals groups — Post marketing.html + Demo offer.</li>
-<li><b>SGB:</b> Send Principal WhatsApp Report (Principal → Report → WhatsApp) — SGB sees % Retrieval, wants it for their school.</li>
-<li><b>End of year:</b> Best time — Schools lose books in Nov/Dec, panic in Jan. Sell in Nov–Jan.</li>
-<li><b>Don't:</b> Give free forever. Demo 7 days only. If school uses free for 30 days, they will never pay.</li>
-</ol>
-<div class="goldBox"><b>Referral Script:</b><br><i>Hello Principal, if you know another Principal who loses books, send them my number. If they sign STANDARD, I will give you R500 off your next renewal. Thank you!</i></div>
-</div>
-
-<div class="card" id="admin">
-<h2>8. Admin Logins — Keep Safe (Do Not Share)</h2>
-<div class="secret"><b>Your Admin:</b> Use <b>schools.html</b> with Admin account.<br><b>Demo Admin:</b> admin@thuto.co.za / 1234 — <b>Change this in Firebase after first use — Demo is public</b><br><b>Firebase Console:</b> console.firebase.google.com → makhanani-ltsm → Firestore + RTDB<br><b>GitHub:</b> Your repo — Only you commit. If you give GitHub to someone, they can change prices.<br><b>Backup:</b> Every month, export Firestore (Firebase → Export) + Download RTDB JSON. Save on laptop + Google Drive.</div>
-<p class="small">Change demo passwords after launch. If demo logins leak, anyone can login as demo teacher.</p>
-<h3>What Each Role Can See</h3>
-<table><tr><th>Role</th><th>Can See</th></tr><tr><td><b>You — ADMIN / SUPER_ADMIN</b></td><td>All schools in schools.html, all prices, all manuals including Founder</td></tr><tr><td><b>Principal</b></td><td>Only their school, their teachers, their % Retrieval. Cannot see other schools, cannot see Founder.</td></tr><tr><td><b>Librarian / HOD</b></td><td>Only their school. Cannot see schools.html pricing admin.</td></tr><tr><td><b>Teacher</b></td><td>Only my class. Cannot see schools.html, cannot see Founder.</td></tr></table>
-</div>
-
-<div class="card" id="routine">
-<h2>9. Weekly Founder Routine</h2>
-<table><tr><th>Day</th><th>Do (15 min)</th></tr><tr><td><b>Monday</b></td><td>Open <b>schools.html</b> → Check Expired (red) + Trial ending in 3 days → WhatsApp those Principals.</td></tr><tr><td><b>Wednesday</b></td><td>Check WhatsApp support — Any school stuck? Reply within 2 hours.</td></tr><tr><td><b>Friday</b></td><td>Check new leads — Who requested Demo? Follow up.</td></tr><tr><td><b>End of Month</b></td><td>Count: Schools Paid, Revenue, Expired, Demo → Update Excel. Backup Firebase.</td></tr></table>
-</div>
-
-<div class="card" id="calculator">
-<h2>10. Calculator — Your Revenue (Fill In)</h2>
-<label>How Many Schools — STANDARD Yearly? (e.g. 10)</label><input id="calcStandard" type="number" value="10" oninput="calcRevenue()">
-<label>How Many Schools — STARTER Yearly? (e.g. 5)</label><input id="calcStarter" type="number" value="5" oninput="calcRevenue()">
-<label>How Many Schools — PREMIUM Yearly? (e.g. 2)</label><input id="calcPremium" type="number" value="2" oninput="calcRevenue()">
-<label>How Many Schools — Monthly? (Any plan, avg R500/mo)</label><input id="calcMonthly" type="number" value="0" oninput="calcRevenue()">
-<div id="calcResult" class="goldBox"></div>
-<div class="info"><b>How to use:</b> Type numbers above → See Year 1 + Year 2 revenue. Year 1 includes Setup. Year 2+ is recurring only (no setup).</div>
-</div>
-
-<div class="card" id="launch">
-<h2>11. Launch Checklist — Before You Sell</h2>
-<ul>
-<li>☐ Change demo admin password in Firebase (admin@thuto.co.za)</li>
-<li>☐ Test Demo 7 days → Expired → Blocked → Approve → Unblocked</li>
-<li>☐ Test all 4 pricing cards in marketing.html + schools.html + index.html match: DEMO FREE / STARTER R3 000 / STANDARD R4 500 / PREMIUM R5 500</li>
-<li>☐ Print Training Manual (5 copies) + User Manual (5 copies)</li>
-<li>☐ Save Sales Scripts in WhatsApp (Starred messages)</li>
-<li>☐ Create Excel tracker: School | Plan | Setup Paid | Expiry | Amount</li>
-<li>☐ Get 1st paying school — STANDARD Yearly (R12 000)</li>
-<li>☐ Backup Firebase (Export Firestore + Download RTDB)</li>
-</ul>
-<button class="btn btn-gold" onclick="window.print()">🖨️ Print Founder Manual</button>
-<button class="btn btn-blue" onclick="location.href='schools.html'">🏫 Go To Schools Admin →</button>
-<button class="btn btn-green" onclick="location.href='marketing.html'">💰 Go To Marketing →</button>
 </div>
 
 </main>
 <script>
-function calcRevenue(){
-  const std=parseInt(document.getElementById('calcStandard').value)||0;
-  const st=parseInt(document.getElementById('calcStarter').value)||0;
-  const pr=parseInt(document.getElementById('calcPremium').value)||0;
-  const mo=parseInt(document.getElementById('calcMonthly').value)||0;
-  const y1 = std*12000 + st*7500 + pr*14500 + mo*6000;
-  const y2 = std*7500 + st*4500 + pr*9000 + mo*6000;
-  const totalSchools = std+st+pr+mo;
-  document.getElementById('calcResult').innerHTML=`<b>📊 Your Revenue:</b><br>Total Schools: <b>${totalSchools}</b><br>Year 1 (with Setup): <b>R${y1.toLocaleString()}</b><br>Year 2+ (recurring only, no setup): <b>R${y2.toLocaleString()} / year</b><br><br>Breakdown Year 1:<br>STANDARD Yearly ${std} × R12 000 = R${(std*12000).toLocaleString()}<br>STARTER Yearly ${st} × R7 500 = R${(st*7500).toLocaleString()}<br>PREMIUM Yearly ${pr} × R14 500 = R${(pr*14500).toLocaleString()}<br>Monthly ${mo} × R6 000 (avg) = R${(mo*6000).toLocaleString()}`;
+let ALL_SCHOOLS = [];
+let CURRENT_TOWN = '';
+function esc(s){ return String(s||'').replace(/</g,'&lt;'); }
+function normTown(t){ const s=String(t||'').trim().replace(/\s+/g,' '); if(!s) return ''; return s.toUpperCase(); }
+function displayTown(t){ const s=String(t||'').trim(); if(!s) return '—'; return s.toLowerCase().replace(/\b\w/g, c=>c.toUpperCase()); }
+function daysLeft(expiry){ if(!expiry) return null; const today=new Date(); today.setHours(0,0,0,0); const exp=new Date(expiry); exp.setHours(0,0,0,0); return Math.ceil((exp-today)/86400000); }
+function statusBadge(s){ const plan=(s.plan||'DEMO').toUpperCase(); const status=(s.status||'ACTIVE').toUpperCase(); const dl=daysLeft(s.expiryDate||s.expiry); if(status==='BLOCKED') return '<span class="badge badge-red">🚫 BLOCKED</span>'; if(dl!==null && dl<0) return '<span class="badge badge-red">⛔ EXPIRED</span>'; if(plan==='DEMO') return '<span class="badge badge-blue">🆓 DEMO</span>'; if(dl!==null && dl<=7) return '<span class="badge badge-orange">⏰ EXPIRING '+dl+'d</span>'; return '<span class="badge badge-green">✅ ACTIVE</span>'; }
+function planBadge(plan){ const p=(plan||'DEMO').toUpperCase(); if(p==='STANDARD') return '<span class="badge badge-green">STANDARD ⭐</span>'; if(p==='PREMIUM') return '<span class="badge badge-blue">PREMIUM</span>'; if(p==='STARTER') return '<span class="badge badge-grey">STARTER</span>'; return '<span class="badge badge-blue">DEMO</span>'; }
+function showTab(name){ ['schools','towns','expiring','expired','goals'].forEach(t=>{ document.getElementById('tab-'+t).style.display=t===name?'block':'none'; document.getElementById('tabBtn-'+t).classList.toggle('active',t===name); }); if(name==='towns') renderRevenueByTown(); if(name==='expiring') renderExpiring(); if(name==='expired') renderExpired(); if(name==='goals') renderGoals(); }
+function logout(){ localStorage.removeItem('makhanani_user'); location.href='index.html'; }
+async function loadAll(){
+  const msg=document.getElementById('authMsg');
+  try{ const u=JSON.parse(localStorage.getItem('makhanani_user')||'null'); if(!u || !['ADMIN','SUPER_ADMIN'].includes((u.role||'').toUpperCase())){ msg.innerHTML='<div class="warn">⚠️ You must login as <b>ADMIN / SUPER_ADMIN</b> to see this page. <button class="btn btn-blue" onclick="location.href=\'index.html\'">Go To Login →</button><br>Demo Admin: admin@thuto.co.za / 1234</div>'; document.getElementById('schoolsList').innerHTML='<div class="warn">Login as Admin first.</div>'; return; } msg.innerHTML=`<div class="ok">✅ Logged in as <b>${esc(u.name)}</b> — ${esc(u.role)}</div>`; }catch(e){}
+  document.getElementById('schoolsList').innerHTML='<div class="info">⏳ Loading schools...</div>';
+  ALL_SCHOOLS=[];
+  try{ const snap=await db.collection('schools').get(); for(const doc of snap.docs){ const d=doc.data()||{}; let pEmail=d.principalEmail||'', pPhone=d.principalPhone||'', pName=d.principalName||''; let usersCount=0; try{ const us=await db.collection('schools').doc(doc.id).collection('users').get(); usersCount=us.size; us.forEach(ud=>{ const u=ud.data(); if((u.role||'').toUpperCase()==='PRINCIPAL'){ pEmail=u.email||pEmail; pPhone=u.phone||pPhone; pName=u.name||pName; } }); }catch(e){} ALL_SCHOOLS.push({id:doc.id, schoolName:d.schoolName||doc.id, principalName:pName, principalEmail:pEmail, principalPhone:pPhone, plan:d.plan||d.planKey||'DEMO', billing:d.billing||'FREE', status:d.status||'ACTIVE', expiryDate:d.expiryDate||d.expiry||'', lastPaymentDate:d.lastPaymentDate||'', lastPaymentAmount:d.lastPaymentAmount||'', createdAt:d.createdAt||'', usersCount, town:d.town||d.district||d.circuit||'', province:d.province||'', emis:d.emis||''}); } }catch(e){}
+  try{ const rs=await rtdb.ref('schools').once('value'); const rv=rs.val()||{}; for(const sid of Object.keys(rv)){ const info=rv[sid].info||rv[sid].subscription||{}; const existing=ALL_SCHOOLS.find(s=>s.id===sid); if(!existing){ const usersObj=rv[sid].users||{}; let pEmail='', pPhone='', pName=''; Object.values(usersObj).forEach(u=>{ if((u.role||'').toUpperCase()==='PRINCIPAL'){ pEmail=u.email||''; pPhone=u.phone||''; pName=u.name||''; } }); ALL_SCHOOLS.push({id:sid, schoolName:info.schoolName||sid, principalName:pName, principalEmail:pEmail, principalPhone:pPhone, plan:info.plan||'DEMO', billing:info.billing||'FREE', status:info.status||'ACTIVE', expiryDate:info.expiryDate||info.expiry||'', lastPaymentDate:info.lastPaymentDate||'', lastPaymentAmount:info.lastPaymentAmount||'', createdAt:info.createdAt||'', usersCount:Object.keys(usersObj).length, town:info.town||info.district||info.circuit||'', province:info.province||'', emis:info.emis||''}); } else { if(!existing.town) existing.town=info.town||info.district||info.circuit||''; if(!existing.province) existing.province=info.province||''; } } }catch(e){}
+  try{ const leadsSnap=await db.collection('dbe_leads').get(); const leads=leadsSnap.docs.map(d=>d.data()); ALL_SCHOOLS.forEach(s=>{ if(!s.town){ const match=leads.find(l=> (l.emis && s.emis && String(l.emis)===String(s.emis)) || (l.schoolName && s.schoolName && l.schoolName.toUpperCase()===s.schoolName.toUpperCase())); if(match){ s.town=match.town||match.district||match.circuit||''; if(!s.province) s.province=match.province||''; } } }); }catch(e){}
+  updateKPIs(); buildTownFilter(); renderSchools(); renderRevenueByTown(); renderExpiring(); renderExpired(); renderGoals();
+  const gs=localStorage.getItem('makhanani_goal_schools')||''; if(gs) document.getElementById('goalSchools').value=gs;
+  const gr=localStorage.getItem('makhanani_goal_revenue')||''; if(gr) document.getElementById('goalRevenue').value=gr;
+  const gt=localStorage.getItem('makhanani_goal_town')||''; if(gt) document.getElementById('goalTown').value=gt;
 }
-calcRevenue();
+function updateKPIs(){
+  const total=ALL_SCHOOLS.length;
+  const expired=ALL_SCHOOLS.filter(s=> (s.status||'').toUpperCase()==='BLOCKED' || (daysLeft(s.expiryDate)!==null && daysLeft(s.expiryDate)<0) ).length;
+  const trial=ALL_SCHOOLS.filter(s=> (s.plan||'').toUpperCase()==='DEMO').length;
+  const active=total-expired;
+  const expiring=ALL_SCHOOLS.filter(s=>{ const dl=daysLeft(s.expiryDate); return dl!==null && dl>=0 && dl<=7 && (s.status||'').toUpperCase()!=='BLOCKED'; }).length;
+  const now=new Date(); const sevenAgo=new Date(); sevenAgo.setDate(now.getDate()-7);
+  const new7=ALL_SCHOOLS.filter(s=>{ if(!s.createdAt) return false; try{ return new Date(s.createdAt)>=sevenAgo; }catch(e){ return false; } }).length;
+  const priceY1={STARTER:7500, STANDARD:12000, PREMIUM:14500, DEMO:0};
+  const priceRen={STARTER:4500, STANDARD:7500, PREMIUM:9000, DEMO:0};
+  let revY1=0, revRen=0;
+  ALL_SCHOOLS.forEach(s=>{ const p=(s.plan||'DEMO').toUpperCase(); if((s.status||'').toUpperCase()!=='BLOCKED' && daysLeft(s.expiryDate)!==null && daysLeft(s.expiryDate)>=0){ revY1+=priceY1[p]||0; revRen+=priceRen[p]||0; } });
+  document.getElementById('kTotal').textContent=total;
+  document.getElementById('kActive').textContent=active;
+  document.getElementById('kExpired').textContent=expired;
+  document.getElementById('kTrial').textContent=trial;
+  document.getElementById('kRevenue').textContent='R'+revY1.toLocaleString();
+  document.getElementById('kRenewal').textContent='R'+revRen.toLocaleString();
+  document.getElementById('kExpiring').textContent=expiring;
+  document.getElementById('kNew7').textContent=new7;
+  let alerts=[];
+  if(expiring>0) alerts.push(`<div class="warn">⏰ <b>${expiring} school(s) expiring in 7 days.</b></div>`);
+  if(expired>0) alerts.push(`<div class="warn">⛔ <b>${expired} school(s) expired / blocked.</b></div>`);
+  if(trial>0) alerts.push(`<div class="info">🆓 <b>${trial} school(s) on DEMO.</b></div>`);
+  if(alerts.length===0) alerts.push('<div class="ok">✅ No expiring / expired schools.</div>');
+  document.getElementById('alertBox').innerHTML=alerts.join('');
+  const townCounts=getTownCounts();
+  const topTowns=Object.entries(townCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(topTowns.length>0) document.getElementById('townKpiBox').innerHTML=`<div class="goldBox"><b>🏘️ Top Towns (Active Schools):</b> ${topTowns.map(([t,c])=>`${displayTown(t)} (${c})`).join(' • ')}<br><span class="small">Total towns: ${Object.keys(townCounts).length} • No town yet: ${ALL_SCHOOLS.filter(s=>!normTown(s.town)).length}</span></div>`;
+  else document.getElementById('townKpiBox').innerHTML=`<div class="goldBox"><b>🏘️ Top Towns:</b> No towns yet — Convert from DBE Leads (Town auto-copies) or Add Town in Super Admin.</div>`;
+}
+function getTownCounts(){ const counts={}; ALL_SCHOOLS.forEach(s=>{ const t=normTown(s.town); if(t) counts[t]=(counts[t]||0)+1; }); return counts; }
+function buildTownFilter(){
+  const counts=getTownCounts(); const towns=Object.keys(counts).sort();
+  const sel=document.getElementById('filterTown'); if(sel){ const prev=sel.value; sel.innerHTML='<option value="">All Towns</option>'+towns.map(t=>`<option value="${esc(t)}">${displayTown(t)} (${counts[t]})</option>`).join(''); if(prev && towns.includes(prev)) sel.value=prev; else if(CURRENT_TOWN && towns.includes(CURRENT_TOWN)) sel.value=CURRENT_TOWN; }
+  const selExp=document.getElementById('filterTownExpiring'); if(selExp){ const prev=selExp.value; selExp.innerHTML='<option value="">All Towns</option>'+towns.map(t=>`<option value="${esc(t)}">${displayTown(t)} (${counts[t]})</option>`).join(''); if(prev) selExp.value=prev; }
+  const selExpired=document.getElementById('filterTownExpired'); if(selExpired){ const prev=selExpired.value; selExpired.innerHTML='<option value="">All Towns</option>'+towns.map(t=>`<option value="${esc(t)}">${displayTown(t)} (${counts[t]})</option>`).join(''); if(prev) selExpired.value=prev; }
+  const chipsEl=document.getElementById('townChips'); if(chipsEl){ if(towns.length===0){ chipsEl.innerHTML='<span class="small">No towns yet.</span>'; return; } chipsEl.innerHTML=towns.map(t=>`<button class="${CURRENT_TOWN===t?'active':''}" onclick="setTownFilter('${esc(t)}')">🏘️ ${displayTown(t)} (${counts[t]})</button>`).join('')+(CURRENT_TOWN?`<button class="clear" onclick="clearTownFilter()">✖️ Clear Town</button>`:''); }
+}
+function setTownFilter(town){ CURRENT_TOWN=town||''; const sel=document.getElementById('filterTown'); if(sel) sel.value=CURRENT_TOWN; buildTownFilter(); renderSchools(); }
+function clearTownFilter(){ setTownFilter(''); }
+function clearAllFilters(){ CURRENT_TOWN=''; document.getElementById('searchBox').value=''; document.getElementById('filterProvince').value=''; document.getElementById('filterTown').value=''; document.getElementById('filterPlan').value=''; buildTownFilter(); renderSchools(); }
+function getFilteredSchools(){
+  const q=(document.getElementById('searchBox').value||'').toLowerCase();
+  const fp=document.getElementById('filterProvince').value;
+  const fplan=document.getElementById('filterPlan').value;
+  const ft=CURRENT_TOWN || document.getElementById('filterTown')?.value || '';
+  return ALL_SCHOOLS.filter(s=>{
+    if(q && !((s.schoolName||'').toLowerCase().includes(q) || (s.principalName||'').toLowerCase().includes(q) || (s.town||'').toLowerCase().includes(q))) return false;
+    if(fp && (s.province||'').toUpperCase()!==fp) return false;
+    if(ft && normTown(s.town)!==ft) return false;
+    if(fplan && (s.plan||'').toUpperCase()!==fplan) return false;
+    return true;
+  });
+}
+function renderSchools(){
+  const list=getFilteredSchools();
+  const summary=document.getElementById('filterSummary');
+  if(summary){ const q=(document.getElementById('searchBox').value||''); const fp=document.getElementById('filterProvince').value; const fplan=document.getElementById('filterPlan').value; const ft=CURRENT_TOWN; if(q||fp||ft||fplan){ summary.style.display='block'; summary.innerHTML=`<b>Showing ${list.length} of ${ALL_SCHOOLS.length} schools</b> — ${q?`Search "${esc(q)}" • `:''}${fp?`Province ${esc(fp)} • `:''}${ft?`🏘️ Town <b>${displayTown(ft)}</b> • `:''}${fplan?`Plan ${esc(fplan)}`:''} <button class="btn btn-grey btn-small" onclick="clearAllFilters()">✖️ Clear</button>`; } else summary.style.display='none'; }
+  if(list.length===0){ document.getElementById('schoolsList').innerHTML='<div class="info">No schools found. Try clear filters.</div>'; return; }
+  let html='<table><tr><th>School</th><th>🏘️ Town / Province</th><th>Principal</th><th>Plan / Billing</th><th>Expiry</th><th>Users</th></tr>';
+  list.forEach(s=>{ const dl=daysLeft(s.expiryDate); const dlText=dl===null?'No expiry':dl<0?`<b style="color:#dc2626">${dl} days (EXPIRED)</b>`:dl===0?'<b>Today</b>':`<b>${dl} days left</b>`; html+=`<tr><td><b>${esc(s.schoolName)}</b><br>${statusBadge(s)} ${planBadge(s.plan)}</td><td><b>🏘️ ${displayTown(s.town)}</b><br><span class="small">${esc(s.province||'—')}</span></td><td>${esc(s.principalName||'—')}<br><span class="small">${esc(s.principalEmail||'—')}<br>${esc(s.principalPhone||'—')}</span></td><td>${planBadge(s.plan)}<br><span class="small">Billing: ${esc(s.billing||'—')}</span></td><td>${esc(s.expiryDate||'—')}<br>${dlText}</td><td>${s.usersCount}</td></tr>`; });
+  html+='</table>'; document.getElementById('schoolsList').innerHTML=html;
+}
+function renderRevenueByTown(){
+  const priceY1={STARTER:7500, STANDARD:12000, PREMIUM:14500, DEMO:0};
+  const priceRen={STARTER:4500, STANDARD:7500, PREMIUM:9000, DEMO:0};
+  const townRev={};
+  ALL_SCHOOLS.forEach(s=>{ const t=normTown(s.town)||'NO TOWN'; const p=(s.plan||'DEMO').toUpperCase(); if(!townRev[t]) townRev[t]={count:0, y1:0, ren:0, active:0, demo:0}; townRev[t].count++; if((s.status||'').toUpperCase()!=='BLOCKED' && daysLeft(s.expiryDate)!==null && daysLeft(s.expiryDate)>=0){ townRev[t].y1+=priceY1[p]||0; townRev[t].ren+=priceRen[p]||0; townRev[t].active++; } if(p==='DEMO') townRev[t].demo++; });
+  const sorted=Object.entries(townRev).sort((a,b)=>b[1].y1-a[1].y1);
+  if(sorted.length===0){ document.getElementById('revenueByTown').innerHTML='<div class="info">No towns yet.</div>'; return; }
+  let html='<table><tr><th>🏘️ Town</th><th>Schools</th><th>Active</th><th>DEMO</th><th>Year 1 Value</th><th>Renewal / Year</th><th>Action</th></tr>';
+  sorted.forEach(([t,v])=>{ html+=`<tr><td><b>${t==='NO TOWN'?'— No Town —':displayTown(t)}</b></td><td>${v.count}</td><td>${v.active}</td><td>${v.demo}</td><td><b>R${v.y1.toLocaleString()}</b></td><td><b>R${v.ren.toLocaleString()}</b></td><td><button class="btn btn-blue btn-small" onclick="setTownFilter('${esc(t==='NO TOWN'?'':t)}');showTab('schools')">👀 View Schools →</button></td></tr>`; });
+  html+='</table>'; document.getElementById('revenueByTown').innerHTML=html;
+  const top=sorted[0];
+  document.getElementById('townDetail').innerHTML=`<div class="goldBox"><b>🏆 Top Town: ${top[0]==='NO TOWN'?'No Town':displayTown(top[0])}</b> — ${top[1].count} schools, Year 1 R${top[1].y1.toLocaleString()}, Renewal R${top[1].ren.toLocaleString()} / year<br>Visit this town first — It makes you most money.</div>`;
+}
+function renderExpiring(){
+  const townFilter=document.getElementById('filterTownExpiring')?.value||'';
+  let list=ALL_SCHOOLS.filter(s=>{ const dl=daysLeft(s.expiryDate); return dl!==null && dl>=0 && dl<=7 && (s.status||'').toUpperCase()!=='BLOCKED'; });
+  if(townFilter) list=list.filter(s=>normTown(s.town)===townFilter);
+  if(list.length===0){ document.getElementById('expiringList').innerHTML='<div class="ok">✅ No schools expiring in 7 days'+(townFilter?` in ${displayTown(townFilter)}`:'')+'.</div>'; return; }
+  let html=''; list.forEach(s=>{ const dl=daysLeft(s.expiryDate); html+=`<div class="goldBox"><b>${esc(s.schoolName)}</b> — 🏘️ ${displayTown(s.town)} • ${esc(s.province||'')} — ${esc(s.principalName)} — Expiry ${esc(s.expiryDate)} • <b>${dl} days left</b></div>`; }); document.getElementById('expiringList').innerHTML=html;
+}
+function renderExpired(){
+  const townFilter=document.getElementById('filterTownExpired')?.value||'';
+  let list=ALL_SCHOOLS.filter(s=> (s.status||'').toUpperCase()==='BLOCKED' || (daysLeft(s.expiryDate)!==null && daysLeft(s.expiryDate)<0));
+  if(townFilter) list=list.filter(s=>normTown(s.town)===townFilter);
+  if(list.length===0){ document.getElementById('expiredList').innerHTML='<div class="ok">✅ No expired / blocked schools'+(townFilter?` in ${displayTown(townFilter)}`:'')+'.</div>'; return; }
+  let html=''; list.forEach(s=>{ html+=`<div class="warn"><b>${esc(s.schoolName)}</b> — 🏘️ ${displayTown(s.town)} • ${esc(s.province||'')} — ${esc(s.principalName)} — Expiry ${esc(s.expiryDate)} • Status ${esc(s.status)}</div>`; }); document.getElementById('expiredList').innerHTML=html;
+}
+function renderGoals(){
+  const goalSchools=parseInt(localStorage.getItem('makhanani_goal_schools')||document.getElementById('goalSchools').value||'0')||0;
+  const goalRev=parseInt(localStorage.getItem('makhanani_goal_revenue')||document.getElementById('goalRevenue').value||'0')||0;
+  const goalTown=localStorage.getItem('makhanani_goal_town')||document.getElementById('goalTown').value||'';
+  const total=ALL_SCHOOLS.length;
+  const priceY1={STARTER:7500, STANDARD:12000, PREMIUM:14500, DEMO:0};
+  let revY1=0; ALL_SCHOOLS.forEach(s=>{ const p=(s.plan||'DEMO').toUpperCase(); if((s.status||'').toUpperCase()!=='BLOCKED' && daysLeft(s.expiryDate)!==null && daysLeft(s.expiryDate)>=0) revY1+=priceY1[p]||0; });
+  const townCount=goalTown ? ALL_SCHOOLS.filter(s=>normTown(s.town)===normTown(goalTown)).length : 0;
+  let html='';
+  if(goalSchools>0){ const pct=Math.min(100, Math.round(total/goalSchools*100)); html+=`<div class="goldBox"><b>🎯 Schools Goal: ${total} / ${goalSchools} (${pct}%)</b><br>Need ${Math.max(0, goalSchools-total)} more schools.</div>`; }
+  if(goalRev>0){ const pct=Math.min(100, Math.round(revY1/goalRev*100)); html+=`<div class="goldBox"><b>💰 Revenue Goal: R${revY1.toLocaleString()} / R${goalRev.toLocaleString()} (${pct}%)</b><br>Need R${Math.max(0, goalRev-revY1).toLocaleString()} more.</div>`; }
+  if(goalTown){ html+=`<div class="goldBox"><b>🏘️ Focus Town: ${displayTown(goalTown)}</b> — ${townCount} active schools in this town.<br>Visit ${displayTown(goalTown)} next.</div>`; }
+  if(!html) html='<div class="info">Set your goals above — Schools, Revenue, Focus Town. They save on this phone.</div>';
+  document.getElementById('goalsBox').innerHTML=html;
+}
+function exportCSV(){
+  if(ALL_SCHOOLS.length===0){ alert('No schools to export.'); return; }
+  let csv='School Name,Town,Province,Principal Name,Principal Email,Principal Phone,Plan,Billing,Status,Expiry Date,Users Count\n';
+  ALL_SCHOOLS.forEach(s=>{ const row=[s.schoolName,s.town,s.province,s.principalName,s.principalEmail,s.principalPhone,s.plan,s.billing,s.status,s.expiryDate,s.usersCount]; csv+=row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')+'\n'; });
+  const blob=new Blob([csv], {type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='makhanani_founder_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+function exportVisibleCSV(){
+  const list=getFilteredSchools();
+  if(list.length===0){ alert('No visible schools to export.'); return; }
+  let csv='School Name,Town,Province,Principal Name,Principal Email,Principal Phone,Plan,Billing,Status,Expiry Date,Users Count\n';
+  list.forEach(s=>{ const row=[s.schoolName,s.town,s.province,s.principalName,s.principalEmail,s.principalPhone,s.plan,s.billing,s.status,s.expiryDate,s.usersCount]; csv+=row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')+'\n'; });
+  const blob=new Blob([csv], {type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='makhanani_founder_filtered_'+(CURRENT_TOWN||'all')+'_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+window.onload=loadAll;
 </script>
 </body>
 </html>
