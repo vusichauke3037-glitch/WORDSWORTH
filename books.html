@@ -10,239 +10,203 @@ header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#
 .wrap{max-width:1100px;margin:0 auto;padding:12px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
 input{cursor:text}select{appearance:auto;-webkit-appearance:auto}
 select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 .btn{border:none;border-radius:8px;padding:12px 14px;font-weight:900;cursor:pointer;font-size:14px}
-.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{flex:1;min-width:100px;padding:12px;border:none;border-radius:8px;background:#e2e8f0;font-weight:900;cursor:pointer}
-.tabs button.active{background:#0a1f4d;color:#fff}
-.tab{display:none}.tab.active{display:block}
+.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.kpi b{font-size:24px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
-.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-issued{background:#fee2e2;color:#991b1b}.badge-free{background:#dcfce7;color:#166534}.badge-cat{background:#fef3c7;color:#92400e}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-cat{background:#fef3c7;color:#92400e}.badge-issued{background:#fee2e2;color:#991b1b}.badge-free{background:#dcfce7;color:#166534}.badge-lost{background:#111827;color:#fff}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-@media(max-width:700px){table{font-size:12px}.row{flex-direction:column}}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{flex:1;min-width:100px;padding:12px;border:none;border-radius:8px;background:#e2e8f0;font-weight:900;cursor:pointer}.tabs button.active{background:#0a1f4d;color:#fff}
+.tab{display:none}.tab.active{display:block}
+@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}table{font-size:12px}}
 </style></head>
 <body>
-<script>/* guardPage defined in nav.js - nav.js loads in header below, so guard runs after DOM */</script>
 <header><h1>📚 Textbooks</h1><p id="schoolLine">Loading school...</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 <script>guardPage(1,'Textbooks');</script>
 </header>
 <div class="wrap">
+<div class="info" id="roleInfo">Loading...</div>
+<div class="kpi">
+<div><b id="kpiTotal">0</b><span>📚 TOTAL TEXTBOOKS</span></div>
+<div><b id="kpiFree">0</b><span>📗 FREE / IN STOCK</span></div>
+<div><b id="kpiIssued">0</b><span>📕 ISSUED</span></div>
+<div><b id="kpiLost">0</b><span>❌ LOST</span></div>
+</div>
 
-<!-- TABS -->
 <div class="tabs">
-<button id="tabBtnList" class="active" onclick="showTab('list')">📋 All Textbooks</button>
-<button id="tabBtnAdd" onclick="showTab('add')">➕ Add 1 Textbook</button>
-<button id="tabBtnBulk" onclick="showTab('bulk')">➕➕ Add Many Copies</button>
+<button id="tabBtnList" class="active" onclick="showTab('list')">📚 All Textbooks</button>
+<button id="tabBtnAdd" onclick="showTab('add')">➕ Add Textbook</button>
 <button id="tabBtnIssue" onclick="showTab('issue')">📕 Issue / Return</button>
 </div>
 
-<!-- LIST TAB -->
 <div id="tab-list" class="tab active"><div class="card">
-<h2>📋 All Textbooks — <span id="countLine">Loading...</span></h2>
+<h2>📚 Textbooks — WORDSWORTH — Filter By Grade / Category / Status</h2>
 <div class="row">
-<div><label>🔍 Search — Title / Number / Category</label><input id="searchInput" placeholder="Type Maths / WHS000001 / English" oninput="renderBooks()"></div>
-<div><label>🔍 Filter By Category — Dropdown — Selection Possible</label>
-<select id="filterCategory" onchange="renderBooks()">
-<option value="">📚 All Categories — Show All</option>
-<optgroup label="📐 Maths & Science"><option value="Maths">Maths</option><option value="Maths Literacy">Maths Literacy</option><option value="Physical Sciences">Physical Sciences</option><option value="Life Sciences">Life Sciences</option><option value="Natural Sciences">Natural Sciences</option><option value="Technology">Technology</option></optgroup>
-<optgroup label="📖 Languages"><option value="English">English — Home Language</option><option value="English FAL">English — FAL</option><option value="Afrikaans">Afrikaans</option><option value="Sepedi">Sepedi</option><option value="Setswana">Setswana</option><option value="Sesotho">Sesotho</option><option value="IsiZulu">IsiZulu</option><option value="IsiXhosa">IsiXhosa</option></optgroup>
-<optgroup label="🌍 Humanities"><option value="Geography">Geography</option><option value="History">History</option><option value="Social Sciences">Social Sciences</option><option value="Life Orientation">Life Orientation — LO</option></optgroup>
-<optgroup label="💼 Commerce"><option value="Accounting">Accounting</option><option value="Business Studies">Business Studies</option><option value="Economics">Economics</option><option value="EMS">EMS</option></optgroup>
-<optgroup label="🎨 Other"><option value="Creative Arts">Creative Arts</option><option value="Life Skills">Life Skills</option><option value="Other">Other</option></optgroup>
-</select></div>
-<div><label>📚 Filter By Grade — Dropdown</label>
-<select id="filterGrade" onchange="renderBooks()"><option value="">📚 All Grades</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option></select></div>
+<div><label>📚 Grade — Dropdown</label><select id="filterGrade" onchange="renderBooks()"><option value="">📚 ALL GRADES</option><option value="8">GRADE 8</option><option value="9">GRADE 9</option><option value="10">GRADE 10</option><option value="11">GRADE 11</option><option value="12">GRADE 12</option></select></div>
+<div><label>📚 Category — Dropdown — ALL CAPS</label><select id="filterCategory" onchange="renderBooks()"><option value="">📚 ALL CATEGORIES</option><option value="MATHS">MATHS</option><option value="ENGLISH">ENGLISH</option><option value="LIFE SCIENCES">LIFE SCIENCES</option><option value="PHYSICAL SCIENCES">PHYSICAL SCIENCES</option><option value="GEOGRAPHY">GEOGRAPHY</option><option value="HISTORY">HISTORY</option><option value="ACCOUNTING">ACCOUNTING</option><option value="BUSINESS STUDIES">BUSINESS STUDIES</option><option value="LIFE ORIENTATION">LIFE ORIENTATION</option><option value="AFRIKAANS">AFRIKAANS</option><option value="SEPEDI">SEPEDI</option><option value="ISIZULU">ISIZULU</option><option value="SESOTHO">SESOTHO</option><option value="XITSONGA">XITSONGA</option><option value="TECHNOLOGY">TECHNOLOGY</option><option value="COMPUTER APPLICATIONS TECHNOLOGY">COMPUTER APPLICATIONS TECHNOLOGY</option><option value="ENGINEERING GRAPHICS AND DESIGN">ENGINEERING GRAPHICS AND DESIGN</option><option value="TOURISM">TOURISM</option><option value="CONSUMER STUDIES">CONSUMER STUDIES</option><option value="AGRICULTURAL SCIENCES">AGRICULTURAL SCIENCES</option><option value="ECONOMICS">ECONOMICS</option><option value="MATHEMATICAL LITERACY">MATHEMATICAL LITERACY</option></select></div>
+<div><label>📕 Status — Dropdown</label><select id="filterStatus" onchange="renderBooks()"><option value="">📚 ALL STATUS</option><option value="Free">📗 FREE</option><option value="Issued">📕 ISSUED</option><option value="Lost">❌ LOST</option></select></div>
 </div>
-<div id="categoryFilterInfo" class="info" style="display:none"></div>
+<label>🔍 Search — Title / Number</label><input id="searchInput" placeholder="e.g. MATHS or WHS000001" oninput="renderBooks()" style="text-transform:uppercase">
+<div id="listInfo" class="info">Loading...</div>
 <div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Number</th><th>Title</th><th>Category</th><th>Grade</th><th>Status</th><th>Learner</th><th>Action</th></tr></thead><tbody id="bookTable"></tbody></table></div>
-<button class="btn btn-gold btn-full" onclick="location.href='book_barcode.html'">🏷️ Print Textbook Barcodes →</button>
 </div></div>
 
-<!-- ADD 1 TAB -->
 <div id="tab-add" class="tab"><div class="card">
-<h2>➕ Add 1 Textbook — Category Dropdown Required</h2>
-<label>📚 Category / Subject * — Dropdown — Click To Select</label>
-<select id="bookCategory" onchange="onCategoryChange()">
-<option value="">-- Pick Category * --</option>
-<optgroup label="📐 Maths & Science - High School">
-<option value="Maths">Maths — Mathematics</option><option value="Maths Literacy">Maths Literacy</option><option value="Physical Sciences">Physical Sciences</option><option value="Life Sciences">Life Sciences</option><option value="Natural Sciences">Natural Sciences</option><option value="Technology">Technology</option></optgroup>
-<optgroup label="📖 Languages">
-<option value="English">English — Home Language</option><option value="English FAL">English — First Additional Language</option><option value="Afrikaans">Afrikaans</option><option value="Sepedi">Sepedi</option><option value="Setswana">Setswana</option><option value="Sesotho">Sesotho</option><option value="IsiZulu">IsiZulu</option><option value="IsiXhosa">IsiXhosa</option></optgroup>
-<optgroup label="🌍 Humanities & Social Sciences">
-<option value="Geography">Geography</option><option value="History">History</option><option value="Social Sciences">Social Sciences</option><option value="Life Orientation">Life Orientation — LO</option></optgroup>
-<optgroup label="💼 Commerce">
-<option value="Accounting">Accounting</option><option value="Business Studies">Business Studies</option><option value="Economics">Economics</option><option value="EMS">EMS — Economic & Management Sciences</option></optgroup>
-<optgroup label="🎨 Other">
-<option value="Creative Arts">Creative Arts</option><option value="Life Skills">Life Skills</option><option value="Other">Other — Type in Title</option></optgroup>
+<h2>➕ Add Textbook — WORDSWORTH Only</h2>
+<div class="info">Next Number: <b id="nextNumber">WHS000001</b> — Auto-generated from Prefix <b id="prefixLabel">WHS</b> — Do not type number manually unless you want to override.</div>
+<label>📚 Title * — Will Be Saved In ALL CAPS</label><input id="bookTitle" placeholder="e.g. MATHS GRADE 10 TEXTBOOK">
+<label>📚 Category * — Dropdown — ALL CAPS — REQUIRED ▼</label>
+<select id="bookCategory">
+<option value="">-- PICK CATEGORY * --</option>
+<option value="MATHS">MATHS</option><option value="ENGLISH">ENGLISH</option><option value="LIFE SCIENCES">LIFE SCIENCES</option><option value="PHYSICAL SCIENCES">PHYSICAL SCIENCES</option><option value="GEOGRAPHY">GEOGRAPHY</option><option value="HISTORY">HISTORY</option><option value="ACCOUNTING">ACCOUNTING</option><option value="BUSINESS STUDIES">BUSINESS STUDIES</option><option value="LIFE ORIENTATION">LIFE ORIENTATION</option><option value="AFRIKAANS">AFRIKAANS</option><option value="SEPEDI">SEPEDI</option><option value="ISIZULU">ISIZULU</option><option value="SESOTHO">SESOTHO</option><option value="XITSONGA">XITSONGA</option><option value="TECHNOLOGY">TECHNOLOGY</option><option value="COMPUTER APPLICATIONS TECHNOLOGY">COMPUTER APPLICATIONS TECHNOLOGY</option><option value="ENGINEERING GRAPHICS AND DESIGN">ENGINEERING GRAPHICS AND DESIGN</option><option value="TOURISM">TOURISM</option><option value="CONSUMER STUDIES">CONSUMER STUDIES</option><option value="AGRICULTURAL SCIENCES">AGRICULTURAL SCIENCES</option><option value="ECONOMICS">ECONOMICS</option><option value="MATHEMATICAL LITERACY">MATHEMATICAL LITERACY</option>
 </select>
-<div id="categoryInfo" class="info" style="display:none"></div>
-<label>📚 Grade * — Dropdown — WORDSWORTH 8-12</label>
-<select id="bookGrade"><option value="">-- Pick Grade * --</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option></select>
-<label>📖 Title * — Type</label><input id="bookTitle" placeholder="e.g. Maths Grade 10 Textbook">
-<label>📚 Textbook Number — Auto — Do Not Type</label><input id="bookNumber" placeholder="Auto: WHS000001" readonly>
-<button class="btn btn-green btn-full" onclick="saveBook()">✅ Save Textbook</button>
-<div id="bookMsg"></div>
+<label>📚 Grade * — Dropdown — REQUIRED ▼</label>
+<select id="bookGrade"><option value="">-- PICK GRADE * --</option><option value="8">GRADE 8</option><option value="9">GRADE 9</option><option value="10">GRADE 10</option><option value="11">GRADE 11</option><option value="12">GRADE 12</option></select>
+<label>🔢 Quantity — How Many Copies? — Will Create WHS000001, WHS000002, etc</label>
+<select id="bookQty"><option value="1">1 COPY</option><option value="5">5 COPIES</option><option value="10">10 COPIES</option><option value="20">20 COPIES</option><option value="30">30 COPIES</option><option value="50">50 COPIES</option></select>
+<label>🔢 Override Number — Optional — Leave Blank For Auto</label><input id="bookNumberOverride" placeholder="e.g. WHS000123 — Leave blank for auto">
+<button class="btn btn-green btn-full" onclick="addBook()">➕ ADD TEXTBOOK(S) →</button>
+<div id="addMsg"></div>
 </div></div>
 
-<!-- BULK TAB -->
-<div id="tab-bulk" class="tab"><div class="card">
-<h2>➕➕ Add Many Copies — Same Title</h2>
-<label>📚 Category * — Dropdown</label>
-<select id="bulkCategory"><option value="">-- Pick Category * --</option><option value="Maths">Maths</option><option value="English">English</option><option value="Life Sciences">Life Sciences</option><option value="Physical Sciences">Physical Sciences</option><option value="Geography">Geography</option><option value="History">History</option><option value="Accounting">Accounting</option><option value="Business Studies">Business Studies</option><option value="Life Orientation">Life Orientation</option><option value="Afrikaans">Afrikaans</option></select>
-<label>📚 Grade * — Dropdown</label>
-<select id="bulkGrade"><option value="">-- Pick Grade * --</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option></select>
-<label>📖 Title *</label><input id="bulkTitle" placeholder="e.g. Maths Grade 10 Textbook">
-<label>🔢 How Many Copies? — Dropdown</label>
-<select id="bulkCount"><option value="5">5 Copies</option><option value="10">10 Copies</option><option value="15">15 Copies</option><option value="20">20 Copies</option><option value="30" selected>30 Copies</option></select>
-<button class="btn btn-green btn-full" onclick="saveBulk()">✅ Create Copies — WHS000001 to WHS000030</button>
-<div id="bulkMsg"></div>
-</div></div>
-
-<!-- ISSUE TAB -->
 <div id="tab-issue" class="tab"><div class="card">
-<h2>📕 Issue / Return Textbook</h2>
-<label>👩‍🎓 Pick Learner * — Dropdown</label><select id="issueLearner"><option value="">-- Pick Learner * --</option></select>
-<label>📚 Pick Textbook * — Dropdown — Only Free Textbooks</label><select id="issueBook"><option value="">-- Pick Textbook * --</option></select>
-<div class="row"><button class="btn btn-green" style="flex:1" onclick="issueBook()">📕 Issue To Learner</button><button class="btn btn-gold" style="flex:1" onclick="returnBook()">↩️ Return Textbook</button></div>
+<h2>📕 Issue / Return / Lost</h2>
+<label>👩‍🎓 Pick Learner * — Dropdown</label><select id="issueLearner"><option value="">-- PICK LEARNER * --</option></select>
+<label>📚 Pick Textbook * — Dropdown</label><select id="issueBook"><option value="">-- PICK TEXTBOOK * --</option></select>
+<div class="row"><button class="btn btn-green" style="flex:1" onclick="issueBook()">📕 ISSUE</button><button class="btn btn-gold" style="flex:1" onclick="returnBook()">↩️ RETURN</button><button class="btn btn-red" style="flex:1" onclick="markLost()">❌ MARK LOST</button></div>
 <div id="issueMsg"></div>
+<div class="info">Teacher: Learners + Textbooks shown are <b>only your classes / grades</b>.<br>Librarian / Principal: <b>All classes / grades</b>.</div>
 </div></div>
-
 </div>
 <script>
-// FIREBASE - Same config as index.html - REPLACE with your config
-const firebaseConfig={apiKey:"YOUR_API_KEY",authDomain:"YOUR_PROJECT.firebaseapp.com",databaseURL:"https://YOUR_PROJECT-default-rtdb.firebaseio.com",projectId:"YOUR_PROJECT",storageBucket:"YOUR_PROJECT.appspot.com",messagingSenderId:"YOUR_SENDER",appId:"YOUR_APP"};
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
-let user=null, schoolId='', prefix='WHS', schoolName='WORDSWORTH HIGH SCHOOL (WHS)';
-let books=[], learners=[];
-try{ user=JSON.parse(localStorage.getItem('makhanani_user')||'null'); if(user){ schoolId=user.schoolId||'WHS'; prefix=user.prefix||(schoolId==='WHS'?'WHS':'MPS'); schoolName=user.schoolName||schoolName; } }catch(e){}
-document.getElementById('schoolLine').textContent = schoolName+' • Prefix '+prefix+' • Grades 8-12 • EMIS 700310854';
-function showTab(t){
-  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+t).classList.add('active');
-  document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');
+function toCaps(s){return String(s||'').trim().toUpperCase();}
+let user=null,schoolId='WHS',prefix='WHS',schoolName='WORDSWORTH HIGH SCHOOL (WHS)';
+try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null'); if(user){schoolId=user.schoolId||'WHS';prefix=user.prefix||'WHS';schoolName=user.schoolName||schoolName;}}catch(e){}
+document.getElementById('schoolLine').textContent=schoolName+' • Prefix '+prefix+' • EMIS 700310854 • Grades 8-12';
+document.getElementById('prefixLabel').textContent=prefix;
+let books=[],learners=[];
+function showTab(t){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');}
+// TEACHER FILTER - MULTIPLE GRADES / CLASSES
+function canTeacherSeeBook(b){
+  if(!user || user.role!=='Teacher') return true;
+  if(user.teachingGrades && user.teachingGrades.length) return user.teachingGrades.includes(String(b.grade));
+  if(user.grade) return String(b.grade)===String(user.grade);
+  return true;
+}
+function canTeacherSeeLearner(l){
+  if(!user || user.role!=='Teacher') return true;
+  if(user.teachingClasses && user.teachingClasses.length){
+    if(user.teachingClasses.includes('All Classes')) return true;
+    return user.teachingClasses.includes(String(l.grade)+String(l.className));
+  }
+  if(user.grade && user.className) return String(l.grade)===String(user.grade) && String(l.className)===String(user.className);
+  return true;
 }
 function nextNumber(){
-  let max=0; books.forEach(b=>{ let n=parseInt(String(b.number||'').replace(/\D/g,''))||0; if(n>max) max=n; });
+  let max=0; books.forEach(b=>{let n=parseInt(String(b.number||'').replace(/\D/g,'')); if(!isNaN(n)&&n>max) max=n;});
   return prefix + String(max+1).padStart(6,'0');
 }
-function onCategoryChange(){
-  let cat=document.getElementById('bookCategory').value;
-  let info=document.getElementById('categoryInfo');
-  if(!cat){ info.style.display='none'; return; }
-  info.style.display='block';
-  info.innerHTML=`✅ Selected Category: <b>${cat}</b><br>Textbooks will be grouped under <b>${cat}</b> in Reports + Filter.`;
-  let title=document.getElementById('bookTitle');
-  if(title && !title.value){ title.placeholder=`e.g. ${cat} Grade 10 Textbook`; }
-}
 async function loadData(){
-  try{
-    let bsnap=await rtdb.ref('textbooks/'+schoolId).once('value'); let bv=bsnap.val()||{};
-    books=Object.entries(bv).map(([id,v])=>({id,...v}));
-    let lsnap=await rtdb.ref('learners/'+schoolId).once('value'); let lv=lsnap.val()||{};
-    learners=Object.entries(lv).map(([id,v])=>({id,...v}));
-  }catch(e){ console.log(e); }
-  // Demo if empty - so you can see Category working
+  try{let bs=await rtdb.ref('textbooks/'+schoolId).once('value');books=Object.entries(bs.val()||{}).map(([id,v])=>({id,...v,category:toCaps(v.category),title:toCaps(v.title)}));let ls=await rtdb.ref('learners/'+schoolId).once('value');learners=Object.entries(ls.val()||{}).map(([id,v])=>({id,...v}));}catch(e){console.log(e);}
   if(books.length===0){
     books=[
-      {id:'1',number:prefix+'000001',title:'Maths Grade 10 Textbook',category:'Maths',grade:'10',status:'Free',learnerName:''},
-      {id:'2',number:prefix+'000002',title:'English Grade 10 Textbook',category:'English',grade:'10',status:'Issued',learnerName:'10A001 - Thabo M'},
-      {id:'3',number:prefix+'000003',title:'Life Sciences Grade 11',category:'Life Sciences',grade:'11',status:'Free',learnerName:''},
+      {id:'1',number:prefix+'000001',title:'MATHS GRADE 10 TEXTBOOK',category:'MATHS',grade:'10',status:'Free',learnerName:''},
+      {id:'2',number:prefix+'000002',title:'ENGLISH GRADE 10 TEXTBOOK',category:'ENGLISH',grade:'10',status:'Issued',learnerName:'10A001 - Thabo M'},
+      {id:'3',number:prefix+'000003',title:'LIFE SCIENCES GRADE 11',category:'LIFE SCIENCES',grade:'11',status:'Free',learnerName:''},
+      {id:'4',number:prefix+'000004',title:'PHYSICAL SCIENCES GRADE 12',category:'PHYSICAL SCIENCES',grade:'12',status:'Free',learnerName:''},
     ];
-    learners=[{id:'1',learnerId:'10A001',name:'Thabo M',grade:'10',className:'A'},{id:'2',learnerId:'10A002',name:'Lerato K',grade:'10',className:'A'}];
+    learners=[{id:'1',learnerId:'10A001',name:'Thabo M',grade:'10',className:'A'},{id:'2',learnerId:'10B001',name:'Lerato K',grade:'10',className:'B'}];
   }
-  document.getElementById('bookNumber').value=nextNumber();
-  fillIssueDropdowns(); renderBooks();
+  if(user && user.role==='Teacher' && !user.teachingClasses){ user.teachingClasses=['10A','10B','11A']; user.teachingGrades=['10','11']; }
+  document.getElementById('roleInfo').innerHTML = user?.role==='Teacher'
+    ? `👩‍🏫 <b>${toCaps(user.name)}</b> — Subject: <b>${toCaps(user.subject||'ALL SUBJECTS')}</b> — You teach: <b>${(user.teachingClasses||[]).join(' • ')}</b> — Showing ONLY your grades / classes.`
+    : `✅ <b>${toCaps(user?.role||'USER')}</b> — <b>${toCaps(user?.name||'')}</b> — Showing <b>ALL CLASSES — Whole School</b> — Prefix <b>${prefix}</b>`;
+  document.getElementById('nextNumber').textContent=nextNumber();
+  fillIssue(); renderBooks();
 }
-function fillIssueDropdowns(){
-  let lsel=document.getElementById('issueLearner');
-  lsel.innerHTML='<option value="">-- Pick Learner * --</option>'+learners.map(l=>`<option value="${l.learnerId}">${l.learnerId} - ${l.name} - Grade ${l.grade}${l.className}</option>`).join('');
-  let bsel=document.getElementById('issueBook');
-  let free=books.filter(b=>b.status!=='Issued');
-  bsel.innerHTML='<option value="">-- Pick Textbook * --</option>'+free.map(b=>`<option value="${b.id}">${b.number} - ${b.title} - ${b.category} Gr ${b.grade}</option>`).join('');
-}
+function visibleBooks(){ return books.filter(b=>canTeacherSeeBook(b)); }
 function renderBooks(){
-  let q=(document.getElementById('searchInput').value||'').toLowerCase();
-  let cat=document.getElementById('filterCategory').value;
-  let grade=document.getElementById('filterGrade').value;
-  let info=document.getElementById('categoryFilterInfo');
-  if(cat){ info.style.display='block'; info.innerHTML=`🔍 Showing Category: <b>${cat}</b> — ${books.filter(b=>b.category===cat).length} textbooks — <a href="#" onclick="event.preventDefault();document.getElementById('filterCategory').value='';renderBooks();">Show All</a>`; } else { info.style.display='none'; }
-  let filtered=books.filter(b=>{
-    if(cat && b.category!==cat) return false;
-    if(grade && String(b.grade)!==String(grade)) return false;
-    if(q && !((b.title||'').toLowerCase().includes(q) || (b.number||'').toLowerCase().includes(q) || (b.category||'').toLowerCase().includes(q))) return false;
-    return true;
-  });
-  document.getElementById('countLine').textContent=filtered.length+' of '+books.length+' textbooks'+(cat?' — Category: '+cat:'');
-  document.getElementById('bookTable').innerHTML=filtered.length?filtered.map(b=>`<tr><td><b>${b.number}</b></td><td>${b.title}</td><td><span class="badge badge-cat">${b.category}</span></td><td>Gr ${b.grade}</td><td><span class="badge ${b.status==='Issued'?'badge-issued':'badge-free'}">${b.status||'Free'}</span></td><td>${b.learnerName||'—'}</td><td><button class="btn btn-grey" onclick="deleteBook('${b.id}')">🗑️</button></td></tr>`).join(''):`<tr><td colspan="7" style="text-align:center;padding:20px">No textbooks found${cat?' for Category '+cat:''} — Add one in ➕ Add 1 Textbook tab.</td></tr>`;
+  let grade=document.getElementById('filterGrade').value,cat=document.getElementById('filterCategory').value,status=document.getElementById('filterStatus').value,search=toCaps(document.getElementById('searchInput').value);
+  let list=visibleBooks();
+  if(grade) list=list.filter(b=>String(b.grade)===String(grade));
+  if(cat) list=list.filter(b=>toCaps(b.category)===cat);
+  if(status) list=list.filter(b=>b.status===status);
+  if(search) list=list.filter(b=>toCaps(b.title).includes(search)||toCaps(b.number).includes(search)||toCaps(b.category).includes(search));
+  let all=visibleBooks();
+  document.getElementById('kpiTotal').textContent=all.length;
+  document.getElementById('kpiFree').textContent=all.filter(b=>b.status!=='Issued'&&b.status!=='Lost').length;
+  document.getElementById('kpiIssued').textContent=all.filter(b=>b.status==='Issued').length;
+  document.getElementById('kpiLost').textContent=all.filter(b=>b.status==='Lost').length;
+  document.getElementById('listInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${all.length}</b> textbooks${grade?' — Grade '+grade:''}${cat?' — Category '+cat:''}${status?' — Status '+status:''}${user?.role==='Teacher'?' — Your grades only':''}`;
+  document.getElementById('bookTable').innerHTML=list.length?list.map(b=>`<tr><td><b>${b.number}</b></td><td>${toCaps(b.title)}</td><td><span class="badge badge-cat">${toCaps(b.category)}</span></td><td>Gr ${b.grade}</td><td><span class="badge ${b.status==='Issued'?'badge-issued':b.status==='Lost'?'badge-lost':'badge-free'}">${toCaps(b.status||'Free')}</span></td><td>${b.learnerName||'—'}</td><td>${b.status==='Issued'?`<button class="btn btn-gold" onclick="quickReturn('${b.id}')">↩️ RETURN</button>`:b.status==='Lost'?`<button class="btn btn-grey" onclick="quickFree('${b.id}')">📗 FOUND</button>`:`<button class="btn btn-grey" onclick="deleteBook('${b.id}')">🗑️</button>`}</td></tr>`).join(''):`<tr><td colspan="7" style="text-align:center;padding:20px">No textbooks for this filter.</td></tr>`;
+  document.getElementById('nextNumber').textContent=nextNumber();
 }
-async function saveBook(){
-  let cat=document.getElementById('bookCategory').value;
-  let grade=document.getElementById('bookGrade').value;
-  let title=document.getElementById('bookTitle').value.trim();
-  let msg=document.getElementById('bookMsg');
-  if(!cat){ msg.innerHTML='<div class="warn">⚠️ Pick Category first — Click Category dropdown → Select Maths / English / etc.</div>'; document.getElementById('bookCategory').focus(); return; }
-  if(!grade){ msg.innerHTML='<div class="warn">⚠️ Pick Grade first — Click Grade dropdown → Select 8 / 9 / 10 / 11 / 12.</div>'; return; }
-  if(!title){ msg.innerHTML='<div class="warn">⚠️ Type Title — e.g. Maths Grade 10 Textbook.</div>'; return; }
-  let num=nextNumber();
-  let rec={number:num,title,category:cat,grade,status:'Free',learnerName:'',schoolId,createdAt:Date.now()};
-  try{ let ref=rtdb.ref('textbooks/'+schoolId).push(); await ref.set(rec); rec.id=ref.key; }catch(e){}
-  books.push({...rec,id:rec.id||Date.now()});
-  msg.innerHTML=`<div class="ok">✅ Saved: <b>${title}</b> — Category: <b>${cat}</b> — Grade: <b>${grade}</b> — Number: <b>${num}</b></div>`;
-  document.getElementById('bookTitle').value=''; document.getElementById('bookNumber').value=nextNumber();
-  fillIssueDropdowns(); renderBooks();
-}
-async function saveBulk(){
-  let cat=document.getElementById('bulkCategory').value;
-  let grade=document.getElementById('bulkGrade').value;
-  let title=document.getElementById('bulkTitle').value.trim();
-  let count=parseInt(document.getElementById('bulkCount').value)||30;
-  let msg=document.getElementById('bulkMsg');
-  if(!cat){ msg.innerHTML='<div class="warn">⚠️ Pick Category first.</div>'; return; }
-  if(!grade){ msg.innerHTML='<div class="warn">⚠️ Pick Grade first.</div>'; return; }
-  if(!title){ msg.innerHTML='<div class="warn">⚠️ Type Title.</div>'; return; }
-  let start=parseInt(nextNumber().replace(/\D/g,''))||1;
-  for(let i=0;i<count;i++){
-    let num=prefix+String(start+i).padStart(6,'0');
-    let rec={number:num,title,category:cat,grade,status:'Free',learnerName:'',schoolId,createdAt:Date.now()};
-    try{ let ref=rtdb.ref('textbooks/'+schoolId).push(); await ref.set(rec); rec.id=ref.key; }catch(e){}
-    books.push({...rec,id:rec.id||Date.now()+i});
+async function addBook(){
+  let title=toCaps(document.getElementById('bookTitle').value),cat=toCaps(document.getElementById('bookCategory').value),grade=document.getElementById('bookGrade').value,qty=parseInt(document.getElementById('bookQty').value)||1,override=toCaps(document.getElementById('bookNumberOverride').value),msg=document.getElementById('addMsg');
+  if(!title){msg.innerHTML='<div class="warn">⚠️ Type Title first — e.g. MATHS GRADE 10 TEXTBOOK</div>';return;}
+  if(!cat){msg.innerHTML='<div class="warn">⚠️ Pick Category first — Click Category dropdown.</div>';return;}
+  if(!grade){msg.innerHTML='<div class="warn">⚠️ Pick Grade first — Click Grade dropdown.</div>';return;}
+  // Teacher can only add for grades they teach
+  if(user?.role==='Teacher' && user.teachingGrades && !user.teachingGrades.includes(String(grade))){msg.innerHTML=`<div class="warn">⚠️ You teach Grades <b>${user.teachingGrades.join(', ')}</b> — You cannot add Grade ${grade} textbook.</div>`;return;}
+  let added=[];
+  for(let i=0;i<qty;i++){
+    let num = override && qty===1 ? override : (i===0 && override ? override : nextNumber());
+    // If override used for 1, next loop uses auto - handle by pushing then recalculating
+    let rec={number:num,title,category:cat,grade,status:'Free',learnerName:'',schoolId,prefix,schoolName,createdAt:Date.now()};
+    try{let ref=rtdb.ref('textbooks/'+schoolId).push();await ref.set(rec);rec.id=ref.key;}catch(e){rec.id='tmp'+Date.now()+i;}
+    books.push(rec); added.push(num);
+    if(override && qty===1) break;
   }
-  msg.innerHTML=`<div class="ok">✅ Created ${count} copies: <b>${title}</b> — Category: <b>${cat}</b> — Grade: <b>${grade}</b> — ${prefix+String(start).padStart(6,'0')} to ${prefix+String(start+count-1).padStart(6,'0')}</div>`;
-  fillIssueDropdowns(); renderBooks();
+  msg.innerHTML=`<div class="ok">✅ Added <b>${added.length}</b> textbook(s): <b>${toCaps(title)}</b> — Category <b>${cat}</b> — Grade <b>${grade}</b><br>Numbers: <b>${added.join(', ')}</b></div>`;
+  document.getElementById('bookTitle').value='';document.getElementById('bookNumberOverride').value='';
+  fillIssue(); renderBooks(); setTimeout(()=>showTab('list'),800);
+}
+function fillIssue(){
+  let myLearners=learners.filter(l=>canTeacherSeeLearner(l));
+  document.getElementById('issueLearner').innerHTML='<option value="">-- PICK LEARNER * --</option>'+myLearners.map(l=>`<option value="${l.learnerId}">${l.learnerId} - ${toCaps(l.name)} - Grade ${l.grade}${l.className}</option>`).join('');
+  let myBooks=visibleBooks();
+  document.getElementById('issueBook').innerHTML='<option value="">-- PICK TEXTBOOK * --</option>'+myBooks.map(b=>`<option value="${b.id}">${b.number} - ${toCaps(b.title)} - ${toCaps(b.category)} Gr ${b.grade} - ${toCaps(b.status||'Free')} ${b.learnerName?' - '+b.learnerName:''}</option>`).join('');
 }
 async function issueBook(){
-  let lid=document.getElementById('issueLearner').value;
-  let bid=document.getElementById('issueBook').value;
-  let msg=document.getElementById('issueMsg');
-  if(!lid||!bid){ msg.innerHTML='<div class="warn">⚠️ Pick Learner + Textbook from dropdowns first.</div>'; return; }
-  let learner=learners.find(l=>l.learnerId===lid);
-  let book=books.find(b=>String(b.id)===String(bid));
+  let lid=document.getElementById('issueLearner').value,bid=document.getElementById('issueBook').value,msg=document.getElementById('issueMsg');
+  if(!lid||!bid){msg.innerHTML='<div class="warn">⚠️ Pick Learner + Textbook first.</div>';return;}
+  let learner=learners.find(l=>l.learnerId===lid),book=books.find(b=>String(b.id)===String(bid));
   if(!book) return;
-  book.status='Issued'; book.learnerName=(learner?lid+' - '+learner.name:lid);
-  try{ await rtdb.ref('textbooks/'+schoolId+'/'+book.id).update({status:'Issued',learnerName:book.learnerName}); }catch(e){}
-  msg.innerHTML=`<div class="ok">✅ Issued <b>${book.number} - ${book.title} (${book.category})</b> to <b>${book.learnerName}</b></div>`;
-  fillIssueDropdowns(); renderBooks();
+  if(book.status==='Issued'){msg.innerHTML=`<div class="warn">⚠️ This textbook is already Issued to <b>${book.learnerName}</b> — Return it first.</div>`;return;}
+  book.status='Issued';book.learnerName=lid+' - '+(learner?learner.name:'');
+  try{await rtdb.ref('textbooks/'+schoolId+'/'+book.id).update({status:'Issued',learnerName:book.learnerName});}catch(e){}
+  msg.innerHTML=`<div class="ok">✅ Issued <b>${book.number} - ${toCaps(book.title)}</b> to <b>${book.learnerName}</b></div>`;fillIssue();renderBooks();
 }
 async function returnBook(){
-  let bid=document.getElementById('issueBook').value;
-  // If issue dropdown only shows Free, return needs to pick from Issued - reload with all
+  let bid=document.getElementById('issueBook').value,msg=document.getElementById('issueMsg');
   let book=books.find(b=>String(b.id)===String(bid));
-  if(!book){ document.getElementById('issueMsg').innerHTML='<div class="warn">⚠️ To return, pick the textbook from the list — Or use Librarian page Return tab. This dropdown shows Free only.</div>'; return; }
-  book.status='Free'; book.learnerName='';
-  try{ await rtdb.ref('textbooks/'+schoolId+'/'+book.id).update({status:'Free',learnerName:''}); }catch(e){}
-  document.getElementById('issueMsg').innerHTML=`<div class="ok">✅ Returned <b>${book.number}</b> — Now Free.</div>`;
-  fillIssueDropdowns(); renderBooks();
+  if(!book){msg.innerHTML='<div class="warn">⚠️ Pick Textbook first.</div>';return;}
+  book.status='Free';book.learnerName='';
+  try{await rtdb.ref('textbooks/'+schoolId+'/'+book.id).update({status:'Free',learnerName:''});}catch(e){}
+  msg.innerHTML=`<div class="ok">✅ Returned <b>${book.number}</b> — Now FREE.</div>`;fillIssue();renderBooks();
 }
-async function deleteBook(id){ if(!confirm('Delete this textbook?')) return; books=books.filter(b=>String(b.id)!==String(id)); try{ await rtdb.ref('textbooks/'+schoolId+'/'+id).remove(); }catch(e){} fillIssueDropdowns(); renderBooks(); }
-// Open tab from nav.js - e.g. sessionStorage openTab='add' / 'bulk' / 'issue'
-try{ let t=sessionStorage.getItem('openTab'); if(t){ setTimeout(()=>{ if(t==='add'||t==='bulk'||t==='issue'||t==='list') showTab(t); sessionStorage.removeItem('openTab'); },400); } }catch(e){}
+async function quickReturn(id){let b=books.find(x=>String(x.id)===String(id)); if(!b) return; b.status='Free';b.learnerName='';try{await rtdb.ref('textbooks/'+schoolId+'/'+id).update({status:'Free',learnerName:''});}catch(e){} fillIssue();renderBooks();}
+async function quickFree(id){let b=books.find(x=>String(x.id)===String(id)); if(!b) return; b.status='Free';b.learnerName='';try{await rtdb.ref('textbooks/'+schoolId+'/'+id).update({status:'Free',learnerName:''});}catch(e){} fillIssue();renderBooks();}
+async function markLost(){
+  let bid=document.getElementById('issueBook').value,msg=document.getElementById('issueMsg');
+  let book=books.find(b=>String(b.id)===String(bid));
+  if(!book){msg.innerHTML='<div class="warn">⚠️ Pick Textbook first.</div>';return;}
+  book.status='Lost';
+  try{await rtdb.ref('textbooks/'+schoolId+'/'+book.id).update({status:'Lost'});}catch(e){}
+  msg.innerHTML=`<div class="ok">✅ Marked <b>${book.number}</b> as LOST.</div>`;fillIssue();renderBooks();
+}
+async function deleteBook(id){if(!confirm('Delete this textbook?'))return;books=books.filter(b=>String(b.id)!==String(id));try{await rtdb.ref('textbooks/'+schoolId+'/'+id).remove();}catch(e){}fillIssue();renderBooks();}
 loadData();
 </script></body></html>
