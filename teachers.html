@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Teachers</title><meta name="theme-color" content="#0a1f4d">
+<title>Makhanani LTSM — Teachers — Camera Scan</title><meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -43,14 +44,19 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 .kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
 .topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
 .small{font-size:12px;color:#64748b}
+#reader{width:100%;max-width:420px;margin:10px auto;border:2px solid #0a1f4d;border-radius:12px;overflow:hidden;display:none}
+#reader video{width:100% !important}
+.scanBox{border:2px dashed #0a1f4d;border-radius:12px;padding:10px;text-align:center;margin-top:10px;background:#f8fafc}
+.scanBox b{color:#0a1f4d}
+.lastScan{background:#dcfce7;border:2px solid #059669;border-radius:10px;padding:10px;font-size:16px;font-weight:900;text-align:center;margin-top:10px;display:none}
 @media(max-width:600px){.kpi{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <header>
 <img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'">
-<h1>👩‍🏫 Teacher Dashboard</h1><p id="userLine">Loading...</p>
-<div class="topnav"><a href="index.html">🏠 Login</a><a href="issue.html">📖 Issue / Return</a><a href="principal.html">📊 Principal</a><a href="librarian.html">📚 Librarian</a><a href="profile.html">👤 Profile</a></div>
+<h1>👩‍🏫 Teacher Dashboard — 📷 Camera Scan</h1><p id="userLine">Loading...</p>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="issue.html">📖 Issue / Return</a><a href="principal.html">📊 Principal</a><a href="librarian.html">📚 Librarian</a><a href="barcode.html">🏷️ Barcodes</a><a href="profile.html">👤 Profile</a></div>
 </header>
 <main>
 <div class="card">
@@ -64,19 +70,27 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <!-- LEARNERS -->
 <div class="card" id="tab-learners">
 <h2>👥 My Learners — <span id="myClassName"></span></h2>
-<div class="goldBox">You see <b>your class only</b>. You cannot see other classes. Librarian adds learners — if a learner is missing, WhatsApp Librarian / Principal.</div>
+<div class="goldBox">You see <b>your class only</b>. Scan a learner card barcode to find them instantly — Use Scan below in Issue tab.</div>
 <div id="learnersList"></div>
 </div>
 
 <!-- ISSUE -->
 <div class="card" id="tab-issue" style="display:none">
-<h2>📤 Issue Book — My Class Only</h2>
+<h2>📤 Issue Book — My Class Only — 📷 Scan Book</h2>
+<div class="goldBox"><b>Fastest:</b> 1. Pick Learner → 2. Click 📷 Scan Book → Point at `TP000001` → Beep → 3. Click ISSUE. No typing.</div>
 <label>👥 Learner — My Class</label>
-<input id="learnerSearch" placeholder="Type learner name or ID..." oninput="filterLearners()">
+<input id="learnerSearch" placeholder="Type learner name or ID... e.g. Thandi / 10A001" oninput="filterLearners()">
 <select id="learnerSelect"><option value="">-- Pick Learner --</option></select>
 <div id="learnerInfo" class="info" style="display:none"></div>
 <label>📚 Book Barcode — Scan or Type</label>
-<input id="barcodeInput" placeholder="Scan barcode or type BK001" oninput="findBook()">
+<input id="barcodeInput" placeholder="Scan barcode or type TP000001" oninput="findBook()">
+<div class="scanBox">
+<b>📷 Camera Scan — Book Barcode</b><br><span class="small">Allow camera when asked. Hold barcode 15cm away, good light.</span><br>
+<button class="btn btn-blue" id="scanBtn" onclick="toggleScanner()">📷 START CAMERA SCAN</button>
+<div id="reader"></div>
+<div id="lastScanIssue" class="lastScan"></div>
+<div id="scanMsg" class="small"></div>
+</div>
 <div id="bookInfo" class="info" style="display:none"></div>
 <label>📅 Due Date</label>
 <input id="dueDate" type="date">
@@ -97,44 +111,80 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <button class="btn btn-gold" onclick="whatsappAllOverdue()">📱 WhatsApp ALL Overdue Parents</button>
 </div>
 
-<div class="card"><button class="btn btn-grey" onclick="logout()">🚪 Logout</button><button class="btn btn-blue" onclick="location.href='issue.html'">📖 Full Issue / Return Page →</button></div>
+<div class="card"><button class="btn btn-grey" onclick="logout()">🚪 Logout</button><button class="btn btn-blue" onclick="location.href='issue.html'">📖 Full Issue / Return Page →</button><button class="btn btn-gold" onclick="location.href='barcode.html'">🏷️ Print Barcodes →</button></div>
 </main>
 
 <script>
 let currentUser=null, schoolId='', myClass='', learners=[], allLearners=[], books=[], issues=[];
 let useDemo=false;
+let scanner=null, scanning=false, lastCode='', lastTime=0;
 const DEMO={
-  learners:[{id:'L001', name:'Thandi Mokoena', learnerId:'L001', className:'10A', grade:'10', phone:'0780233263'},
-  {id:'L002', name:'Sipho Dube', learnerId:'L002', className:'10A', grade:'10', phone:'0781112222'},
-  {id:'L003', name:'Zanele Nkosi', learnerId:'L003', className:'10B', grade:'10', phone:'0782223333'}],
-  books:[{id:'BK001', title:'Mathematics Grade 10', barcode:'BK001', subject:'Mathematics', grade:'10', status:'OUT'},
-  {id:'BK002', title:'English Grade 10', barcode:'BK002', subject:'English', grade:'10', status:'AVAILABLE'}],
-  issues:[{id:'i1', learnerId:'L001', learnerName:'Thandi Mokoena', className:'10A', phone:'0780233263', barcode:'BK001', bookTitle:'Mathematics Grade 10', dueDate:new Date(Date.now()-1*86400000).toISOString().slice(0,10), issueDate:new Date(Date.now()-10*86400000).toISOString().slice(0,10), status:'OUT'}]
+  learners:[{id:'10A001', name:'Thandi Mokoena', learnerId:'10A001', className:'10A', grade:'10', phone:'0780233263'},
+  {id:'10A002', name:'Sipho Dube', learnerId:'10A002', className:'10A', grade:'10', phone:'0781112222'},
+  {id:'10B001', name:'Zanele Nkosi', learnerId:'10B001', className:'10B', grade:'10', phone:'0782223333'}],
+  books:[{id:'TP000001', title:'Mathematics Grade 10', barcode:'TP000001', subject:'Mathematics', grade:'10', status:'OUT'},
+  {id:'TP000002', title:'English Grade 10', barcode:'TP000002', subject:'English', grade:'10', status:'AVAILABLE'}],
+  issues:[{id:'i1', learnerId:'10A001', learnerName:'Thandi Mokoena', className:'10A', phone:'0780233263', barcode:'TP000001', bookTitle:'Mathematics Grade 10', dueDate:new Date(Date.now()-1*86400000).toISOString().slice(0,10), issueDate:new Date(Date.now()-10*86400000).toISOString().slice(0,10), status:'OUT'}]
 };
 function esc(s){ return String(s||'').replace(/</g,'&lt;'); }
 function getUser(){ try{ return JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){ return null; } }
-function logout(){ localStorage.removeItem('makhanani_user'); location.href='index.html'; }
+function logout(){ stopScanner(); localStorage.removeItem('makhanani_user'); location.href='index.html'; }
 function showTab(name, btn){
   ['learners','issue','out','overdue'].forEach(t=>document.getElementById('tab-'+t).style.display = t===name ? 'block':'none');
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
+  if(name!=='issue' && scanning) stopScanner();
 }
 function todayPlus(d){ const x=new Date(); x.setDate(x.getDate()+d); return x.toISOString().slice(0,10); }
 document.getElementById('dueDate').value=todayPlus(14);
+function beep(){
+  try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(); const g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value=880; o.type='sine'; g.gain.value=0.2; o.start(); o.stop(ctx.currentTime+0.15); }catch(e){}
+  try{ if(navigator.vibrate) navigator.vibrate(100); }catch(e){}
+}
+
+// ===== CAMERA SCANNER =====
+async function toggleScanner(){
+  if(scanning){ await stopScanner(); return; }
+  const el=document.getElementById('reader'); el.style.display='block';
+  document.getElementById('scanBtn').textContent='⏹️ STOP CAMERA';
+  document.getElementById('scanMsg').textContent='📷 Point camera at barcode... Hold 15cm away.';
+  scanning=true;
+  scanner=new Html5Qrcode("reader");
+  try{
+    await scanner.start({facingMode:"environment"}, {fps:10, qrbox:{width:260, height:120}}, (decoded)=>{
+      const now=Date.now(); if(decoded===lastCode && now-lastTime<2000) return; lastCode=decoded; lastTime=now;
+      onScan(decoded.trim().toUpperCase());
+    }, ()=>{});
+  }catch(e){
+    document.getElementById('scanMsg').textContent='⚠️ Camera failed: '+e.message+' — Use manual typing, or allow camera in browser settings.';
+    scanning=false; document.getElementById('scanBtn').textContent='📷 START CAMERA SCAN';
+  }
+}
+async function stopScanner(){
+  try{ if(scanner){ await scanner.stop(); await scanner.clear(); scanner=null; } }catch(e){}
+  scanning=false; document.getElementById('reader').style.display='none'; document.getElementById('scanBtn').textContent='📷 START CAMERA SCAN';
+}
+function onScan(code){
+  beep();
+  document.getElementById('barcodeInput').value=code;
+  const el=document.getElementById('lastScanIssue'); el.style.display='block'; el.innerHTML=`✅ Scanned: <b>${code}</b>`;
+  document.getElementById('scanMsg').textContent='✅ Scanned! Check book below, then click ISSUE.';
+  findBook();
+  setTimeout(()=>{ if(scanning) stopScanner(); }, 800);
+}
 
 // ===== LOAD =====
 async function loadAll(){
   currentUser=getUser();
   if(!currentUser){ location.href='index.html'; return; }
-  schoolId=currentUser.schoolId;
-  myClass=currentUser.className || currentUser.class || '';
+  schoolId=currentUser.schoolId; myClass=currentUser.className || currentUser.class || '';
   document.getElementById('userLine').innerHTML=`👋 ${esc(currentUser.name)} • ${esc(currentUser.schoolName)} • ${esc(currentUser.role)} • Subject: ${esc(currentUser.subject||'-')}`;
   document.getElementById('myClassName').textContent = myClass ? `Class ${myClass}` : 'No Class Assigned';
   if(myClass){
     const cb=document.getElementById('classBox'); cb.style.display='block';
     cb.innerHTML=`<b>Your Class: ${esc(myClass)}</b> • Subject: ${esc(currentUser.subject||'-')} • You see this class only. If class is wrong, ask Principal to fix it in Principal → Teachers → Delete + Re-add with correct Class.`;
   } else {
-    document.getElementById('statusBox').innerHTML=`⚠️ <b>No Class Assigned</b> to you. Principal must set Class when creating your account. You will see ALL learners until Principal fixes it. WhatsApp Principal.`;
+    document.getElementById('statusBox').innerHTML=`⚠️ <b>No Class Assigned</b> to you. Principal must set Class. You will see ALL learners until fixed.`;
   }
   try{
     const lSnap=await db.collection('schools').doc(schoolId).collection('learners').get();
@@ -145,32 +195,26 @@ async function loadAll(){
       books=bSnap.docs.map(d=>({id:d.id, ...d.data()}));
       issues=iSnap.docs.map(d=>({id:d.id, ...d.data()}));
       learners = myClass ? allLearners.filter(l=> (l.className||'')===myClass) : allLearners;
-      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Firestore — ${schoolId} • Class ${esc(myClass||'All')}`;
+      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Firestore — ${schoolId} • Class ${esc(myClass||'All')} • 📷 Camera Scan Ready`;
       renderAll(); filterLearners(); return;
     }
     const rSnap=await rtdb.ref('schools/'+schoolId).once('value');
     const rv=rSnap.val();
     if(rv && (rv.learners || rv.books)){
-      allLearners=Object.values(rv.learners||{});
-      books=Object.values(rv.books||{});
-      issues=Object.values(rv.issues||{});
+      allLearners=Object.values(rv.learners||{}); books=Object.values(rv.books||{}); issues=Object.values(rv.issues||{});
       learners = myClass ? allLearners.filter(l=> (l.className||'')===myClass) : allLearners;
-      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Realtime — ${schoolId}`;
+      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Realtime — ${schoolId} • 📷 Camera Scan Ready`;
       renderAll(); filterLearners(); return;
     }
     throw new Error('No data');
   }catch(e){
-    console.log('Demo:', e.message);
     useDemo=true; allLearners=[...DEMO.learners]; books=[...DEMO.books]; issues=[...DEMO.issues];
     learners = myClass ? allLearners.filter(l=>l.className===myClass) : allLearners;
-    // If demo teacher has no class in session, default to 10A for demo
     if(!myClass){ myClass='10A'; learners=allLearners.filter(l=>l.className==='10A'); document.getElementById('myClassName').textContent='Class 10A (Demo)'; }
     document.getElementById('statusBox').innerHTML=`⚠️ Firebase has no data yet — Showing Demo Class ${esc(myClass)}.`;
     renderAll(); filterLearners();
   }
 }
-
-// ===== ISSUE =====
 async function saveIssue(id, data){
   if(useDemo) return;
   try{ await db.collection('schools').doc(schoolId).collection('issues').doc(id).set(data, {merge:true}); }catch(e){}
@@ -222,7 +266,7 @@ async function issueBook(){
   const data={learnerId:learner.learnerId, learnerName:learner.name, className:learner.className, phone:learner.phone||'', barcode, bookTitle:book.title, subject:book.subject||'', dueDate, issueDate:new Date().toISOString().slice(0,10), issuedBy:currentUser.name, schoolId, status:'OUT'};
   issues.push({id, ...data}); await saveIssue(id, data); await updateBookStatus(barcode, 'OUT');
   msg.innerHTML=`<div class="ok">✅ ISSUED: <b>${esc(book.title)}</b> → <b>${esc(learner.name)}</b> • Due ${dueDate}</div>`;
-  document.getElementById('barcodeInput').value=''; document.getElementById('bookInfo').style.display='none';
+  document.getElementById('barcodeInput').value=''; document.getElementById('bookInfo').style.display='none'; document.getElementById('lastScanIssue').style.display='none';
   if(learner.phone){
     const clean=learner.phone.replace(/\D/g,''); const wa=clean.startsWith('0') ? '27'+clean.slice(1) : clean;
     const txt=`Hello, this is ${currentUser.schoolName} — ${myClass} Teacher ${currentUser.name}. 📚 Your child ${learner.name} (${learner.learnerId}, ${learner.className}) borrowed: ${book.title} (${barcode}). Please return by ${dueDate}. Thank you.`;
@@ -233,12 +277,11 @@ async function issueBook(){
 async function returnById(id){
   const issue=issues.find(i=>i.id===id); if(!issue) return;
   issue.status='RETURNED'; issue.returnDate=new Date().toISOString().slice(0,10);
-  await saveIssue(id, issue); await updateBookStatus(issue.barcode, 'AVAILABLE');
-  renderAll();
+  await saveIssue(id, issue); await updateBookStatus(issue.barcode, 'AVAILABLE'); renderAll();
 }
 function whatsappParent(issue){
   const phone=issue.phone || learners.find(l=>l.learnerId===issue.learnerId)?.phone || '';
-  if(!phone){ alert('No parent phone. Add in Librarian → Learners.'); return; }
+  if(!phone){ alert('No parent phone.'); return; }
   const clean=phone.replace(/\D/g,''); const wa=clean.startsWith('0') ? '27'+clean.slice(1) : clean;
   const txt=`Hello, this is ${currentUser.schoolName} — ${myClass} Teacher ${currentUser.name}. ⚠️ OVERDUE: Your child ${issue.learnerName} (${issue.learnerId}, ${issue.className}) has not returned: ${issue.bookTitle} (${issue.barcode}) — Was due ${issue.dueDate}. Please return tomorrow, or replace / pay. Thank you.`;
   window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(txt),'_blank');
@@ -250,8 +293,6 @@ function whatsappAllOverdue(){
   if(!confirm(`WhatsApp ${overdue.length} overdue parents one by one?`)) return;
   overdue.forEach((o,idx)=>setTimeout(()=>whatsappParent(o), idx*800));
 }
-
-// ===== RENDER =====
 function renderAll(){
   const q=(document.getElementById('searchBox').value||'').toLowerCase();
   const today=new Date().toISOString().slice(0,10);
@@ -262,22 +303,20 @@ function renderAll(){
   document.getElementById('kBooks').textContent=books.length;
   document.getElementById('kOut').textContent=outIssues.length;
   document.getElementById('kOverdue').textContent=overdue.length;
-
   const fLearners=learners.filter(l=>(l.name+' '+l.learnerId).toLowerCase().includes(q));
   document.getElementById('learnersList').innerHTML = fLearners.length ? `<table><tr><th>Name</th><th>ID</th><th>Class</th><th>Phone</th><th>Books Out</th></tr>${fLearners.map(l=>{
     const cnt=outIssues.filter(i=>i.learnerId===l.learnerId).length;
-    return `<tr><td><b>${esc(l.name)}</b></td><td>${esc(l.learnerId)}</td><td>${esc(l.className)}</td><td>${esc(l.phone||'-')}</td><td><b>${cnt}</b> ${cnt ? `<button class="btn-small btn-gold" onclick="showTab('out',document.querySelectorAll('.tabs button')[2])">View</button>` : ''}</td></tr>`;
-  }).join('')}</table>` : '<p class="small">No learners in your class yet. Librarian adds them — check Class matches exactly (e.g. 10A, not 10a).</p>';
-
+    return `<tr><td><b>${esc(l.name)}</b></td><td>${esc(l.learnerId)}</td><td>${esc(l.className)}</td><td>${esc(l.phone||'-')}</td><td><b>${cnt}</b></td></tr>`;
+  }).join('')}</table>` : '<p class="small">No learners in your class yet.</p>';
   const fOut=outIssues.filter(i=>(i.learnerName+' '+i.learnerId+' '+i.bookTitle+' '+i.barcode).toLowerCase().includes(q));
   document.getElementById('outList').innerHTML = fOut.length ? `<table><tr><th>Learner</th><th>Book</th><th>Due</th><th>Action</th></tr>${fOut.map(i=>`<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}</td><td>${esc(i.dueDate)} ${i.dueDate < today ? '<b style="color:#dc2626">OVERDUE</b>' : ''}</td><td><button class="btn-small btn-blue" onclick="returnById('${esc(i.id)}')">📥 Return</button> <button class="btn-small btn-gold" onclick="whatsappParent(${JSON.stringify(i).replace(/"/g,'&quot;')})">📱 Parent</button></td></tr>`).join('')}</table>` : '<p class="small">No books out in your class.</p>';
-
   const fOver=overdue.filter(i=>(i.learnerName+' '+i.bookTitle).toLowerCase().includes(q));
   document.getElementById('overdueList').innerHTML = fOver.length ? `<table><tr><th>Learner</th><th>Book</th><th>Due</th><th>Days Late</th><th>Action</th></tr>${fOver.map(i=>{
     const days=Math.ceil((new Date(today)-new Date(i.dueDate))/86400000);
     return `<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}<br>Parent: ${esc(i.phone||'-')}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}</td><td>${esc(i.dueDate)}</td><td><b style="color:#dc2626">${days} days</b></td><td><button class="btn-small btn-gold" onclick="whatsappParent(${JSON.stringify(i).replace(/"/g,'&quot;')})">📱 Parent</button> <button class="btn-small btn-blue" onclick="returnById('${esc(i.id)}')">📥 Return</button></td></tr>`;
   }).join('')}</table>` : '<p class="small">No overdue books in your class. 🎉</p>';
 }
+document.getElementById('barcodeInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); findBook(); } });
 loadAll();
 </script>
 </body>
