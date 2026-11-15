@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Issue / Return</title><meta name="theme-color" content="#0a1f4d">
+<title>Makhanani LTSM — Issue / Return — Camera Scan</title><meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -43,14 +44,19 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 .kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
 .topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
 .small{font-size:12px;color:#64748b}
+#reader, #readerReturn{width:100%;max-width:420px;margin:10px auto;border:2px solid #0a1f4d;border-radius:12px;overflow:hidden;display:none}
+#reader video, #readerReturn video{width:100% !important}
+.scanBox{border:2px dashed #0a1f4d;border-radius:12px;padding:10px;text-align:center;margin-top:10px;background:#f8fafc}
+.scanBox b{color:#0a1f4d}
+.lastScan{background:#dcfce7;border:2px solid #059669;border-radius:10px;padding:10px;font-size:16px;font-weight:900;text-align:center;margin-top:10px;display:none}
 @media(max-width:600px){.kpi{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <header>
 <img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'">
-<h1>📖 Issue / Return</h1><p id="userLine">Loading...</p>
-<div class="topnav"><a href="index.html">🏠 Login</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">📊 Principal</a><a href="teachers.html">👩‍🏫 Teachers</a><a href="profile.html">👤 Profile</a></div>
+<h1>📖 Issue / Return — 📷 Camera Scan</h1><p id="userLine">Loading...</p>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">📊 Principal</a><a href="teachers.html">👩‍🏫 Teachers</a><a href="barcode.html">🏷️ Barcodes</a><a href="profile.html">👤 Profile</a></div>
 </header>
 <main>
 <div class="card"><div class="kpi"><div><b id="kLearners">0</b><span>Learners</span></div><div><b id="kBooks">0</b><span>Books</span></div><div><b id="kOut">0</b><span>Out</span></div><div><b id="kOverdue">0</b><span>Overdue</span></div></div>
@@ -61,15 +67,22 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 
 <!-- ISSUE -->
 <div class="card" id="tab-issue">
-<h2>📤 Issue Book — 3 Seconds</h2>
-<div class="goldBox"><b>How:</b> 1. Pick Learner → 2. Scan / Type Barcode → 3. Click ISSUE. Learner gets 1 book at a time per barcode. Duplicate barcode blocked.</div>
+<h2>📤 Issue Book — Scan Book + Pick Learner</h2>
+<div class="goldBox"><b>Fastest Way:</b> 1. Pick Learner → 2. Click 📷 Scan Book → 3. Point camera at barcode → Beep → Book fills → 4. Click ISSUE. No typing.</div>
 <label>👥 Learner — Type to Search</label>
-<input id="learnerSearch" placeholder="Type learner name or ID... e.g. Thandi / L001" oninput="filterLearners()">
+<input id="learnerSearch" placeholder="Type learner name or ID... e.g. Thandi / 10A001" oninput="filterLearners()">
 <select id="learnerSelect"><option value="">-- Pick Learner --</option></select>
 <div id="learnerInfo" class="info" style="display:none"></div>
 
 <label>📚 Book Barcode — Scan or Type</label>
-<input id="barcodeInput" placeholder="Scan barcode or type BK001" oninput="findBook()">
+<input id="barcodeInput" placeholder="Scan barcode or type TP000001" oninput="findBook()">
+<div class="scanBox">
+<b>📷 Camera Scan — Book Barcode</b><br><span class="small">Works on phone + laptop. Allow camera when asked. Hold barcode 15cm away, good light.</span><br>
+<button class="btn btn-blue" id="scanBtn" onclick="toggleScanner('issue')">📷 START CAMERA SCAN</button>
+<div id="reader"></div>
+<div id="lastScanIssue" class="lastScan"></div>
+<div id="scanMsg" class="small"></div>
+</div>
 <div id="bookInfo" class="info" style="display:none"></div>
 
 <label>📅 Due Date</label>
@@ -81,8 +94,15 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <!-- RETURN -->
 <div class="card" id="tab-return" style="display:none">
 <h2>📥 Return Book — Scan Barcode Only</h2>
+<div class="goldBox">No need to pick learner for Return. Just scan book, it finds who has it.</div>
 <label>📚 Barcode to Return</label>
-<input id="returnBarcode" placeholder="Scan / Type barcode... e.g. BK001">
+<input id="returnBarcode" placeholder="Scan / Type barcode... e.g. TP000001">
+<div class="scanBox">
+<b>📷 Camera Scan — Return</b><br>
+<button class="btn btn-blue" id="scanBtnReturn" onclick="toggleScanner('return')">📷 START CAMERA SCAN</button>
+<div id="readerReturn"></div>
+<div id="lastScanReturn" class="lastScan"></div>
+</div>
 <button class="btn btn-blue" onclick="returnBook()">📥 RETURN BOOK</button>
 <div id="returnMsg"></div>
 <h3>Books Out Now — Click Return</h3>
@@ -98,34 +118,103 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <!-- OVERDUE -->
 <div class="card" id="tab-overdue" style="display:none">
 <h2>⚠️ Overdue — WhatsApp Parent In 1 Click</h2>
-<div class="goldBox">Overdue = Due Date passed + Not returned. Click 📱 to WhatsApp parent: "Book overdue, please return / replace."</div>
+<div class="goldBox">Overdue = Due Date passed + Not returned. Click 📱 to WhatsApp parent.</div>
 <div id="overdueList"></div>
 <button class="btn btn-gold" onclick="whatsappAllOverdue()">📱 WhatsApp ALL Overdue Parents</button>
 </div>
 
-<div class="card"><button class="btn btn-grey" onclick="logout()">🚪 Logout</button></div>
+<div class="card"><button class="btn btn-grey" onclick="logout()">🚪 Logout</button><button class="btn btn-gold" onclick="location.href='barcode.html'">🏷️ Print Barcodes →</button></div>
 </main>
 
 <script>
 let currentUser=null, schoolId='', learners=[], books=[], issues=[];
 let useDemo=false;
+let scanner=null, scannerReturn=null, scanningIssue=false, scanningReturn=false, lastCode='', lastTime=0;
 const DEMO={
-  learners:[{id:'L001', name:'Thandi Mokoena', learnerId:'L001', className:'10A', grade:'10', phone:'0780233263'},
-  {id:'L002', name:'Sipho Dube', learnerId:'L002', className:'10A', grade:'10', phone:'0781112222'}],
-  books:[{id:'BK001', title:'Mathematics Grade 10', barcode:'BK001', subject:'Mathematics', grade:'10', author:'Maskew Miller', status:'AVAILABLE'},
-  {id:'BK002', title:'English Grade 10', barcode:'BK002', subject:'English', grade:'10', author:'Oxford', status:'AVAILABLE'}],
+  learners:[{id:'10A001', name:'Thandi Mokoena', learnerId:'10A001', className:'10A', grade:'10', phone:'0780233263'},
+  {id:'10A002', name:'Sipho Dube', learnerId:'10A002', className:'10A', grade:'10', phone:'0781112222'}],
+  books:[{id:'TP000001', title:'Mathematics Grade 10', barcode:'TP000001', subject:'Mathematics', grade:'10', status:'AVAILABLE'},
+  {id:'TP000002', title:'English Grade 10', barcode:'TP000002', subject:'English', grade:'10', status:'AVAILABLE'}],
   issues:[]
 };
 function esc(s){ return String(s||'').replace(/</g,'&lt;'); }
 function getUser(){ try{ return JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){ return null; } }
-function logout(){ localStorage.removeItem('makhanani_user'); location.href='index.html'; }
+function logout(){ stopAllScanners(); localStorage.removeItem('makhanani_user'); location.href='index.html'; }
 function showTab(name, btn){
   ['issue','return','out','overdue'].forEach(t=>document.getElementById('tab-'+t).style.display = t===name ? 'block':'none');
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
+  // Stop camera when switching tabs to save battery
+  if(name!=='issue' && scanningIssue) toggleScanner('issue');
+  if(name!=='return' && scanningReturn) toggleScanner('return');
 }
 function todayPlus(days){ const d=new Date(); d.setDate(d.getDate()+days); return d.toISOString().slice(0,10); }
 document.getElementById('dueDate').value = todayPlus(14);
+function beep(){
+  try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(); const g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value=880; o.type='sine'; g.gain.value=0.2; o.start(); o.stop(ctx.currentTime+0.15); }catch(e){}
+  try{ if(navigator.vibrate) navigator.vibrate(100); }catch(e){}
+}
+
+// ===== CAMERA SCANNER =====
+async function toggleScanner(mode){
+  if(mode==='issue'){
+    if(scanningIssue){ await stopScanner('issue'); return; }
+    const el=document.getElementById('reader'); el.style.display='block';
+    document.getElementById('scanBtn').textContent='⏹️ STOP CAMERA';
+    document.getElementById('scanMsg').textContent='📷 Point camera at barcode... Hold 15cm away.';
+    scanningIssue=true;
+    scanner=new Html5Qrcode("reader");
+    try{
+      await scanner.start({facingMode:"environment"}, {fps:10, qrbox:{width:260, height:120}}, (decoded)=>{
+        // Prevent double scan in 2 sec
+        const now=Date.now(); if(decoded===lastCode && now-lastTime<2000) return; lastCode=decoded; lastTime=now;
+        onScanIssue(decoded.trim().toUpperCase());
+      }, ()=>{});
+    }catch(e){
+      document.getElementById('scanMsg').textContent='⚠️ Camera failed: '+e.message+' — Use manual typing below, or allow camera in browser settings.';
+      scanningIssue=false; document.getElementById('scanBtn').textContent='📷 START CAMERA SCAN';
+    }
+  } else {
+    if(scanningReturn){ await stopScanner('return'); return; }
+    const el=document.getElementById('readerReturn'); el.style.display='block';
+    document.getElementById('scanBtnReturn').textContent='⏹️ STOP CAMERA';
+    scanningReturn=true;
+    scannerReturn=new Html5Qrcode("readerReturn");
+    try{
+      await scannerReturn.start({facingMode:"environment"}, {fps:10, qrbox:{width:260, height:120}}, (decoded)=>{
+        const now=Date.now(); if(decoded===lastCode && now-lastTime<2000) return; lastCode=decoded; lastTime=now;
+        onScanReturn(decoded.trim().toUpperCase());
+      }, ()=>{});
+    }catch(e){
+      document.getElementById('scanBtnReturn').textContent='📷 START CAMERA SCAN'; scanningReturn=false;
+      alert('Camera failed: '+e.message);
+    }
+  }
+}
+async function stopScanner(mode){
+  try{
+    if(mode==='issue' && scanner){ await scanner.stop(); await scanner.clear(); scanner=null; }
+    if(mode==='return' && scannerReturn){ await scannerReturn.stop(); await scannerReturn.clear(); scannerReturn=null; }
+  }catch(e){}
+  if(mode==='issue'){ scanningIssue=false; document.getElementById('reader').style.display='none'; document.getElementById('scanBtn').textContent='📷 START CAMERA SCAN'; }
+  if(mode==='return'){ scanningReturn=false; document.getElementById('readerReturn').style.display='none'; document.getElementById('scanBtnReturn').textContent='📷 START CAMERA SCAN'; }
+}
+async function stopAllScanners(){ await stopScanner('issue'); await stopScanner('return'); }
+function onScanIssue(code){
+  beep();
+  document.getElementById('barcodeInput').value=code;
+  const el=document.getElementById('lastScanIssue'); el.style.display='block'; el.innerHTML=`✅ Scanned: <b>${code}</b>`;
+  document.getElementById('scanMsg').textContent='✅ Scanned! Check book below, then click ISSUE.';
+  findBook();
+  // Auto-stop after 1 sec so user can click ISSUE
+  setTimeout(()=>{ if(scanningIssue) stopScanner('issue'); }, 800);
+}
+function onScanReturn(code){
+  beep();
+  document.getElementById('returnBarcode').value=code;
+  const el=document.getElementById('lastScanReturn'); el.style.display='block'; el.innerHTML=`✅ Scanned: <b>${code}</b> — Click RETURN below.`;
+  setTimeout(()=>{ if(scanningReturn) stopScanner('return'); }, 800);
+}
 
 // ===== LOAD =====
 async function loadAll(){
@@ -133,10 +222,6 @@ async function loadAll(){
   if(!currentUser){ location.href='index.html'; return; }
   schoolId=currentUser.schoolId;
   document.getElementById('userLine').innerHTML=`👋 ${esc(currentUser.name)} • ${esc(currentUser.schoolName)} • ${esc(currentUser.role)}`;
-  // Teacher: limit to their class
-  if(currentUser.role==='TEACHER' && currentUser.className){
-    document.getElementById('statusBox').innerHTML=`⚠️ Teacher — You see <b>Class ${esc(currentUser.className)}</b> only.`;
-  }
   try{
     const lSnap=await db.collection('schools').doc(schoolId).collection('learners').get();
     const bSnap=await db.collection('schools').doc(schoolId).collection('books').get();
@@ -145,43 +230,34 @@ async function loadAll(){
       learners=lSnap.docs.map(d=>({id:d.id, ...d.data()}));
       books=bSnap.docs.map(d=>({id:d.id, ...d.data()}));
       issues=iSnap.docs.map(d=>({id:d.id, ...d.data()}));
-      // If issues collection has returned too, filter OUT only for display, but keep all for return logic
-      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Firestore — ${schoolId}`;
-      renderAll(); return;
+      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Firestore — ${schoolId} • 📷 Camera Scan Ready`;
+      renderAll(); filterLearners(); return;
     }
     const rSnap=await rtdb.ref('schools/'+schoolId).once('value');
     const rv=rSnap.val();
     if(rv && (rv.learners || rv.books)){
-      learners=Object.values(rv.learners||{});
-      books=Object.values(rv.books||{});
-      issues=Object.values(rv.issues||{});
-      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Realtime — ${schoolId}`;
-      renderAll(); return;
+      learners=Object.values(rv.learners||{}); books=Object.values(rv.books||{}); issues=Object.values(rv.issues||{});
+      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Realtime — ${schoolId} • 📷 Camera Scan Ready`;
+      renderAll(); filterLearners(); return;
     }
     throw new Error('No data');
   }catch(e){
-    console.log('Demo:', e.message);
     useDemo=true; learners=[...DEMO.learners]; books=[...DEMO.books]; issues=[];
-    document.getElementById('statusBox').innerHTML=`⚠️ Firebase has no learners/books yet — Showing Demo. Add learners/books in Librarian page.`;
-    renderAll();
+    document.getElementById('statusBox').innerHTML=`⚠️ Firebase has no learners/books yet — Showing Demo. Add in Librarian / Barcode page.`;
+    renderAll(); filterLearners();
   }
 }
-
-// ===== HELPERS =====
 async function saveIssue(id, data){
   if(useDemo) return;
   try{ await db.collection('schools').doc(schoolId).collection('issues').doc(id).set(data, {merge:true}); }catch(e){}
   try{ await rtdb.ref('schools/'+schoolId+'/issues/'+id).set(data); }catch(e){}
 }
 async function updateBookStatus(barcode, status){
-  const b=books.find(x=>x.barcode===barcode);
-  if(b) b.status=status;
+  const b=books.find(x=>x.barcode===barcode); if(b) b.status=status;
   if(useDemo) return;
   try{ await db.collection('schools').doc(schoolId).collection('books').doc(barcode).update({status}); }catch(e){}
   try{ await rtdb.ref('schools/'+schoolId+'/books/'+barcode).update({status}); }catch(e){}
 }
-
-// ===== FILTER / FIND =====
 function filterLearners(){
   const q=(document.getElementById('learnerSearch').value||'').toLowerCase();
   const sel=document.getElementById('learnerSelect');
@@ -190,12 +266,12 @@ function filterLearners(){
   list=list.filter(l=>(l.name+' '+l.learnerId+' '+l.className).toLowerCase().includes(q));
   sel.innerHTML='<option value="">-- Pick Learner --</option>'+list.slice(0,50).map(l=>`<option value="${esc(l.id)}">${esc(l.name)} — ${esc(l.learnerId)} — ${esc(l.className)}</option>`).join('');
   sel.onchange=()=>{
-    const id=sel.value; const l=learners.find(x=>x.id===id);
+    const l=learners.find(x=>x.id===sel.value);
     const info=document.getElementById('learnerInfo');
     if(!l){ info.style.display='none'; return; }
-    info.style.display='block';
     const outCount=issues.filter(i=>i.learnerId===l.learnerId && i.status==='OUT').length;
-    info.innerHTML=`<b>${esc(l.name)}</b> • ${esc(l.learnerId)} • Class ${esc(l.className)} • Grade ${esc(l.grade||'-')} • Parent: ${esc(l.phone||'No phone')}<br>Books Out: <b>${outCount}</b>`;
+    info.style.display='block';
+    info.innerHTML=`<b>${esc(l.name)}</b> • ${esc(l.learnerId)} • Class ${esc(l.className)} • Parent: ${esc(l.phone||'No phone')}<br>Books Out: <b>${outCount}</b>`;
   };
 }
 function findBook(){
@@ -203,14 +279,12 @@ function findBook(){
   const info=document.getElementById('bookInfo');
   if(!bc){ info.style.display='none'; return; }
   const b=books.find(x=>(x.barcode||'').toUpperCase()===bc);
-  if(!b){ info.style.display='block'; info.innerHTML=`⚠️ Barcode <b>${esc(bc)}</b> not found. Add it in Librarian → Books first.`; return; }
+  if(!b){ info.style.display='block'; info.innerHTML=`⚠️ Barcode <b>${esc(bc)}</b> not found. Add it in Librarian → Books or Barcode page.`; return; }
   info.style.display='block';
   const out=issues.find(i=>i.barcode===bc && i.status==='OUT');
   if(out){ info.innerHTML=`⛔ <b>${esc(b.title)}</b> (${esc(b.barcode)}) — <b>ALREADY OUT</b> to ${esc(out.learnerName)} (${esc(out.learnerId)}) • Due ${esc(out.dueDate)}`; }
   else { info.innerHTML=`✅ <b>${esc(b.title)}</b> (${esc(b.barcode)}) — ${esc(b.subject||'')} Grade ${esc(b.grade||'-')} • Status: ${esc(b.status||'AVAILABLE')}`; }
 }
-
-// ===== ISSUE =====
 async function issueBook(){
   const learnerId=document.getElementById('learnerSelect').value;
   const barcode=document.getElementById('barcodeInput').value.trim().toUpperCase();
@@ -218,24 +292,16 @@ async function issueBook(){
   const msg=document.getElementById('issueMsg');
   if(!learnerId){ msg.innerHTML='<div class="warn">⚠️ Pick Learner first.</div>'; return; }
   if(!barcode){ msg.innerHTML='<div class="warn">⚠️ Scan / Type Barcode.</div>'; return; }
-  if(!dueDate){ msg.innerHTML='<div class="warn">⚠️ Pick Due Date.</div>'; return; }
   const learner=learners.find(l=>l.id===learnerId);
   const book=books.find(b=>(b.barcode||'').toUpperCase()===barcode);
-  if(!learner){ msg.innerHTML='<div class="warn">⚠️ Learner not found.</div>'; return; }
   if(!book){ msg.innerHTML='<div class="warn">⚠️ Book barcode not found. Add it in Librarian → Books.</div>'; return; }
   const already=issues.find(i=>i.barcode===barcode && i.status==='OUT');
-  if(already){ msg.innerHTML=`<div class="warn">⛔ This book is ALREADY OUT to ${esc(already.learnerName)} (${esc(already.learnerId)}). Return it first.</div>`; return; }
-  const alreadyLearnerHas=issues.find(i=>i.learnerId===learner.learnerId && i.barcode===barcode && i.status==='OUT');
-  if(alreadyLearnerHas){ msg.innerHTML='<div class="warn">⛔ Learner already has this book.</div>'; return; }
-
-  const issueId=barcode+'_'+learner.learnerId+'_'+Date.now();
+  if(already){ msg.innerHTML=`<div class="warn">⛔ This book is ALREADY OUT to ${esc(already.learnerName)}. Return it first.</div>`; return; }
+  const id=barcode+'_'+learner.learnerId+'_'+Date.now();
   const data={learnerId:learner.learnerId, learnerName:learner.name, className:learner.className, phone:learner.phone||'', barcode, bookTitle:book.title, subject:book.subject||'', dueDate, issueDate:new Date().toISOString().slice(0,10), issuedBy:currentUser.name, schoolId, status:'OUT'};
-  issues.push({id:issueId, ...data});
-  await saveIssue(issueId, data);
-  await updateBookStatus(barcode, 'OUT');
-  msg.innerHTML=`<div class="ok">✅ ISSUED: <b>${esc(book.title)}</b> (${esc(barcode)}) → <b>${esc(learner.name)}</b> (${esc(learner.learnerId)}) • Due ${dueDate}<br>Parent WhatsApp ready below.</div>`;
-  document.getElementById('barcodeInput').value=''; document.getElementById('bookInfo').style.display='none';
-  // WhatsApp parent
+  issues.push({id, ...data}); await saveIssue(id, data); await updateBookStatus(barcode, 'OUT');
+  msg.innerHTML=`<div class="ok">✅ ISSUED: <b>${esc(book.title)}</b> (${esc(barcode)}) → <b>${esc(learner.name)}</b> • Due ${dueDate}</div>`;
+  document.getElementById('barcodeInput').value=''; document.getElementById('bookInfo').style.display='none'; document.getElementById('lastScanIssue').style.display='none';
   if(learner.phone){
     const clean=learner.phone.replace(/\D/g,''); const wa=clean.startsWith('0') ? '27'+clean.slice(1) : clean;
     const txt=`Hello, this is ${currentUser.schoolName} Library. 📚 Your child ${learner.name} (${learner.learnerId}, ${learner.className}) borrowed: ${book.title} (${barcode}). Please return by ${dueDate}. If lost, replace or pay. Thank you. — ${currentUser.schoolName}`;
@@ -243,31 +309,26 @@ async function issueBook(){
   }
   renderAll(); filterLearners();
 }
-
-// ===== RETURN =====
 async function returnBook(){
-  const bc=(document.getElementById('returnBarcode').value.trim().toUpperCase());
+  const bc=document.getElementById('returnBarcode').value.trim().toUpperCase();
   const msg=document.getElementById('returnMsg');
   if(!bc){ msg.innerHTML='<div class="warn">⚠️ Scan / Type Barcode to return.</div>'; return; }
   const issue=issues.find(i=>i.barcode===bc && i.status==='OUT');
-  if(!issue){ msg.innerHTML=`<div class="warn">⚠️ Barcode ${esc(bc)} is NOT out. Check Books Out list.</div>`; return; }
+  if(!issue){ msg.innerHTML=`<div class="warn">⚠️ Barcode ${esc(bc)} is NOT out.</div>`; return; }
   issue.status='RETURNED'; issue.returnDate=new Date().toISOString().slice(0,10);
-  await saveIssue(issue.id, issue);
-  await updateBookStatus(bc, 'AVAILABLE');
-  msg.innerHTML=`<div class="ok">✅ RETURNED: <b>${esc(issue.bookTitle)}</b> (${esc(bc)}) from <b>${esc(issue.learnerName)}</b> (${esc(issue.learnerId)})</div>`;
-  document.getElementById('returnBarcode').value='';
+  await saveIssue(issue.id, issue); await updateBookStatus(bc, 'AVAILABLE');
+  msg.innerHTML=`<div class="ok">✅ RETURNED: <b>${esc(issue.bookTitle)}</b> (${esc(bc)}) from <b>${esc(issue.learnerName)}</b></div>`;
+  document.getElementById('returnBarcode').value=''; document.getElementById('lastScanReturn').style.display='none';
   renderAll();
 }
 async function returnById(id){
   const issue=issues.find(i=>i.id===id); if(!issue) return;
   issue.status='RETURNED'; issue.returnDate=new Date().toISOString().slice(0,10);
-  await saveIssue(id, issue); await updateBookStatus(issue.barcode, 'AVAILABLE');
-  renderAll();
+  await saveIssue(id, issue); await updateBookStatus(issue.barcode, 'AVAILABLE'); renderAll();
 }
 function whatsappParent(issue){
-  const learner=learners.find(l=>l.learnerId===issue.learnerId);
-  const phone=learner?.phone || issue.phone || '';
-  if(!phone){ alert('No parent phone for this learner. Add phone in Librarian → Learners.'); return; }
+  const phone=issue.phone || learners.find(l=>l.learnerId===issue.learnerId)?.phone || '';
+  if(!phone){ alert('No parent phone.'); return; }
   const clean=phone.replace(/\D/g,''); const wa=clean.startsWith('0') ? '27'+clean.slice(1) : clean;
   const txt=`Hello, this is ${currentUser.schoolName} Library. ⚠️ OVERDUE: Your child ${issue.learnerName} (${issue.learnerId}, ${issue.className}) has not returned: ${issue.bookTitle} (${issue.barcode}) — Was due ${issue.dueDate}. Please return tomorrow, or replace / pay. Thank you. — ${currentUser.schoolName}`;
   window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(txt),'_blank');
@@ -279,8 +340,6 @@ function whatsappAllOverdue(){
   if(!confirm(`WhatsApp ${overdue.length} overdue parents one by one?`)) return;
   overdue.forEach((o,idx)=>setTimeout(()=>whatsappParent(o), idx*800));
 }
-
-// ===== RENDER =====
 function renderAll(){
   const q=(document.getElementById('searchBox').value||'').toLowerCase();
   const today=new Date().toISOString().slice(0,10);
@@ -293,15 +352,17 @@ function renderAll(){
   document.getElementById('kBooks').textContent=books.length;
   document.getElementById('kOut').textContent=outIssues.length;
   document.getElementById('kOverdue').textContent=overdue.length;
-
   document.getElementById('returnList').innerHTML = fOut.length ? `<table><tr><th>Learner</th><th>Book</th><th>Due</th><th>Action</th></tr>${fOut.map(i=>`<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}</td><td>${esc(i.dueDate)} ${i.dueDate < today ? '<b style="color:#dc2626">OVERDUE</b>' : ''}</td><td><button class="btn-small btn-blue" onclick="returnById('${esc(i.id)}')">📥 Return</button></td></tr>`).join('')}</table>` : '<p class="small">No books out.</p>';
   document.getElementById('outList').innerHTML = fOut.length ? `<table><tr><th>Learner</th><th>Book</th><th>Issued</th><th>Due</th><th>Action</th></tr>${fOut.map(i=>`<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}</td><td>${esc(i.issueDate||'-')}</td><td>${esc(i.dueDate)} ${i.dueDate < today ? '<b style="color:#dc2626">OVERDUE</b>' : ''}</td><td><button class="btn-small btn-blue" onclick="returnById('${esc(i.id)}')">📥 Return</button> <button class="btn-small btn-gold" onclick="whatsappParent(${JSON.stringify(i).replace(/"/g,'&quot;')})">📱 Parent</button></td></tr>`).join('')}</table>` : '<p class="small">No books out.</p>';
   const fOver=overdue.filter(i=>(i.learnerName+' '+i.bookTitle+' '+i.barcode).toLowerCase().includes(q));
   document.getElementById('overdueList').innerHTML = fOver.length ? `<table><tr><th>Learner</th><th>Book</th><th>Due</th><th>Days Late</th><th>Action</th></tr>${fOver.map(i=>{
     const days=Math.ceil((new Date(today)-new Date(i.dueDate))/86400000);
-    return `<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}<br>Parent: ${esc(i.phone||'-')}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}</td><td>${esc(i.dueDate)}</td><td><b style="color:#dc2626">${days} days</b></td><td><button class="btn-small btn-gold" onclick="whatsappParent(${JSON.stringify(i).replace(/"/g,'&quot;')})">📱 WhatsApp Parent</button> <button class="btn-small btn-blue" onclick="returnById('${esc(i.id)}')">📥 Return</button></td></tr>`;
+    return `<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}<br>Parent: ${esc(i.phone||'-')}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}</td><td>${esc(i.dueDate)}</td><td><b style="color:#dc2626">${days} days</b></td><td><button class="btn-small btn-gold" onclick="whatsappParent(${JSON.stringify(i).replace(/"/g,'&quot;')})">📱 Parent</button> <button class="btn-small btn-blue" onclick="returnById('${esc(i.id)}')">📥 Return</button></td></tr>`;
   }).join('')}</table>` : '<p class="small">No overdue books. 🎉</p>';
 }
+// USB Scanner support: If user uses a physical USB scanner, it types + Enter. Auto-find book.
+document.getElementById('barcodeInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); findBook(); } });
+document.getElementById('returnBarcode').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); returnBook(); } });
 loadAll();
 </script>
 </body>
