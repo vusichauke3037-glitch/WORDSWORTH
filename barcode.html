@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makhanani LTSM — Barcode Print A4 3x5</title><meta name="theme-color" content="#0a1f4d">
+<link rel="icon" type="image/png" href="logo.png">
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const rtdb = firebase.database();
+</script>
+<style>
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
+header{background:#0a1f4d;color:#fff;padding:14px;text-align:center}header h1{margin:0;font-size:20px}header p{margin:4px 0 0;opacity:.9;font-size:12px}
+header img{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:50%;padding:5px;display:block;margin:0 auto 8px}
+main{max-width:1000px;margin:auto;padding:12px}.card{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+h2{margin:0 0 10px;color:#0a1f4d;font-size:17px;border-bottom:2px solid #d4af37;padding-bottom:6px}
+label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:10px}
+input,select{width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
+.btn-blue{background:#0a1f4d;color:#fff}.btn-green{background:#059669;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}
+.btn-small{width:auto;padding:7px 10px;font-size:12px;margin:2px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button{flex:1;min-width:90px;padding:10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
+.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
+.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
+.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:10px;margin-top:10px;font-size:13px;line-height:1.6}
+.topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
+.small{font-size:12px;color:#64748b}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:7px;text-align:left}th{background:#0a1f4d;color:#fff}
+
+/* ===== A4 3x5 SHEET ===== */
+#printArea{display:none}
+.sheet{width:210mm;min-height:297mm;padding:10mm 10mm 8mm;margin:0 auto;background:#fff}
+.sheetGrid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:repeat(5, 52mm);gap:3mm}
+.labelCard{border:1.5px dashed #111;border-radius:4px;padding:2mm 2mm 1.5mm;text-align:center;overflow:hidden;display:flex;flex-direction:column;justify-content:center;background:#fff}
+.labelTop{font-size:9pt;font-weight:900;line-height:1.15;text-transform:uppercase;color:#0a1f4d}
+.labelTop small{display:block;font-size:7pt;color:#b45309;letter-spacing:1px}
+.labelMid{font-size:8pt;font-weight:900;line-height:1.1;margin:1mm 0 0;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.labelCard svg{width:100%;height:18mm;display:block}
+.labelBottom{font-size:11pt;font-weight:900;letter-spacing:1.5px;margin-top:0.5mm}
+.labelSub{font-size:7pt;color:#555}
+.cutHint{font-size:8pt;color:#888;text-align:center;margin-top:2mm}
+
+@media print{
+  body{background:#fff} header, main .noPrint{display:none !important}
+  #printArea{display:block !important}
+  @page{size:A4 portrait;margin:0}
+  .sheet{padding:10mm 10mm 8mm;margin:0}
+  .sheet + .sheet{page-break-before:always}
+}
+</style>
+</head>
+<body>
+<header>
+<img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+<h1>🏷️ Barcode Print — A4 3x5</h1><p id="userLine">Loading...</p>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="librarian.html">📚 Librarian</a><a href="issue.html">📖 Issue</a><a href="principal.html">📊 Principal</a></div>
+</header>
+<main class="noPrint">
+<div class="card">
+<div class="tabs"><button class="active" onclick="showTab('book',this)">📚 Book Barcodes</button><button onclick="showTab('learner',this)">👥 Learner Barcodes</button><button onclick="showTab('single',this)">🏷️ Single Barcode</button></div>
+<div id="statusBox" class="info">⏳ Loading your school...</div>
+<div class="goldBox"><b>Formats — Auto Number, No Typing:</b><br>👥 <b>Learner ID = Grade + Class Letter + 3 Digits</b> e.g. Grade 10 Class A Learner 1 = <b>10A001</b> • Learner 25 = <b>10A025</b><br>📚 <b>Book No = First Letter of Each Word in School Name + 6 Digits</b> e.g. THUTO PRIMARY = <b>TP</b> → Book 1 = <b>TP000001</b> • Book 42 = <b>TP000042</b> • WORDSWORTH PRIMARY = <b>WP000001</b></div>
+</div>
+
+<!-- BOOK -->
+<div class="card" id="tab-book">
+<h2>📚 Book Barcodes — A4 3x5 (15 per page)</h2>
+<label>Book Title</label><input id="bTitle" placeholder="e.g. Mathematics Grade 10">
+<label>Subject</label><input id="bSubject" placeholder="e.g. Mathematics">
+<label>Grade</label><input id="bGrade" placeholder="e.g. 10">
+<label>How Many Books? (Same Title, Auto Numbers)</label><input id="bCount" type="number" value="15" min="1" max="150">
+<label>Start From Number (Leave 1 for first time)</label><input id="bStart" type="number" value="1" min="1">
+<div id="bPreview" class="info">Prefix will show after school loads. Example: THUTO PRIMARY → TP000001</div>
+<button class="btn btn-green" onclick="generateBooks()">🏷️ GENERATE + SAVE BOOKS + PRINT SHEET</button>
+<div id="bMsg"></div>
+</div>
+
+<!-- LEARNER -->
+<div class="card" id="tab-learner" style="display:none">
+<h2>👥 Learner Barcodes — A4 3x5 (15 per page)</h2>
+<label>Grade</label><input id="lGrade" placeholder="e.g. 10" value="10">
+<label>Class Letter</label><input id="lClass" placeholder="e.g. A" value="A" maxlength="2">
+<label>How Many Learners In This Class?</label><input id="lCount" type="number" value="15" min="1" max="150">
+<label>Start From Number</label><input id="lStart" type="number" value="1" min="1">
+<div class="info">Learner Names: You can type names below (one per line) OR leave blank — IDs will be <b>10A001, 10A002...</b> and Librarian adds names later.<br><b>Tip:</b> Paste names from class list, one per line.</div>
+<label>Learner Names (Optional — One Per Line)</label><textarea id="lNames" rows="5" placeholder="Thandi Mokoena&#10;Sipho Dube&#10;Zanele Nkosi" style="width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px"></textarea>
+<button class="btn btn-green" onclick="generateLearners()">🏷️ GENERATE + SAVE LEARNERS + PRINT SHEET</button>
+<div id="lMsg"></div>
+</div>
+
+<!-- SINGLE -->
+<div class="card" id="tab-single" style="display:none">
+<h2>🏷️ Single Barcode — Reprint One</h2>
+<label>Type — Book or Learner</label><select id="sType"><option value="BOOK">📚 BOOK</option><option value="LEARNER">👥 LEARNER</option></select>
+<label>Code — Book No or Learner ID</label><input id="sCode" placeholder="e.g. TP000001 or 10A001">
+<label>Name / Title To Show On Label</label><input id="sName" placeholder="e.g. Mathematics Grade 10 or Thandi Mokoena">
+<label>Copies</label><input id="sCopies" type="number" value="1" min="1" max="15">
+<button class="btn btn-blue" onclick="generateSingle()">🏷️ GENERATE SINGLE + PRINT</button>
+<div id="sMsg"></div>
+</div>
+
+<div class="card"><h2>📋 Already In Firebase — Click To Reprint</h2><input id="searchBox" placeholder="🔍 Search book / learner..." oninput="renderLists()"><div id="listsBox"></div></div>
+</main>
+
+<!-- PRINT AREA -->
+<div id="printArea"></div>
+
+<script>
+let currentUser=null, schoolId='', schoolName='', schoolPrefix='', books=[], learners=[];
+let useDemo=false;
+const DEMO={schoolName:'THUTO PRIMARY', books:[{barcode:'TP000001', title:'Mathematics Grade 10', subject:'Mathematics', grade:'10'}], learners:[{learnerId:'10A001', name:'Thandi Mokoena', className:'10A', grade:'10'}]};
+function esc(s){ return String(s||'').replace(/</g,'&lt;'); }
+function getUser(){ try{ return JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){ return null; } }
+function logout(){ localStorage.removeItem('makhanani_user'); location.href='index.html'; }
+function showTab(name, btn){
+  ['book','learner','single'].forEach(t=>document.getElementById('tab-'+t).style.display = t===name ? 'block':'none');
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active');
+}
+function getPrefix(name){
+  // First letter of each word, uppercase, letters only. THUTO PRIMARY -> TP, WORDSWORTH PRIMARY -> WP
+  return (name||'SCHOOL').trim().split(/\s+/).map(w=>w.replace(/[^A-Za-z]/g,'').charAt(0).toUpperCase()).join('') || 'SC';
+}
+function pad(n, len){ return String(n).padStart(len,'0'); }
+function bookCode(seq){ return schoolPrefix + pad(seq,6); } // TP000001
+function learnerCode(grade, classLetter, seq){ return String(grade).trim() + String(classLetter).trim().toUpperCase() + pad(seq,3); } // 10A001
+
+async function loadAll(){
+  currentUser=getUser(); if(!currentUser){ location.href='index.html'; return; }
+  schoolId=currentUser.schoolId; schoolName=currentUser.schoolName||'SCHOOL';
+  schoolPrefix=getPrefix(schoolName);
+  document.getElementById('userLine').innerHTML=`👋 ${esc(currentUser.name)} • ${esc(schoolName)} • ${esc(currentUser.role)} • Prefix: <b>${schoolPrefix}</b>`;
+  document.getElementById('bPreview').innerHTML=`Prefix for <b>${esc(schoolName)}</b> = <b>${schoolPrefix}</b> → First book = <b>${bookCode(1)}</b> • Next: <b>${bookCode(2)}</b>`;
+  try{
+    const bSnap=await db.collection('schools').doc(schoolId).collection('books').get();
+    const lSnap=await db.collection('schools').doc(schoolId).collection('learners').get();
+    if(!bSnap.empty || !lSnap.empty){
+      books=bSnap.docs.map(d=>({id:d.id, ...d.data()}));
+      learners=lSnap.docs.map(d=>({id:d.id, ...d.data()}));
+      // Auto next numbers
+      const maxBook=Math.max(0, ...books.map(b=>parseInt(String(b.barcode||'').replace(/\D/g,''))||0));
+      document.getElementById('bStart').value = maxBook+1;
+      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Firestore — ${schoolName} • ${books.length} books, ${learners.length} learners • Next Book: <b>${bookCode(maxBook+1)}</b>`;
+      renderLists(); return;
+    }
+    const rs=await rtdb.ref('schools/'+schoolId).once('value'); const rv=rs.val();
+    if(rv && (rv.books || rv.learners)){
+      books=Object.values(rv.books||{}); learners=Object.values(rv.learners||{});
+      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Realtime — ${schoolName}`;
+      renderLists(); return;
+    }
+    throw new Error('No data');
+  }catch(e){
+    useDemo=true; schoolName=DEMO.schoolName; schoolPrefix=getPrefix(schoolName); books=[...DEMO.books]; learners=[...DEMO.learners];
+    document.getElementById('statusBox').innerHTML=`⚠️ Firebase empty — Showing Demo THUTO PRIMARY. Generate will save to Firebase if connected.`;
+    renderLists();
+  }
+}
+
+// ===== SAVE =====
+async function saveBook(data){
+  if(useDemo) return;
+  try{ await db.collection('schools').doc(schoolId).collection('books').doc(data.barcode).set(data, {merge:true}); }catch(e){}
+  try{ await rtdb.ref('schools/'+schoolId+'/books/'+data.barcode).set(data); }catch(e){}
+}
+async function saveLearner(data){
+  if(useDemo) return;
+  try{ await db.collection('schools').doc(schoolId).collection('learners').doc(data.learnerId).set(data, {merge:true}); }catch(e){}
+  try{ await rtdb.ref('schools/'+schoolId+'/learners/'+data.learnerId).set(data); }catch(e){}
+}
+
+// ===== GENERATE =====
+async function generateBooks(){
+  const title=document.getElementById('bTitle').value.trim();
+  const subject=document.getElementById('bSubject').value.trim();
+  const grade=document.getElementById('bGrade').value.trim();
+  const count=parseInt(document.getElementById('bCount').value)||15;
+  const start=parseInt(document.getElementById('bStart').value)||1;
+  if(!title){ alert('Type Book Title'); return; }
+  const items=[];
+  for(let i=0;i<count;i++){
+    const seq=start+i; const code=bookCode(seq);
+    const data={barcode:code, title, subject:subject||'', grade:grade||'', schoolId, schoolName, status:'AVAILABLE', createdAt:new Date().toISOString()};
+    // Avoid duplicate
+    if(books.find(b=>b.barcode===code)) continue;
+    books.push(data); items.push(data); await saveBook(data);
+  }
+  if(!items.length){ alert('All those numbers already exist. Change Start From Number.'); return; }
+  document.getElementById('bMsg').innerHTML=`<div class="ok">✅ Saved ${items.length} books: <b>${items[0].barcode}</b> to <b>${items[items.length-1].barcode}</b> — Print sheet opening...</div>`;
+  document.getElementById('bStart').value = start+count;
+  printLabels(items.map(x=>({type:'BOOK', code:x.barcode, name:x.title, sub:`${x.subject||''} Grade ${x.grade||''}`.trim()})));
+  renderLists();
+}
+async function generateLearners(){
+  const grade=document.getElementById('lGrade').value.trim();
+  const classLetter=document.getElementById('lClass').value.trim().toUpperCase();
+  const count=parseInt(document.getElementById('lCount').value)||15;
+  const start=parseInt(document.getElementById('lStart').value)||1;
+  const names=document.getElementById('lNames').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!grade||!classLetter){ alert('Fill Grade + Class Letter'); return; }
+  const className=grade+classLetter;
+  const items=[];
+  for(let i=0;i<count;i++){
+    const seq=start+i; const code=learnerCode(grade, classLetter, seq);
+    const name=names[i] || `Learner ${code}`;
+    const data={learnerId:code, name, className, grade, schoolId, schoolName, phone:'', createdAt:new Date().toISOString()};
+    if(learners.find(l=>l.learnerId===code)) continue;
+    learners.push(data); items.push(data); await saveLearner(data);
+  }
+  if(!items.length){ alert('All those IDs already exist. Change Start From Number.'); return; }
+  document.getElementById('lMsg').innerHTML=`<div class="ok">✅ Saved ${items.length} learners: <b>${items[0].learnerId}</b> to <b>${items[items.length-1].learnerId}</b> — Class ${className} — Print sheet opening...</div>`;
+  document.getElementById('lStart').value = start+count;
+  printLabels(items.map(x=>({type:'LEARNER', code:x.learnerId, name:x.name, sub:`Class ${x.className} • Grade ${x.grade}`})));
+  renderLists();
+}
+function generateSingle(){
+  const type=document.getElementById('sType').value;
+  const code=document.getElementById('sCode').value.trim().toUpperCase();
+  const name=document.getElementById('sName').value.trim();
+  const copies=parseInt(document.getElementById('sCopies').value)||1;
+  if(!code||!name){ alert('Fill Code + Name/Title'); return; }
+  const items=Array.from({length:copies},()=>({type, code, name, sub: type==='BOOK' ? 'TEXTBOOK' : 'LEARNER'}));
+  printLabels(items);
+}
+
+// ===== PRINT - A4 3x5 =====
+function printLabels(items){
+  const area=document.getElementById('printArea');
+  area.innerHTML='';
+  // Chunk into 15 per sheet
+  for(let s=0;s<items.length;s+=15){
+    const chunk=items.slice(s,s+15);
+    const sheet=document.createElement('div'); sheet.className='sheet';
+    const grid=document.createElement('div'); grid.className='sheetGrid';
+    chunk.forEach((item, idx)=>{
+      const card=document.createElement('div'); card.className='labelCard';
+      const topText = `${schoolName}<small>MAKHANANI LTSM • XINTIMANI GROUP</small>`;
+      const midText = item.type==='BOOK' ? '📚 TEXTBOOK' : '👥 LEARNER';
+      card.innerHTML=`<div class="labelTop">${topText}</div><div class="labelMid">${midText}</div><svg class="bc" id="bc-${s}-${idx}"></svg><div class="labelBottom">${esc(item.code)}</div><div class="labelSub">${esc(item.name)}</div>`;
+      grid.appendChild(card);
+    });
+    sheet.appendChild(grid);
+    sheet.innerHTML += `<div class="cutHint">✂️ Cut along dashed lines • A4 3x5 • ${chunk.length} labels • Page ${Math.floor(s/15)+1} of ${Math.ceil(items.length/15)}</div>`;
+    area.appendChild(sheet);
+  }
+  // Render real barcodes
+  items.forEach((item, globalIdx)=>{
+    const s=Math.floor(globalIdx/15)*15; const idx=globalIdx%15;
+    const el=document.getElementById(`bc-${s}-${idx}`);
+    if(el){
+      try{ JsBarcode(el, item.code, {format:'CODE128', lineColor:'#000', background:'#fff', width:1.4, height:48, displayValue:false, margin:0}); }catch(e){ console.log(e); }
+    }
+  });
+  // Print after render
+  setTimeout(()=>window.print(), 300);
+}
+
+// ===== LISTS - Reprint =====
+function renderLists(){
+  const q=(document.getElementById('searchBox')?.value||'').toLowerCase();
+  const fBooks=books.filter(b=>(b.title+' '+b.barcode).toLowerCase().includes(q)).slice(0,30);
+  const fLearners=learners.filter(l=>(l.name+' '+l.learnerId).toLowerCase().includes(q)).slice(0,30);
+  document.getElementById('listsBox').innerHTML=`
+  <h3>📚 Books (${books.length}) — Click Reprint</h3>
+  ${fBooks.length ? `<table><tr><th>Book No</th><th>Title</th><th>Action</th></tr>${fBooks.map(b=>`<tr><td><b>${esc(b.barcode)}</b></td><td>${esc(b.title)}</td><td><button class="btn-small btn-blue" onclick="reprintOne('BOOK','${esc(b.barcode)}','${esc(b.title).replace(/'/g,"")}')">🏷️ Reprint</button></td></tr>`).join('')}</table>` : '<p class="small">No books yet.</p>'}
+  <h3>👥 Learners (${learners.length}) — Click Reprint</h3>
+  ${fLearners.length ? `<table><tr><th>Learner ID</th><th>Name</th><th>Action</th></tr>${fLearners.map(l=>`<tr><td><b>${esc(l.learnerId)}</b></td><td>${esc(l.name)} — ${esc(l.className)}</td><td><button class="btn-small btn-blue" onclick="reprintOne('LEARNER','${esc(l.learnerId)}','${esc(l.name).replace(/'/g,"")}')">🏷️ Reprint</button></td></tr>`).join('')}</table>` : '<p class="small">No learners yet.</p>'}`;
+}
+function reprintOne(type, code, name){
+  printLabels([{type, code, name, sub: type==='BOOK' ? 'TEXTBOOK' : 'LEARNER'}]);
+}
+loadAll();
+</script>
+</body>
+</html>
