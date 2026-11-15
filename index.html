@@ -4,6 +4,12 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Makhanani LTSM — Login</title><meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Makhanani LTSM">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -46,10 +52,20 @@ input:focus{border-color:#0a1f4d;outline:none}
 .small{font-size:12px;color:#64748b;text-align:center;margin-top:10px}
 .showRow{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:#475569}
 .showRow input{width:auto;margin:0}
+.installBox{background:#fef3c7;border:2px solid #d4af37}
 </style>
 </head>
 <body>
 <div class="wrap">
+
+<div id="installBox" class="card installBox" style="display:none">
+  <h3 style="margin:0 0 6px;color:#0a1f4d;font-size:15px">📲 Install Makhanani App</h3>
+  <p style="font-size:13px;line-height:1.6;margin:0">Install as app on your phone — Opens like WhatsApp, no browser bar, works offline for pages.</p>
+  <button class="btn btn-gold" id="installBtn" onclick="installApp()">📲 INSTALL APP NOW</button>
+  <button class="btn btn-grey" onclick="document.getElementById('installBox').style.display='none'">Later</button>
+  <p id="installHint" class="small" style="text-align:left"></p>
+</div>
+
 <div class="card">
 <img src="logo.png" alt="Makhanani Logo" class="logo" onerror="this.style.display='none'">
 <h1>📚 Makhanani LTSM</h1>
@@ -116,7 +132,7 @@ input:focus{border-color:#0a1f4d;outline:none}
 <div class="card" style="text-align:center">
 <p style="font-size:13px;line-height:1.6;margin:0"><b>Support — Xintimani Group</b><br>Vusi Chauke — <b>078 023 3263</b> (WhatsApp)<br>New school • New subject • Password reset for Principal • Training</p>
 <button class="btn btn-green" onclick="whatsappSupport()">📱 WhatsApp Vusi — Support</button>
-<p class="small">Makhanani LTSM • Version November 2026 • All books due 30 November</p>
+<p class="small">Makhanani LTSM • Version November 2026 • All books due 30 November • Downloadable App (PWA)</p>
 </div>
 </div>
 
@@ -149,8 +165,6 @@ async function login(){
   const msg=document.getElementById('loginMsg');
   if(!email || !password){ msg.innerHTML='<div class="warn">⚠️ Fill Email + Password.</div>'; return; }
   msg.innerHTML='<div class="info">⏳ Logging in...</div>';
-
-  // Demo logins — Always work, even without Firebase
   const demos={
     'teacher@thuto.co.za': {name:'Mr. Nkosi', email:'teacher@thuto.co.za', password:'1234', pin:'1234', role:'TEACHER', subject:'MATHEMATICS', subjects:['MATHEMATICS'], className:'10A', schoolId:'thuto_primary', schoolName:'THUTO PRIMARY'},
     'lib@thuto.co.za': {name:'Ms. Mokoena', email:'lib@thuto.co.za', password:'1234', pin:'1234', role:'LIBRARIAN', subject:'', className:'', schoolId:'thuto_primary', schoolName:'THUTO PRIMARY'},
@@ -166,20 +180,16 @@ async function login(){
     setTimeout(()=>goToRole(u.role), 600);
     return;
   }
-
-  // Real Firebase login — Search all schools for this email
   try{
     const schoolsSnap=await db.collection('schools').get();
     let found=null, foundSchoolId=null;
     for(const doc of schoolsSnap.docs){
       const uSnap=await db.collection('schools').doc(doc.id).collection('users').doc(email.replace(/[@.]/g,'_')).get();
       if(uSnap.exists){ found={id:uSnap.id, ...uSnap.data()}; foundSchoolId=doc.id; break; }
-      // Fallback: search by email field
       const qSnap=await db.collection('schools').doc(doc.id).collection('users').where('email','==',email).limit(1).get();
       if(!qSnap.empty){ found={id:qSnap.docs[0].id, ...qSnap.docs[0].data()}; foundSchoolId=doc.id; break; }
     }
     if(!found){
-      // Try Realtime DB
       const rs=await rtdb.ref('schools').once('value'); const rv=rs.val()||{};
       for(const sid of Object.keys(rv)){
         const usersObj=rv[sid].users||{};
@@ -222,7 +232,6 @@ async function registerSchool(){
     try{ await rtdb.ref('schools/'+schoolId+'/info').set({schoolName, schoolId, prefix}); }catch(e){}
   }catch(e){
     msg.innerHTML='<div class="warn">⚠️ Could not save to Firebase: '+esc(e.message)+'<br>Your school will still work in this browser — Log in below with your email + password.</div>';
-    // Still allow local login
     localStorage.setItem('makhanani_user', JSON.stringify(principal));
     setTimeout(()=>location.href='principal.html', 800);
     return;
@@ -233,7 +242,6 @@ async function registerSchool(){
 }
 document.getElementById('password').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); login(); } });
 document.getElementById('email').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('password').focus(); } });
-// If already logged in, show welcome
 (function(){
   try{
     const u=JSON.parse(localStorage.getItem('makhanani_user')||'null');
@@ -241,6 +249,67 @@ document.getElementById('email').addEventListener('keydown', e=>{ if(e.key==='En
       document.getElementById('loginMsg').innerHTML=`<div class="info">👋 Already logged in as <b>${esc(u.name)}</b> — ${esc(u.role)} — ${esc(u.schoolName)}<br><button class="btn-small btn-blue" style="background:#0a1f4d;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-weight:900;cursor:pointer;margin-top:6px" onclick="goToRole('${esc(u.role)}')">Continue →</button> <button class="btn-small" style="background:#e2e8f0;border:none;border-radius:8px;padding:8px 12px;font-weight:900;cursor:pointer" onclick="localStorage.removeItem('makhanani_user');location.reload()">Logout</button></div>`;
     }
   }catch(e){}
+})();
+// PWA — Register Service Worker + Install Prompt
+let deferredPrompt = null;
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(() => console.log('Makhanani SW OK')).catch((e) => console.log('SW Fail', e));
+  });
+}
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const box = document.getElementById('installBox');
+  if (box) box.style.display = 'block';
+  const hint = document.getElementById('installHint');
+  if (hint) hint.textContent = 'Tap INSTALL APP NOW below.';
+});
+window.addEventListener('appinstalled', () => {
+  const box = document.getElementById('installBox');
+  if (box) box.style.display = 'none';
+  deferredPrompt = null;
+  alert('✅ Makhanani App Installed! Look for Makhanani icon on your home screen.');
+});
+async function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    if (choice.outcome === 'accepted') {
+      document.getElementById('installBox').style.display = 'none';
+    }
+    deferredPrompt = null;
+    return;
+  }
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const hint = document.getElementById('installHint');
+  if (isIOS) {
+    if (hint) hint.innerHTML = '🍎 <b>iPhone:</b> Tap <b>Share ⬆️</b> at bottom → <b>Add to Home Screen</b> → <b>Add</b>.';
+    alert('🍎 iPhone: Tap Share ⬆️ at bottom → Add to Home Screen → Add');
+  } else {
+    if (hint) hint.innerHTML = '📲 <b>Android:</b> Tap <b>⋮ Menu</b> (top right) → <b>Install app</b> / <b>Add to Home screen</b>. Or tap Share → Add to Home screen.';
+    alert('📲 Android: Tap ⋮ Menu → Install app / Add to Home screen');
+  }
+}
+(function(){
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isIOS && !isStandalone) {
+    setTimeout(() => {
+      const box = document.getElementById('installBox');
+      if (box) box.style.display = 'block';
+      const hint = document.getElementById('installHint');
+      if (hint) hint.innerHTML = '🍎 <b>iPhone:</b> Tap <b>Share ⬆️</b> → <b>Add to Home Screen</b>.';
+    }, 1500);
+  }
+  if (!isIOS && !isStandalone) {
+    setTimeout(() => {
+      const box = document.getElementById('installBox');
+      if (box && !deferredPrompt) box.style.display = 'block';
+      const hint = document.getElementById('installHint');
+      if (hint && !deferredPrompt) hint.innerHTML = '📲 <b>Android:</b> Tap <b>⋮ Menu</b> → <b>Install app</b>.';
+    }, 3000);
+  }
 })();
 </script>
 </body>
