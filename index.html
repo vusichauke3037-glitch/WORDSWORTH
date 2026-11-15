@@ -4,387 +4,249 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Makhanani LTSM — Login</title><meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
-<link rel="apple-touch-icon" href="logo.png">
 <link rel="manifest" href="manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Makhanani LTSM">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
-  authDomain: "makhanani-ltsm.firebaseapp.com",
-  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
-  projectId: "makhanani-ltsm",
-  storageBucket: "makhanani-ltsm.firebasestorage.app",
-  messagingSenderId: "247180363183",
-  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
-  measurementId: "G-PEST1XFCR8"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const rtdb = firebase.database();
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+firebase.initializeApp(firebaseConfig);const db=firebase.firestore();const rtdb=firebase.database();
 </script>
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#0a1f4d;color:#111;min-height:100vh}
-.wrap{max-width:480px;margin:auto;padding:16px}
-.card{background:#fff;border-radius:16px;padding:20px;margin-top:16px;box-shadow:0 4px 20px rgba(0,0,0,.3)}
-.logo{width:90px;height:90px;object-fit:contain;background:#fff;border-radius:50%;padding:8px;display:block;margin:0 auto 10px}
-h1{text-align:center;margin:0;color:#0a1f4d;font-size:22px}
-.sub{text-align:center;color:#64748b;font-size:13px;line-height:1.6;margin:8px 0 0}
-label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:14px}
-input,select{width:100%;padding:13px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;margin-top:5px}
-input:focus{border-color:#0a1f4d;outline:none}
-.btn{width:100%;padding:14px;border:none;border-radius:10px;font-weight:900;font-size:15px;cursor:pointer;margin-top:14px}
-.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}
-.btn-small{width:auto;padding:8px 12px;font-size:12px;margin:4px}
-.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:10px;padding:10px;font-size:13px;line-height:1.6;margin-top:12px}
-.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:10px;padding:10px;font-size:13px;line-height:1.6;margin-top:12px}
-.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:10px;padding:10px;font-size:13px;line-height:1.6;margin-top:12px}
-.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:10px;margin-top:12px;font-size:13px;line-height:1.6}
-.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.quick button{padding:10px;border:none;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer;background:#f1f5f9;color:#0a1f4d}
-.links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
-.links a{background:#f1f5f9;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
-.small{font-size:12px;color:#64748b;text-align:center;margin-top:10px}
-.showRow{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:#475569}
-.showRow input{width:auto;margin:0}
-.installBox{background:#fef3c7;border:2px solid #d4af37}
-.pricing{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;text-align:left}
-.priceCard{border:2px solid #0a1f4d;border-radius:12px;padding:10px;font-size:13px;line-height:1.6}
-.priceCard.pop{border-color:#059669;background:#f0fdf4}
-.priceCard b{color:#111}.setup{color:#059669;font-weight:900}
-.termsRow{display:flex;gap:8px;align-items:flex-start;font-weight:400;font-size:13px;line-height:1.5;margin-top:12px;color:#334155}
-.termsRow input{width:20px;height:20px;margin:0;flex-shrink:0}
-.termsRow a{color:#0a1f4d;font-weight:900}
-.adminBox{background:#0a1f4d;color:#fff;border-radius:12px;padding:12px;margin-top:12px}
-.adminBox p{color:#fff;font-size:13px;line-height:1.6;margin:0 0 8px}
-.adminBox .btn{margin-top:6px}
+.top{color:#fff;text-align:center;padding:22px 14px 6px}.top img{width:90px;height:90px;object-fit:contain;background:#fff;border-radius:50%;padding:8px;display:block;margin:0 auto 12px}.top h1{margin:0;font-size:24px}.top p{margin:8px 0 0;line-height:1.6;font-size:13px;color:#e2e8f0}
+main{max-width:480px;margin:16px auto;padding:12px}.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:12px;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
+p,li{font-size:14px;line-height:1.6}ul,ol{padding-left:20px}li{margin-bottom:6px}
+.btn{padding:12px 14px;border:none;border-radius:8px;font-weight:900;font-size:13px;cursor:pointer;margin-top:8px}
+.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}
+.btn-full{width:100%}.btn-small{padding:6px 9px;font-size:11px;margin:2px}
+input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px}label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:12px}
+.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
+.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
+.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
+.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:10px;line-height:1.6;margin-top:10px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{padding:10px 14px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
+.topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:12px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
+.small{font-size:12px;color:#64748b}
 </style>
 </head>
 <body>
-<div class="wrap">
-
-<div id="installBox" class="card installBox" style="display:none">
-  <h3 style="margin:0 0 6px;color:#0a1f4d;font-size:15px">📲 Install Makhanani App</h3>
-  <p style="font-size:13px;line-height:1.6;margin:0">Install as app on your phone — Opens like WhatsApp, no browser bar, works offline for pages.</p>
-  <button class="btn btn-gold" id="installBtn" onclick="installApp()">📲 INSTALL APP NOW</button>
-  <button class="btn btn-grey" onclick="document.getElementById('installBox').style.display='none'">Later</button>
-  <p id="installHint" class="small" style="text-align:left"></p>
+<div class="top">
+<img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+<h1>Makhanani LTSM</h1>
+<p>Xintimani Group • Learner + Textbook Tracking<br>Learner ID: Grade + Class + 3 Digits • Textbook: School Initials + 6 Digits<br>Barcode A4 3x5 • Scannable</p>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="add_school.html">🏫 Add School</a><a href="home.html">🏠 Home</a><a href="learners.html">👩‍🎓 Learners</a><a href="books.html">📚 Books</a><a href="barcode.html">🏷️ Barcodes</a></div>
 </div>
 
+<main>
 <div class="card">
-<img src="logo.png" alt="Makhanani Logo" class="logo" onerror="this.style.display='none'">
-<h1>📚 Makhanani LTSM</h1>
-<p class="sub"><b>Xintimani Group</b><br>Library + LTSM System<br>Books • Learners • Teachers • Stock • Barcodes<br><b>All books due 30 November every year</b></p>
+<div class="tabs">
+<button id="tabBtn-login" class="active" onclick="showTab('login')">🔐 Login</button>
+<button id="tabBtn-schools" onclick="showTab('schools')">🏫 Schools</button>
+<button id="tabBtn-demo" onclick="showTab('demo')">🧪 Demo</button>
+</div>
 
-<div class="goldBox"><b>📖 Rules:</b> One Learner = One Title • Grade Must Match • Teacher = Own Subject Only • Return = Any Book</div>
+<div id="tab-login">
+<h2>🔐 Login — Pick School First</h2>
+<div class="goldBox"><b>Step 1:</b> Pick School → <b>Step 2:</b> Type Email + Password → <b>Step 3:</b> Login<br>Teacher sees ONLY their school's learners / textbooks.</div>
 
-<label>Email — Login</label>
-<input id="email" type="email" placeholder="e.g. teacher@school.co.za" autocomplete="username">
-<label>Password</label>
-<input id="password" type="password" placeholder="e.g. Nkosi2026" autocomplete="current-password">
-<label class="showRow"><input type="checkbox" id="showPw" onchange="togglePw()"> Show password</label>
+<label>🏫 Pick School * — Dropdown</label>
+<select id="schoolSelect" onchange="onSchoolChange()"><option value="">-- Loading Schools... --</option></select>
+<div id="schoolInfo" class="info" style="display:none"></div>
 
-<label>Role — Pick Your Role (Must Match Your Account)</label>
-<select id="role">
-<option value="">-- Auto-Detect Role --</option>
-<option value="TEACHER">👩‍🏫 TEACHER — My Class Only</option>
-<option value="LIBRARIAN">📚 LIBRARIAN</option>
-<option value="HOD">📘 HOD</option>
-<option value="PRINCIPAL">📊 PRINCIPAL</option>
-<option value="ADMIN">⚙️ ADMIN</option>
-<option value="SUPER_ADMIN">👑 SUPER ADMIN</option>
-</select>
+<label>📧 Email * — e.g. teacher@thuto.co.za</label>
+<input id="emailInput" type="email" placeholder="e.g. teacher@thuto.co.za" autocomplete="username">
 
-<button class="btn btn-blue" onclick="login()">🔓 LOGIN →</button>
+<label>🔑 Password *</label>
+<input id="passInput" type="password" placeholder="e.g. 1234" autocomplete="current-password">
+
+<button class="btn btn-green btn-full" onclick="doLogin()">🔐 LOGIN →</button>
 <div id="loginMsg"></div>
 
-<div class="info"><b>Forgot password?</b> Ask Principal / Librarian to Reset to <b>1234</b>, then log in with 1234 and change it in Profile.</div>
-
-<h3 style="color:#0a1f4d;margin:16px 0 6px;font-size:14px">⚡ Quick Demo Login — Try System (Demo School)</h3>
-<div class="quick">
-<button onclick="quickLogin('teacher@thuto.co.za','1234')">👩‍🏫 Teacher Demo</button>
-<button onclick="quickLogin('lib@thuto.co.za','1234')">📚 Librarian Demo</button>
-<button onclick="quickLogin('principal@thuto.co.za','1234')">📊 Principal Demo</button>
-<button onclick="quickLogin('admin@thuto.co.za','1234')">⚙️ Admin Demo</button>
-</div>
-<p class="small">Demo uses THUTO PRIMARY — TP000001 etc. Real schools use their own logins from Principal. Do NOT add real school data to Demo.</p>
-
-<button class="btn btn-gold" onclick="location.href='home.html'">🏠 HOME — Landing Page →</button>
-<button class="btn btn-gold" onclick="location.href='manual.html'">📖 Open User Manual →</button>
-<button class="btn btn-grey" onclick="location.href='profile.html'">👤 My Profile</button>
-<button class="btn btn-grey" onclick="location.href='marketing.html'">💰 Marketing — Why Makhanani? →</button>
-<button class="btn btn-grey" onclick="location.href='training.html'">🎓 Training Manual →</button>
-<button class="btn btn-grey" onclick="location.href='schools.html'">🏫 Schools + Subscriptions (Admin Only)</button>
-
-<div class="adminBox">
-<p><b>👑 Super Admin — Vusi Only</b><br>All Schools • All Money • Expiring Soon • Approve / Block / Extend</p>
-<button class="btn btn-gold" onclick="location.href='super_admin.html'">👑 OPEN SUPER ADMIN DASHBOARD →</button>
-<button class="btn btn-grey" onclick="location.href='home.html'">🏠 OPEN HOME PAGE →</button>
-<p style="font-size:11px;color:#cbd5e1;margin:8px 0 0">If Super Admin shows "Login as Admin first" — Login above as admin@thuto.co.za / 1234 first, then click again.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+<button class="btn btn-blue" style="flex:1" onclick="location.href='add_school.html'">🏫 Add New School →</button>
+<button class="btn btn-gold" style="flex:1" onclick="location.href='home.html'">🏠 Go To Home →</button>
 </div>
 
-<div class="links">
-<a href="home.html">🏠 Home</a>
-<a href="super_admin.html">👑 Super Admin</a>
-<a href="librarian.html">📚 Librarian</a>
-<a href="issue.html">📖 Issue / Return</a>
-<a href="teachers.html">👩‍🏫 Teachers</a>
-<a href="principal.html">📊 Principal</a>
-<a href="stock.html">📦 Stock</a>
-<a href="barcode.html">🏷️ Barcodes</a>
-<a href="terms.html">📜 Terms</a>
-<a href="privacy.html">🔒 Privacy</a>
+<div class="info"><b>No school yet?</b> Click <b>🏫 Add New School</b> → Add School Name + EMIS + First Teacher → Come back → Pick that school → Login.<br><b>Forgot password?</b> Ask Admin in <b>Add School</b> page → Add Teacher tab → Re-add teacher with new password.</div>
+</div>
+
+<div id="tab-schools" style="display:none">
+<h2>🏫 Schools — All Schools In System</h2>
+<button class="btn btn-blue btn-full" onclick="loadSchools()">🔄 Refresh Schools</button>
+<div id="schoolList"></div>
+<div style="margin-top:10px">
+<button class="btn btn-gold btn-full" onclick="location.href='add_school.html'">🏫 Add New School →</button>
 </div>
 </div>
 
-<div class="card" style="text-align:center">
-<h3 style="margin:0 0 8px;color:#0a1f4d;font-size:16px">💰 Pricing — Choose Your Plan</h3>
-<div class="pricing">
-<div class="priceCard"><b>DEMO</b><br>7 days free trial<br><span class="setup">Setup: FREE</span><br>Monthly: <b>FREE</b><br>Once-off: <b>FREE</b><br><button class="btn btn-green" onclick="document.getElementById('regSchool').focus();window.scrollTo(0,document.getElementById('regSchool').offsetTop-20)">➡️ REQUEST DEMO</button></div>
-<div class="priceCard"><b>STARTER</b><br>Starter — 1 school<br><span class="setup">Setup: R3 000</span><br>Monthly: <b>R350 / month</b><br>Once-off: <b>R4 500 / year</b><br><button class="btn btn-green" onclick="whatsappPlan('STARTER')">➡️ REQUEST STARTER</button></div>
-<div class="priceCard pop"><b>STANDARD ⭐</b><br>Most popular<br><span class="setup">Setup: R4 500</span><br>Monthly: <b>R500 / month</b><br>Once-off: <b>R7 500 / year</b><br><button class="btn btn-green" onclick="whatsappPlan('STANDARD')">➡️ REQUEST STANDARD</button></div>
-<div class="priceCard"><b>PREMIUM</b><br>Premium<br><span class="setup">Setup: R5 500</span><br>Monthly: <b>R600 / month</b><br>Once-off: <b>R9 000 / year</b><br><button class="btn btn-green" onclick="whatsappPlan('PREMIUM')">➡️ REQUEST PREMIUM</button></div>
+<div id="tab-demo" style="display:none">
+<h2>🧪 Demo — Try Without Adding School</h2>
+<div class="goldBox"><b>Demo School:</b> Thuto Secondary School (TSS) — EMIS 700310854<br><b>Demo Teacher:</b> teacher@thuto.co.za / 1234<br><b>Demo Admin:</b> admin@thuto.co.za / 1234</div>
+<button class="btn btn-green btn-full" onclick="loginDemo('teacher@thuto.co.za','1234','Teacher')">🧪 LOGIN AS DEMO TEACHER →</button>
+<button class="btn btn-blue btn-full" onclick="loginDemo('admin@thuto.co.za','1234','Admin')">🧪 LOGIN AS DEMO ADMIN →</button>
+<div id="demoMsg"></div>
+<div class="info"><b>Demo data is in your browser only</b> until you add a real school in Add School page. Demo learners: 10A001, 10A002... Demo textbooks: TSS000001, TSS000002...</div>
 </div>
-<p class="small">Setup once + Monthly OR Once-off per year. Example: STANDARD Yearly = R4 500 + R7 500 = R12 000 first year. Year 2+ = R7 500 / year (no setup again).</p>
-<button class="btn btn-grey" onclick="location.href='terms.html'">📜 Read Terms & Conditions →</button>
-<button class="btn btn-grey" onclick="location.href='marketing.html'">💰 See Full Marketing →</button>
-<button class="btn btn-grey" onclick="location.href='home.html'">🏠 See Home Page →</button>
 </div>
 
 <div class="card">
-<h3 style="margin:0 0 8px;color:#0a1f4d;font-size:15px">🏫 New School? Register Your School</h3>
-<p style="font-size:13px;line-height:1.6;margin:0">Principal — Register your school once, then add Teachers + Learners + Books.<br>🆓 You get <b>DEMO — Free 7 days</b>. After demo, choose STARTER / STANDARD / PREMIUM.</p>
-<label>School Name *</label><input id="regSchool" placeholder="e.g. THUTO PRIMARY">
-<label>Principal Name *</label><input id="regName" placeholder="e.g. Mr. Chauke">
-<label>Principal Email — Will Be Your Login *</label><input id="regEmail" type="email" placeholder="e.g. principal@thuto.co.za">
-<label>Principal Password *</label><input id="regPass" placeholder="Min 6 characters">
-<label>Principal Phone (WhatsApp)</label><input id="regPhone" placeholder="e.g. 0780233263">
-<label class="termsRow"><input type="checkbox" id="termsAgree"> <span>I agree to <a href="terms.html" target="_blank">Terms &amp; Conditions</a> + <a href="privacy.html" target="_blank">Privacy Policy</a>. I have read them. I agree for my whole school.</span></label>
-<button class="btn btn-green" onclick="registerSchool()">🏫 REGISTER SCHOOL →</button>
-<div id="regMsg"></div>
+<h2>📋 What Each Format Means</h2>
+<table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th style="background:#0a1f4d;color:#fff;padding:8px;text-align:left">Type</th><th style="background:#0a1f4d;color:#fff;padding:8px;text-align:left">Format</th><th style="background:#0a1f4d;color:#fff;padding:8px;text-align:left">Example</th></tr>
+<tr><td style="border:1px solid #e2e8f0;padding:8px">Learner ID</td><td style="border:1px solid #e2e8f0;padding:8px">Grade + Class + 3 Digits</td><td style="border:1px solid #e2e8f0;padding:8px"><b>10A001</b></td></tr>
+<tr><td style="border:1px solid #e2e8f0;padding:8px">Textbook No.</td><td style="border:1px solid #e2e8f0;padding:8px">School Initials + 6 Digits</td><td style="border:1px solid #e2e8f0;padding:8px"><b>MPS000001</b></td></tr>
+<tr><td style="border:1px solid #e2e8f0;padding:8px">Barcode</td><td style="border:1px solid #e2e8f0;padding:8px">A4 3x5 — CODE128</td><td style="border:1px solid #e2e8f0;padding:8px">15 per page</td></tr>
+</table>
+<ul>
+<li><b>Top of label:</b> School Name + Brand Name + Learner / Textbook</li>
+<li><b>Middle:</b> Real Barcode — Scans with phone camera</li>
+<li><b>Bottom:</b> Learner ID / Textbook Number + Name / Title</li>
+</ul>
 </div>
-
-<div class="card">
-<h3 style="margin:0 0 8px;color:#0a1f4d;font-size:15px">📚 All Manuals — Pick Yours</h3>
-<table style="width:100%;font-size:13px;line-height:1.6"><tr><td><b>🏠 Home</b><br>Everyone — Landing Page — Stop Losing Books</td><td><a href="home.html" style="color:#0a1f4d;font-weight:900">Open →</a></td></tr><tr><td><b>👑 Super Admin</b><br>Vusi Only — All Schools + Money</td><td><a href="super_admin.html" style="color:#0a1f4d;font-weight:900">Open →</a></td></tr><tr><td><b>💰 Marketing</b><br>Principals / SGB — To decide</td><td><a href="marketing.html" style="color:#0a1f4d;font-weight:900">Open →</a></td></tr><tr><td><b>🎓 Training</b><br>Librarian / Teachers — 1-Day Training</td><td><a href="training.html" style="color:#0a1f4d;font-weight:900">Open →</a></td></tr><tr><td><b>📖 User Manual</b><br>Everyone — Daily Use</td><td><a href="manual.html" style="color:#0a1f4d;font-weight:900">Open →</a></td></tr><tr><td><b>📜 Terms</b><br>Everyone — Must read before paying</td><td><a href="terms.html" style="color:#0a1f4d;font-weight:900">Open →</a></td></tr><tr><td><b>🔒 Privacy (POPIA)</b><br>Everyone — How data is handled</td><td><a href="privacy.html" style="color:#0a1f4d;font-weight:900">Open →</a></td></tr></table>
-</div>
-
-<div class="card" style="text-align:center">
-<p style="font-size:13px;line-height:1.6;margin:0"><b>Support — Xintimani Group</b><br>Vusi Chauke — <b>078 023 3263</b> (WhatsApp)<br>New school • New subject • Password reset for Principal • Training • Subscription / Payment</p>
-<button class="btn btn-green" onclick="whatsappSupport()">📱 WhatsApp Vusi — Support</button>
-<button class="btn btn-gold" onclick="location.href='home.html'">🏠 Home Page →</button>
-<button class="btn btn-grey" onclick="location.href='super_admin.html'">👑 Super Admin →</button>
-<p class="small"><a href="home.html">🏠 Home</a> • <a href="super_admin.html">👑 Super Admin</a> • <a href="terms.html">📜 Terms</a> • <a href="privacy.html">🔒 Privacy</a> • <a href="marketing.html">💰 Marketing</a> • <a href="manual.html">📖 User Manual</a><br>Makhanani LTSM • Version November 2026 • All books due 30 November • Downloadable App (PWA)</p>
-</div>
-</div>
-
+</main>
 <script>
-function esc(s){ return String(s||'').replace(/</g,'&lt;'); }
-function togglePw(){ const p=document.getElementById('password'); p.type=document.getElementById('showPw').checked ? 'text' : 'password'; }
-function getPrefix(name){ return (name||'SCHOOL').trim().split(/\s+/).map(w=>w.replace(/[^A-Za-z]/g,'').charAt(0).toUpperCase()).join('') || 'SC'; }
-function goToRole(role){
-  const r=(role||'').toUpperCase();
-  if(r==='TEACHER') location.href='teachers.html';
-  else if(r==='LIBRARIAN') location.href='librarian.html';
-  else if(r==='PRINCIPAL') location.href='principal.html';
-  else if(r==='HOD') location.href='librarian.html';
-  else if(r==='ADMIN' || r==='SUPER_ADMIN') location.href='super_admin.html';
-  else location.href='profile.html';
+let ALL_SCHOOLS=[];
+function esc(s){return String(s||'').replace(/</g,'&lt;');}
+function showTab(n){['login','schools','demo'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===n?'block':'none';document.getElementById('tabBtn-'+t).classList.toggle('active',t===n);});if(n==='schools')renderSchools();}
+function schoolInitials(name){
+  const words=String(name||'').trim().split(/\s+/).filter(w=>/[A-Za-z]/.test(w));
+  if(words.length===0) return 'TSS';
+  return words.map(w=>w.replace(/[^A-Za-z]/g,'').charAt(0).toUpperCase()).join('')||'TSS';
 }
-function quickLogin(email, pass){
-  document.getElementById('email').value=email;
-  document.getElementById('password').value=pass;
-  login();
+function onSchoolChange(){
+  const sel=document.getElementById('schoolSelect');
+  const id=sel.value;
+  const s=ALL_SCHOOLS.find(x=>(x.id||x.schoolId)===id);
+  const info=document.getElementById('schoolInfo');
+  if(!s){info.style.display='none';return;}
+  const prefix=s.prefix||schoolInitials(s.schoolName||s.name||'');
+  info.style.display='block';
+  info.innerHTML=`<b>Selected:</b> ${esc(s.schoolName||s.name||id)}<br>Prefix: <b>${esc(prefix)}</b> • EMIS: <b>${esc(s.emis||'—')}</b> • Grades: ${esc(s.fromGrade||'')} - ${esc(s.toGrade||'')}<br>Textbook Format: <b>${esc(prefix)}000001</b> • Learner ID: <b>10A001</b>`;
 }
-function whatsappSupport(){
-  const txt=`Hello Vusi, Makhanani LTSM Support.\nSchool: \nName: \nProblem: `;
-  window.open('https://wa.me/27780233263?text='+encodeURIComponent(txt),'_blank');
-}
-function whatsappPlan(plan){
-  const txt=`Hello Vusi, Makhanani LTSM.\n\nI want to REQUEST ${plan}.\nSchool: \nPrincipal Name: \nPhone: \nEmail: \n\nPlease send payment details for ${plan}.`;
-  window.open('https://wa.me/27780233263?text='+encodeURIComponent(txt),'_blank');
-}
-async function login(){
-  const email=document.getElementById('email').value.trim().toLowerCase();
-  const password=document.getElementById('password').value.trim();
-  const rolePick=document.getElementById('role').value;
-  const msg=document.getElementById('loginMsg');
-  if(!email || !password){ msg.innerHTML='<div class="warn">⚠️ Fill Email + Password.</div>'; return; }
-  msg.innerHTML='<div class="info">⏳ Logging in...</div>';
-  const demos={
-    'teacher@thuto.co.za': {name:'Mr. Nkosi', email:'teacher@thuto.co.za', password:'1234', pin:'1234', role:'TEACHER', subject:'MATHEMATICS', subjects:['MATHEMATICS'], className:'10A', schoolId:'thuto_primary', schoolName:'THUTO PRIMARY'},
-    'lib@thuto.co.za': {name:'Ms. Mokoena', email:'lib@thuto.co.za', password:'1234', pin:'1234', role:'LIBRARIAN', subject:'', className:'', schoolId:'thuto_primary', schoolName:'THUTO PRIMARY'},
-    'librarian@thuto.co.za': {name:'Ms. Mokoena', email:'librarian@thuto.co.za', password:'1234', pin:'1234', role:'LIBRARIAN', subject:'', className:'', schoolId:'thuto_primary', schoolName:'THUTO PRIMARY'},
-    'principal@thuto.co.za': {name:'Mr. Chauke', email:'principal@thuto.co.za', password:'1234', pin:'1234', role:'PRINCIPAL', subject:'', className:'', schoolId:'thuto_primary', schoolName:'THUTO PRIMARY'},
-    'admin@thuto.co.za': {name:'Admin', email:'admin@thuto.co.za', password:'1234', pin:'1234', role:'ADMIN', subject:'', className:'', schoolId:'thuto_primary', schoolName:'THUTO PRIMARY'},
-  };
-  if(demos[email] && demos[email].password===password){
-    const u=demos[email];
-    if(rolePick && rolePick.toUpperCase()!==u.role){ msg.innerHTML=`<div class="warn">⚠️ Role mismatch. This account is <b>${u.role}</b>, you picked <b>${rolePick}</b>. Pick ${u.role} or Auto-Detect.</div>`; return; }
-    localStorage.setItem('makhanani_user', JSON.stringify(u));
-    msg.innerHTML=`<div class="ok">✅ Welcome <b>${esc(u.name)}</b> — ${esc(u.role)} — ${esc(u.schoolName)}<br><span style="font-size:12px">Demo — For testing only. Do NOT add real school data to Demo.</span></div>`;
-    setTimeout(()=>goToRole(u.role), 600);
-    return;
+async function loadSchools(){
+  ALL_SCHOOLS=[];
+  try{const snap=await db.collection('schools').get();snap.forEach(d=>{ALL_SCHOOLS.push({id:d.id,...d.data()});});}catch(e){}
+  try{const rs=await rtdb.ref('schools').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,v])=>{if(!ALL_SCHOOLS.find(x=>x.id===id))ALL_SCHOOLS.push({id,...(v.meta||v)});});}catch(e){}
+  if(ALL_SCHOOLS.length===0){try{ALL_SCHOOLS=JSON.parse(localStorage.getItem('makhanani_schools')||'[]');}catch(e){}}
+  if(ALL_SCHOOLS.length===0){
+    // Default demo school
+    ALL_SCHOOLS=[{id:'thuto',schoolId:'thuto',schoolName:'Thuto Secondary School',name:'Thuto Secondary School',prefix:'TSS',emis:'700310854',fromGrade:'1',toGrade:'12',province:'Gauteng'}];
   }
+  const sel=document.getElementById('schoolSelect');
+  sel.innerHTML='<option value="">-- Pick School --</option>'+ALL_SCHOOLS.map(s=>{
+    const id=s.id||s.schoolId; const name=s.schoolName||s.name||id; const prefix=s.prefix||schoolInitials(name);
+    return `<option value="${esc(id)}">${esc(name)} (${esc(prefix)})</option>`;
+  }).join('');
+  // Auto-select school from add_school.html -> Open This School
   try{
-    const schoolsSnap=await db.collection('schools').get();
-    let found=null, foundSchoolId=null;
-    for(const doc of schoolsSnap.docs){
-      const uSnap=await db.collection('schools').doc(doc.id).collection('users').doc(email.replace(/[@.]/g,'_')).get();
-      if(uSnap.exists){ found={id:uSnap.id, ...uSnap.data()}; foundSchoolId=doc.id; break; }
-      const qSnap=await db.collection('schools').doc(doc.id).collection('users').where('email','==',email).limit(1).get();
-      if(!qSnap.empty){ found={id:qSnap.docs[0].id, ...qSnap.docs[0].data()}; foundSchoolId=doc.id; break; }
-    }
-    if(!found){
-      const rs=await rtdb.ref('schools').once('value'); const rv=rs.val()||{};
-      for(const sid of Object.keys(rv)){
-        const usersObj=rv[sid].users||{};
-        for(const uid of Object.keys(usersObj)){
-          const u=usersObj[uid];
-          if((u.email||'').toLowerCase()===email){ found={id:uid, ...u}; foundSchoolId=sid; break; }
-        }
-        if(found) break;
-      }
-    }
-    if(!found){ msg.innerHTML='<div class="warn">⚠️ Email not found. Check spelling, or ask Principal to add you. Try Demo logins below to test.</div>'; return; }
-    let schoolDoc=null;
-    try{ const sSnap=await db.collection('schools').doc(foundSchoolId).get(); if(sSnap.exists) schoolDoc=sSnap.data(); }catch(e){}
-    if(!schoolDoc){ try{ const rs2=await rtdb.ref('schools/'+foundSchoolId+'/info').once('value'); schoolDoc=rs2.val(); }catch(e){} }
-    if(!schoolDoc){ try{ const rs3=await rtdb.ref('schools/'+foundSchoolId+'/subscription').once('value'); schoolDoc=rs3.val(); }catch(e){} }
-    if(foundSchoolId!=='thuto_primary' && schoolDoc){
-      const plan=schoolDoc.plan||'DEMO'; const expiry=schoolDoc.expiryDate||schoolDoc.expiry||''; const status=(schoolDoc.status||'ACTIVE').toUpperCase();
-      if(status==='BLOCKED'){ msg.innerHTML=`<div class="warn">🚫 <b>School Blocked</b><br>${esc(schoolDoc.schoolName||'')} is blocked. Contact Vusi — 078 023 3263 to reactivate.</div>`; return; }
-      if(expiry){
-        const today=new Date(); today.setHours(0,0,0,0); const exp=new Date(expiry); exp.setHours(0,0,0,0);
-        const diff=Math.ceil((exp-today)/86400000);
-        if(diff<0){
-          msg.innerHTML=`<div class="warn">⛔ <b>Subscription Expired</b><br>${esc(schoolDoc.schoolName||'')} — Plan ${esc(plan)} expired ${esc(expiry)}.<br><br>💰 To reactivate:<br>STARTER Setup R3 000 + R350/mo or R4 500/year<br>STANDARD ⭐ Setup R4 500 + R500/mo or R7 500/year<br>PREMIUM Setup R5 500 + R600/mo or R9 000/year<br><br>Contact Vusi — <b>078 023 3263</b><br><button class="btn btn-green" style="margin-top:8px" onclick="window.open('https://wa.me/27780233263?text='+encodeURIComponent('Hello Vusi, our school ${esc(schoolDoc.schoolName||'')} subscription expired. We want to pay to reactivate.'),'_blank')">📱 WhatsApp Vusi To Pay →</button></div>`;
-          return;
-        }
-        if(diff<=3){ msg.innerHTML+=`<div class="warn">⚠️ <b>Demo / Subscription ending in ${diff} days</b> (${esc(expiry)}) — Plan ${esc(plan)}. Contact Vusi 078 023 3263 to renew.</div>`; }
-      }
-    }
-    const correct = found.password || found.pin;
-    if(correct !== password){ msg.innerHTML='<div class="warn">⚠️ Wrong password. Ask Principal / Librarian to Reset to 1234.</div>'; return; }
-    if(rolePick && rolePick.toUpperCase() !== (found.role||'').toUpperCase()){ msg.innerHTML=`<div class="warn">⚠️ Role mismatch. Your account is <b>${esc(found.role)}</b>, you picked <b>${esc(rolePick)}</b>.</div>`; return; }
-    const user={...found, schoolId:foundSchoolId, schoolName:found.schoolName||foundSchoolId};
-    localStorage.setItem('makhanani_user', JSON.stringify(user));
-    msg.innerHTML=`<div class="ok">✅ Welcome <b>${esc(user.name)}</b> — ${esc(user.role)} — ${esc(user.schoolName)}</div>`;
-    setTimeout(()=>goToRole(user.role), 600);
-  }catch(e){
-    msg.innerHTML='<div class="warn">⚠️ Login failed: '+esc(e.message)+'<br>Try Demo logins, or check internet.</div>';
-  }
-}
-async function registerSchool(){
-  const schoolName=document.getElementById('regSchool').value.trim().toUpperCase();
-  const name=document.getElementById('regName').value.trim();
-  const email=document.getElementById('regEmail').value.trim().toLowerCase();
-  const password=document.getElementById('regPass').value.trim();
-  const phone=document.getElementById('regPhone').value.trim();
-  const msg=document.getElementById('regMsg');
-  if(!schoolName || !name || !email || !password){ msg.innerHTML='<div class="warn">⚠️ Fill School Name + Principal Name + Email + Password.</div>'; return; }
-  if(password.length<6){ msg.innerHTML='<div class="warn">⚠️ Password min 6 characters.</div>'; return; }
-  if(!document.getElementById('termsAgree') || !document.getElementById('termsAgree').checked){
-    msg.innerHTML='<div class="warn">⚠️ Please tick <b>“I agree to Terms &amp; Conditions + Privacy Policy”</b> before registering. Read them here: <a href="terms.html" target="_blank">Terms</a> | <a href="privacy.html" target="_blank">Privacy</a></div>';
-    return;
-  }
-  const schoolId=schoolName.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
-  const prefix=getPrefix(schoolName);
-  const trialExpiry = new Date(); trialExpiry.setDate(trialExpiry.getDate()+7);
-  const expiryStr = trialExpiry.toISOString().slice(0,10);
-  msg.innerHTML='<div class="info">⏳ Registering school...</div>';
-  const principal={name, email, password, pin:password, role:'PRINCIPAL', subject:'', className:'', schoolId, schoolName, phone, status:'ACTIVE', plan:'DEMO', planKey:'DEMO', billing:'FREE', expiryDate:expiryStr, termsAgreed:true, termsAgreedAt:new Date().toISOString(), createdAt:new Date().toISOString()};
-  try{
-    await db.collection('schools').doc(schoolId).collection('users').doc(email.replace(/[@.]/g,'_')).set(principal);
-    await db.collection('schools').doc(schoolId).set({schoolName, schoolId, prefix, principalName:name, principalEmail:email, principalPhone:phone, plan:'DEMO', planKey:'DEMO', billing:'FREE', status:'ACTIVE', expiryDate:expiryStr, termsAgreed:true, createdAt:new Date().toISOString()}, {merge:true});
-    try{ await rtdb.ref('schools/'+schoolId+'/users/'+email.replace(/[@.]/g,'_')).set(principal); }catch(e){}
-    try{ await rtdb.ref('schools/'+schoolId+'/info').set({schoolName, schoolId, prefix, principalName:name, principalEmail:email, principalPhone:phone, plan:'DEMO', planKey:'DEMO', billing:'FREE', status:'ACTIVE', expiryDate:expiryStr}); }catch(e){}
-    try{ await rtdb.ref('schools/'+schoolId+'/subscription').set({plan:'DEMO', planKey:'DEMO', billing:'FREE', status:'ACTIVE', expiryDate:expiryStr}); }catch(e){}
-  }catch(e){
-    msg.innerHTML='<div class="warn">⚠️ Could not save to Firebase: '+esc(e.message)+'<br>Your school will still work in this browser — Log in below with your email + password.</div>';
-    localStorage.setItem('makhanani_user', JSON.stringify(principal));
-    setTimeout(()=>location.href='principal.html', 800);
-    return;
-  }
-  localStorage.setItem('makhanani_user', JSON.stringify(principal));
-  msg.innerHTML=`<div class="ok">✅ School registered: <b>${esc(schoolName)}</b><br>🆓 <b>DEMO — Free 7 days until ${expiryStr}</b><br>After demo, choose:<br>STARTER Setup R3 000 + R350/mo or R4 500/year<br>STANDARD ⭐ Setup R4 500 + R500/mo or R7 500/year<br>PREMIUM Setup R5 500 + R600/mo or R9 000/year<br>Contact Vusi 078 023 3263 to pay.<br>Prefix: <b>${esc(prefix)}</b> — Books will be ${esc(prefix)}000001...<br>Logging in as Principal...</div>`;
-  setTimeout(()=>location.href='principal.html', 1200);
-}
-document.getElementById('password').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); login(); } });
-document.getElementById('email').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('password').focus(); } });
-(function(){
-  try{
-    const u=JSON.parse(localStorage.getItem('makhanani_user')||'null');
-    if(u && u.email){
-      document.getElementById('loginMsg').innerHTML=`<div class="info">👋 Already logged in as <b>${esc(u.name)}</b> — ${esc(u.role)} — ${esc(u.schoolName)}<br><button class="btn-small btn-blue" style="background:#0a1f4d;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-weight:900;cursor:pointer;margin-top:6px" onclick="goToRole('${esc(u.role)}')">Continue →</button> <button class="btn-small" style="background:#e2e8f0;border:none;border-radius:8px;padding:8px 12px;font-weight:900;cursor:pointer" onclick="localStorage.removeItem('makhanani_user');location.reload()">Logout</button></div>`;
+    const saved=JSON.parse(localStorage.getItem('makhanani_selected_school')||'null');
+    if(saved && saved.schoolId){
+      sel.value=saved.schoolId;
+      onSchoolChange();
+      localStorage.removeItem('makhanani_selected_school');
+      document.getElementById('loginMsg').innerHTML=`<div class="ok">✅ School selected: <b>${esc(saved.schoolName||'')}</b> — Now type Email + Password for that school.</div>`;
     }
   }catch(e){}
-})();
-let deferredPrompt = null;
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then(() => console.log('Makhanani SW OK')).catch((e) => console.log('SW Fail', e));
-  });
+  // Auto-select last logged in school
+  try{
+    const u=JSON.parse(localStorage.getItem('makhanani_user')||'null');
+    if(u && u.schoolId && !sel.value){ sel.value=u.schoolId; onSchoolChange(); document.getElementById('emailInput').value=u.email||''; }
+  }catch(e){}
+  renderSchools();
 }
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  const box = document.getElementById('installBox');
-  if (box) box.style.display = 'block';
-  const hint = document.getElementById('installHint');
-  if (hint) hint.textContent = 'Tap INSTALL APP NOW below.';
-});
-window.addEventListener('appinstalled', () => {
-  const box = document.getElementById('installBox');
-  if (box) box.style.display = 'none';
-  deferredPrompt = null;
-  alert('✅ Makhanani App Installed! Look for Makhanani icon on your home screen.');
-});
-async function installApp() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const choice = await deferredPrompt.userChoice;
-    if (choice.outcome === 'accepted') {
-      document.getElementById('installBox').style.display = 'none';
+function renderSchools(){
+  if(ALL_SCHOOLS.length===0){document.getElementById('schoolList').innerHTML='<div class="info">No schools yet. Click Add New School.</div>';return;}
+  let html='<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px"><tr><th style="background:#0a1f4d;color:#fff;padding:8px;text-align:left">School</th><th style="background:#0a1f4d;color:#fff;padding:8px;text-align:left">Prefix</th><th style="background:#0a1f4d;color:#fff;padding:8px;text-align:left">Textbook</th><th style="background:#0a1f4d;color:#fff;padding:8px;text-align:left">Action</th></tr>';
+  ALL_SCHOOLS.forEach(s=>{
+    const id=s.id||s.schoolId; const name=s.schoolName||s.name||id; const prefix=s.prefix||schoolInitials(name);
+    html+=`<tr><td style="border:1px solid #e2e8f0;padding:8px"><b>${esc(name)}</b><br><span class="small">EMIS ${esc(s.emis||'—')}</span></td><td style="border:1px solid #e2e8f0;padding:8px"><b>${esc(prefix)}</b></td><td style="border:1px solid #e2e8f0;padding:8px"><b>${esc(prefix)}000001</b></td><td style="border:1px solid #e2e8f0;padding:8px"><button class="btn btn-blue btn-small" onclick="pickSchool('${esc(id)}')">🏫 Pick This School →</button></td></tr>`;
+  });
+  html+='</table>';document.getElementById('schoolList').innerHTML=html;
+}
+function pickSchool(id){
+  document.getElementById('schoolSelect').value=id;
+  onSchoolChange();
+  showTab('login');
+  document.getElementById('emailInput').focus();
+}
+function saveUser(user){
+  localStorage.setItem('makhanani_user',JSON.stringify(user));
+  location.href='home.html';
+}
+async function doLogin(){
+  const schoolId=document.getElementById('schoolSelect').value;
+  const email=document.getElementById('emailInput').value.trim().toLowerCase();
+  const pass=document.getElementById('passInput').value.trim();
+  const msg=document.getElementById('loginMsg');
+  if(!schoolId){msg.innerHTML='<div class="warn">⚠️ Pick School first — Dropdown above.</div>';return;}
+  if(!email||!pass){msg.innerHTML='<div class="warn">⚠️ Fill Email + Password.</div>';return;}
+  msg.innerHTML='<div class="info">🔍 Checking login for this school...</div>';
+  const school=ALL_SCHOOLS.find(s=>(s.id||s.schoolId)===schoolId);
+  const schoolName=school? (school.schoolName||school.name||schoolId) : schoolId;
+  const prefix=school? (school.prefix||schoolInitials(schoolName)) : 'TSS';
+  const emis=school? (school.emis||'') : '';
+
+  // 1) Try Firebase - teachers inside that school
+  try{
+    const snap=await db.collection('schools').doc(schoolId).collection('teachers').get();
+    let found=null;
+    snap.forEach(d=>{const t=d.data(); if(String(t.email||'').toLowerCase()===email && String(t.password||'')===pass) found=t;});
+    if(found){
+      saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId,schoolName,schoolPrefix:prefix,emis});
+      return;
     }
-    deferredPrompt = null;
+  }catch(e){}
+  // 2) Try Firebase - global teachers
+  try{
+    const snap=await db.collection('teachers').where('email','==',email).get();
+    let found=null;
+    snap.forEach(d=>{const t=d.data(); if(String(t.password||'')===pass && (t.schoolId===schoolId || !t.schoolId)) found=t;});
+    if(found){
+      saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId:found.schoolId||schoolId,schoolName:found.schoolName||schoolName,schoolPrefix:found.schoolPrefix||prefix,emis:found.emis||emis});
+      return;
+    }
+  }catch(e){}
+  // 3) Try RTDB - teachers inside that school
+  try{
+    const rs=await rtdb.ref('schools/'+schoolId+'/teachers').once('value');
+    const rv=rs.val()||{};
+    let found=null;
+    Object.values(rv).forEach(t=>{ if(String(t.email||'').toLowerCase()===email && String(t.password||'')===pass) found=t;});
+    if(found){
+      saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId,schoolName,schoolPrefix:prefix,emis});
+      return;
+    }
+  }catch(e){}
+  // 4) Try localStorage teachers (from add_school.html)
+  try{
+    const localTeachers=JSON.parse(localStorage.getItem('makhanani_teachers')||'[]');
+    const found=localTeachers.find(t=>String(t.email||'').toLowerCase()===email && String(t.password||'')===pass && t.schoolId===schoolId);
+    if(found){
+      saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId,schoolName:found.schoolName||schoolName,schoolPrefix:found.schoolPrefix||prefix,emis:found.emis||emis});
+      return;
+    }
+    // If teacher exists but for different school, warn
+    const other=localTeachers.find(t=>String(t.email||'').toLowerCase()===email && String(t.password||'')===pass);
+    if(other){
+      msg.innerHTML=`<div class="warn">⚠️ This teacher belongs to <b>${esc(other.schoolName||other.schoolId)}</b>, not <b>${esc(schoolName)}</b>.<br>Pick <b>${esc(other.schoolName||'')}</b> in School Dropdown, or add teacher to this school in <b>Add School</b> page.</div>`;
+      return;
+    }
+  }catch(e){}
+  // 5) Demo fallback - only for Thuto demo school
+  if(schoolId==='thuto' && ((email==='teacher@thuto.co.za'&&pass==='1234') || (email==='admin@thuto.co.za'&&pass==='1234'))){
+    const role=email.startsWith('admin')?'Admin':'Teacher';
+    saveUser({name:role+' Demo',email,role,schoolId:'thuto',schoolName:'Thuto Secondary School',schoolPrefix:'TSS',emis:'700310854'});
     return;
   }
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const hint = document.getElementById('installHint');
-  if (isIOS) {
-    if (hint) hint.innerHTML = '🍎 <b>iPhone:</b> Tap <b>Share ⬆️</b> at bottom → <b>Add to Home Screen</b> → <b>Add</b>.';
-    alert('🍎 iPhone: Tap Share ⬆️ at bottom → Add to Home Screen → Add');
-  } else {
-    if (hint) hint.innerHTML = '📲 <b>Android:</b> Tap <b>⋮ Menu</b> (top right) → <b>Install app</b> / <b>Add to Home screen</b>. Or tap Share → Add to Home screen.';
-    alert('📲 Android: Tap ⋮ Menu → Install app / Add to Home screen');
-  }
+  msg.innerHTML=`<div class="warn">⚠️ Login failed for <b>${esc(schoolName)}</b>.<br>Email / Password wrong, or teacher not added to this school.<br><br><b>Fix:</b> Go to <b>Add School</b> → Tab <b>Add Teacher To School</b> → Pick <b>${esc(schoolName)}</b> → Add this teacher with same Email + Password → Try again.<br><br>Demo: Pick <b>Thuto Secondary School</b> → teacher@thuto.co.za / 1234</div>`;
 }
-(function(){
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  if (isIOS && !isStandalone) {
-    setTimeout(() => {
-      const box = document.getElementById('installBox');
-      if (box) box.style.display = 'block';
-      const hint = document.getElementById('installHint');
-      if (hint) hint.innerHTML = '🍎 <b>iPhone:</b> Tap <b>Share ⬆️</b> → <b>Add to Home Screen</b>.';
-    }, 1500);
-  }
-  if (!isIOS && !isStandalone) {
-    setTimeout(() => {
-      const box = document.getElementById('installBox');
-      if (box && !deferredPrompt) box.style.display = 'block';
-      const hint = document.getElementById('installHint');
-      if (hint && !deferredPrompt) hint.innerHTML = '📲 <b>Android:</b> Tap <b>⋮ Menu</b> → <b>Install app</b>.';
-    }, 3000);
-  }
-})();
+function loginDemo(email,pass,role){
+  // Demo - Thuto school, no Firebase needed
+  saveUser({name:role+' Demo',email,role,schoolId:'thuto',schoolName:'Thuto Secondary School',schoolPrefix:'TSS',emis:'700310854'});
+}
+window.onload=loadSchools;
+document.addEventListener('keydown',e=>{ if(e.key==='Enter' && document.getElementById('tab-login').style.display!=='none'){ doLogin(); }});
 </script>
 </body>
 </html>
