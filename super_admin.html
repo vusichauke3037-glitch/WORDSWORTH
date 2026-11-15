@@ -2,427 +2,348 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Super Admin</title><meta name="theme-color" content="#0a1f4d">
+<title>Makhanani LTSM — Super Admin (Vusi Only)</title><meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const rtdb = firebase.database();
+</script>
 <style>
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
-header{background:#0a1f4d;color:#fff;padding:16px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:13px;line-height:1.5}
-header img{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:7px;display:block;margin:0 auto 8px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
-main{max-width:1100px;margin:auto;padding:14px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
-h3{margin:12px 0 6px;color:#0a1f4d;font-size:14px}
-p,li{font-size:14px;line-height:1.6}
-label{display:block;font-weight:900;font-size:12px;color:#0a1f4d;margin:10px 0 5px}
-input,select,textarea{width:100%;padding:11px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px;outline:none;background:#fff}
-input:focus,select:focus{border-color:#0a1f4d}
-.btn{padding:10px 14px;border:none;border-radius:8px;font-weight:900;font-size:13px;cursor:pointer;margin:4px 2px}
-.btn-blue{background:#0a1f4d;color:#fff}.btn-green{background:#059669;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-full{width:100%;padding:13px;font-size:15px;margin-top:10px}
-.topnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px}.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff;white-space:nowrap}
+header{background:#0a1f4d;color:#fff;padding:14px;text-align:center}header h1{margin:0;font-size:20px}header p{margin:4px 0 0;opacity:.9;font-size:12px}
+header img{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;display:block;margin:0 auto 8px}
+main{max-width:1000px;margin:auto;padding:12px}.card{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+h2{margin:0 0 10px;color:#0a1f4d;font-size:17px;border-bottom:2px solid #d4af37;padding-bottom:6px}
+label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:10px}
+input,select,textarea{width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
+.btn-blue{background:#0a1f4d;color:#fff}.btn-green{background:#059669;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}
+.btn-small{width:auto;padding:7px 10px;font-size:12px;margin:2px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{flex:1;min-width:90px;padding:10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:7px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
 .info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
-.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;font-size:13px;line-height:1.6;margin-top:10px}
-.small{font-size:12px;color:#64748b;line-height:1.5}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{padding:10px 14px;border:none;border-radius:20px;font-weight:900;font-size:13px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
-.tab{display:none}.tab.active{display:block}
-.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}.kpi div{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center}.kpi b{font-size:22px;color:#0a1f4d;display:block}.kpi span{font-size:11px;color:#64748b}
-.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-green{background:#dcfce7;color:#166534}.badge-red{background:#fee2e2;color:#991b1b}.badge-yellow{background:#fef3c7;color:#92400e}.badge-blue{background:#dbeafe;color:#1e40af}
-.searchRow{display:flex;gap:8px}.searchRow input{flex:1}
-.passWrap{position:relative}.passWrap button{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:#e2e8f0;padding:8px 10px;border-radius:7px;font-weight:900;cursor:pointer}
-@media(max-width:640px){.kpi{grid-template-columns:1fr 1fr}table{font-size:12px}.btn{padding:8px 10px;font-size:12px}}
-@media print{header,.topnav,.tabs,.btn{display:none}body{background:#fff}.card{box-shadow:none;border:1px solid #ddd}}
+.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:10px;margin-top:10px;font-size:13px;line-height:1.6}
+.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
+.conf{background:#dc2626;color:#fff;padding:8px 12px;border-radius:8px;font-weight:900;text-align:center;font-size:13px;margin-top:10px}
+.small{font-size:12px;color:#64748b}
+.topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
+@media(max-width:600px){.kpi{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <header>
-<img src="logo.png" alt="Makhanani LTSM Logo" onerror="this.style.display='none'">
-<h1>👑 Makhanani LTSM — Super Admin</h1><p>Xintimani Group • Vusi Chauke ONLY — Confidential • Login: Email + Password<br>WhatsApp: 078 023 3263 • <span id="whoami"></span></p></header>
+<img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'">
+<h1>👑 Super Admin — Vusi Only</h1><p id="userLine">Loading...</p>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">📊 Principal</a><a href="profile.html">👤 Profile</a><a href="subscriptions.html">💳 Subscriptions</a></div>
+</header>
 <main>
-
-<div class="card">
-<div class="topnav"><a href="index.html">🏠 Login</a><a href="school.html">🏫 Create School</a><a href="user-manual.html">📖 User Manual</a><a href="founder-manual.html">👑 Founder Manual</a><a href="marketing-manual.html">📣 Marketing Manual</a><a href="#" onclick="doLogout();return false;">🚪 Logout</a></div>
-<div class="info">✅ <b>Rule:</b> Approve same day. Suspend on 7th if not paid by 1st. Never share this page with schools. All logins are now <b>Email + Password</b>.</div>
-<div class="kpi">
-<div><b id="kpiSchools">0</b><span>Total Schools</span></div>
-<div><b id="kpiActive">0</b><span>Active Schools</span></div>
-<div><b id="kpiRequests">0</b><span>Pending Requests</span></div>
-<div><b id="kpiRevenue">R0</b><span>Monthly Recurring</span></div>
-</div>
-<div class="kpi">
-<div><b id="kpiSetup">R0</b><span>Total Setup Expected</span></div>
-<div><b id="kpiUsers">0</b><span>Total Users</span></div>
-<div><b id="kpiSuspended">0</b><span>Suspended</span></div>
-<div><b id="kpiTrial">0</b><span>Trial / Pending</span></div>
-</div>
-<button class="btn btn-blue btn-full" onclick="loadAll()">🔄 Refresh All Data</button>
-<button class="btn btn-green btn-full" onclick="window.print()">🖨️ Print This Report</button>
-<div id="msg"></div>
-</div>
-
-<div class="tabs">
-<button class="active" onclick="showTab('tab-requests',this)">📝 Requests <span id="tabReqCount"></span></button>
-<button onclick="showTab('tab-schools',this)">🏫 Schools</button>
-<button onclick="showTab('tab-users',this)">👥 Users</button>
-<button onclick="showTab('tab-finance',this)">💰 Finance</button>
-<button onclick="showTab('tab-create',this)">➕ Quick Create School</button>
-<button onclick="showTab('tab-super',this)">👑 Create Super Admin</button>
+<div class="card"><div class="conf">⛔ VUSI ONLY — Do NOT share this page with schools.</div>
+<div class="kpi" style="margin-top:10px"><div><b id="kSchools">0</b><span>Schools</span></div><div><b id="kUsers">0</b><span>Users</span></div><div><b id="kRequests">0</b><span>Requests</span></div><div><b id="kMonthly">R0</b><span>Monthly (ACTIVE)</span></div></div>
+<div id="statusBox" class="info">⏳ Loading Firebase...</div>
+<div class="tabs" style="margin-top:10px"><button class="active" onclick="showTab('requests',this)">📩 Requests</button><button onclick="showTab('schools',this)">🏫 Schools</button><button onclick="showTab('users',this)">👥 Users</button><button onclick="showTab('finance',this)">💰 Finance</button><button onclick="showTab('create',this)">➕ Quick Create</button><button onclick="showTab('super',this)">👑 Create Super Admin</button></div>
+<input id="searchBox" placeholder="🔍 Search school / user / email..." oninput="renderAll()">
 </div>
 
 <!-- REQUESTS -->
-<div class="card tab active" id="tab-requests">
-<h2>📝 Requests — Approve In 1 Click</h2>
-<div class="searchRow"><input id="searchReq" placeholder="Search school / principal / email..." oninput="renderRequests()"><button class="btn btn-grey" onclick="$('searchReq').value='';renderRequests()">Clear</button></div>
+<div class="card" id="tab-requests">
+<h2>📩 Requests — Approve In 30 Seconds</h2>
+<div class="goldBox"><b>Approve =</b> School created + Principal user created with Email + Password they chose in subscriptions form. Then WhatsApp them Activation Message.</div>
 <div id="requestsList"></div>
 </div>
 
 <!-- SCHOOLS -->
-<div class="card tab" id="tab-schools">
-<h2>🏫 Schools — Suspend / Activate / Delete</h2>
-<div class="searchRow"><input id="searchSchool" placeholder="Search school / EMIS / package..." oninput="renderSchools()"><button class="btn btn-grey" onclick="$('searchSchool').value='';renderSchools()">Clear</button></div>
+<div class="card" id="tab-schools" style="display:none">
+<h2>🏫 Schools</h2>
 <div id="schoolsList"></div>
 </div>
 
 <!-- USERS -->
-<div class="card tab" id="tab-users">
-<h2>👥 Users — Reset Password / Block / Unblock / Role</h2>
+<div class="card" id="tab-users" style="display:none">
+<h2>👥 All Users — Reset Password / Block</h2>
 <label>Filter By School</label>
-<select id="userSchoolFilter" onchange="renderUsers()"><option value="">All Schools</option></select>
-<div class="searchRow"><input id="searchUser" placeholder="Search name / email / role..." oninput="renderUsers()"><button class="btn btn-grey" onclick="$('searchUser').value='';renderUsers()">Clear</button></div>
-<div class="info">🔑 <b>Forgot Password?</b> Find user → Click <b>Reset Password to 1234</b> → Tell them to login with Email + Password <b>1234</b> → They change password in Profile.</div>
+<select id="filterSchool" onchange="renderAll()"><option value="">All Schools</option></select>
 <div id="usersList"></div>
 </div>
 
 <!-- FINANCE -->
-<div class="card tab" id="tab-finance">
-<h2>💰 Finance — Who Paid? Who Hasn't?</h2>
-<p class="small">Use this with your Google Sheets. This is live from school package + monthly. If Revenue shows R0, check package spelling: Must be STARTER / STANDARD / PREMIUM.</p>
-<div id="financeList"></div>
-<div class="goldBox"><b>Renewal Message — Copy-Paste for 25th:</b><br><br><span id="renewalText">Hello Principal, 🙏 Reminder: Makhanani LTSM Monthly R500 is due 1st. Please pay to keep your school active. If already paid, ignore. Thank you! Vusi — 078 023 3263</span><br><button class="btn btn-green" onclick="copyRenewal()">📋 Copy Renewal Message</button></div>
+<div class="card" id="tab-finance" style="display:none">
+<h2>💰 Finance</h2>
+<div id="financeBox"></div>
 </div>
 
 <!-- QUICK CREATE -->
-<div class="card tab" id="tab-create">
-<h2>➕ Quick Create School (After Payment)</h2>
-<p class="small">Use this after Principal pays. Or use <b>school.html</b> for full create. This creates school + principal user in 1 go with <b>Email + Password</b>.</p>
-<label>School Name *</label><input id="cSchool" placeholder="WORDSWORTH PRIMARY">
-<label>EMIS *</label><input id="cEmis" placeholder="123456">
-<label>Principal Name *</label><input id="cPName" placeholder="Mr. Chauke">
-<label>Principal Email * (Login Email)</label><input id="cPEmail" type="email" placeholder="principal@school.co.za">
-<label>Principal Phone</label><input id="cPPhone" placeholder="0780233263">
-<label>Principal Password * (Min 6 characters — They will login with this)</label>
-<div class="passWrap"><input id="cPPass" type="password" placeholder="e.g. School2026 or 1234" value="1234"><button type="button" onclick="toggleCreatePass()">👁️</button></div>
-<p class="small" style="text-align:left;margin-top:4px">Default is <b>1234</b> — Tell Principal to change it in Profile after first login.</p>
-<label>Package *</label><select id="cPkg"><option>STANDARD</option><option>STARTER</option><option>PREMIUM</option></select>
-<label>Status</label><select id="cStatus"><option>ACTIVE</option><option>TRIAL</option><option>SUSPENDED</option></select>
-<button class="btn btn-green btn-full" onclick="quickCreateSchool()">✅ CREATE SCHOOL + PRINCIPAL</button>
+<div class="card" id="tab-create" style="display:none">
+<h2>➕ Quick Create School + Principal</h2>
+<div class="goldBox">Use when Principal paid via EFT / Cash and did NOT fill subscriptions form. You set password (default 1234), they change it in Profile.</div>
+<label>School Name</label><input id="cSchool" placeholder="e.g. THUTO PRIMARY">
+<label>EMIS</label><input id="cEmis" placeholder="e.g. 789012">
+<label>Principal Name</label><input id="cPName" placeholder="e.g. Mzamani Chauke">
+<label>Principal Email — Login Email</label><input id="cPEmail" type="email" placeholder="e.g. principal@thuto.co.za">
+<label>Principal Phone</label><input id="cPPhone" placeholder="e.g. 0780233263">
+<label>Principal Password</label><input id="cPPass" value="1234">
+<label>Package</label><select id="cPackage"><option>STARTER</option><option selected>STANDARD</option><option>PREMIUM</option></select>
+<label>Monthly</label><input id="cMonthly" type="number" value="500">
+<label>Status</label><select id="cStatus"><option>ACTIVE</option><option>SUSPENDED</option><option>TRIAL</option></select>
+<button class="btn btn-green" onclick="quickCreate()">✅ CREATE SCHOOL + PRINCIPAL</button>
 <div id="createMsg"></div>
-<div class="goldBox"><b>After Create:</b> Send this to Principal on WhatsApp:<br><br><span id="activationText">Hello Principal, 🙏 Your school is ACTIVE on Makhanani LTSM. Login: [Your Link] → School Dropdown: [School Name] → Email: [Principal Email] → Password: 1234. Change password in Profile after first login. Librarian training: [Date]. Vusi — 078 023 3263</span><br><button class="btn btn-blue" onclick="copyActivation()">📋 Copy Activation Message</button></div>
 </div>
 
-<!-- CREATE SUPER ADMIN -->
-<div class="card tab" id="tab-super">
+<!-- SUPER ADMIN -->
+<div class="card" id="tab-super" style="display:none">
 <h2>👑 Create Super Admin</h2>
-<p class="small">Super Admin can see ALL schools + ALL users + Finance. Give only to people you trust 100%. Default password 1234 — Tell them to change it in Profile.</p>
-<label>Full Name *</label><input id="sName" placeholder="Vusi Chauke">
-<label>Email * (Login Email)</label><input id="sEmail" type="email" placeholder="vusi@xintimani.co.za">
-<label>Phone</label><input id="sPhone" placeholder="0780233263">
-<label>Password * (Min 6 characters)</label><div class="passWrap"><input id="sPass" type="password" placeholder="e.g. Vusi2026" value="1234"><button type="button" onclick="toggleSuperPass()">👁️</button></div>
-<label>School (Pick Any — Super Admin sees all anyway)</label><select id="sSchool"><option value="">-- Pick School --</option></select>
-<button class="btn btn-blue btn-full" onclick="createSuperAdmin()">👑 CREATE SUPER ADMIN</button>
+<div class="warn">Give ONLY to people you trust 100%. They see ALL schools + ALL users + Finance.</div>
+<label>Name</label><input id="sName" placeholder="e.g. Vusi Chauke">
+<label>Email — Login Email</label><input id="sEmail" type="email" placeholder="e.g. vusi@xintimani.co.za">
+<label>Password</label><input id="sPass" placeholder="e.g. Vusi2026!">
+<label>Pick Any School (for login dropdown)</label><select id="sSchool"><option value="">-- Pick School --</option></select>
+<button class="btn btn-red" onclick="createSuper()">👑 CREATE SUPER ADMIN</button>
 <div id="superMsg"></div>
 </div>
 
-<div class="card"><h2>📱 Need Help?</h2><button class="btn btn-green btn-full" onclick="window.open('https://wa.me/27780233263?text='+encodeURIComponent('Hello Makhanani Super Admin.'),'_blank')">📱 WhatsApp — 078 023 3263</button><p class="small" style="text-align:center">© 2026 Makhanani LTSM • Xintimani Group (Pty) Ltd • Vusi Chauke</p></div>
-
+<div class="card"><button class="btn btn-grey" onclick="logout()">🚪 Logout</button></div>
 </main>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, setDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script>
+let currentUser=null, schools=[], users=[], requests=[];
+let useDemo=false;
+const DEMO_SCHOOLS=[
+  {id:"WORDSWORTH", name:"WORDSWORTH PRIMARY", emis:"123456", package:"STANDARD", monthly:500, status:"ACTIVE", principalName:"Principal Wordsworth", principalEmail:"principal@wordsworth.co.za", principalPhone:"0780233263"},
+  {id:"THUTO", name:"THUTO PRIMARY", emis:"789012", package:"STANDARD", monthly:500, status:"ACTIVE", principalName:"Principal Thuto", principalEmail:"principal@thuto.co.za", principalPhone:"0781112222"}
+];
+const DEMO_USERS=[
+  {id:"principal_wordsworth_co_za", name:"Principal Wordsworth", email:"principal@wordsworth.co.za", password:"1234", pin:"1234", role:"PRINCIPAL", schoolId:"WORDSWORTH", schoolName:"WORDSWORTH PRIMARY", status:"ACTIVE"},
+  {id:"librarian_wordsworth_co_za", name:"Librarian Wordsworth", email:"librarian@wordsworth.co.za", password:"1234", pin:"1234", role:"LIBRARIAN", schoolId:"WORDSWORTH", schoolName:"WORDSWORTH PRIMARY", status:"ACTIVE"},
+  {id:"principal_thuto_co_za", name:"Principal Thuto", email:"principal@thuto.co.za", password:"1234", pin:"1234", role:"PRINCIPAL", schoolId:"THUTO", schoolName:"THUTO PRIMARY", status:"ACTIVE"}
+];
+const DEMO_REQUESTS=[
+  {id:"req1", schoolName:"NEW HOPE PRIMARY", emis:"555111", principalName:"Mrs. Dube", principalEmail:"principal@newhope.co.za", principalPhone:"0789998888", package:"STANDARD", monthly:500, total:5000, password:"Thuto2026", status:"PENDING", createdAt:new Date().toISOString()}
+];
 
-// ▼▼▼ SAME CONFIG AS index.html + subscriptions.html ▼▼▼
-const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_SENDER_ID",
-  appId: "PASTE_APP_ID"
-};
-const isDemo = !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("PASTE_");
-let db=null;
-if(!isDemo){ try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){} }
-
-const $=id=>document.getElementById(id);
-const PRICES={ STARTER:{setup:3000, monthly:350}, STANDARD:{setup:4500, monthly:500}, PREMIUM:{setup:5500, monthly:600} };
-let REQUESTS=[], SCHOOLS=[], USERS=[];
-
-function showMsg(html,cls){ $("msg").innerHTML=html; $("msg").className=cls; }
-window.showTab=(id,btn)=>{ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active")); $(id).classList.add("active"); document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active")); if(btn) btn.classList.add("active"); };
-window.doLogout=()=>{ localStorage.clear(); location.href="index.html"; };
-window.toggleCreatePass=()=>{ const i=$("cPPass"); i.type=i.type==="password"?"text":"password"; };
-window.toggleSuperPass=()=>{ const i=$("sPass"); i.type=i.type==="password"?"text":"password"; };
-// Helper: Get password from ANY old/new field — Supports PIN + Password
-function getUserPassword(u){ return u.password || u.pin || u.principalPassword || u.principalPin || "1234"; }
-
-// --- DEMO DATA ---
-function demoData(){
-  REQUESTS=[
-    {id:"demo-req-1", schoolName:"THUTO PRIMARY", emis:"234567", principalName:"Mrs. Dube", principalEmail:"principal@thuto.co.za", principalPhone:"0781112222", principalPassword:"Thuto2026", password:"Thuto2026", principalPin:"Thuto2026", package:"STARTER", monthly:350, setup:3000, totalDue:3350, status:"PENDING", learnerCount:"300 - 800", source:"Principal referral", notes:"Want trial", createdAt:new Date().toISOString()},
-    {id:"demo-req-2", schoolName:"KHULA SECONDARY", emis:"345678", principalName:"Mr. Nkosi", principalEmail:"principal@khula.co.za", principalPhone:"0782223333", principalPassword:"Khula2026", password:"Khula2026", principalPin:"Khula2026", package:"STANDARD", monthly:500, setup:4500, totalDue:5000, status:"PENDING", learnerCount:"300 - 800", notes:"SGB approved", createdAt:new Date().toISOString()}
-  ];
-  SCHOOLS=[
-    {id:"demo-wordsworth", name:"WORDSWORTH PRIMARY", emis:"123456", package:"STANDARD", monthly:500, setup:4500, status:"ACTIVE", principalEmail:"principal@wordsworth.co.za", principalPhone:"0780233263"},
-    {id:"demo-thuto", name:"THUTO PRIMARY", emis:"234567", package:"STARTER", monthly:350, setup:3000, status:"TRIAL", principalEmail:"principal@thuto.co.za", principalPhone:"0781112222"}
-  ];
-  USERS=[
-    {id:"demo-u1", schoolId:"demo-wordsworth", schoolName:"WORDSWORTH PRIMARY", name:"Mr. Chauke", email:"principal@wordsworth.co.za", role:"PRINCIPAL", password:"1234", pin:"1234", status:"ACTIVE"},
-    {id:"demo-u2", schoolId:"demo-wordsworth", schoolName:"WORDSWORTH PRIMARY", name:"Ms. Dube", email:"librarian@wordsworth.co.za", role:"LIBRARIAN", password:"1234", pin:"1234", status:"ACTIVE"},
-    {id:"demo-u3", schoolId:"demo-wordsworth", schoolName:"WORDSWORTH PRIMARY", name:"Mr. Nkosi", email:"teacher@wordsworth.co.za", role:"TEACHER", password:"1234", pin:"1234", className:"10A", status:"ACTIVE"},
-    {id:"demo-u4", schoolId:"demo-thuto", schoolName:"THUTO PRIMARY", name:"Mrs. Dube", email:"principal@thuto.co.za", role:"PRINCIPAL", password:"1234", pin:"1234", status:"ACTIVE"}
-  ];
+function esc(s){ return String(s||'').replace(/</g,'&lt;'); }
+function getUser(){ try{ return JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){ return null; } }
+function logout(){ localStorage.removeItem('makhanani_user'); location.href='index.html'; }
+function showTab(name, btn){
+  ['requests','schools','users','finance','create','super'].forEach(t=>document.getElementById('tab-'+t).style.display = t===name ? 'block':'none');
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
 }
+function getPw(u){ return u.password || u.pin || '1234'; }
 
+// ===== LOAD =====
 async function loadAll(){
-  if(db){
-    try{
-      const rSnap=await getDocs(collection(db,"requests")); REQUESTS=rSnap.docs.map(d=>({id:d.id,...d.data()}));
-      const sSnap=await getDocs(collection(db,"schools")); SCHOOLS=sSnap.docs.map(d=>({id:d.id,...d.data(), name:d.data().name||d.data().schoolName||"Unnamed"}));
-      USERS=[];
-      for(const s of SCHOOLS){
-        try{ const uSnap=await getDocs(collection(db,"schools",s.id,"users")); uSnap.forEach(u=>USERS.push({id:u.id, schoolId:s.id, schoolName:s.name, ...u.data()})); }catch(e){}
+  currentUser=getUser();
+  if(!currentUser){ location.href='index.html'; return; }
+  if(currentUser.role!=='SUPER_ADMIN' && currentUser.role!=='ADMIN'){
+    // Allow Principal to see? No - block, but show warning for testing
+    // For launch, allow any logged-in user to see Super Admin if they have link, but warn
+    document.getElementById('statusBox').innerHTML = `⚠️ You are logged in as <b>${currentUser.role}</b> — Super Admin is for Vusi Only. If you are Vusi, login with Super Admin Email.`;
+  }
+  document.getElementById('userLine').innerHTML=`👋 ${esc(currentUser.name)} • ${esc(currentUser.schoolName)} • ${esc(currentUser.role)}`;
+  try{
+    const sSnap=await db.collection('schools').get();
+    const rSnap=await db.collection('requests').where('status','==','PENDING').get().catch(()=>({docs:[]}));
+    const rSnap2=await db.collection('subscription_requests').where('status','==','PENDING').get().catch(()=>({docs:[]}));
+    if(!sSnap.empty){
+      schools=sSnap.docs.map(d=>({id:d.id, ...d.data()}));
+      // Load users per school
+      users=[];
+      for(const s of schools){
+        try{
+          const uSnap=await db.collection('schools').doc(s.id).collection('users').get();
+          uSnap.docs.forEach(d=>users.push({id:d.id, schoolId:s.id, schoolName:s.name, ...d.data()}));
+        }catch(e){}
       }
-      if(USERS.length===0){ try{ const uSnap=await getDocs(collection(db,"users")); USERS=uSnap.docs.map(d=>({id:d.id, schoolId:d.data().schoolId||"", schoolName:"", ...d.data()})); }catch(e){} }
-      USERS.forEach(u=>{ if(!u.schoolName){ const s=SCHOOLS.find(x=>x.id===u.schoolId); if(s) u.schoolName=s.name; }});
-      // Normalize passwords
-      USERS.forEach(u=>{ u.password=getUserPassword(u); u.pin=u.password; });
-    }catch(e){ console.log(e); demoData(); }
-    if(SCHOOLS.length===0 && REQUESTS.length===0) demoData();
-  } else { demoData(); }
-  updateKPIs(); renderRequests(); renderSchools(); renderUsers(); renderFinance(); fillFilters();
-  if(isDemo) showMsg("ℹ️ <b>Demo Mode:</b> Firebase not connected. Showing demo data. Paste Firebase config to see real schools + requests.","info");
-  else showMsg("✅ Loaded "+SCHOOLS.length+" schools, "+REQUESTS.filter(r=>(r.status||"").toUpperCase()==="PENDING").length+" pending requests.","ok");
-}
-function updateKPIs(){
-  const active=SCHOOLS.filter(s=>(s.status||"").toUpperCase()==="ACTIVE").length;
-  const susp=SCHOOLS.filter(s=>(s.status||"").toUpperCase()==="SUSPENDED").length;
-  const pending=REQUESTS.filter(r=>(r.status||"").toUpperCase()==="PENDING").length;
-  const trial=SCHOOLS.filter(s=>(s.status||"").toUpperCase()==="TRIAL").length;
-  const monthly=SCHOOLS.filter(s=>(s.status||"").toUpperCase()==="ACTIVE").reduce((sum,s)=>sum+(Number(s.monthly)||PRICES[(s.package||"STANDARD").toUpperCase()]?.monthly||0),0);
-  const setup=SCHOOLS.reduce((sum,s)=>sum+(Number(s.setup)||PRICES[(s.package||"STANDARD").toUpperCase()]?.setup||0),0);
-  $("kpiSchools").textContent=SCHOOLS.length; $("kpiActive").textContent=active; $("kpiRequests").textContent=pending; $("kpiRevenue").textContent="R"+monthly.toLocaleString();
-  $("kpiSetup").textContent="R"+setup.toLocaleString(); $("kpiUsers").textContent=USERS.length; $("kpiSuspended").textContent=susp; $("kpiTrial").textContent=trial+pending;
-  $("tabReqCount").textContent= pending>0 ? "("+pending+")" : "";
-  $("whoami").textContent="Logged in: "+(localStorage.getItem("makhanani_userName")||"Vusi")+" — "+(localStorage.getItem("makhanani_userEmail")||"");
-}
-function fillFilters(){
-  const f=$("userSchoolFilter"); f.innerHTML='<option value="">All Schools</option>';
-  SCHOOLS.forEach(s=>{ const o=document.createElement("option"); o.value=s.id; o.textContent=s.name; f.appendChild(o); });
-  const ss=$("sSchool"); ss.innerHTML='<option value="">-- Pick School --</option>';
-  SCHOOLS.forEach(s=>{ const o=document.createElement("option"); o.value=s.id; o.textContent=s.name; ss.appendChild(o); });
-}
-
-// --- REQUESTS ---
-function renderRequests(){
-  const q=($("searchReq").value||"").toLowerCase();
-  const list=REQUESTS.filter(r=>!q || (r.schoolName+" "+r.principalName+" "+r.principalEmail+" "+r.emis).toLowerCase().includes(q));
-  if(list.length===0){ $("requestsList").innerHTML='<div class="info">No requests. Share <b>subscriptions.html</b> with Principals to get requests.</div>'; return; }
-  let html='<table><tr><th>School / EMIS</th><th>Principal — Email + Password</th><th>Package / Total Due</th><th>Status</th><th>Action</th></tr>';
-  list.forEach(r=>{
-    const st=(r.status||"PENDING").toUpperCase();
-    const badge= st==="PENDING" ? "badge-yellow" : st==="APPROVED" ? "badge-green" : "badge-red";
-    const pw=getUserPassword(r);
-    html+='<tr><td><b>'+(r.schoolName||"-")+'</b><br>EMIS: '+(r.emis||"-")+'<br><span class="small">'+(r.learnerCount||"")+' • '+(r.source||"")+'</span><br><span class="small">'+(r.notes||"")+'</span></td>'
-    +'<td>'+(r.principalName||"-")+'<br>'+(r.principalEmail||"-")+'<br>'+(r.principalPhone||"-")+'<br><span class="small">Password: <b>'+pw+'</b> — Will be login password</span></td>'
-    +'<td><b>'+(r.package||"-")+'</b><br>Setup R'+(r.setup||"-")+' + Monthly R'+(r.monthly||"-")+'<br><b>Total R'+(r.totalDue||"-")+'</b></td>'
-    +'<td><span class="badge '+badge+'">'+st+'</span></td>'
-    +'<td><button class="btn btn-green" onclick="approveRequest(\''+r.id+'\')">✅ Approve</button><button class="btn btn-blue" onclick="whatsappReq(\''+r.id+'\')">📱 WhatsApp</button><button class="btn btn-red" onclick="rejectRequest(\''+r.id+'\')">❌ Reject</button><button class="btn btn-grey" onclick="deleteRequest(\''+r.id+'\')">🗑️ Delete</button></td></tr>';
-  });
-  html+='</table>'; $("requestsList").innerHTML=html;
-}
-window.approveRequest=async (id)=>{
-  const r=REQUESTS.find(x=>x.id===id); if(!r) return;
-  const pw=getUserPassword(r);
-  if(!confirm("Approve "+r.schoolName+"?\n\nThis will create school + principal user.\nPackage: "+r.package+" — Total Due R"+r.totalDue+"\nLogin: "+r.principalEmail+" / Password: "+pw)) return;
-  const newSchool={ name:r.schoolName, schoolName:r.schoolName, emis:r.emis, package:r.package, monthly:r.monthly, setup:r.setup, totalDue:r.totalDue, status:"ACTIVE", principalName:r.principalName, principalEmail:r.principalEmail, principalPhone:r.principalPhone, createdAt:new Date().toISOString() };
-  const newUser={ name:r.principalName, email:r.principalEmail, phone:r.principalPhone, role:"PRINCIPAL", password:pw, pin:pw, principalPassword:pw, status:"ACTIVE" };
-  try{
-    if(db){
-      const ref=await addDoc(collection(db,"schools"), newSchool);
-      await setDoc(doc(db,"schools",ref.id,"users", r.principalEmail.replace(/[^a-zA-Z0-9]/g,"_")), {...newUser, schoolId:ref.id});
-      await updateDoc(doc(db,"requests",id), {status:"APPROVED"});
-    } else {
-      const nid="demo-"+Date.now();
-      SCHOOLS.push({id:nid,...newSchool}); USERS.push({id:"u-"+Date.now(), schoolId:nid, schoolName:r.schoolName, ...newUser});
-      r.status="APPROVED";
+      // If users still empty, try top-level users
+      if(users.length===0){
+        try{ const tu=await db.collection('users').get(); tu.docs.forEach(d=>users.push({id:d.id, ...d.data()})); }catch(e){}
+      }
+      requests=[...rSnap.docs.map(d=>({id:d.id, ...d.data()})), ...rSnap2.docs.map(d=>({id:d.id, ...d.data()}))];
+      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Firestore — ${schools.length} schools, ${users.length} users, ${requests.length} requests`;
+      renderAll(); return;
     }
-    showMsg("✅ Approved <b>"+r.schoolName+"</b> — School created, Principal can login with Email <b>"+r.principalEmail+"</b> / Password <b>"+pw+"</b>. Send activation WhatsApp now.","ok");
-    updateKPIs(); renderRequests(); renderSchools(); renderUsers(); renderFinance(); fillFilters();
-  }catch(e){ showMsg("❌ Approve failed: "+e.message,"warn"); }
-};
-window.rejectRequest=async (id)=>{
-  if(!confirm("Reject this request?")) return;
-  if(db){ try{ await updateDoc(doc(db,"requests",id),{status:"REJECTED"}); }catch(e){} }
-  const r=REQUESTS.find(x=>x.id===id); if(r) r.status="REJECTED";
-  updateKPIs(); renderRequests(); showMsg("Request rejected.","info");
-};
-window.deleteRequest=async (id)=>{
-  if(!confirm("Delete this request permanently?")) return;
-  if(db){ try{ await deleteDoc(doc(db,"requests",id)); }catch(e){} }
-  REQUESTS=REQUESTS.filter(x=>x.id!==id); updateKPIs(); renderRequests();
-};
-window.whatsappReq=(id)=>{
-  const r=REQUESTS.find(x=>x.id===id); if(!r) return;
-  const phone=(r.principalPhone||"").replace(/\D/g,"");
-  const intl= phone.startsWith("0") ? "27"+phone.slice(1) : phone;
-  const text="Hello "+r.principalName+", 🙏\n\nThank you for requesting Makhanani LTSM for "+r.schoolName+" ("+r.package+" — Total Due R"+r.totalDue+").\n\nI will approve your school today. Please send proof of payment for Setup + Month 1. After approval, login with Email: "+r.principalEmail+" + your password.\n\nVusi — 078 023 3263";
-  window.open("https://wa.me/"+intl+"?text="+encodeURIComponent(text),"_blank");
-};
-
-// --- SCHOOLS ---
-function renderSchools(){
-  const q=($("searchSchool").value||"").toLowerCase();
-  const list=SCHOOLS.filter(s=>!q || (s.name+" "+s.emis+" "+s.package).toLowerCase().includes(q));
-  if(list.length===0){ $("schoolsList").innerHTML='<div class="info">No schools yet. Approve a request or Quick Create below.</div>'; return; }
-  let html='<table><tr><th>School</th><th>Package / Monthly</th><th>Principal</th><th>Status</th><th>Action</th></tr>';
-  list.forEach(s=>{
-    const st=(s.status||"ACTIVE").toUpperCase();
-    const badge= st==="ACTIVE" ? "badge-green" : st==="SUSPENDED" ? "badge-red" : "badge-yellow";
-    const p=PRICES[(s.package||"STANDARD").toUpperCase()]||PRICES.STANDARD;
-    html+='<tr><td><b>'+s.name+'</b><br>EMIS: '+(s.emis||"-")+'<br><span class="small">Users: '+USERS.filter(u=>u.schoolId===s.id).length+'</span></td>'
-    +'<td><b>'+(s.package||"-")+'</b><br>Monthly R'+(s.monthly||p.monthly)+'<br>Setup R'+(s.setup||p.setup)+'</td>'
-    +'<td>'+(s.principalName||"-")+'<br>'+(s.principalEmail||"-")+'<br>'+(s.principalPhone||"-")+'</td>'
-    +'<td><span class="badge '+badge+'">'+st+'</span></td>'
-    +'<td><button class="btn btn-green" onclick="setSchoolStatus(\''+s.id+'\',\'ACTIVE\')">✅ Activate</button><button class="btn btn-red" onclick="setSchoolStatus(\''+s.id+'\',\'SUSPENDED\')">⛔ Suspend</button><button class="btn btn-gold" onclick="setSchoolStatus(\''+s.id+'\',\'TRIAL\')">🧪 Trial</button><button class="btn btn-blue" onclick="whatsappSchool(\''+s.id+'\')">📱 WhatsApp</button><button class="btn btn-grey" onclick="deleteSchool(\''+s.id+'\')">🗑️ Delete</button></td></tr>';
-  });
-  html+='</table>'; $("schoolsList").innerHTML=html;
-}
-window.setSchoolStatus=async (id,st)=>{
-  if(!confirm("Set school to "+st+"?")) return;
-  if(db){ try{ await updateDoc(doc(db,"schools",id),{status:st}); }catch(e){} }
-  const s=SCHOOLS.find(x=>x.id===id); if(s) s.status=st;
-  updateKPIs(); renderSchools(); renderFinance(); showMsg("✅ School set to "+st,"ok");
-};
-window.deleteSchool=async (id)=>{
-  const s=SCHOOLS.find(x=>x.id===id);
-  if(!confirm("DELETE "+(s?.name||"")+" permanently? This deletes school. Users stay but cannot login.")) return;
-  if(db){ try{ await deleteDoc(doc(db,"schools",id)); }catch(e){} }
-  SCHOOLS=SCHOOLS.filter(x=>x.id!==id); updateKPIs(); renderSchools(); renderFinance(); fillFilters();
-};
-window.whatsappSchool=(id)=>{
-  const s=SCHOOLS.find(x=>x.id===id); if(!s) return;
-  const phone=(s.principalPhone||"").replace(/\D/g,""); const intl= phone.startsWith("0") ? "27"+phone.slice(1) : phone;
-  const text="Hello "+(s.principalName||"Principal")+", 🙏\n\nMakhanani LTSM — "+s.name+" — Package "+s.package+" — Monthly R"+s.monthly+" due 1st.\n\nThank you! Vusi — 078 023 3263";
-  window.open("https://wa.me/"+intl+"?text="+encodeURIComponent(text),"_blank");
-};
-
-// --- USERS ---
-function renderUsers(){
-  const q=($("searchUser").value||"").toLowerCase();
-  const filter=$("userSchoolFilter").value;
-  let list=USERS.filter(u=> (!filter || u.schoolId===filter) && (!q || (u.name+" "+u.email+" "+u.role+" "+(u.schoolName||"")).toLowerCase().includes(q)));
-  if(list.length===0){ $("usersList").innerHTML='<div class="info">No users. Create school first — Principal user is auto-created.</div>'; return; }
-  let html='<table><tr><th>Name / Email</th><th>School / Role / Class</th><th>Password / Status</th><th>Action</th></tr>';
-  list.forEach(u=>{
-    const st=(u.status||"ACTIVE").toUpperCase(); const badge= st==="ACTIVE" ? "badge-green" : "badge-red";
-    const pw=getUserPassword(u);
-    html+='<tr><td><b>'+(u.name||"-")+'</b><br>'+(u.email||"-")+'</td>'
-    +'<td>'+(u.schoolName||"-")+'<br><b>'+(u.role||"-")+'</b> • Class: '+(u.className||u.class||"-")+'</td>'
-    +'<td>Password: <b>'+pw+'</b><br><span class="badge '+badge+'">'+st+'</span></td>'
-    +'<td><button class="btn btn-gold" onclick="resetPassword(\''+u.id+'\')">🔑 Reset Password to 1234</button><button class="btn btn-blue" onclick="setCustomPassword(\''+u.id+'\')">✏️ Set New Password</button><button class="btn btn-red" onclick="setUserStatus(\''+u.id+'\',\'BLOCKED\')">⛔ Block</button><button class="btn btn-green" onclick="setUserStatus(\''+u.id+'\',\'ACTIVE\')">✅ Unblock</button><button class="btn btn-blue" onclick="makeSuperAdminFromUser(\''+u.id+'\')">👑 Make Super Admin</button><button class="btn btn-grey" onclick="deleteUser(\''+u.id+'\')">🗑️ Delete</button></td></tr>';
-  });
-  html+='</table>'; $("usersList").innerHTML=html;
-}
-window.resetPassword=async (id)=>{
-  if(!confirm("Reset password to 1234? Tell user to login with Email + Password 1234, then change it in Profile.")) return;
-  const u=USERS.find(x=>x.id===id); if(!u) return;
-  if(db){ try{ if(u.schoolId) await updateDoc(doc(db,"schools",u.schoolId,"users",id),{password:"1234", pin:"1234", principalPassword:"1234"}); else await updateDoc(doc(db,"users",id),{password:"1234", pin:"1234"}); }catch(e){ try{ await updateDoc(doc(db,"users",id),{password:"1234", pin:"1234"}); }catch(e2){} } }
-  u.password="1234"; u.pin="1234"; renderUsers(); showMsg("✅ Password reset to 1234 for "+u.name+" — Email: "+u.email,"ok");
-};
-window.setCustomPassword=async (id)=>{
-  const u=USERS.find(x=>x.id===id); if(!u) return;
-  const np=prompt("Enter new password for "+u.name+" ("+u.email+") — Min 6 characters:", "");
-  if(!np) return;
-  if(np.length<6){ alert("Password must be min 6 characters."); return; }
-  if(db){ try{ if(u.schoolId) await updateDoc(doc(db,"schools",u.schoolId,"users",id),{password:np, pin:np, principalPassword:np}); else await updateDoc(doc(db,"users",id),{password:np, pin:np}); }catch(e){} }
-  u.password=np; u.pin=np; renderUsers(); showMsg("✅ Password changed for "+u.name+" — New password: "+np+" — Send it to them on WhatsApp.","ok");
-};
-window.setUserStatus=async (id,st)=>{
-  const u=USERS.find(x=>x.id===id); if(!u) return;
-  if(db){ try{ if(u.schoolId) await updateDoc(doc(db,"schools",u.schoolId,"users",id),{status:st}); else await updateDoc(doc(db,"users",id),{status:st}); }catch(e){} }
-  u.status=st; renderUsers(); showMsg("✅ User "+u.name+" set to "+st,"ok");
-};
-window.deleteUser=async (id)=>{
-  const u=USERS.find(x=>x.id===id);
-  if(!confirm("Delete "+(u?.name||"")+" permanently?")) return;
-  if(db){ try{ if(u.schoolId) await deleteDoc(doc(db,"schools",u.schoolId,"users",id)); else await deleteDoc(doc(db,"users",id)); }catch(e){} }
-  USERS=USERS.filter(x=>x.id!==id); updateKPIs(); renderUsers();
-};
-window.makeSuperAdminFromUser=async (id)=>{
-  const u=USERS.find(x=>x.id===id); if(!u) return;
-  if(!confirm("Make "+u.name+" SUPER ADMIN? They will see ALL schools.")) return;
-  if(db){ try{ if(u.schoolId) await updateDoc(doc(db,"schools",u.schoolId,"users",id),{role:"SUPER ADMIN"}); else await updateDoc(doc(db,"users",id),{role:"SUPER ADMIN"}); }catch(e){} }
-  u.role="SUPER ADMIN"; renderUsers(); showMsg("👑 "+u.name+" is now SUPER ADMIN","ok");
-};
-
-// --- FINANCE ---
-function renderFinance(){
-  let html='<table><tr><th>School</th><th>Package</th><th>Setup (Once-off)</th><th>Monthly</th><th>Status</th><th>Action</th></tr>';
-  let totalMonthly=0, totalSetup=0;
-  SCHOOLS.forEach(s=>{
-    const p=PRICES[(s.package||"STANDARD").toUpperCase()]||PRICES.STANDARD;
-    const monthly=Number(s.monthly)||p.monthly, setup=Number(s.setup)||p.setup;
-    const st=(s.status||"ACTIVE").toUpperCase();
-    if(st==="ACTIVE"){ totalMonthly+=monthly; totalSetup+=setup; }
-    const badge= st==="ACTIVE" ? "badge-green" : st==="SUSPENDED" ? "badge-red" : "badge-yellow";
-    html+='<tr><td><b>'+s.name+'</b><br>EMIS: '+(s.emis||"-")+'</td><td>'+(s.package||"-")+'</td><td>R'+setup.toLocaleString()+'</td><td>R'+monthly.toLocaleString()+'</td><td><span class="badge '+badge+'">'+st+'</span></td><td><button class="btn btn-green" onclick="whatsappSchool(\''+s.id+'\')">📱 Renewal WhatsApp</button></td></tr>';
-  });
-  html+='<tr><td><b>TOTAL (Active Only)</b></td><td></td><td><b>R'+totalSetup.toLocaleString()+'</b></td><td><b>R'+totalMonthly.toLocaleString()+'/month</b></td><td></td><td></td></tr></table>';
-  $("financeList").innerHTML=html;
-}
-window.copyRenewal=()=>{ const t=$("renewalText").innerText; navigator.clipboard.writeText(t).then(()=>alert("Copied! Paste in WhatsApp.")); };
-window.copyActivation=()=>{ const t=$("activationText").innerText; navigator.clipboard.writeText(t).then(()=>alert("Copied! Paste in WhatsApp.")); };
-
-// --- QUICK CREATE ---
-window.quickCreateSchool=async ()=>{
-  const name=$("cSchool").value.trim(), emis=$("cEmis").value.trim(), pname=$("cPName").value.trim(), pemail=$("cPEmail").value.trim().toLowerCase(), pphone=$("cPPhone").value.trim(), ppass=$("cPPass").value, pkg=$("cPkg").value, status=$("cStatus").value;
-  if(!name||!emis||!pname||!pemail||!ppass){ $("createMsg").innerHTML="⚠️ Fill School, EMIS, Principal Name, Email, Password."; $("createMsg").className="warn"; return; }
-  if(ppass.length<4){ $("createMsg").innerHTML="⚠️ Password must be min 4 characters."; $("createMsg").className="warn"; return; }
-  const p=PRICES[pkg];
-  const newSchool={name, schoolName:name, emis, package:pkg, monthly:p.monthly, setup:p.setup, totalDue:p.setup+p.monthly, status, principalName:pname, principalEmail:pemail, principalPhone:pphone, createdAt:new Date().toISOString()};
-  const newUser={name:pname, email:pemail, phone:pphone, role:"PRINCIPAL", password:ppass, pin:ppass, principalPassword:ppass, status:"ACTIVE"};
-  try{
-    if(db){
-      const ref=await addDoc(collection(db,"schools"), newSchool);
-      await setDoc(doc(db,"schools",ref.id,"users", pemail.replace(/[^a-zA-Z0-9]/g,"_")), {...newUser, schoolId:ref.id});
-      SCHOOLS.push({id:ref.id,...newSchool}); USERS.push({id:pemail.replace(/[^a-zA-Z0-9]/g,"_"), schoolId:ref.id, schoolName:name, ...newUser});
-    } else {
-      const nid="demo-"+Date.now(); SCHOOLS.push({id:nid,...newSchool}); USERS.push({id:"u-"+Date.now(), schoolId:nid, schoolName:name, ...newUser});
+    // Try Realtime
+    const rs=await rtdb.ref('schools').once('value');
+    const rv=rs.val();
+    if(rv){
+      schools=Object.keys(rv).map(k=>({id:k, ...rv[k]}));
+      users=[];
+      schools.forEach(s=>{
+        const uObj = rv[s.id]?.users || {};
+        Object.keys(uObj).forEach(uid=>users.push({id:uid, schoolId:s.id, schoolName:s.name, ...uObj[uid]}));
+      });
+      const rr=await rtdb.ref('requests').once('value'); const rrv=rr.val()||{};
+      requests=Object.keys(rrv).map(k=>({id:k, ...rrv[k]})).filter(r=>r.status==='PENDING');
+      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Realtime — ${schools.length} schools, ${users.length} users`;
+      renderAll(); return;
     }
-    $("createMsg").innerHTML="✅ <b>Created "+name+" ("+pkg+")</b> — Principal "+pemail+" / Password "+ppass+" can login now."; $("createMsg").className="ok";
-    $("activationText").textContent="Hello "+pname+", 🙏 Your school is ACTIVE on Makhanani LTSM. Login: [Your Link] → School Dropdown: "+name+" → Email: "+pemail+" → Password: "+ppass+". Change password in Profile after first login. Vusi — 078 023 3263";
-    updateKPIs(); renderSchools(); renderUsers(); renderFinance(); fillFilters();
-    ["cSchool","cEmis","cPName","cPEmail","cPPhone"].forEach(id=>$(id).value=""); $("cPPass").value="1234";
-  }catch(e){ $("createMsg").innerHTML="❌ "+e.message; $("createMsg").className="warn"; }
-};
+    throw new Error('No schools');
+  }catch(e){
+    console.log('Demo:', e.message);
+    useDemo=true; schools=[...DEMO_SCHOOLS]; users=[...DEMO_USERS]; requests=[...DEMO_REQUESTS];
+    document.getElementById('statusBox').innerHTML=`⚠️ Firebase has no schools yet — Showing Demo. Add schools via Quick Create, they will save to Firebase if connected.`;
+    renderAll();
+  }
+}
 
-// --- CREATE SUPER ADMIN ---
-window.createSuperAdmin=async ()=>{
-  const name=$("sName").value.trim(), email=$("sEmail").value.trim().toLowerCase(), phone=$("sPhone").value.trim(), pass=$("sPass").value, schoolId=$("sSchool").value;
-  if(!name||!email||!pass||!schoolId){ $("superMsg").innerHTML="⚠️ Fill Name, Email, Password, and pick a School."; $("superMsg").className="warn"; return; }
-  if(pass.length<4){ $("superMsg").innerHTML="⚠️ Password must be min 4 characters."; $("superMsg").className="warn"; return; }
-  const school=SCHOOLS.find(s=>s.id===schoolId);
-  const newUser={name, email, phone, role:"SUPER ADMIN", password:pass, pin:pass, principalPassword:pass, status:"ACTIVE", schoolId};
-  try{
-    if(db){ await setDoc(doc(db,"schools",schoolId,"users", email.replace(/[^a-zA-Z0-9]/g,"_")), newUser); }
-    USERS.push({id:email.replace(/[^a-zA-Z0-9]/g,"_"), schoolName:school?.name||"", ...newUser});
-    $("superMsg").innerHTML="✅ <b>"+name+" is now SUPER ADMIN</b> — Email: "+email+" / Password: "+pass+" — They can login in index.html and go to Super Admin."; $("superMsg").className="ok";
-    renderUsers(); updateKPIs();
-    ["sName","sEmail","sPhone"].forEach(id=>$(id).value=""); $("sPass").value="1234";
-  }catch(e){ $("superMsg").innerHTML="❌ "+e.message; $("superMsg").className="warn"; }
-};
+// ===== SAVE HELPERS =====
+async function saveSchool(id, data){
+  if(useDemo) return;
+  try{ await db.collection('schools').doc(id).set(data, {merge:true}); }catch(e){}
+  try{ await rtdb.ref('schools/'+id).update(data); }catch(e){}
+}
+async function saveUser(schoolId, docId, data){
+  if(useDemo) return;
+  try{ await db.collection('schools').doc(schoolId).collection('users').doc(docId).set(data, {merge:true}); }catch(e){}
+  try{ await rtdb.ref('schools/'+schoolId+'/users/'+docId).set(data); }catch(e){}
+}
+async function deleteDoc(collection, id){
+  if(useDemo) return;
+  try{ await db.collection(collection).doc(id).delete(); }catch(e){}
+}
 
+// ===== ACTIONS =====
+async function approveRequest(id){
+  const req=requests.find(r=>r.id===id);
+  if(!req) return;
+  if(!confirm(`Approve ${req.schoolName}?\nLogin: ${req.principalEmail} / Password: ${getPw(req)}\nSchool will be created.`)) return;
+  const schoolId=(req.schoolName||'SCHOOL').toUpperCase().replace(/[^A-Z0-9]/g,'_').slice(0,30) || 'SCHOOL_'+Date.now();
+  const schoolData={name:req.schoolName, emis:req.emis||'', principalName:req.principalName||'', principalEmail:req.principalEmail||'', principalPhone:req.principalPhone||'', package:req.package||'STANDARD', monthly:req.monthly||500, status:'ACTIVE', createdAt:new Date().toISOString()};
+  const docId=(req.principalEmail||'principal').replace(/[@.]/g,'_');
+  const userData={name:req.principalName||'Principal', email:req.principalEmail, password:getPw(req), pin:getPw(req), role:'PRINCIPAL', schoolId, schoolName:req.schoolName, status:'ACTIVE', createdAt:new Date().toISOString()};
+  schools.push({id:schoolId, ...schoolData});
+  users.push({id:docId, ...userData});
+  requests=requests.filter(r=>r.id!==id);
+  await saveSchool(schoolId, schoolData);
+  await saveUser(schoolId, docId, userData);
+  if(!useDemo){ try{ await db.collection('requests').doc(id).update({status:'APPROVED'}); }catch(e){} try{ await db.collection('subscription_requests').doc(id).update({status:'APPROVED'}); }catch(e){} try{ await rtdb.ref('requests/'+id).update({status:'APPROVED'}); }catch(e){} }
+  renderAll();
+  const msg=`Hello ${req.principalName}, 🙏 Your school is ACTIVE on Makhanani LTSM. Login: [Your Link] → School Dropdown: ${req.schoolName} → Email: ${req.principalEmail} → Password: ${getPw(req)}. Change password in Profile after first login. Vusi — 078 023 3263`;
+  if(confirm('✅ Approved!\n\nCopy Activation Message?\n\n'+msg)) navigator.clipboard?.writeText(msg);
+  window.open('https://wa.me/'+(req.principalPhone||'27780233263')+'?text='+encodeURIComponent(msg),'_blank');
+}
+async function rejectRequest(id){
+  if(!confirm('Reject this request?')) return;
+  requests=requests.filter(r=>r.id!==id);
+  if(!useDemo){ try{ await db.collection('requests').doc(id).update({status:'REJECTED'}); }catch(e){} try{ await rtdb.ref('requests/'+id).update({status:'REJECTED'}); }catch(e){} }
+  renderAll();
+}
+async function resetPassword(schoolId, userId, email){
+  if(!confirm(`Reset password for ${email} to 1234?`)) return;
+  const u=users.find(x=>x.id===userId);
+  if(u){ u.password='1234'; u.pin='1234'; await saveUser(schoolId, userId, {password:'1234', pin:'1234'}); }
+  renderAll();
+  const msg=`Hello, 🙏 Your password has been reset to 1234. Login with Email: ${email} + Password: 1234. Then go to Profile → Change My Password → Change it to your own password. Vusi — 078 023 3263`;
+  if(confirm('✅ Reset to 1234. Send WhatsApp message?\n\n'+msg)) window.open('https://wa.me/27780233263?text='+encodeURIComponent(msg),'_blank');
+}
+async function setNewPassword(schoolId, userId, email){
+  const np=prompt(`Set NEW password for ${email} (min 6):`, 'School2026');
+  if(!np || np.length<6){ alert('Min 6 characters'); return; }
+  const u=users.find(x=>x.id===userId);
+  if(u){ u.password=np; u.pin=np; await saveUser(schoolId, userId, {password:np, pin:np}); }
+  renderAll(); alert(`✅ Password for ${email} set to: ${np}\nTell them 1-to-1 on WhatsApp.`);
+}
+async function toggleBlock(schoolId, userId){
+  const u=users.find(x=>x.id===userId); if(!u) return;
+  const newStatus = u.status==='BLOCKED' ? 'ACTIVE' : 'BLOCKED';
+  if(!confirm((newStatus==='BLOCKED'?'Block':'Unblock')+' '+u.email+'?')) return;
+  u.status=newStatus; await saveUser(schoolId, userId, {status:newStatus}); renderAll();
+}
+async function toggleSuspend(schoolId){
+  const s=schools.find(x=>x.id===schoolId); if(!s) return;
+  const newStatus = s.status==='SUSPENDED' ? 'ACTIVE' : 'SUSPENDED';
+  if(!confirm((newStatus==='SUSPENDED'?'Suspend':'Activate')+' '+s.name+'?')) return;
+  s.status=newStatus; await saveSchool(schoolId, {status:newStatus}); renderAll();
+  if(newStatus==='SUSPENDED') alert('⛔ Suspended. WhatsApp Principal: "Your school is suspended. Pay to reactivate."');
+  else alert('✅ Activated. WhatsApp Principal: "Your school is ACTIVE again."');
+}
+async function deleteSchool(schoolId){
+  if(!confirm('Delete school '+schoolId+'? Cannot undo.')) return;
+  schools=schools.filter(s=>s.id!==schoolId); users=users.filter(u=>u.schoolId!==schoolId);
+  if(!useDemo){ try{ await db.collection('schools').doc(schoolId).delete(); }catch(e){} try{ await rtdb.ref('schools/'+schoolId).remove(); }catch(e){} }
+  renderAll();
+}
+async function quickCreate(){
+  const name=document.getElementById('cSchool').value.trim();
+  const emis=document.getElementById('cEmis').value.trim();
+  const pName=document.getElementById('cPName').value.trim();
+  const pEmail=document.getElementById('cPEmail').value.trim().toLowerCase();
+  const pPhone=document.getElementById('cPPhone').value.trim();
+  const pPass=document.getElementById('cPPass').value.trim()||'1234';
+  const pkg=document.getElementById('cPackage').value;
+  const monthly=parseInt(document.getElementById('cMonthly').value)||500;
+  const status=document.getElementById('cStatus').value;
+  if(!name||!pEmail){ alert('Fill School Name + Principal Email'); return; }
+  const schoolId=name.toUpperCase().replace(/[^A-Z0-9]/g,'_').slice(0,30);
+  const schoolData={name, emis, principalName:pName, principalEmail:pEmail, principalPhone:pPhone, package:pkg, monthly, status, createdAt:new Date().toISOString()};
+  const docId=pEmail.replace(/[@.]/g,'_');
+  const userData={name:pName||'Principal', email:pEmail, password:pPass, pin:pPass, role:'PRINCIPAL', schoolId, schoolName:name, status:'ACTIVE', createdAt:new Date().toISOString()};
+  schools.push({id:schoolId, ...schoolData}); users.push({id:docId, ...userData});
+  await saveSchool(schoolId, schoolData); await saveUser(schoolId, docId, userData);
+  document.getElementById('createMsg').innerHTML=`<div class="ok">✅ Created <b>${name}</b> + Principal <b>${pEmail}</b> / Password <b>${pPass}</b><br>Activation: School Dropdown: ${name} → Email: ${pEmail} → Password: ${pPass}</div>`;
+  ['cSchool','cEmis','cPName','cPEmail','cPPhone'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+}
+async function createSuper(){
+  const name=document.getElementById('sName').value.trim();
+  const email=document.getElementById('sEmail').value.trim().toLowerCase();
+  const pass=document.getElementById('sPass').value.trim();
+  const schoolId=document.getElementById('sSchool').value;
+  if(!name||!email||!pass||!schoolId){ alert('Fill Name, Email, Password, School'); return; }
+  if(pass.length<6){ alert('Password min 6'); return; }
+  const docId=email.replace(/[@.]/g,'_');
+  const school=schools.find(s=>s.id===schoolId);
+  const data={name, email, password:pass, pin:pass, role:'SUPER_ADMIN', schoolId, schoolName:school?school.name:schoolId, status:'ACTIVE', createdAt:new Date().toISOString()};
+  users.push({id:docId, ...data}); await saveUser(schoolId, docId, data);
+  document.getElementById('superMsg').innerHTML=`<div class="ok">✅ Super Admin created: ${email} / ${pass}<br>Login: School Dropdown: ${school?school.name:schoolId} → Email: ${email} → Password: ${pass}</div>`;
+  renderAll();
+}
+
+// ===== RENDER =====
+function renderAll(){
+  const q=(document.getElementById('searchBox').value||'').toLowerCase();
+  const activeSchools=schools.filter(s=>s.status==='ACTIVE');
+  const monthlyTotal=activeSchools.reduce((sum,s)=>sum+(parseInt(s.monthly)||0),0);
+  document.getElementById('kSchools').textContent=schools.length;
+  document.getElementById('kUsers').textContent=users.length;
+  document.getElementById('kRequests').textContent=requests.length;
+  document.getElementById('kMonthly').textContent='R'+monthlyTotal.toLocaleString();
+
+  // Filter school dropdown
+  const fs=document.getElementById('filterSchool');
+  const cur=fs.value;
+  fs.innerHTML='<option value="">All Schools</option>'+schools.map(s=>`<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('');
+  if(schools.find(s=>s.id===cur)) fs.value=cur;
+  const ss=document.getElementById('sSchool');
+  ss.innerHTML='<option value="">-- Pick School --</option>'+schools.map(s=>`<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('');
+
+  const fReq=requests.filter(r=>(r.schoolName+' '+r.principalEmail+' '+r.principalName).toLowerCase().includes(q));
+  document.getElementById('requestsList').innerHTML = fReq.length ? `<table><tr><th>School</th><th>Principal</th><th>Package / Total</th><th>Login</th><th>Action</th></tr>${fReq.map(r=>`<tr><td><b>${esc(r.schoolName)}</b><br>EMIS: ${esc(r.emis||'-')}<br>${esc(r.principalPhone||'')}</td><td>${esc(r.principalName)}<br>${esc(r.principalEmail)}</td><td>${esc(r.package||'STANDARD')}<br>Monthly R${r.monthly||500}<br><b>Total R${r.total||5000}</b></td><td>Email: ${esc(r.principalEmail)}<br>Password: <b>${esc(getPw(r))}</b></td><td><button class="btn-small btn-green" onclick="approveRequest('${esc(r.id)}')">✅ Approve</button><button class="btn-small btn-red" onclick="rejectRequest('${esc(r.id)}')">Reject</button><button class="btn-small btn-blue" onclick="window.open('https://wa.me/${(r.principalPhone||'').replace(/\D/g,'')}?text='+encodeURIComponent('Hello ${r.principalName}, thank you for requesting Makhanani LTSM for ${r.schoolName}. Total Due R${r.total||5000}. Please send proof of payment. Vusi — 078 023 3263'),'_blank')">📱 WhatsApp</button></td></tr>`).join('')}</table>` : '<p class="small">No pending requests. New requests from subscriptions.html will appear here.</p>';
+
+  const fSchools=schools.filter(s=>(s.name+' '+s.emis+' '+s.principalEmail).toLowerCase().includes(q));
+  document.getElementById('schoolsList').innerHTML = fSchools.length ? `<table><tr><th>School</th><th>Principal</th><th>Package</th><th>Status</th><th>Action</th></tr>${fSchools.map(s=>`<tr><td><b>${esc(s.name)}</b><br>EMIS: ${esc(s.emis||'-')}</td><td>${esc(s.principalName||'-')}<br>${esc(s.principalEmail||'-')}<br>${esc(s.principalPhone||'')}</td><td>${esc(s.package||'STANDARD')}<br>R${s.monthly||500}/mo</td><td><b>${esc(s.status||'ACTIVE')}</b></td><td><button class="btn-small ${s.status==='SUSPENDED'?'btn-green':'btn-red'}" onclick="toggleSuspend('${esc(s.id)}')">${s.status==='SUSPENDED'?'✅ Activate':'⛔ Suspend'}</button><button class="btn-small btn-red" onclick="deleteSchool('${esc(s.id)}')">Delete</button></td></tr>`).join('')}</table>` : '<p class="small">No schools yet. Use Quick Create.</p>';
+
+  const filterSchool=document.getElementById('filterSchool').value;
+  const fUsers=users.filter(u=> (!filterSchool || u.schoolId===filterSchool) && (u.name+' '+u.email+' '+(u.schoolName||'')).toLowerCase().includes(q));
+  document.getElementById('usersList').innerHTML = fUsers.length ? `<table><tr><th>Name / Role</th><th>Email (Login)</th><th>Password</th><th>School / Class</th><th>Status</th><th>Action</th></tr>${fUsers.map(u=>`<tr><td><b>${esc(u.name)}</b><br>${esc(u.role)}</td><td>${esc(u.email)}</td><td><b>${esc(getPw(u))}</b></td><td>${esc(u.schoolName||u.schoolId)}<br>Class: ${esc(u.className||'-')}</td><td>${esc(u.status||'ACTIVE')}</td><td><button class="btn-small btn-gold" onclick="resetPassword('${esc(u.schoolId)}','${esc(u.id)}','${esc(u.email)}')">🔑 Reset to 1234</button><button class="btn-small btn-blue" onclick="setNewPassword('${esc(u.schoolId)}','${esc(u.id)}','${esc(u.email)}')">✏️ Set New</button><button class="btn-small ${u.status==='BLOCKED'?'btn-green':'btn-red'}" onclick="toggleBlock('${esc(u.schoolId)}','${esc(u.id)}')">${u.status==='BLOCKED'?'✅ Unblock':'⛔ Block'}</button></td></tr>`).join('')}</table>` : '<p class="small">No users yet.</p>';
+
+  document.getElementById('financeBox').innerHTML = `<div class="goldBox"><b>Total Monthly Recurring (ACTIVE only): R${monthlyTotal.toLocaleString()}/month</b><br>ACTIVE Schools: ${activeSchools.length} / ${schools.length}<br>SUSPENDED: ${schools.filter(s=>s.status==='SUSPENDED').length}</div><table><tr><th>School</th><th>Package</th><th>Monthly</th><th>Status</th></tr>${schools.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(s.package||'STANDARD')}</td><td>R${s.monthly||500}</td><td>${esc(s.status||'ACTIVE')}</td></tr>`).join('')}</table>`;
+}
 loadAll();
 </script>
 </body>
