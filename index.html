@@ -29,6 +29,7 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{padding:10px 14px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
 .topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:12px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
 .small{font-size:12px;color:#64748b}
+.roleBox{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}.roleBox div{background:#f8fafc;border:2px solid #e2e8f0;border-radius:8px;padding:8px;text-align:center;font-size:11px;line-height:1.4}.roleBox b{display:block;font-size:13px;color:#0a1f4d}
 </style>
 </head>
 <body>
@@ -36,7 +37,7 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;
 <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
 <h1>Makhanani LTSM</h1>
 <p>Xintimani Group • Learner + Textbook Tracking<br>Learner ID: Grade + Class + 3 Digits • Textbook: School Initials + 6 Digits<br>Barcode A4 3x5 • Scannable</p>
-<div class="topnav"><a href="index.html">🏠 Login</a><a href="add_school.html">🏫 Add School</a><a href="home.html">🏠 Home</a><a href="learners.html">👩‍🎓 Learners</a><a href="books.html">📚 Books</a><a href="barcode.html">🏷️ Barcodes</a></div>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="add_school.html">🏫 Add School</a><a href="home.html">🏠 Home</a><a href="teacher.html">👩‍🏫 Teacher</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">🏫 Principal</a><a href="barcode.html">🏷️ Barcodes</a></div>
 </div>
 
 <main>
@@ -64,12 +65,18 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;
 <button class="btn btn-green btn-full" onclick="doLogin()">🔐 LOGIN →</button>
 <div id="loginMsg"></div>
 
+<div class="roleBox">
+<div><b>👩‍🏫 Teacher</b>→ Teacher Dashboard<br>My Class Only</div>
+<div><b>📚 Librarian</b>→ Librarian Dashboard<br>All Textbooks</div>
+<div><b>🏫 Principal</b>→ Principal Dashboard<br>Whole School</div>
+</div>
+
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
 <button class="btn btn-blue" style="flex:1" onclick="location.href='add_school.html'">🏫 Add New School →</button>
 <button class="btn btn-gold" style="flex:1" onclick="location.href='home.html'">🏠 Go To Home →</button>
 </div>
 
-<div class="info"><b>No school yet?</b> Click <b>🏫 Add New School</b> → Add School Name + EMIS + First Teacher → Come back → Pick that school → Login.<br><b>Forgot password?</b> Ask Admin in <b>Add School</b> page → Add Teacher tab → Re-add teacher with new password.</div>
+<div class="info"><b>No school yet?</b> Click <b>🏫 Add New School</b> → Add School Name + EMIS + First Teacher → Come back → Pick that school → Login.<br><b>Forgot password?</b> Ask Principal / Admin in <b>Add School</b> page → Add Teacher tab → Re-add teacher with new password.</div>
 </div>
 
 <div id="tab-schools" style="display:none">
@@ -83,9 +90,10 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;
 
 <div id="tab-demo" style="display:none">
 <h2>🧪 Demo — Try Without Adding School</h2>
-<div class="goldBox"><b>Demo School:</b> Thuto Secondary School (TSS) — EMIS 700310854<br><b>Demo Teacher:</b> teacher@thuto.co.za / 1234<br><b>Demo Admin:</b> admin@thuto.co.za / 1234</div>
+<div class="goldBox"><b>Demo School:</b> Thuto Secondary School (TSS) — EMIS 700310854<br><b>Demo Teacher:</b> teacher@thuto.co.za / 1234 → Teacher Dashboard<br><b>Demo Librarian:</b> librarian@thuto.co.za / 1234 → Librarian Dashboard<br><b>Demo Principal:</b> admin@thuto.co.za / 1234 → Principal Dashboard</div>
 <button class="btn btn-green btn-full" onclick="loginDemo('teacher@thuto.co.za','1234','Teacher')">🧪 LOGIN AS DEMO TEACHER →</button>
-<button class="btn btn-blue btn-full" onclick="loginDemo('admin@thuto.co.za','1234','Admin')">🧪 LOGIN AS DEMO ADMIN →</button>
+<button class="btn btn-blue btn-full" onclick="loginDemo('librarian@thuto.co.za','1234','Librarian')">🧪 LOGIN AS DEMO LIBRARIAN →</button>
+<button class="btn btn-gold btn-full" onclick="loginDemo('admin@thuto.co.za','1234','Principal')">🧪 LOGIN AS DEMO PRINCIPAL →</button>
 <div id="demoMsg"></div>
 <div class="info"><b>Demo data is in your browser only</b> until you add a real school in Add School page. Demo learners: 10A001, 10A002... Demo textbooks: TSS000001, TSS000002...</div>
 </div>
@@ -103,6 +111,7 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;
 <li><b>Middle:</b> Real Barcode — Scans with phone camera</li>
 <li><b>Bottom:</b> Learner ID / Textbook Number + Name / Title</li>
 </ul>
+<div class="goldBox"><b>Dashboards:</b><br>👩‍🏫 <b>Teacher:</b> My Class Only — Issue / Return for my learners<br>📚 <b>Librarian:</b> All Textbooks — Issue / Return all, Mark Lost, Overdue<br>🏫 <b>Principal:</b> Whole School — Reports, Teachers, Export CSV, Overdue + Lost</div>
 </div>
 </main>
 <script>
@@ -130,7 +139,6 @@ async function loadSchools(){
   try{const rs=await rtdb.ref('schools').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,v])=>{if(!ALL_SCHOOLS.find(x=>x.id===id))ALL_SCHOOLS.push({id,...(v.meta||v)});});}catch(e){}
   if(ALL_SCHOOLS.length===0){try{ALL_SCHOOLS=JSON.parse(localStorage.getItem('makhanani_schools')||'[]');}catch(e){}}
   if(ALL_SCHOOLS.length===0){
-    // Default demo school
     ALL_SCHOOLS=[{id:'thuto',schoolId:'thuto',schoolName:'Thuto Secondary School',name:'Thuto Secondary School',prefix:'TSS',emis:'700310854',fromGrade:'1',toGrade:'12',province:'Gauteng'}];
   }
   const sel=document.getElementById('schoolSelect');
@@ -138,7 +146,6 @@ async function loadSchools(){
     const id=s.id||s.schoolId; const name=s.schoolName||s.name||id; const prefix=s.prefix||schoolInitials(name);
     return `<option value="${esc(id)}">${esc(name)} (${esc(prefix)})</option>`;
   }).join('');
-  // Auto-select school from add_school.html -> Open This School
   try{
     const saved=JSON.parse(localStorage.getItem('makhanani_selected_school')||'null');
     if(saved && saved.schoolId){
@@ -148,7 +155,6 @@ async function loadSchools(){
       document.getElementById('loginMsg').innerHTML=`<div class="ok">✅ School selected: <b>${esc(saved.schoolName||'')}</b> — Now type Email + Password for that school.</div>`;
     }
   }catch(e){}
-  // Auto-select last logged in school
   try{
     const u=JSON.parse(localStorage.getItem('makhanani_user')||'null');
     if(u && u.schoolId && !sel.value){ sel.value=u.schoolId; onSchoolChange(); document.getElementById('emailInput').value=u.email||''; }
@@ -170,9 +176,14 @@ function pickSchool(id){
   showTab('login');
   document.getElementById('emailInput').focus();
 }
+// ===== ROLE ROUTING - THIS IS THE KEY PART =====
 function saveUser(user){
   localStorage.setItem('makhanani_user',JSON.stringify(user));
-  location.href='home.html';
+  const role=String(user.role||'Teacher').toLowerCase();
+  if(role.includes('principal')||role.includes('admin')) location.href='principal.html';
+  else if(role.includes('librarian')) location.href='librarian.html';
+  else if(role.includes('teacher')) location.href='teacher.html';
+  else location.href='home.html';
 }
 async function doLogin(){
   const schoolId=document.getElementById('schoolSelect').value;
@@ -187,62 +198,49 @@ async function doLogin(){
   const prefix=school? (school.prefix||schoolInitials(schoolName)) : 'TSS';
   const emis=school? (school.emis||'') : '';
 
-  // 1) Try Firebase - teachers inside that school
+  // 1) Firebase - teachers inside that school
   try{
     const snap=await db.collection('schools').doc(schoolId).collection('teachers').get();
     let found=null;
     snap.forEach(d=>{const t=d.data(); if(String(t.email||'').toLowerCase()===email && String(t.password||'')===pass) found=t;});
-    if(found){
-      saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId,schoolName,schoolPrefix:prefix,emis});
-      return;
-    }
+    if(found){ saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId,schoolName,schoolPrefix:prefix,emis}); return; }
   }catch(e){}
-  // 2) Try Firebase - global teachers
+  // 2) Firebase - global teachers
   try{
     const snap=await db.collection('teachers').where('email','==',email).get();
     let found=null;
     snap.forEach(d=>{const t=d.data(); if(String(t.password||'')===pass && (t.schoolId===schoolId || !t.schoolId)) found=t;});
-    if(found){
-      saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId:found.schoolId||schoolId,schoolName:found.schoolName||schoolName,schoolPrefix:found.schoolPrefix||prefix,emis:found.emis||emis});
-      return;
-    }
+    if(found){ saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId:found.schoolId||schoolId,schoolName:found.schoolName||schoolName,schoolPrefix:found.schoolPrefix||prefix,emis:found.emis||emis}); return; }
   }catch(e){}
-  // 3) Try RTDB - teachers inside that school
+  // 3) RTDB - teachers inside that school
   try{
     const rs=await rtdb.ref('schools/'+schoolId+'/teachers').once('value');
     const rv=rs.val()||{};
     let found=null;
     Object.values(rv).forEach(t=>{ if(String(t.email||'').toLowerCase()===email && String(t.password||'')===pass) found=t;});
-    if(found){
-      saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId,schoolName,schoolPrefix:prefix,emis});
-      return;
-    }
+    if(found){ saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId,schoolName,schoolPrefix:prefix,emis}); return; }
   }catch(e){}
-  // 4) Try localStorage teachers (from add_school.html)
+  // 4) localStorage teachers (from add_school.html)
   try{
     const localTeachers=JSON.parse(localStorage.getItem('makhanani_teachers')||'[]');
     const found=localTeachers.find(t=>String(t.email||'').toLowerCase()===email && String(t.password||'')===pass && t.schoolId===schoolId);
-    if(found){
-      saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId,schoolName:found.schoolName||schoolName,schoolPrefix:found.schoolPrefix||prefix,emis:found.emis||emis});
-      return;
-    }
-    // If teacher exists but for different school, warn
+    if(found){ saveUser({name:found.name||email,email,role:found.role||'Teacher',schoolId,schoolName:found.schoolName||schoolName,schoolPrefix:found.schoolPrefix||prefix,emis:found.emis||emis}); return; }
     const other=localTeachers.find(t=>String(t.email||'').toLowerCase()===email && String(t.password||'')===pass);
     if(other){
       msg.innerHTML=`<div class="warn">⚠️ This teacher belongs to <b>${esc(other.schoolName||other.schoolId)}</b>, not <b>${esc(schoolName)}</b>.<br>Pick <b>${esc(other.schoolName||'')}</b> in School Dropdown, or add teacher to this school in <b>Add School</b> page.</div>`;
       return;
     }
   }catch(e){}
-  // 5) Demo fallback - only for Thuto demo school
-  if(schoolId==='thuto' && ((email==='teacher@thuto.co.za'&&pass==='1234') || (email==='admin@thuto.co.za'&&pass==='1234'))){
-    const role=email.startsWith('admin')?'Admin':'Teacher';
-    saveUser({name:role+' Demo',email,role,schoolId:'thuto',schoolName:'Thuto Secondary School',schoolPrefix:'TSS',emis:'700310854'});
-    return;
+  // 5) Demo fallback - Thuto only
+  if(schoolId==='thuto'){
+    if(email==='teacher@thuto.co.za'&&pass==='1234'){ saveUser({name:'Teacher Demo',email,role:'Teacher',schoolId:'thuto',schoolName:'Thuto Secondary School',schoolPrefix:'TSS',emis:'700310854'}); return; }
+    if(email==='librarian@thuto.co.za'&&pass==='1234'){ saveUser({name:'Librarian Demo',email,role:'Librarian',schoolId:'thuto',schoolName:'Thuto Secondary School',schoolPrefix:'TSS',emis:'700310854'}); return; }
+    if((email==='admin@thuto.co.za'||email==='principal@thuto.co.za')&&pass==='1234'){ saveUser({name:'Principal Demo',email,role:'Principal',schoolId:'thuto',schoolName:'Thuto Secondary School',schoolPrefix:'TSS',emis:'700310854'}); return; }
   }
   msg.innerHTML=`<div class="warn">⚠️ Login failed for <b>${esc(schoolName)}</b>.<br>Email / Password wrong, or teacher not added to this school.<br><br><b>Fix:</b> Go to <b>Add School</b> → Tab <b>Add Teacher To School</b> → Pick <b>${esc(schoolName)}</b> → Add this teacher with same Email + Password → Try again.<br><br>Demo: Pick <b>Thuto Secondary School</b> → teacher@thuto.co.za / 1234</div>`;
 }
 function loginDemo(email,pass,role){
-  // Demo - Thuto school, no Firebase needed
+  // Demo - Thuto school, routes by role via saveUser
   saveUser({name:role+' Demo',email,role,schoolId:'thuto',schoolName:'Thuto Secondary School',schoolPrefix:'TSS',emis:'700310854'});
 }
 window.onload=loadSchools;
