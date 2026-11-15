@@ -29,6 +29,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}.kpi div{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center}.kpi b{font-size:22px;color:#0a1f4d;display:block}.kpi span{font-size:11px;color:#64748b}
 .badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-green{background:#dcfce7;color:#166534}.badge-red{background:#fee2e2;color:#991b1b}.badge-yellow{background:#fef3c7;color:#92400e}.badge-blue{background:#dbeafe;color:#1e40af}
 .searchRow{display:flex;gap:8px}.searchRow input{flex:1}
+.passWrap{position:relative}.passWrap button{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:#e2e8f0;padding:8px 10px;border-radius:7px;font-weight:900;cursor:pointer}
 @media(max-width:640px){.kpi{grid-template-columns:1fr 1fr}table{font-size:12px}.btn{padding:8px 10px;font-size:12px}}
 @media print{header,.topnav,.tabs,.btn{display:none}body{background:#fff}.card{box-shadow:none;border:1px solid #ddd}}
 </style>
@@ -36,12 +37,12 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <body>
 <header>
 <img src="logo.png" alt="Makhanani LTSM Logo" onerror="this.style.display='none'">
-<h1>👑 Makhanani LTSM — Super Admin</h1><p>Xintimani Group • Vusi Chauke ONLY — Confidential<br>WhatsApp: 078 023 3263 • <span id="whoami"></span></p></header>
+<h1>👑 Makhanani LTSM — Super Admin</h1><p>Xintimani Group • Vusi Chauke ONLY — Confidential • Login: Email + Password<br>WhatsApp: 078 023 3263 • <span id="whoami"></span></p></header>
 <main>
 
 <div class="card">
 <div class="topnav"><a href="index.html">🏠 Login</a><a href="school.html">🏫 Create School</a><a href="user-manual.html">📖 User Manual</a><a href="founder-manual.html">👑 Founder Manual</a><a href="marketing-manual.html">📣 Marketing Manual</a><a href="#" onclick="doLogout();return false;">🚪 Logout</a></div>
-<div class="info">✅ <b>Rule:</b> Approve same day. Suspend on 7th if not paid by 1st. Never share this page with schools.</div>
+<div class="info">✅ <b>Rule:</b> Approve same day. Suspend on 7th if not paid by 1st. Never share this page with schools. All logins are now <b>Email + Password</b>.</div>
 <div class="kpi">
 <div><b id="kpiSchools">0</b><span>Total Schools</span></div>
 <div><b id="kpiActive">0</b><span>Active Schools</span></div>
@@ -84,10 +85,11 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 
 <!-- USERS -->
 <div class="card tab" id="tab-users">
-<h2>👥 Users — Reset PIN / Block / Unblock / Role</h2>
+<h2>👥 Users — Reset Password / Block / Unblock / Role</h2>
 <label>Filter By School</label>
 <select id="userSchoolFilter" onchange="renderUsers()"><option value="">All Schools</option></select>
 <div class="searchRow"><input id="searchUser" placeholder="Search name / email / role..." oninput="renderUsers()"><button class="btn btn-grey" onclick="$('searchUser').value='';renderUsers()">Clear</button></div>
+<div class="info">🔑 <b>Forgot Password?</b> Find user → Click <b>Reset Password to 1234</b> → Tell them to login with Email + Password <b>1234</b> → They change password in Profile.</div>
 <div id="usersList"></div>
 </div>
 
@@ -102,28 +104,30 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <!-- QUICK CREATE -->
 <div class="card tab" id="tab-create">
 <h2>➕ Quick Create School (After Payment)</h2>
-<p class="small">Use this after Principal pays. Or use <b>school.html</b> for full create. This creates school + principal user in 1 go.</p>
+<p class="small">Use this after Principal pays. Or use <b>school.html</b> for full create. This creates school + principal user in 1 go with <b>Email + Password</b>.</p>
 <label>School Name *</label><input id="cSchool" placeholder="WORDSWORTH PRIMARY">
 <label>EMIS *</label><input id="cEmis" placeholder="123456">
 <label>Principal Name *</label><input id="cPName" placeholder="Mr. Chauke">
-<label>Principal Email * (Login email)</label><input id="cPEmail" placeholder="principal@school.co.za">
+<label>Principal Email * (Login Email)</label><input id="cPEmail" type="email" placeholder="principal@school.co.za">
 <label>Principal Phone</label><input id="cPPhone" placeholder="0780233263">
-<label>Principal PIN *</label><input id="cPPin" placeholder="1234" value="1234" maxlength="6">
+<label>Principal Password * (Min 6 characters — They will login with this)</label>
+<div class="passWrap"><input id="cPPass" type="password" placeholder="e.g. School2026 or 1234" value="1234"><button type="button" onclick="toggleCreatePass()">👁️</button></div>
+<p class="small" style="text-align:left;margin-top:4px">Default is <b>1234</b> — Tell Principal to change it in Profile after first login.</p>
 <label>Package *</label><select id="cPkg"><option>STANDARD</option><option>STARTER</option><option>PREMIUM</option></select>
 <label>Status</label><select id="cStatus"><option>ACTIVE</option><option>TRIAL</option><option>SUSPENDED</option></select>
 <button class="btn btn-green btn-full" onclick="quickCreateSchool()">✅ CREATE SCHOOL + PRINCIPAL</button>
 <div id="createMsg"></div>
-<div class="goldBox"><b>After Create:</b> Send this to Principal on WhatsApp:<br><br><span id="activationText">Hello Principal, 🙏 Your school is ACTIVE on Makhanani LTSM. Login: [Your Link] → School: [School Name] → Email: [Principal Email] → PIN: 1234. Change PIN in Profile after first login. Librarian training: [Date]. Vusi — 078 023 3263</span><br><button class="btn btn-blue" onclick="copyActivation()">📋 Copy Activation Message</button></div>
+<div class="goldBox"><b>After Create:</b> Send this to Principal on WhatsApp:<br><br><span id="activationText">Hello Principal, 🙏 Your school is ACTIVE on Makhanani LTSM. Login: [Your Link] → School Dropdown: [School Name] → Email: [Principal Email] → Password: 1234. Change password in Profile after first login. Librarian training: [Date]. Vusi — 078 023 3263</span><br><button class="btn btn-blue" onclick="copyActivation()">📋 Copy Activation Message</button></div>
 </div>
 
 <!-- CREATE SUPER ADMIN -->
 <div class="card tab" id="tab-super">
 <h2>👑 Create Super Admin</h2>
-<p class="small">Super Admin can see ALL schools + ALL users + Finance. Give only to people you trust 100%. Default PIN 1234 — Tell them to change it.</p>
+<p class="small">Super Admin can see ALL schools + ALL users + Finance. Give only to people you trust 100%. Default password 1234 — Tell them to change it in Profile.</p>
 <label>Full Name *</label><input id="sName" placeholder="Vusi Chauke">
-<label>Email *</label><input id="sEmail" placeholder="vusi@xintimani.co.za">
+<label>Email * (Login Email)</label><input id="sEmail" type="email" placeholder="vusi@xintimani.co.za">
 <label>Phone</label><input id="sPhone" placeholder="0780233263">
-<label>PIN *</label><input id="sPin" placeholder="1234" value="1234" maxlength="6">
+<label>Password * (Min 6 characters)</label><div class="passWrap"><input id="sPass" type="password" placeholder="e.g. Vusi2026" value="1234"><button type="button" onclick="toggleSuperPass()">👁️</button></div>
 <label>School (Pick Any — Super Admin sees all anyway)</label><select id="sSchool"><option value="">-- Pick School --</option></select>
 <button class="btn btn-blue btn-full" onclick="createSuperAdmin()">👑 CREATE SUPER ADMIN</button>
 <div id="superMsg"></div>
@@ -137,7 +141,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, setDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ▼▼▼ SAME CONFIG AS index.html ▼▼▼
+// ▼▼▼ SAME CONFIG AS index.html + subscriptions.html ▼▼▼
 const firebaseConfig = {
   apiKey: "PASTE_YOUR_API_KEY",
   authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
@@ -157,22 +161,26 @@ let REQUESTS=[], SCHOOLS=[], USERS=[];
 function showMsg(html,cls){ $("msg").innerHTML=html; $("msg").className=cls; }
 window.showTab=(id,btn)=>{ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active")); $(id).classList.add("active"); document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active")); if(btn) btn.classList.add("active"); };
 window.doLogout=()=>{ localStorage.clear(); location.href="index.html"; };
+window.toggleCreatePass=()=>{ const i=$("cPPass"); i.type=i.type==="password"?"text":"password"; };
+window.toggleSuperPass=()=>{ const i=$("sPass"); i.type=i.type==="password"?"text":"password"; };
+// Helper: Get password from ANY old/new field — Supports PIN + Password
+function getUserPassword(u){ return u.password || u.pin || u.principalPassword || u.principalPin || "1234"; }
 
-// --- DEMO DATA (when Firebase not connected) ---
+// --- DEMO DATA ---
 function demoData(){
   REQUESTS=[
-    {id:"demo-req-1", schoolName:"THUTO PRIMARY", emis:"234567", principalName:"Mrs. Dube", principalEmail:"principal@thuto.co.za", principalPhone:"0781112222", principalPin:"1234", package:"STARTER", monthly:350, setup:3000, totalDue:3350, status:"PENDING", learnerCount:"300 - 800", source:"Principal referral", notes:"Want trial", createdAt:new Date().toISOString()},
-    {id:"demo-req-2", schoolName:"KHULA SECONDARY", emis:"345678", principalName:"Mr. Nkosi", principalEmail:"principal@khula.co.za", principalPhone:"0782223333", principalPin:"1234", package:"STANDARD", monthly:500, setup:4500, totalDue:5000, status:"PENDING", learnerCount:"300 - 800", notes:"SGB approved", createdAt:new Date().toISOString()}
+    {id:"demo-req-1", schoolName:"THUTO PRIMARY", emis:"234567", principalName:"Mrs. Dube", principalEmail:"principal@thuto.co.za", principalPhone:"0781112222", principalPassword:"Thuto2026", password:"Thuto2026", principalPin:"Thuto2026", package:"STARTER", monthly:350, setup:3000, totalDue:3350, status:"PENDING", learnerCount:"300 - 800", source:"Principal referral", notes:"Want trial", createdAt:new Date().toISOString()},
+    {id:"demo-req-2", schoolName:"KHULA SECONDARY", emis:"345678", principalName:"Mr. Nkosi", principalEmail:"principal@khula.co.za", principalPhone:"0782223333", principalPassword:"Khula2026", password:"Khula2026", principalPin:"Khula2026", package:"STANDARD", monthly:500, setup:4500, totalDue:5000, status:"PENDING", learnerCount:"300 - 800", notes:"SGB approved", createdAt:new Date().toISOString()}
   ];
   SCHOOLS=[
     {id:"demo-wordsworth", name:"WORDSWORTH PRIMARY", emis:"123456", package:"STANDARD", monthly:500, setup:4500, status:"ACTIVE", principalEmail:"principal@wordsworth.co.za", principalPhone:"0780233263"},
     {id:"demo-thuto", name:"THUTO PRIMARY", emis:"234567", package:"STARTER", monthly:350, setup:3000, status:"TRIAL", principalEmail:"principal@thuto.co.za", principalPhone:"0781112222"}
   ];
   USERS=[
-    {id:"demo-u1", schoolId:"demo-wordsworth", schoolName:"WORDSWORTH PRIMARY", name:"Mr. Chauke", email:"principal@wordsworth.co.za", role:"PRINCIPAL", pin:"1234", status:"ACTIVE"},
-    {id:"demo-u2", schoolId:"demo-wordsworth", schoolName:"WORDSWORTH PRIMARY", name:"Ms. Dube", email:"librarian@wordsworth.co.za", role:"LIBRARIAN", pin:"1234", status:"ACTIVE"},
-    {id:"demo-u3", schoolId:"demo-wordsworth", schoolName:"WORDSWORTH PRIMARY", name:"Mr. Nkosi", email:"teacher@wordsworth.co.za", role:"TEACHER", pin:"1234", className:"10A", status:"ACTIVE"},
-    {id:"demo-u4", schoolId:"demo-thuto", schoolName:"THUTO PRIMARY", name:"Mrs. Dube", email:"principal@thuto.co.za", role:"PRINCIPAL", pin:"1234", status:"ACTIVE"}
+    {id:"demo-u1", schoolId:"demo-wordsworth", schoolName:"WORDSWORTH PRIMARY", name:"Mr. Chauke", email:"principal@wordsworth.co.za", role:"PRINCIPAL", password:"1234", pin:"1234", status:"ACTIVE"},
+    {id:"demo-u2", schoolId:"demo-wordsworth", schoolName:"WORDSWORTH PRIMARY", name:"Ms. Dube", email:"librarian@wordsworth.co.za", role:"LIBRARIAN", password:"1234", pin:"1234", status:"ACTIVE"},
+    {id:"demo-u3", schoolId:"demo-wordsworth", schoolName:"WORDSWORTH PRIMARY", name:"Mr. Nkosi", email:"teacher@wordsworth.co.za", role:"TEACHER", password:"1234", pin:"1234", className:"10A", status:"ACTIVE"},
+    {id:"demo-u4", schoolId:"demo-thuto", schoolName:"THUTO PRIMARY", name:"Mrs. Dube", email:"principal@thuto.co.za", role:"PRINCIPAL", password:"1234", pin:"1234", status:"ACTIVE"}
   ];
 }
 
@@ -181,14 +189,14 @@ async function loadAll(){
     try{
       const rSnap=await getDocs(collection(db,"requests")); REQUESTS=rSnap.docs.map(d=>({id:d.id,...d.data()}));
       const sSnap=await getDocs(collection(db,"schools")); SCHOOLS=sSnap.docs.map(d=>({id:d.id,...d.data(), name:d.data().name||d.data().schoolName||"Unnamed"}));
-      // Users: try schools subcollection + global users
       USERS=[];
       for(const s of SCHOOLS){
         try{ const uSnap=await getDocs(collection(db,"schools",s.id,"users")); uSnap.forEach(u=>USERS.push({id:u.id, schoolId:s.id, schoolName:s.name, ...u.data()})); }catch(e){}
       }
       if(USERS.length===0){ try{ const uSnap=await getDocs(collection(db,"users")); USERS=uSnap.docs.map(d=>({id:d.id, schoolId:d.data().schoolId||"", schoolName:"", ...d.data()})); }catch(e){} }
-      // Fill schoolName for global users
       USERS.forEach(u=>{ if(!u.schoolName){ const s=SCHOOLS.find(x=>x.id===u.schoolId); if(s) u.schoolName=s.name; }});
+      // Normalize passwords
+      USERS.forEach(u=>{ u.password=getUserPassword(u); u.pin=u.password; });
     }catch(e){ console.log(e); demoData(); }
     if(SCHOOLS.length===0 && REQUESTS.length===0) demoData();
   } else { demoData(); }
@@ -220,12 +228,13 @@ function renderRequests(){
   const q=($("searchReq").value||"").toLowerCase();
   const list=REQUESTS.filter(r=>!q || (r.schoolName+" "+r.principalName+" "+r.principalEmail+" "+r.emis).toLowerCase().includes(q));
   if(list.length===0){ $("requestsList").innerHTML='<div class="info">No requests. Share <b>subscriptions.html</b> with Principals to get requests.</div>'; return; }
-  let html='<table><tr><th>School / EMIS</th><th>Principal</th><th>Package / Total Due</th><th>Status</th><th>Action</th></tr>';
+  let html='<table><tr><th>School / EMIS</th><th>Principal — Email + Password</th><th>Package / Total Due</th><th>Status</th><th>Action</th></tr>';
   list.forEach(r=>{
     const st=(r.status||"PENDING").toUpperCase();
     const badge= st==="PENDING" ? "badge-yellow" : st==="APPROVED" ? "badge-green" : "badge-red";
+    const pw=getUserPassword(r);
     html+='<tr><td><b>'+(r.schoolName||"-")+'</b><br>EMIS: '+(r.emis||"-")+'<br><span class="small">'+(r.learnerCount||"")+' • '+(r.source||"")+'</span><br><span class="small">'+(r.notes||"")+'</span></td>'
-    +'<td>'+(r.principalName||"-")+'<br>'+(r.principalEmail||"-")+'<br>'+(r.principalPhone||"-")+'<br><span class="small">PIN: '+(r.principalPin||"1234")+'</span></td>'
+    +'<td>'+(r.principalName||"-")+'<br>'+(r.principalEmail||"-")+'<br>'+(r.principalPhone||"-")+'<br><span class="small">Password: <b>'+pw+'</b> — Will be login password</span></td>'
     +'<td><b>'+(r.package||"-")+'</b><br>Setup R'+(r.setup||"-")+' + Monthly R'+(r.monthly||"-")+'<br><b>Total R'+(r.totalDue||"-")+'</b></td>'
     +'<td><span class="badge '+badge+'">'+st+'</span></td>'
     +'<td><button class="btn btn-green" onclick="approveRequest(\''+r.id+'\')">✅ Approve</button><button class="btn btn-blue" onclick="whatsappReq(\''+r.id+'\')">📱 WhatsApp</button><button class="btn btn-red" onclick="rejectRequest(\''+r.id+'\')">❌ Reject</button><button class="btn btn-grey" onclick="deleteRequest(\''+r.id+'\')">🗑️ Delete</button></td></tr>';
@@ -234,9 +243,10 @@ function renderRequests(){
 }
 window.approveRequest=async (id)=>{
   const r=REQUESTS.find(x=>x.id===id); if(!r) return;
-  if(!confirm("Approve "+r.schoolName+"?\n\nThis will create school + principal user.\nPackage: "+r.package+" — Total Due R"+r.totalDue)) return;
+  const pw=getUserPassword(r);
+  if(!confirm("Approve "+r.schoolName+"?\n\nThis will create school + principal user.\nPackage: "+r.package+" — Total Due R"+r.totalDue+"\nLogin: "+r.principalEmail+" / Password: "+pw)) return;
   const newSchool={ name:r.schoolName, schoolName:r.schoolName, emis:r.emis, package:r.package, monthly:r.monthly, setup:r.setup, totalDue:r.totalDue, status:"ACTIVE", principalName:r.principalName, principalEmail:r.principalEmail, principalPhone:r.principalPhone, createdAt:new Date().toISOString() };
-  const newUser={ name:r.principalName, email:r.principalEmail, phone:r.principalPhone, role:"PRINCIPAL", pin:r.principalPin||"1234", status:"ACTIVE" };
+  const newUser={ name:r.principalName, email:r.principalEmail, phone:r.principalPhone, role:"PRINCIPAL", password:pw, pin:pw, principalPassword:pw, status:"ACTIVE" };
   try{
     if(db){
       const ref=await addDoc(collection(db,"schools"), newSchool);
@@ -247,7 +257,7 @@ window.approveRequest=async (id)=>{
       SCHOOLS.push({id:nid,...newSchool}); USERS.push({id:"u-"+Date.now(), schoolId:nid, schoolName:r.schoolName, ...newUser});
       r.status="APPROVED";
     }
-    showMsg("✅ Approved <b>"+r.schoolName+"</b> — School created, Principal can login with PIN "+(r.principalPin||"1234")+". Send activation WhatsApp now.","ok");
+    showMsg("✅ Approved <b>"+r.schoolName+"</b> — School created, Principal can login with Email <b>"+r.principalEmail+"</b> / Password <b>"+pw+"</b>. Send activation WhatsApp now.","ok");
     updateKPIs(); renderRequests(); renderSchools(); renderUsers(); renderFinance(); fillFilters();
   }catch(e){ showMsg("❌ Approve failed: "+e.message,"warn"); }
 };
@@ -266,7 +276,7 @@ window.whatsappReq=(id)=>{
   const r=REQUESTS.find(x=>x.id===id); if(!r) return;
   const phone=(r.principalPhone||"").replace(/\D/g,"");
   const intl= phone.startsWith("0") ? "27"+phone.slice(1) : phone;
-  const text="Hello "+r.principalName+", 🙏\n\nThank you for requesting Makhanani LTSM for "+r.schoolName+" ("+r.package+" — Total Due R"+r.totalDue+").\n\nI will approve your school today. Please send proof of payment for Setup + Month 1.\n\nVusi — 078 023 3263";
+  const text="Hello "+r.principalName+", 🙏\n\nThank you for requesting Makhanani LTSM for "+r.schoolName+" ("+r.package+" — Total Due R"+r.totalDue+").\n\nI will approve your school today. Please send proof of payment for Setup + Month 1. After approval, login with Email: "+r.principalEmail+" + your password.\n\nVusi — 078 023 3263";
   window.open("https://wa.me/"+intl+"?text="+encodeURIComponent(text),"_blank");
 };
 
@@ -313,21 +323,30 @@ function renderUsers(){
   const filter=$("userSchoolFilter").value;
   let list=USERS.filter(u=> (!filter || u.schoolId===filter) && (!q || (u.name+" "+u.email+" "+u.role+" "+(u.schoolName||"")).toLowerCase().includes(q)));
   if(list.length===0){ $("usersList").innerHTML='<div class="info">No users. Create school first — Principal user is auto-created.</div>'; return; }
-  let html='<table><tr><th>Name / Email</th><th>School / Role / Class</th><th>PIN / Status</th><th>Action</th></tr>';
+  let html='<table><tr><th>Name / Email</th><th>School / Role / Class</th><th>Password / Status</th><th>Action</th></tr>';
   list.forEach(u=>{
     const st=(u.status||"ACTIVE").toUpperCase(); const badge= st==="ACTIVE" ? "badge-green" : "badge-red";
+    const pw=getUserPassword(u);
     html+='<tr><td><b>'+(u.name||"-")+'</b><br>'+(u.email||"-")+'</td>'
     +'<td>'+(u.schoolName||"-")+'<br><b>'+(u.role||"-")+'</b> • Class: '+(u.className||u.class||"-")+'</td>'
-    +'<td>PIN: <b>'+(u.pin||"-")+'</b><br><span class="badge '+badge+'">'+st+'</span></td>'
-    +'<td><button class="btn btn-gold" onclick="resetPin(\''+u.id+'\')">🔑 Reset to 1234</button><button class="btn btn-red" onclick="setUserStatus(\''+u.id+'\',\'BLOCKED\')">⛔ Block</button><button class="btn btn-green" onclick="setUserStatus(\''+u.id+'\',\'ACTIVE\')">✅ Unblock</button><button class="btn btn-blue" onclick="makeSuperAdminFromUser(\''+u.id+'\')">👑 Make Super Admin</button><button class="btn btn-grey" onclick="deleteUser(\''+u.id+'\')">🗑️ Delete</button></td></tr>';
+    +'<td>Password: <b>'+pw+'</b><br><span class="badge '+badge+'">'+st+'</span></td>'
+    +'<td><button class="btn btn-gold" onclick="resetPassword(\''+u.id+'\')">🔑 Reset Password to 1234</button><button class="btn btn-blue" onclick="setCustomPassword(\''+u.id+'\')">✏️ Set New Password</button><button class="btn btn-red" onclick="setUserStatus(\''+u.id+'\',\'BLOCKED\')">⛔ Block</button><button class="btn btn-green" onclick="setUserStatus(\''+u.id+'\',\'ACTIVE\')">✅ Unblock</button><button class="btn btn-blue" onclick="makeSuperAdminFromUser(\''+u.id+'\')">👑 Make Super Admin</button><button class="btn btn-grey" onclick="deleteUser(\''+u.id+'\')">🗑️ Delete</button></td></tr>';
   });
   html+='</table>'; $("usersList").innerHTML=html;
 }
-window.resetPin=async (id)=>{
-  if(!confirm("Reset PIN to 1234?")) return;
+window.resetPassword=async (id)=>{
+  if(!confirm("Reset password to 1234? Tell user to login with Email + Password 1234, then change it in Profile.")) return;
   const u=USERS.find(x=>x.id===id); if(!u) return;
-  if(db){ try{ if(u.schoolId) await updateDoc(doc(db,"schools",u.schoolId,"users",id),{pin:"1234"}); else await updateDoc(doc(db,"users",id),{pin:"1234"}); }catch(e){ try{ await updateDoc(doc(db,"users",id),{pin:"1234"}); }catch(e2){} } }
-  u.pin="1234"; renderUsers(); showMsg("✅ PIN reset to 1234 for "+u.name,"ok");
+  if(db){ try{ if(u.schoolId) await updateDoc(doc(db,"schools",u.schoolId,"users",id),{password:"1234", pin:"1234", principalPassword:"1234"}); else await updateDoc(doc(db,"users",id),{password:"1234", pin:"1234"}); }catch(e){ try{ await updateDoc(doc(db,"users",id),{password:"1234", pin:"1234"}); }catch(e2){} } }
+  u.password="1234"; u.pin="1234"; renderUsers(); showMsg("✅ Password reset to 1234 for "+u.name+" — Email: "+u.email,"ok");
+};
+window.setCustomPassword=async (id)=>{
+  const u=USERS.find(x=>x.id===id); if(!u) return;
+  const np=prompt("Enter new password for "+u.name+" ("+u.email+") — Min 6 characters:", "");
+  if(!np) return;
+  if(np.length<6){ alert("Password must be min 6 characters."); return; }
+  if(db){ try{ if(u.schoolId) await updateDoc(doc(db,"schools",u.schoolId,"users",id),{password:np, pin:np, principalPassword:np}); else await updateDoc(doc(db,"users",id),{password:np, pin:np}); }catch(e){} }
+  u.password=np; u.pin=np; renderUsers(); showMsg("✅ Password changed for "+u.name+" — New password: "+np+" — Send it to them on WhatsApp.","ok");
 };
 window.setUserStatus=async (id,st)=>{
   const u=USERS.find(x=>x.id===id); if(!u) return;
@@ -367,11 +386,12 @@ window.copyActivation=()=>{ const t=$("activationText").innerText; navigator.cli
 
 // --- QUICK CREATE ---
 window.quickCreateSchool=async ()=>{
-  const name=$("cSchool").value.trim(), emis=$("cEmis").value.trim(), pname=$("cPName").value.trim(), pemail=$("cPEmail").value.trim().toLowerCase(), pphone=$("cPPhone").value.trim(), ppin=$("cPPin").value.trim(), pkg=$("cPkg").value, status=$("cStatus").value;
-  if(!name||!emis||!pname||!pemail||!ppin){ $("createMsg").innerHTML="⚠️ Fill School, EMIS, Principal Name, Email, PIN."; $("createMsg").className="warn"; return; }
+  const name=$("cSchool").value.trim(), emis=$("cEmis").value.trim(), pname=$("cPName").value.trim(), pemail=$("cPEmail").value.trim().toLowerCase(), pphone=$("cPPhone").value.trim(), ppass=$("cPPass").value, pkg=$("cPkg").value, status=$("cStatus").value;
+  if(!name||!emis||!pname||!pemail||!ppass){ $("createMsg").innerHTML="⚠️ Fill School, EMIS, Principal Name, Email, Password."; $("createMsg").className="warn"; return; }
+  if(ppass.length<4){ $("createMsg").innerHTML="⚠️ Password must be min 4 characters."; $("createMsg").className="warn"; return; }
   const p=PRICES[pkg];
   const newSchool={name, schoolName:name, emis, package:pkg, monthly:p.monthly, setup:p.setup, totalDue:p.setup+p.monthly, status, principalName:pname, principalEmail:pemail, principalPhone:pphone, createdAt:new Date().toISOString()};
-  const newUser={name:pname, email:pemail, phone:pphone, role:"PRINCIPAL", pin:ppin, status:"ACTIVE"};
+  const newUser={name:pname, email:pemail, phone:pphone, role:"PRINCIPAL", password:ppass, pin:ppass, principalPassword:ppass, status:"ACTIVE"};
   try{
     if(db){
       const ref=await addDoc(collection(db,"schools"), newSchool);
@@ -380,25 +400,26 @@ window.quickCreateSchool=async ()=>{
     } else {
       const nid="demo-"+Date.now(); SCHOOLS.push({id:nid,...newSchool}); USERS.push({id:"u-"+Date.now(), schoolId:nid, schoolName:name, ...newUser});
     }
-    $("createMsg").innerHTML="✅ <b>Created "+name+" ("+pkg+")</b> — Principal "+pemail+" PIN "+ppin+" can login now."; $("createMsg").className="ok";
-    $("activationText").textContent="Hello "+pname+", 🙏 Your school is ACTIVE on Makhanani LTSM. Login: [Your Link] → School: "+name+" → Email: "+pemail+" → PIN: "+ppin+". Change PIN in Profile after first login. Vusi — 078 023 3263";
+    $("createMsg").innerHTML="✅ <b>Created "+name+" ("+pkg+")</b> — Principal "+pemail+" / Password "+ppass+" can login now."; $("createMsg").className="ok";
+    $("activationText").textContent="Hello "+pname+", 🙏 Your school is ACTIVE on Makhanani LTSM. Login: [Your Link] → School Dropdown: "+name+" → Email: "+pemail+" → Password: "+ppass+". Change password in Profile after first login. Vusi — 078 023 3263";
     updateKPIs(); renderSchools(); renderUsers(); renderFinance(); fillFilters();
-    ["cSchool","cEmis","cPName","cPEmail","cPPhone"].forEach(id=>$(id).value=""); $("cPPin").value="1234";
+    ["cSchool","cEmis","cPName","cPEmail","cPPhone"].forEach(id=>$(id).value=""); $("cPPass").value="1234";
   }catch(e){ $("createMsg").innerHTML="❌ "+e.message; $("createMsg").className="warn"; }
 };
 
 // --- CREATE SUPER ADMIN ---
 window.createSuperAdmin=async ()=>{
-  const name=$("sName").value.trim(), email=$("sEmail").value.trim().toLowerCase(), phone=$("sPhone").value.trim(), pin=$("sPin").value.trim(), schoolId=$("sSchool").value;
-  if(!name||!email||!pin||!schoolId){ $("superMsg").innerHTML="⚠️ Fill Name, Email, PIN, and pick a School."; $("superMsg").className="warn"; return; }
+  const name=$("sName").value.trim(), email=$("sEmail").value.trim().toLowerCase(), phone=$("sPhone").value.trim(), pass=$("sPass").value, schoolId=$("sSchool").value;
+  if(!name||!email||!pass||!schoolId){ $("superMsg").innerHTML="⚠️ Fill Name, Email, Password, and pick a School."; $("superMsg").className="warn"; return; }
+  if(pass.length<4){ $("superMsg").innerHTML="⚠️ Password must be min 4 characters."; $("superMsg").className="warn"; return; }
   const school=SCHOOLS.find(s=>s.id===schoolId);
-  const newUser={name, email, phone, role:"SUPER ADMIN", pin, status:"ACTIVE", schoolId};
+  const newUser={name, email, phone, role:"SUPER ADMIN", password:pass, pin:pass, principalPassword:pass, status:"ACTIVE", schoolId};
   try{
     if(db){ await setDoc(doc(db,"schools",schoolId,"users", email.replace(/[^a-zA-Z0-9]/g,"_")), newUser); }
     USERS.push({id:email.replace(/[^a-zA-Z0-9]/g,"_"), schoolName:school?.name||"", ...newUser});
-    $("superMsg").innerHTML="✅ <b>"+name+" is now SUPER ADMIN</b> — Email: "+email+" PIN: "+pin+" — They can login in index.html and go to Super Admin."; $("superMsg").className="ok";
+    $("superMsg").innerHTML="✅ <b>"+name+" is now SUPER ADMIN</b> — Email: "+email+" / Password: "+pass+" — They can login in index.html and go to Super Admin."; $("superMsg").className="ok";
     renderUsers(); updateKPIs();
-    ["sName","sEmail","sPhone"].forEach(id=>$(id).value=""); $("sPin").value="1234";
+    ["sName","sEmail","sPhone"].forEach(id=>$(id).value=""); $("sPass").value="1234";
   }catch(e){ $("superMsg").innerHTML="❌ "+e.message; $("superMsg").className="warn"; }
 };
 
