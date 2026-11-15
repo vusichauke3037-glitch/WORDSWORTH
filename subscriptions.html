@@ -32,6 +32,8 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 .badge{display:inline-block;background:#d4af37;color:#0a1f4d;font-size:11px;font-weight:900;padding:3px 8px;border-radius:20px}
 .checkRow{display:flex;gap:8px;align-items:flex-start;margin:8px 0;font-size:13px;line-height:1.5}
 .checkRow input{width:18px;height:18px;margin-top:2px}
+.passWrap{position:relative}.passWrap button{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:#e2e8f0;padding:8px 10px;border-radius:7px;font-weight:900;cursor:pointer}
+.strength{font-size:12px;margin-top:4px;font-weight:700}.strength.weak{color:#dc2626}.strength.ok{color:#059669}
 @media(max-width:640px){.pkg{grid-template-columns:1fr}}
 @media print{header,.topnav,.btn{display:none}body{background:#fff}.card{box-shadow:none;border:1px solid #ddd}}
 </style>
@@ -44,7 +46,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 
 <div class="card">
 <div class="topnav"><a href="index.html">🏠 Login</a><a href="issue.html">📖 Issue / Return</a><a href="user-manual.html">📖 User Manual</a><a href="training-manual.html">🎓 Training Manual</a><a href="https://wa.me/27780233263">📱 WhatsApp</a></div>
-<div class="info">✅ <b>No payment today to request.</b> Fill form → Vusi approves → You get login → You pay setup + Month 1 → You start. 7 days free trial available — Ask Vusi.</div>
+<div class="info">✅ <b>No payment today to request.</b> Fill form → Vusi approves → You get login with <b>Email + Password</b> → You pay setup + Month 1 → You start. 7 days free trial available — Ask Vusi.</div>
 </div>
 
 <!-- PACKAGES -->
@@ -73,7 +75,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <!-- REQUEST FORM -->
 <div class="card">
 <h2>2. Request Access — Fill This (1 Minute)</h2>
-<p>Fill with Principal — Vusi will WhatsApp you to approve.</p>
+<p>Fill with Principal — You will login with <b>Email + Password</b> after approval.</p>
 
 <label>School Name *</label>
 <input id="schoolName" placeholder="e.g. WORDSWORTH PRIMARY" autocomplete="organization">
@@ -84,14 +86,19 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <label>Principal Full Name *</label>
 <input id="principalName" placeholder="e.g. Mr. Vusi Chauke">
 
-<label>Principal Email * (This will be your login email)</label>
+<label>Principal Email * (This will be your LOGIN EMAIL)</label>
 <input id="principalEmail" type="email" placeholder="e.g. principal@school.co.za" autocomplete="email">
 
 <label>Principal Phone / WhatsApp *</label>
-<input id="principalPhone" placeholder="e.g. 0780233263" inputmode="tel">
+<input id="principalPhone" placeholder="e.g. 0780233263" inputmode="tel" autocomplete="tel">
 
-<label>Principal PIN * (4-6 digits — You will use this to login)</label>
-<input id="principalPin" placeholder="e.g. 1234" inputmode="numeric" maxlength="6">
+<label>Create Your Password * (You will use this to login)</label>
+<div class="passWrap"><input id="principalPassword" type="password" placeholder="e.g. Thandi2026 — Min 6 characters" autocomplete="new-password"><button type="button" onclick="togglePass()">👁️</button></div>
+<div id="passStrength" class="strength"></div>
+<p class="small" style="text-align:left;margin-top:4px">Use something you remember. Example: <b>School2026</b> or <b>Thandi2026</b>. Do NOT share it with learners. You can change it later in Profile.</p>
+
+<label>Confirm Password *</label>
+<input id="confirmPassword" type="password" placeholder="Type same password again" autocomplete="new-password">
 
 <label>School Address / Area (Optional)</label>
 <input id="schoolAddress" placeholder="e.g. Soweto, Johannesburg">
@@ -113,7 +120,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <button class="btn btn-green" onclick="sendWhatsAppRequest()">📱 Or Send Via WhatsApp Instead</button>
 <button class="btn btn-grey" onclick="location.href='index.html'">🏠 Back To Login</button>
 
-<div class="info"><b>What happens next?</b><br>1. Your request goes to Vusi instantly (Super Admin → Requests).<br>2. Vusi WhatsApps you to confirm + sends Invoice.<br>3. You pay Setup + Month 1 → Vusi activates school TODAY → You get login.<br>4. Vusi trains your Librarian (1 hr) — You start tomorrow.</div>
+<div class="info"><b>What happens next?</b><br>1. Your request goes to Vusi instantly (Super Admin → Requests).<br>2. Vusi WhatsApps you to confirm + sends Invoice.<br>3. You pay Setup + Month 1 → Vusi activates school TODAY → You login with <b>Email + Password</b> you created here.<br>4. Vusi trains your Librarian (1 hr) — You start tomorrow.</div>
 </div>
 
 <!-- SGB + INVOICE INFO -->
@@ -159,6 +166,14 @@ window.selectPkg=(pkg)=>{
   $("pkgSummary").innerHTML="<b>Selected: "+pkg+"</b> — Setup R"+p.setup.toLocaleString()+" + Month 1 R"+p.monthly.toLocaleString()+" = <b>Total Due R"+p.total.toLocaleString()+"</b><br>Less than 2 lost textbooks = 1 month. This system SAVES you books.";
   $("submitBtn").textContent="📝 SEND REQUEST — "+pkg;
 };
+window.togglePass=()=>{ const i=$("principalPassword"); i.type=i.type==="password"?"text":"password"; };
+$("principalPassword").addEventListener("input", ()=>{
+  const v=$("principalPassword").value; const el=$("passStrength");
+  if(!v){ el.textContent=""; return; }
+  if(v.length<6){ el.textContent="⚠️ Too short — Min 6 characters"; el.className="strength weak"; }
+  else if(v.length<8){ el.textContent="✅ OK — You can use this"; el.className="strength ok"; }
+  else { el.textContent="✅ Strong password"; el.className="strength ok"; }
+});
 function getForm(){
   return{
     schoolName:$("schoolName").value.trim(),
@@ -166,7 +181,12 @@ function getForm(){
     principalName:$("principalName").value.trim(),
     principalEmail:$("principalEmail").value.trim().toLowerCase(),
     principalPhone:$("principalPhone").value.trim(),
-    principalPin:$("principalPin").value.trim(),
+    // Save as BOTH password + pin so old + new login both work
+    principalPassword:$("principalPassword").value,
+    principalPin:$("principalPassword").value,
+    password:$("principalPassword").value,
+    pin:$("principalPassword").value,
+    confirmPassword:$("confirmPassword").value,
     schoolAddress:$("schoolAddress").value.trim(),
     learnerCount:$("learnerCount").value,
     source:$("source").value,
@@ -185,7 +205,8 @@ function validate(d){
   if(!d.principalName) return "Enter Principal Name.";
   if(!d.principalEmail || !d.principalEmail.includes("@")) return "Enter a valid Principal Email.";
   if(!d.principalPhone || d.principalPhone.replace(/\D/g,"").length<10) return "Enter Principal Phone (10 digits).";
-  if(!d.principalPin || d.principalPin.length<4) return "Enter PIN (4-6 digits).";
+  if(!d.principalPassword || d.principalPassword.length<6) return "Create a Password — Min 6 characters. Example: School2026";
+  if(d.principalPassword!==d.confirmPassword) return "Passwords do not match — Type same password in both boxes.";
   if(!$("agree").checked) return "Tick the agreement box.";
   return null;
 }
@@ -193,24 +214,25 @@ function showMsg(html,cls){ const m=$("msg"); m.innerHTML=html; m.className=cls;
 window.sendWhatsAppRequest=()=>{
   const d=getForm(); const err=validate(d);
   if(err){ showMsg("⚠️ "+err,"warn"); return; }
-  const text="Hello Vusi, Makhanani LTSM Request:\n\nSchool: "+d.schoolName+"\nEMIS: "+d.emis+"\nPrincipal: "+d.principalName+"\nEmail: "+d.principalEmail+"\nPhone: "+d.principalPhone+"\nPIN: "+d.principalPin+"\nPackage: "+d.package+" (Setup R"+d.setup+" + Monthly R"+d.monthly+" = R"+d.totalDue+")\nLearners: "+(d.learnerCount||"-")+"\nAddress: "+(d.schoolAddress||"-")+"\nMessage: "+(d.notes||"-");
+  // Do NOT send password in plain WhatsApp for security — Tell Vusi to use it as login, but don't print it
+  const text="Hello Vusi, Makhanani LTSM Request:\n\nSchool: "+d.schoolName+"\nEMIS: "+d.emis+"\nPrincipal: "+d.principalName+"\nEmail: "+d.principalEmail+"\nPhone: "+d.principalPhone+"\nPackage: "+d.package+" (Setup R"+d.setup+" + Monthly R"+d.monthly+" = R"+d.totalDue+")\nLearners: "+(d.learnerCount||"-")+"\nAddress: "+(d.schoolAddress||"-")+"\nMessage: "+(d.notes||"-")+"\n\nI created my password in the form. Please approve my school.";
   window.open("https://wa.me/27780233263?text="+encodeURIComponent(text),"_blank");
-  showMsg("✅ WhatsApp opened — Click Send in WhatsApp. Also click SEND REQUEST below to save it in system.","ok");
+  showMsg("✅ WhatsApp opened — Click Send in WhatsApp. Also click SEND REQUEST below to save it in system. Your password is NOT sent in WhatsApp for safety.","ok");
 };
 window.submitRequest=async ()=>{
   const d=getForm(); const err=validate(d);
   if(err){ showMsg("⚠️ "+err,"warn"); return; }
   $("submitBtn").disabled=true; $("submitBtn").textContent="Sending...";
+  // Remove confirmPassword before saving
+  const toSave={...d}; delete toSave.confirmPassword;
   try{
     if(db){
-      await addDoc(collection(db,"requests"), {...d, createdAt: serverTimestamp()});
+      await addDoc(collection(db,"requests"), {...toSave, createdAt: serverTimestamp()});
     } else {
-      // Demo mode — Save locally so Vusi can see it in Super Admin demo
       const all=JSON.parse(localStorage.getItem("makhanani_demo_requests")||"[]");
-      all.push(d); localStorage.setItem("makhanani_demo_requests", JSON.stringify(all));
+      all.push(toSave); localStorage.setItem("makhanani_demo_requests", JSON.stringify(all));
     }
-    showMsg("✅ <b>Request Sent!</b> Package: <b>"+d.package+"</b> — Total Due R"+d.totalDue.toLocaleString()+"<br>Vusi will WhatsApp you on <b>"+d.principalPhone+"</b> to approve. Check WhatsApp in a few hours.<br><br>Want faster approval? Click <b>Send Via WhatsApp</b> above.","ok");
-    // Also offer WhatsApp
+    showMsg("✅ <b>Request Sent!</b> Package: <b>"+d.package+"</b> — Total Due R"+d.totalDue.toLocaleString()+"<br>Your login will be:<br><b>Email:</b> "+d.principalEmail+"<br><b>Password:</b> The password you created<br>Vusi will WhatsApp you on <b>"+d.principalPhone+"</b> to approve.<br><br>Want faster approval? Click <b>Send Via WhatsApp</b> above.","ok");
     setTimeout(()=>{ if(confirm("Request saved! Send it on WhatsApp too for faster approval?")) sendWhatsAppRequest(); },500);
   }catch(e){
     console.log(e);
