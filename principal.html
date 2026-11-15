@@ -27,6 +27,8 @@ select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
 .badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-cat{background:#fef3c7;color:#92400e}.badge-issued{background:#fee2e2;color:#991b1b}.badge-free{background:#dcfce7;color:#166534}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-weight:700;background:#f1f5f9;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;margin:3px 3px 0 0}
+.chk input{width:auto;padding:0}.chk.on{background:#fef3c7;border:2px solid #d4af37}
 @media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}table{font-size:12px}}
 </style></head>
 <body>
@@ -35,14 +37,12 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 <script>guardPage(3,'Principal Dashboard');</script>
 </header>
 <div class="wrap">
-
 <div class="kpi">
 <div><b id="kpiLearners">0</b><span>👩‍🎓 LEARNERS — WHS</span></div>
 <div><b id="kpiBooks">0</b><span>📚 TEXTBOOKS — WHS</span></div>
 <div><b id="kpiIssued">0</b><span>📕 ISSUED</span></div>
 <div><b id="kpiUsers">0</b><span>👥 USERS — WHS</span></div>
 </div>
-
 <div class="tabs">
 <button id="tabBtnOverview" class="active" onclick="showTab('overview')">📊 Overview</button>
 <button id="tabBtnAdd" onclick="showTab('add')">➕ Add User</button>
@@ -51,7 +51,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 </div>
 
 <div id="tab-overview" class="tab active"><div class="card">
-<h2>📊 Whole School — WORDSWORTH HIGH SCHOOL — By Grade / Category</h2>
+<h2>📊 Whole School — WORDSWORTH — By Grade / Category</h2>
 <div class="row">
 <div><label>📚 By Grade — Dropdown</label><select id="overviewGrade" onchange="renderOverview()"><option value="">📚 All Grades</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option></select></div>
 <div><label>📚 By Category — Dropdown</label><select id="overviewCategory" onchange="renderOverview()"><option value="">📚 All Categories</option><option value="Maths">Maths</option><option value="English">English</option><option value="Life Sciences">Life Sciences</option><option value="Physical Sciences">Physical Sciences</option><option value="Geography">Geography</option><option value="History">History</option><option value="Accounting">Accounting</option><option value="Business Studies">Business Studies</option><option value="Life Orientation">Life Orientation</option><option value="Afrikaans">Afrikaans</option></select></div>
@@ -63,200 +63,131 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 
 <div id="tab-add" class="tab"><div class="card">
 <h2>➕ Add User — For WORDSWORTH Only</h2>
-<label>👤 Full Name *</label><input id="userName" placeholder="e.g. Vusi Chauke">
-<label>📧 Email *</label><input id="userEmail" placeholder="e.g. librarian@wordsworth.co.za">
+<label>👤 Full Name *</label><input id="userName" placeholder="e.g. Mrs Dube">
+<label>📧 Email *</label><input id="userEmail" placeholder="e.g. dube@wordsworth.co.za">
 <label>🔐 Password * — Give To User</label><input id="userPass" placeholder="e.g. 1234" value="1234">
 <label>👤 Role * — Dropdown — REQUIRED ▼</label>
 <select id="userRole" onchange="onRoleChange()">
 <option value="">-- Pick Role * --</option>
-<option value="Teacher">👩‍🏫 Teacher — My Class Only — Issue / Return</option>
-<option value="Librarian">📚 Librarian — All Textbooks — Issue / Return / Lost</option>
-<option value="Principal">🏫 Principal — Whole School — Reports / Users</option>
+<option value="Teacher">👩‍🏫 Teacher — Multiple Grades / Classes</option>
+<option value="Librarian">📚 Librarian — All Classes</option>
+<option value="Principal">🏫 Principal — All Classes</option>
 </select>
 <div id="roleInfo" class="info" style="display:none"></div>
-<label>🏫 Grade — Dropdown — For Teacher (Optional for Others)</label>
-<select id="userGrade" onchange="onGradeClassChange()"><option value="">-- Pick Grade — Teacher Only --</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option></select>
-<label>🏫 Class — Dropdown — For Teacher (Optional)</label>
-<select id="userClass" onchange="onGradeClassChange()"><option value="All Classes">All Classes</option><option value="A">Class A</option><option value="B">Class B</option><option value="C">Class C</option><option value="D">Class D</option><option value="E">Class E</option></select>
+<div id="teacherMulti" style="display:none">
+<label>📚 Grades Taught * — Tick ALL Grades This Teacher Teaches — Multiple Possible</label>
+<div style="margin-top:6px">
+<label class="chk"><input type="checkbox" name="teachGrade" value="8" onchange="buildClassList()"> Grade 8</label>
+<label class="chk"><input type="checkbox" name="teachGrade" value="9" onchange="buildClassList()"> Grade 9</label>
+<label class="chk"><input type="checkbox" name="teachGrade" value="10" onchange="buildClassList()" checked> Grade 10</label>
+<label class="chk"><input type="checkbox" name="teachGrade" value="11" onchange="buildClassList()"> Grade 11</label>
+<label class="chk"><input type="checkbox" name="teachGrade" value="12" onchange="buildClassList()"> Grade 12</label>
+</div>
+<label>🏫 Classes Taught * — Tick ALL Classes — e.g. 10A + 10B + 11A</label>
+<div id="classCheckboxes" style="margin-top:6px"></div>
 <div id="classInfo" class="info" style="display:none"></div>
+<label>📚 Subject / Category Taught — Dropdown — Optional</label>
+<select id="userSubject"><option value="">-- All Subjects --</option><option value="Maths">Maths</option><option value="English">English</option><option value="Life Sciences">Life Sciences</option><option value="Physical Sciences">Physical Sciences</option><option value="Geography">Geography</option><option value="History">History</option><option value="Accounting">Accounting</option><option value="Business Studies">Business Studies</option><option value="Life Orientation">Life Orientation</option><option value="Afrikaans">Afrikaans</option></select>
+</div>
+<div id="allClassesInfo" class="info" style="display:none"></div>
 <button class="btn btn-green btn-full" onclick="addUser()">👤 ADD USER →</button>
 <div id="addUserMsg"></div>
-<div class="info">Teacher → Must pick Grade + Class. Teacher sees only that class, e.g. <b>10A</b>.<br>Librarian / Principal → <b>All Classes</b> — Sees whole school.</div>
+<div class="info">Teacher → Tick Grades + Classes. e.g. <b>10A • 10B • 11A</b>.<br>Librarian / Principal → <b>All Classes</b> — Whole school.</div>
 </div></div>
 
 <div id="tab-users" class="tab"><div class="card">
 <h2>👥 Users — WORDSWORTH Only — <span id="usersCount">0</span></h2>
-<div style="overflow-x:auto"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Grade / Class</th><th>Action</th></tr></thead><tbody id="usersTable"></tbody></table></div>
+<div style="overflow-x:auto"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Subject / Classes</th><th>Action</th></tr></thead><tbody id="usersTable"></tbody></table></div>
 </div></div>
 
 <div id="tab-reports" class="tab"><div class="card">
 <h2>📊 Reports — Dropdowns Required</h2>
-<div class="warn">⚠️ <b>All dropdowns below are REQUIRED. No selection = No report shown. Export button DISABLED until picked.</b></div>
-<label>📊 Report Type * — Dropdown — REQUIRED ▼</label>
-<select id="reportType" onchange="checkReports()">
-<option value="">-- Pick Report Type * --</option>
-<option value="Issued">📕 Issued Textbooks</option>
-<option value="Free">📗 Free / In Stock</option>
-<option value="All">📚 All Textbooks</option>
-<option value="Lost">❌ Lost Textbooks</option>
-</select>
-<label>📚 Grade * — Dropdown — REQUIRED ▼</label>
+<div class="warn">⚠️ <b>All dropdowns REQUIRED. No selection = No report. Export DISABLED until picked.</b></div>
+<label>📊 Report Type * — Dropdown</label>
+<select id="reportType" onchange="checkReports()"><option value="">-- Pick Report Type * --</option><option value="Issued">📕 Issued Textbooks</option><option value="Free">📗 Free / In Stock</option><option value="All">📚 All Textbooks</option><option value="Lost">❌ Lost Textbooks</option></select>
+<label>📚 Grade * — Dropdown</label>
 <select id="reportGrade" onchange="checkReports()"><option value="">-- Pick Grade * --</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option></select>
-<label>📚 Category * — Dropdown — REQUIRED ▼</label>
-<select id="reportCategory" onchange="checkReports()">
-<option value="">-- Pick Category * --</option>
-<option value="All">📚 All Categories</option>
-<option value="Maths">Maths</option><option value="English">English</option><option value="Life Sciences">Life Sciences</option><option value="Physical Sciences">Physical Sciences</option><option value="Geography">Geography</option><option value="History">History</option><option value="Accounting">Accounting</option><option value="Business Studies">Business Studies</option><option value="Life Orientation">Life Orientation</option><option value="Afrikaans">Afrikaans</option>
-</select>
+<label>📚 Category * — Dropdown</label>
+<select id="reportCategory" onchange="checkReports()"><option value="">-- Pick Category * --</option><option value="All">📚 All Categories</option><option value="Maths">Maths</option><option value="English">English</option><option value="Life Sciences">Life Sciences</option><option value="Physical Sciences">Physical Sciences</option><option value="Geography">Geography</option><option value="History">History</option><option value="Accounting">Accounting</option><option value="Business Studies">Business Studies</option><option value="Life Orientation">Life Orientation</option><option value="Afrikaans">Afrikaans</option></select>
 <button id="exportBtn" class="btn btn-gold btn-full" onclick="exportReport()" disabled>📤 Export Report — Pick All Dropdowns First</button>
 <div id="reportInfo" class="info" style="display:none"></div>
 <div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Number</th><th>Title</th><th>Category</th><th>Grade</th><th>Status</th><th>Learner</th></tr></thead><tbody id="reportTable"></tbody></table></div>
 </div></div>
-
 </div>
 <script>
-// FIREBASE - MAKHANANI LTSM - YOUR REAL CONFIG - Compat Version - Already Filled
-const firebaseConfig = {
-  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
-  authDomain: "makhanani-ltsm.firebaseapp.com",
-  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
-  projectId: "makhanani-ltsm",
-  storageBucket: "makhanani-ltsm.firebasestorage.app",
-  messagingSenderId: "247180363183",
-  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
-  measurementId: "G-PEST1XFCR8"
-};
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const rtdb = firebase.database();
-let user=null, schoolId='WHS', prefix='WHS', schoolName='WORDSWORTH HIGH SCHOOL (WHS)';
-try{ user=JSON.parse(localStorage.getItem('makhanani_user')||'null'); if(user){ schoolId=user.schoolId||'WHS'; prefix=user.prefix||'WHS'; schoolName=user.schoolName||schoolName; } }catch(e){}
+const rtdb=firebase.database();
+let user=null,schoolId='WHS',prefix='WHS',schoolName='WORDSWORTH HIGH SCHOOL (WHS)';
+try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null'); if(user){schoolId=user.schoolId||'WHS';prefix=user.prefix||'WHS';schoolName=user.schoolName||schoolName;}}catch(e){}
 document.getElementById('schoolLine').textContent=schoolName+' • Prefix '+prefix+' • EMIS 700310854 • Grades 8-12';
-let books=[], learners=[], users=[];
-function showTab(t){
-  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+t).classList.add('active');
-  document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');
-}
+let books=[],learners=[],users=[];
+function showTab(t){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');}
 function onRoleChange(){
   let role=document.getElementById('userRole').value;
-  let info=document.getElementById('roleInfo');
-  if(!role){ info.style.display='none'; return; }
+  let info=document.getElementById('roleInfo'),multi=document.getElementById('teacherMulti'),allInfo=document.getElementById('allClassesInfo');
+  if(!role){info.style.display='none';multi.style.display='none';allInfo.style.display='none';return;}
   info.style.display='block';
-  if(role==='Teacher'){
-    info.innerHTML=`✅ Role <b>${role}</b><br>⚠️ Now pick Grade + Class for this Teacher — Teacher sees only 1 class.`;
-    document.getElementById('userClass').value='A';
-  } else {
-    info.innerHTML=`✅ Role <b>${role}</b><br>Class set to <b>All Classes</b> — ${role} sees whole school.`;
-    document.getElementById('userClass').value='All Classes';
-    document.getElementById('userGrade').value='';
-  }
-  onGradeClassChange();
+  if(role==='Teacher'){info.innerHTML=`✅ Role <b>Teacher</b><br>⚠️ Tick <b>ALL Grades + ALL Classes</b> this teacher teaches — Multiple possible. e.g. Grade 10 + 11, Classes 10A + 10B + 11A.`;multi.style.display='block';allInfo.style.display='none';buildClassList();}
+  else{info.innerHTML=`✅ Role <b>${role}</b><br>Class set to <b>All Classes</b> — ${role} sees whole school.`;multi.style.display='none';allInfo.style.display='block';allInfo.innerHTML=`✅ ${role} will see: <b>All Classes — Whole School — All Grades 8-12</b>`;}
 }
-function onGradeClassChange(){
-  let role=document.getElementById('userRole').value;
-  let grade=document.getElementById('userGrade').value;
-  let cls=document.getElementById('userClass').value;
+function buildClassList(){
+  let grades=[...document.querySelectorAll('input[name="teachGrade"]:checked')].map(c=>c.value);
+  let box=document.getElementById('classCheckboxes');
+  if(grades.length===0){box.innerHTML='<span style="font-size:13px;color:#ef4444">⚠️ Tick at least 1 Grade first.</span>';return;}
+  let html='';grades.forEach(g=>{['A','B','C','D','E'].forEach(cls=>{let code=g+cls;html+=`<label class="chk"><input type="checkbox" name="teachClass" value="${code}" onchange="onClassTick()" ${g==='10'&&cls==='A'?'checked':''}> ${code}</label>`;});});
+  box.innerHTML=html;onClassTick();
+}
+function onClassTick(){
+  let classes=[...document.querySelectorAll('input[name="teachClass"]:checked')].map(c=>c.value);
   let info=document.getElementById('classInfo');
-  if(role==='Teacher' && grade && cls && cls!=='All Classes'){
-    info.style.display='block'; info.innerHTML=`✅ Teacher will see only: <b>Grade ${grade} Class ${cls}</b> — Learner IDs like <b>${grade}${cls}001</b>`;
-  } else if(role && role!=='Teacher'){
-    info.style.display='block'; info.innerHTML=`✅ ${role} will see: <b>All Classes — Whole School</b>`;
-  } else { info.style.display='none'; }
+  if(classes.length===0){info.style.display='none';return;}
+  info.style.display='block';info.innerHTML=`✅ Teacher will see: <b>${classes.join(' • ')}</b><br>${classes.length} classes total.`;
 }
 async function loadData(){
-  try{
-    let bsnap=await rtdb.ref('textbooks/'+schoolId).once('value'); books=Object.entries(bsnap.val()||{}).map(([id,v])=>({id,...v}));
-    let lsnap=await rtdb.ref('learners/'+schoolId).once('value'); learners=Object.entries(lsnap.val()||{}).map(([id,v])=>({id,...v}));
-    let usnap=await rtdb.ref('users/'+schoolId).once('value'); users=Object.entries(usnap.val()||{}).map(([id,v])=>({id,...v}));
-  }catch(e){ console.log('Firebase load error',e); }
-  if(books.length===0){
-    books=[
-      {id:'1',number:prefix+'000001',title:'Maths Grade 10 Textbook',category:'Maths',grade:'10',status:'Free',learnerName:''},
-      {id:'2',number:prefix+'000002',title:'English Grade 10 Textbook',category:'English',grade:'10',status:'Issued',learnerName:'10A001 - Thabo M'},
-      {id:'3',number:prefix+'000003',title:'Life Sciences Grade 11',category:'Life Sciences',grade:'11',status:'Free',learnerName:''},
-    ];
-    learners=[{id:'1',learnerId:'10A001',name:'Thabo M',grade:'10',className:'A'}];
-    if(users.length===0) users=[{id:'1',name:'Vusi Chauke',email:'vusichauke3037@gmail.com',role:'Principal',className:'All Classes'}];
-  }
-  document.getElementById('kpiLearners').textContent=learners.length;
-  document.getElementById('kpiBooks').textContent=books.length;
-  document.getElementById('kpiIssued').textContent=books.filter(b=>b.status==='Issued').length;
-  document.getElementById('kpiUsers').textContent=users.length;
-  document.getElementById('usersCount').textContent=users.length;
-  document.getElementById('usersTable').innerHTML=users.length?users.map(u=>`<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td><td>${u.grade?'Gr '+u.grade+' ':''}${u.className||'All Classes'}</td><td><button class="btn btn-grey" onclick="deleteUser('${u.id}')">🗑️</button></td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;padding:20px">No users yet — Add one in ➕ Add User tab.</td></tr>';
-  renderOverview(); checkReports();
+  try{let bs=await rtdb.ref('textbooks/'+schoolId).once('value');books=Object.entries(bs.val()||{}).map(([id,v])=>({id,...v}));let ls=await rtdb.ref('learners/'+schoolId).once('value');learners=Object.entries(ls.val()||{}).map(([id,v])=>({id,...v}));let us=await rtdb.ref('users/'+schoolId).once('value');users=Object.entries(us.val()||{}).map(([id,v])=>({id,...v}));}catch(e){console.log(e);}
+  if(books.length===0){books=[{id:'1',number:prefix+'000001',title:'Maths Grade 10 Textbook',category:'Maths',grade:'10',status:'Free',learnerName:''},{id:'2',number:prefix+'000002',title:'English Grade 10 Textbook',category:'English',grade:'10',status:'Issued',learnerName:'10A001 - Thabo M'}];learners=[{id:'1',learnerId:'10A001',name:'Thabo M',grade:'10',className:'A'}];if(users.length===0)users=[{id:'1',name:'Vusi Chauke',email:'vusichauke3037@gmail.com',role:'Principal',className:'All Classes'}];}
+  document.getElementById('kpiLearners').textContent=learners.length;document.getElementById('kpiBooks').textContent=books.length;document.getElementById('kpiIssued').textContent=books.filter(b=>b.status==='Issued').length;document.getElementById('kpiUsers').textContent=users.length;document.getElementById('usersCount').textContent=users.length;
+  renderUsers();renderOverview();checkReports();
+}
+function renderUsers(){
+  document.getElementById('usersTable').innerHTML=users.length?users.map(u=>`<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td><td>${u.role==='Teacher'?((u.teachingClasses||[u.className]).join(' • ')+(u.subject?' • '+u.subject:'')):'All Classes'}</td><td><button class="btn btn-grey" onclick="deleteUser('${u.id}')">🗑️</button></td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;padding:20px">No users yet — Add one in ➕ Add User tab.</td></tr>';
 }
 function renderOverview(){
-  let grade=document.getElementById('overviewGrade').value;
-  let cat=document.getElementById('overviewCategory').value;
-  let filtered=books.filter(b=>{ if(grade && String(b.grade)!==String(grade)) return false; if(cat && b.category!==cat) return false; return true; });
-  document.getElementById('overviewInfo').innerHTML=`Showing <b>${filtered.length}</b> of <b>${books.length}</b> textbooks${grade?' — Grade '+grade:''}${cat?' — Category '+cat:''} — Learners: <b>${learners.length}</b> — Issued: <b>${books.filter(b=>b.status==='Issued').length}</b>`;
-  document.getElementById('overviewTable').innerHTML=filtered.length?filtered.map(b=>`<tr><td><b>${b.number}</b></td><td>${b.title}</td><td><span class="badge badge-cat">${b.category}</span></td><td>Gr ${b.grade}</td><td><span class="badge ${b.status==='Issued'?'badge-issued':'badge-free'}">${b.status||'Free'}</span></td><td>${b.learnerName||'—'}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No textbooks for this filter.</td></tr>`;
+  let grade=document.getElementById('overviewGrade').value,cat=document.getElementById('overviewCategory').value;
+  let f=books.filter(b=>{if(grade&&String(b.grade)!==String(grade))return false;if(cat&&b.category!==cat)return false;return true;});
+  document.getElementById('overviewInfo').innerHTML=`Showing <b>${f.length}</b> of <b>${books.length}</b> textbooks${grade?' — Grade '+grade:''}${cat?' — Category '+cat:''} — Learners: <b>${learners.length}</b> — Issued: <b>${books.filter(b=>b.status==='Issued').length}</b>`;
+  document.getElementById('overviewTable').innerHTML=f.length?f.map(b=>`<tr><td><b>${b.number}</b></td><td>${b.title}</td><td><span class="badge badge-cat">${b.category}</span></td><td>Gr ${b.grade}</td><td><span class="badge ${b.status==='Issued'?'badge-issued':'badge-free'}">${b.status||'Free'}</span></td><td>${b.learnerName||'—'}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No textbooks for this filter.</td></tr>`;
 }
 async function addUser(){
-  let name=document.getElementById('userName').value.trim();
-  let email=document.getElementById('userEmail').value.trim().toLowerCase();
-  let pass=document.getElementById('userPass').value.trim()||'1234';
-  let role=document.getElementById('userRole').value;
-  let grade=document.getElementById('userGrade').value;
-  let cls=document.getElementById('userClass').value||'All Classes';
-  let msg=document.getElementById('addUserMsg');
-  if(!name){ msg.innerHTML='<div class="warn">⚠️ Type Full Name first.</div>'; return; }
-  if(!email || !email.includes('@')){ msg.innerHTML='<div class="warn">⚠️ Type valid Email first.</div>'; return; }
-  if(!role){ msg.innerHTML='<div class="warn">⚠️ Pick Role first — Click Role dropdown → Select Librarian / Teacher / Principal.</div>'; document.getElementById('userRole').focus(); return; }
+  let name=document.getElementById('userName').value.trim(),email=document.getElementById('userEmail').value.trim().toLowerCase(),pass=document.getElementById('userPass').value.trim()||'1234',role=document.getElementById('userRole').value,subject=document.getElementById('userSubject')?.value||'',msg=document.getElementById('addUserMsg');
+  if(!name){msg.innerHTML='<div class="warn">⚠️ Type Full Name first.</div>';return;}
+  if(!email||!email.includes('@')){msg.innerHTML='<div class="warn">⚠️ Type valid Email first.</div>';return;}
+  if(!role){msg.innerHTML='<div class="warn">⚠️ Pick Role first.</div>';return;}
+  let teachingClasses=[],teachingGrades=[];
   if(role==='Teacher'){
-    if(!grade){ msg.innerHTML='<div class="warn">⚠️ Teacher needs Grade — Pick Grade dropdown.</div>'; return; }
-    if(!cls || cls==='All Classes'){ msg.innerHTML='<div class="warn">⚠️ Teacher needs Class — Pick Class A / B / C / D / E.</div>'; return; }
-  } else { cls='All Classes'; grade=''; }
-  let rec={name,email,role,grade,className:cls,schoolId,prefix,schoolName,password:pass,createdAt:Date.now()};
-  try{ let ref=rtdb.ref('users/'+schoolId).push(); await ref.set(rec); rec.id=ref.key; msg.innerHTML=`<div class="ok">✅ User Added to Firebase: <b>${name}</b> — <b>${email}</b> — Role: <b>${role}</b> — ${role==='Teacher'?'Grade '+grade+' Class '+cls:'All Classes — Whole School'}<br>Login with Email + Password <b>${pass}</b></div>`; }
-  catch(e){ msg.innerHTML=`<div class="warn">⚠️ Firebase save failed: ${e.message} — Check Rules in Firebase Console.</div>`; return; }
-  users.push({...rec,id:rec.id||Date.now()});
-  document.getElementById('userName').value=''; document.getElementById('userEmail').value='';
-  document.getElementById('kpiUsers').textContent=users.length; document.getElementById('usersCount').textContent=users.length;
-  document.getElementById('usersTable').innerHTML=users.map(u=>`<tr><td>${u.name||''}</td><td>${u.email||''}</td><td>${u.role||''}</td><td>${u.grade?'Gr '+u.grade+' ':''}${u.className||'All Classes'}</td><td><button class="btn btn-grey" onclick="deleteUser('${u.id}')">🗑️</button></td></tr>`).join('');
-  setTimeout(()=>showTab('users'),800);
+    teachingGrades=[...document.querySelectorAll('input[name="teachGrade"]:checked')].map(c=>c.value);
+    teachingClasses=[...document.querySelectorAll('input[name="teachClass"]:checked')].map(c=>c.value);
+    if(teachingGrades.length===0){msg.innerHTML='<div class="warn">⚠️ Teacher needs at least 1 Grade — Tick Grade 10 / 11 / etc.</div>';return;}
+    if(teachingClasses.length===0){msg.innerHTML='<div class="warn">⚠️ Teacher needs at least 1 Class — Tick 10A / 10B / etc.</div>';return;}
+  } else {teachingClasses=['All Classes'];teachingGrades=['8','9','10','11','12'];}
+  let firstClass=teachingClasses[0],firstGrade=teachingGrades[0]||'';
+  let rec={name,email,role,subject,grade:firstGrade,className:firstClass,teachingGrades,teachingClasses,schoolId,prefix,schoolName,password:pass,createdAt:Date.now()};
+  try{let ref=rtdb.ref('users/'+schoolId).push();await ref.set(rec);rec.id=ref.key;msg.innerHTML=`<div class="ok">✅ User Added to Firebase: <b>${name}</b> — <b>${email}</b> — Role: <b>${role}</b><br>${role==='Teacher'?`Teaches: <b>${teachingClasses.join(' • ')}</b> — Subject: <b>${subject||'All Subjects'}</b>`:'All Classes — Whole School'}</div>`;}catch(e){msg.innerHTML=`<div class="warn">⚠️ Firebase save failed: ${e.message}</div>`;return;}
+  users.push({...rec,id:rec.id||Date.now()});document.getElementById('userName').value='';document.getElementById('userEmail').value='';document.getElementById('kpiUsers').textContent=users.length;document.getElementById('usersCount').textContent=users.length;renderUsers();setTimeout(()=>showTab('users'),800);
 }
-async function deleteUser(id){ if(!confirm('Delete this user?')) return; users=users.filter(u=>String(u.id)!==String(id)); try{ await rtdb.ref('users/'+schoolId+'/'+id).remove(); }catch(e){} loadData(); }
+async function deleteUser(id){if(!confirm('Delete this user?'))return;users=users.filter(u=>String(u.id)!==String(id));try{await rtdb.ref('users/'+schoolId+'/'+id).remove();}catch(e){}loadData();}
 function checkReports(){
-  let type=document.getElementById('reportType').value;
-  let grade=document.getElementById('reportGrade').value;
-  let cat=document.getElementById('reportCategory').value;
-  let btn=document.getElementById('exportBtn');
-  let info=document.getElementById('reportInfo');
-  if(type && grade && cat){
-    btn.disabled=false; btn.textContent='📤 Export Report — Ready →';
-    let filtered=books.filter(b=>{
-      if(type==='Issued' && b.status!=='Issued') return false;
-      if(type==='Free' && b.status==='Issued') return false;
-      if(type==='Lost' && b.status!=='Lost') return false;
-      if(String(b.grade)!==String(grade)) return false;
-      if(cat!=='All' && b.category!==cat) return false;
-      return true;
-    });
-    info.style.display='block'; info.innerHTML=`✅ Report Ready: <b>${type}</b> — Grade <b>${grade}</b> — Category <b>${cat}</b> — Found <b>${filtered.length}</b> textbooks.`;
-    document.getElementById('reportTable').innerHTML=filtered.length?filtered.map(b=>`<tr><td><b>${b.number}</b></td><td>${b.title}</td><td>${b.category}</td><td>Gr ${b.grade}</td><td>${b.status||'Free'}</td><td>${b.learnerName||'—'}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No textbooks for this report.</td></tr>`;
-  } else {
-    btn.disabled=true; btn.textContent='📤 Export Report — Pick All Dropdowns First';
-    info.style.display='block'; info.innerHTML=`⚠️ Pick all 3 dropdowns: Report Type <b>${type||'— Not Picked'}</b> • Grade <b>${grade||'— Not Picked'}</b> • Category <b>${cat||'— Not Picked'}</b>`;
-    document.getElementById('reportTable').innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px">Pick all dropdowns to see report.</td></tr>';
-  }
+  let type=document.getElementById('reportType').value,grade=document.getElementById('reportGrade').value,cat=document.getElementById('reportCategory').value,btn=document.getElementById('exportBtn'),info=document.getElementById('reportInfo');
+  if(type&&grade&&cat){btn.disabled=false;btn.textContent='📤 Export Report — Ready →';let f=books.filter(b=>{if(type==='Issued'&&b.status!=='Issued')return false;if(type==='Free'&&b.status==='Issued')return false;if(type==='Lost'&&b.status!=='Lost')return false;if(String(b.grade)!==String(grade))return false;if(cat!=='All'&&b.category!==cat)return false;return true;});info.style.display='block';info.innerHTML=`✅ Report Ready: <b>${type}</b> — Grade <b>${grade}</b> — Category <b>${cat}</b> — Found <b>${f.length}</b> textbooks.`;document.getElementById('reportTable').innerHTML=f.length?f.map(b=>`<tr><td><b>${b.number}</b></td><td>${b.title}</td><td>${b.category}</td><td>Gr ${b.grade}</td><td>${b.status||'Free'}</td><td>${b.learnerName||'—'}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No textbooks for this report.</td></tr>`;}
+  else{btn.disabled=true;btn.textContent='📤 Export Report — Pick All Dropdowns First';info.style.display='block';info.innerHTML=`⚠️ Pick all 3: Report Type <b>${type||'—'}</b> • Grade <b>${grade||'—'}</b> • Category <b>${cat||'—'}</b>`;document.getElementById('reportTable').innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px">Pick all dropdowns to see report.</td></tr>';}
 }
 function exportReport(){
-  let type=document.getElementById('reportType').value;
-  let grade=document.getElementById('reportGrade').value;
-  let cat=document.getElementById('reportCategory').value;
-  if(!type||!grade||!cat){ alert('Pick all dropdowns first'); return; }
-  let filtered=books.filter(b=>{
-    if(type==='Issued' && b.status!=='Issued') return false;
-    if(type==='Free' && b.status==='Issued') return false;
-    if(String(b.grade)!==String(grade)) return false;
-    if(cat!=='All' && b.category!==cat) return false;
-    return true;
-  });
-  let csv='Number,Title,Category,Grade,Status,Learner\n'+filtered.map(b=>`"${b.number}","${b.title}","${b.category}","${b.grade}","${b.status}","${b.learnerName||''}"`).join('\n');
-  let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=`WHS_Report_${type}_Grade${grade}_${cat}.csv`; a.click();
+  let type=document.getElementById('reportType').value,grade=document.getElementById('reportGrade').value,cat=document.getElementById('reportCategory').value;
+  if(!type||!grade||!cat){alert('Pick all dropdowns first');return;}
+  let f=books.filter(b=>{if(type==='Issued'&&b.status!=='Issued')return false;if(type==='Free'&&b.status==='Issued')return false;if(String(b.grade)!==String(grade))return false;if(cat!=='All'&&b.category!==cat)return false;return true;});
+  let csv='Number,Title,Category,Grade,Status,Learner\n'+f.map(b=>`"${b.number}","${b.title}","${b.category}","${b.grade}","${b.status}","${b.learnerName||''}"`).join('\n');
+  let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`WHS_Report_${type}_Grade${grade}_${cat}.csv`;a.click();
 }
 loadData();
 </script></body></html>
