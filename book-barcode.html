@@ -38,58 +38,59 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <body>
 <header>
 <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
-<h1>📚 Books</h1>
-<p>Makhanani LTSM • Xintimani Group<br>Add Books • Search • Print Barcode • Issue / Return</p>
-<div class="topnav"><a href="index.html">🏠 Login</a><a href="home.html">🏠 Home</a><a href="learners.html">👩‍🎓 Learners</a><a href="books.html">📚 Books</a><a href="barcode.html">🏷️ Barcodes — Learner + Book</a><a href="learner_barcode.html">🏷️ Learner Barcode</a><a href="book_barcode.html">📚 Book Barcode</a></div>
+<h1>📚 Textbooks</h1>
+<p>Makhanani LTSM • Xintimani Group<br>Textbook Number: School Initials + 6 Digits • e.g. MPS000001 • Auto Numbering</p>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="home.html">🏠 Home</a><a href="learners.html">👩‍🎓 Learners</a><a href="books.html">📚 Books</a><a href="barcode.html">🏷️ Barcodes — A4 3x5</a></div>
 </header>
 <main>
 <div class="card">
 <div id="authMsg"></div>
 <div style="display:flex;gap:8px;flex-wrap:wrap">
-<button class="btn btn-blue" onclick="loadBooks()">🔄 Refresh Books</button>
-<button class="btn btn-gold" onclick="location.href='barcode.html'">🏷️ PRINT BARCODES — Learner + Book →</button>
-<button class="btn btn-blue" onclick="location.href='book_barcode.html'">📚 Book Barcode →</button>
+<button class="btn btn-blue" onclick="loadBooks()">🔄 Refresh Textbooks</button>
+<button class="btn btn-gold" onclick="location.href='barcode.html'">🏷️ PRINT BARCODES — A4 3x5 →</button>
 <button class="btn btn-grey" onclick="logout()">🚪 Logout</button>
 </div>
 <div id="kpiBox"></div>
+<div id="formatBox" class="goldBox"></div>
 </div>
 <div class="card">
 <div class="tabs">
-<button id="tabBtn-list" class="active" onclick="showTab('list')">📋 All Books</button>
-<button id="tabBtn-add" onclick="showTab('add')">➕ Add Book</button>
+<button id="tabBtn-list" class="active" onclick="showTab('list')">📋 All Textbooks</button>
+<button id="tabBtn-add" onclick="showTab('add')">➕ Add Textbook</button>
 <button id="tabBtn-bulk" onclick="showTab('bulk')">📋 Paste / Bulk Add</button>
 </div>
 <div id="tab-list">
-<label>🔍 Search Book — Title / Code / Category</label>
-<input id="searchBox" placeholder="e.g. Maths, BK001" oninput="renderBooks()">
+<label>🔍 Search Textbook — Title / Textbook Number / Category</label>
+<input id="searchBox" placeholder="e.g. Maths, MPS000001" oninput="renderBooks()">
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-<button class="btn btn-gold" onclick="location.href='barcode.html'" style="flex:1">🏷️ PRINT BARCODES — Learner + Book →</button>
-<button class="btn btn-blue" onclick="location.href='book_barcode.html'" style="flex:1">📚 Book Barcode →</button>
+<button class="btn btn-gold" onclick="location.href='barcode.html'" style="flex:1">🏷️ PRINT BARCODES — A4 3x5 →</button>
 </div>
-<div class="info" style="margin-top:8px"><b>New book?</b> 1) Add book here → 2) Click <b>📚 Print Barcode</b> on that book → 3) Opens barcode page already filled → 4) Print → Stick inside front cover + Cover with clear tape.</div>
-<label>Filter Category — Dropdown</label>
-<select id="filterCat" onchange="renderBooks()"><option value="">All Categories</option></select>
-<label>Filter Status — Dropdown</label>
-<select id="filterStatus" onchange="renderBooks()"><option value="">All Status</option><option value="AVAILABLE">✅ AVAILABLE</option><option value="ISSUED">📕 ISSUED</option><option value="LOST">❌ LOST</option></select>
+<div class="info" style="margin-top:8px"><b>New textbook?</b> 1) Add textbook here → 2) Click <b>📚 Print Barcode</b> → Opens barcode page already filled → 3) Print → Stick inside front cover + Cover with clear tape.</div>
+<div class="grid2">
+<div><label>Filter Category — Dropdown</label><select id="filterCat" onchange="renderBooks()"><option value="">All Categories</option></select></div>
+<div><label>Filter Status — Dropdown</label><select id="filterStatus" onchange="renderBooks()"><option value="">All Status</option><option value="AVAILABLE">✅ AVAILABLE</option><option value="ISSUED">📕 ISSUED</option><option value="LOST">❌ LOST</option></select></div>
+</div>
 <div id="bookList"></div>
 </div>
 <div id="tab-add" style="display:none">
-<h3>➕ Add 1 Book — 1 Copy = 1 Code</h3>
+<h3>➕ Add 1 Textbook — 1 Copy = 1 Textbook Number</h3>
+<div class="goldBox"><b>Textbook Number Format: First Letter Of Each Word In School Name + 6 Digits</b><br>School <b>Makhanani Primary School</b> = <b>M</b>+<b>P</b>+<b>S</b> = <b>MPS</b> + <b>000001</b> = <b>MPS000001</b><br>Click <b>Auto Next Textbook Number</b> → It finds last textbook +1.</div>
 <div class="grid2">
-<div><label>Book Title *</label><input id="addTitle" placeholder="e.g. Maths Grade 10"></div>
+<div><label>Textbook Title *</label><input id="addTitle" placeholder="e.g. Maths Grade 10"></div>
 <div><label>Category *</label><input id="addCat" placeholder="e.g. Maths"></div>
-<div><label>Book Code * — e.g. BK001</label><input id="addCode" placeholder="e.g. BK001"></div>
-<div><label>Author — Optional</label><input id="addAuthor" placeholder="e.g. Author name"></div>
 </div>
-<button class="btn btn-green btn-full" onclick="addBook()">➕ ADD BOOK →</button>
+<label>Textbook Number * — Auto: School Initials + 6 Digits</label><input id="addCode" placeholder="e.g. MPS000001">
+<button class="btn btn-blue" onclick="autoNextBookCode()">🔢 Auto Next Textbook Number →</button>
+<div id="previewBook" class="ok">Preview: MPS000001</div>
+<label>Author — Optional</label><input id="addAuthor" placeholder="e.g. Author name">
+<button class="btn btn-green btn-full" onclick="addBook()">➕ ADD TEXTBOOK →</button>
 <div id="addMsg"></div>
-<div class="goldBox"><b>Next code?</b> If last book is BK015, new book is BK016.<br><button class="btn btn-blue" onclick="autoNextBookCode()">🔢 Auto Next Book Code</button></div>
 </div>
 <div id="tab-bulk" style="display:none">
-<h3>📋 Bulk Add — Paste Books</h3>
-<div class="goldBox"><b>Format — 1 book per line:</b><br><code>TITLE,CATEGORY,CODE</code><br>Example:<br>Maths Grade 10,Maths,BK001<br>English Grade 10,English,BK002</div>
-<label>Paste Books Here</label>
-<textarea id="bulkText" rows="8" style="width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px" placeholder="Maths Grade 10,Maths,BK001&#10;English Grade 10,English,BK002"></textarea>
+<h3>📋 Bulk Add — Paste Textbooks</h3>
+<div class="goldBox"><b>Format — 1 textbook per line:</b><br><code>TITLE,CATEGORY</code> — Textbook Number Auto<br>Example:<br>Maths Grade 10,Maths<br>English Grade 10,English<br><b>OR with Number:</b> <code>TITLE,CATEGORY,TEXTBOOK_NUMBER</code><br>Maths Grade 10,Maths,MPS000001</div>
+<label>Paste Textbooks Here</label>
+<textarea id="bulkText" rows="8" style="width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px" placeholder="Maths Grade 10,Maths&#10;English Grade 10,English"></textarea>
 <button class="btn btn-green btn-full" onclick="bulkAdd()">📋 ADD ALL PASTED →</button>
 <div id="bulkMsg"></div>
 </div>
@@ -97,32 +98,56 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 <div class="card">
 <h2>⚡ Quick Rules</h2>
 <ul>
-<li><b>1 copy = 1 code.</b> 5 copies of same title = 5 different codes — BK001 to BK005.</li>
-<li><b>Lost label?</b> Click 📚 Print Barcode on same book → Same code → Print again. Do NOT make new code.</li>
+<li><b>Textbook Number = School Initials + 6 Digits.</b> Example: Makhanani Primary School = <b>MPS000001</b>.</li>
+<li><b>1 copy = 1 number.</b> 5 copies of same title = 5 different numbers — MPS000001 to MPS000005.</li>
+<li><b>Lost label?</b> Click 📚 Print Barcode on same textbook → Same number → Print again. Do NOT make new number.</li>
 <li><b>Stick inside front cover</b> + Cover with clear tape.</li>
 </ul>
 </div>
 </main>
 <script>
-let ALL_BOOKS=[];let SCHOOL_ID='',SCHOOL_NAME='';
+let ALL_BOOKS=[];let SCHOOL_ID='',SCHOOL_NAME='',PREFIX='MPS';
 function esc(s){return String(s||'').replace(/</g,'&lt;');}
 function showTab(n){['list','add','bulk'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===n?'block':'none';document.getElementById('tabBtn-'+t).classList.toggle('active',t===n);});}
 function logout(){localStorage.removeItem('makhanani_user');location.href='index.html';}
+// FORMAT: First letter of each word + 6 digits
+function schoolInitials(name){
+  const words=String(name||'').trim().split(/\s+/).filter(w=>/[A-Za-z]/.test(w));
+  if(words.length===0) return 'MPS';
+  return words.map(w=>w.replace(/[^A-Za-z]/g,'').charAt(0).toUpperCase()).join('')||'MPS';
+}
+function textbookNumber(num){return PREFIX+String(num).padStart(6,'0');}
+function maxBookNumber(){
+  let max=0;
+  ALL_BOOKS.forEach(b=>{const m=String(b.code||'').match(/(\d+)$/);if(m)max=Math.max(max,parseInt(m[1]));});
+  return max;
+}
+function autoNextBookCode(){
+  const next=maxBookNumber()+1;
+  document.getElementById('addCode').value=textbookNumber(next);
+  document.getElementById('addMsg').innerHTML=`<div class="ok">✅ Auto: Last textbook is <b>${esc(textbookNumber(maxBookNumber()))}</b> → Next is <b>${esc(textbookNumber(next))}</b></div>`;
+  document.getElementById('previewBook').innerHTML='Preview: <b>'+esc(textbookNumber(next))+'</b> — Next Textbook Number';
+}
 async function loadBooks(){
   let u=null;try{u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
   if(!u){document.getElementById('authMsg').innerHTML='<div class="warn">⚠️ Login first. <button class="btn btn-blue" onclick="location.href=\'index.html\'">Go To Login →</button><br>Demo: teacher@thuto.co.za / 1234</div>';return;}
-  SCHOOL_ID=u.schoolId||'';SCHOOL_NAME=u.schoolName||'';
+  SCHOOL_ID=u.schoolId||'';SCHOOL_NAME=u.schoolName||'Makhanani Primary School';
+  PREFIX=schoolInitials(SCHOOL_NAME);
   document.getElementById('authMsg').innerHTML=`<div class="ok">✅ Logged in as <b>${esc(u.name)}</b> — ${esc(u.role)} — ${esc(SCHOOL_NAME)}</div>`;
+  document.getElementById('formatBox').innerHTML=`<b>Your School:</b> ${esc(SCHOOL_NAME.toUpperCase())} → Initials: <b>${esc(PREFIX)}</b><br><b>📚 Textbook Number:</b> ${esc(PREFIX)} + 6 digits = <b>${esc(textbookNumber(1))}</b> &nbsp;|&nbsp; Next: <b>${esc(textbookNumber(maxBookNumber()+1))}</b> &nbsp;|&nbsp; <b>Auto Numbering ON</b>`;
+  document.getElementById('previewBook').innerHTML='Preview: <b>'+esc(textbookNumber(1))+'</b> — '+esc(PREFIX)+' + 000001 &nbsp;|&nbsp; Next: <b>'+esc(textbookNumber(maxBookNumber()+1))+'</b>';
   ALL_BOOKS=[];
-  try{const s=await db.collection('schools').doc(SCHOOL_ID).collection('books').get();s.forEach(d=>{const b=d.data();ALL_BOOKS.push({id:d.id,title:b.title||b.bookTitle||'',code:b.barcode||b.code||b.bookCode||d.id,category:b.category||b.subject||'',author:b.author||'',status:b.status||'AVAILABLE',issuedTo:b.issuedTo||''});});}catch(e){}
-  try{const rs=await rtdb.ref('schools/'+SCHOOL_ID+'/books').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,b])=>{if(!ALL_BOOKS.find(x=>x.id===id))ALL_BOOKS.push({id,title:b.title||'',code:b.barcode||b.code||id,category:b.category||b.subject||'',author:b.author||'',status:b.status||'AVAILABLE',issuedTo:b.issuedTo||''});});}catch(e){}
+  try{const s=await db.collection('schools').doc(SCHOOL_ID).collection('books').get();s.forEach(d=>{const b=d.data();ALL_BOOKS.push({id:d.id,title:b.title||b.bookTitle||'',code:b.barcode||b.code||b.bookCode||b.textbookNumber||d.id,category:b.category||b.subject||'',author:b.author||'',status:b.status||'AVAILABLE',issuedTo:b.issuedTo||''});});}catch(e){}
+  try{const rs=await rtdb.ref('schools/'+SCHOOL_ID+'/books').once('value');const rv=rs.val()||{};Object.entries(rv).forEach(([id,b])=>{if(!ALL_BOOKS.find(x=>x.id===id))ALL_BOOKS.push({id,title:b.title||'',code:b.barcode||b.code||b.textbookNumber||id,category:b.category||b.subject||'',author:b.author||'',status:b.status||'AVAILABLE',issuedTo:b.issuedTo||''});});}catch(e){}
   if(ALL_BOOKS.length===0){try{const s=JSON.parse(localStorage.getItem('makhanani_books')||'[]');ALL_BOOKS=s;}catch(e){}}
   ALL_BOOKS.sort((a,b)=>String(a.code||'').localeCompare(String(b.code||'')));
   const cats=[...new Set(ALL_BOOKS.map(b=>b.category).filter(Boolean))].sort();
   document.getElementById('filterCat').innerHTML='<option value="">All Categories</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join('');
   const avail=ALL_BOOKS.filter(b=>(b.status||'AVAILABLE')==='AVAILABLE').length;
   const issued=ALL_BOOKS.filter(b=>(b.status||'')==='ISSUED').length;
-  document.getElementById('kpiBox').innerHTML=`<div class="goldBox">📚 <b>${ALL_BOOKS.length} books</b> • ✅ Available ${avail} • 📕 Issued ${issued} • Categories: ${cats.join(', ')||'—'}</div>`;
+  document.getElementById('kpiBox').innerHTML=`<div class="goldBox">📚 <b>${ALL_BOOKS.length} textbooks</b> • ✅ Available ${avail} • 📕 Issued ${issued} • Categories: ${cats.join(', ')||'—'}</div>`;
+  document.getElementById('formatBox').innerHTML=`<b>Your School:</b> ${esc(SCHOOL_NAME.toUpperCase())} → Initials: <b>${esc(PREFIX)}</b><br><b>📚 Textbook Number:</b> ${esc(PREFIX)} + 6 digits = <b>${esc(textbookNumber(1))}</b> &nbsp;|&nbsp; Next: <b>${esc(textbookNumber(maxBookNumber()+1))}</b> &nbsp;|&nbsp; <b>Auto Numbering ON</b>`;
+  document.getElementById('previewBook').innerHTML='Preview: <b>'+esc(textbookNumber(1))+'</b> — '+esc(PREFIX)+' + 000001 &nbsp;|&nbsp; Next: <b>'+esc(textbookNumber(maxBookNumber()+1))+'</b>';
   renderBooks();
 }
 function renderBooks(){
@@ -130,8 +155,8 @@ function renderBooks(){
   const fc=document.getElementById('filterCat').value||'';
   const fs=document.getElementById('filterStatus').value||'';
   let list=ALL_BOOKS.filter(b=>{if(q&&!((b.title||'').toLowerCase().includes(q)||(b.code||'').toLowerCase().includes(q)||(b.category||'').toLowerCase().includes(q)))return false;if(fc&&(b.category||'')!==fc)return false;if(fs&&(b.status||'AVAILABLE')!==fs)return false;return true;});
-  if(list.length===0){document.getElementById('bookList').innerHTML='<div class="info">No books found. Add book in Tab Add Book, or Paste in Tab Bulk Add.</div>';return;}
-  let html=`<div class="info">Showing <b>${list.length}</b> of ${ALL_BOOKS.length} books</div><table><tr><th>Code</th><th>Title</th><th>Category</th><th>Status</th><th>Actions</th></tr>`;
+  if(list.length===0){document.getElementById('bookList').innerHTML='<div class="info">No textbooks found. Add textbook in Tab Add Textbook, or Paste in Tab Bulk Add.</div>';return;}
+  let html=`<div class="info">Showing <b>${list.length}</b> of ${ALL_BOOKS.length} textbooks</div><table><tr><th>Textbook No.</th><th>Title</th><th>Category</th><th>Status</th><th>Actions</th></tr>`;
   list.forEach(b=>{
     const st=(b.status||'AVAILABLE');const badge=st==='ISSUED'?'<span class="badge badge-orange">📕 ISSUED</span>':st==='LOST'?'<span class="badge badge-grey">❌ LOST</span>':'<span class="badge badge-green">✅ AVAILABLE</span>';
     html+=`<tr><td><b>${esc(b.code)}</b></td><td>${esc(b.title)}<br><span class="small">${esc(b.author||'')}</span></td><td>${esc(b.category)}</td><td>${badge}<br><span class="small">${b.issuedTo?esc(b.issuedTo):''}</span></td><td><button class="btn btn-green btn-small" onclick="printBookBarcode('${esc(b.code)}','${esc(b.title)}','${esc(b.category)}')">📚 Print Barcode</button><button class="btn btn-blue btn-small" onclick="editBook('${esc(b.id)}')">✏️ Edit</button><button class="btn btn-red btn-small" onclick="deleteBook('${esc(b.id)}','${esc(b.title)}')">🗑️ Delete</button></td></tr>`;
@@ -139,39 +164,40 @@ function renderBooks(){
   html+='</table>';document.getElementById('bookList').innerHTML=html;
 }
 function printBookBarcode(code,title,cat){localStorage.setItem('makhanani_print_book',JSON.stringify({code,title,cat}));location.href='barcode.html';}
-function autoNextBookCode(){
-  let max=0;ALL_BOOKS.forEach(b=>{const m=String(b.code||'').match(/(\d+)$/);if(m)max=Math.max(max,parseInt(m[1]));});
-  document.getElementById('addCode').value='BK'+String(max+1).padStart(3,'0');
-}
 async function addBook(){
-  const title=document.getElementById('addTitle').value.trim();const cat=document.getElementById('addCat').value.trim();const code=document.getElementById('addCode').value.trim().toUpperCase();const author=document.getElementById('addAuthor').value.trim();const msg=document.getElementById('addMsg');
-  if(!title||!cat||!code){msg.innerHTML='<div class="warn">⚠️ Fill Title + Category + Code.</div>';return;}
-  if(ALL_BOOKS.find(b=>String(b.code).toUpperCase()===code)){msg.innerHTML='<div class="warn">⚠️ Code '+esc(code)+' already used. Use Auto Next Code.</div>';return;}
-  const id=code.toLowerCase().replace(/[^a-z0-9]+/g,'_');const data={title,bookTitle:title,category:cat,subject:cat,code,barcode:code,bookCode:code,author,status:'AVAILABLE',schoolId:SCHOOL_ID,schoolName:SCHOOL_NAME,createdAt:new Date().toISOString()};
+  const title=document.getElementById('addTitle').value.trim();const cat=document.getElementById('addCat').value.trim();let code=document.getElementById('addCode').value.trim().toUpperCase();const author=document.getElementById('addAuthor').value.trim();const msg=document.getElementById('addMsg');
+  if(!title||!cat){msg.innerHTML='<div class="warn">⚠️ Fill Title + Category.</div>';return;}
+  if(!code) code=textbookNumber(maxBookNumber()+1);
+  // Validate: PREFIX + 6 digits
+  const re=new RegExp('^'+PREFIX+'\\d{6}$');
+  if(!re.test(code)){msg.innerHTML='<div class="warn">⚠️ Textbook Number must be <b>'+esc(PREFIX)+' + 6 digits</b>, e.g. <b>'+esc(textbookNumber(1))+'</b>. You typed: '+esc(code)+'<br>Click Auto Next Textbook Number.</div>';return;}
+  if(ALL_BOOKS.find(b=>String(b.code).toUpperCase()===code)){msg.innerHTML='<div class="warn">⚠️ Textbook Number '+esc(code)+' already used. Click Auto Next.</div>';return;}
+  const id=code.toLowerCase().replace(/[^a-z0-9]+/g,'_');const data={title,bookTitle:title,category:cat,subject:cat,code,barcode:code,bookCode:code,textbookNumber:code,author,status:'AVAILABLE',schoolId:SCHOOL_ID,schoolName:SCHOOL_NAME,createdAt:new Date().toISOString()};
   try{await db.collection('schools').doc(SCHOOL_ID).collection('books').doc(id).set(data);try{await rtdb.ref('schools/'+SCHOOL_ID+'/books/'+id).set(data);}catch(e){}}catch(e){let s=JSON.parse(localStorage.getItem('makhanani_books')||'[]');s.push({id,...data});localStorage.setItem('makhanani_books',JSON.stringify(s));}
-  msg.innerHTML=`<div class="ok">✅ Added <b>${esc(title)}</b> — ${esc(code)} — ${esc(cat)}<br><button class="btn btn-green" onclick="printBookBarcode('${esc(code)}','${esc(title)}','${esc(cat)}')">📚 Print Barcode For This Book →</button></div>`;
+  msg.innerHTML=`<div class="ok">✅ Added <b>${esc(title)}</b> — Textbook No. <b>${esc(code)}</b> — ${esc(cat)}<br><button class="btn btn-green" onclick="printBookBarcode('${esc(code)}','${esc(title)}','${esc(cat)}')">📚 Print Barcode For This Textbook →</button></div>`;
   ['addTitle','addCat','addCode','addAuthor'].forEach(i=>document.getElementById(i).value='');loadBooks();
 }
 async function bulkAdd(){
   const txt=document.getElementById('bulkText').value.trim();const msg=document.getElementById('bulkMsg');
-  if(!txt){msg.innerHTML='<div class="warn">⚠️ Paste books first.</div>';return;}
+  if(!txt){msg.innerHTML='<div class="warn">⚠️ Paste textbooks first.</div>';return;}
   const lines=txt.split('\n').map(s=>s.trim()).filter(Boolean);let added=0,skipped=0;
+  let next=maxBookNumber()+1;
   for(const line of lines){
-    const parts=line.split(',').map(s=>s.trim());if(parts.length<3){skipped++;continue;}
-    const [title,cat,codeRaw]=parts;const code=codeRaw.toUpperCase();
+    const parts=line.split(',').map(s=>s.trim());if(parts.length<2){skipped++;continue;}
+    const title=parts[0];const cat=parts[1];let code=parts[2]?parts[2].toUpperCase():textbookNumber(next++);
     if(ALL_BOOKS.find(b=>String(b.code).toUpperCase()===code)){skipped++;continue;}
-    const id=code.toLowerCase().replace(/[^a-z0-9]+/g,'_');const data={title,bookTitle:title,category:cat,subject:cat,code,barcode:code,bookCode:code,status:'AVAILABLE',schoolId:SCHOOL_ID,schoolName:SCHOOL_NAME,createdAt:new Date().toISOString()};
+    const id=code.toLowerCase().replace(/[^a-z0-9]+/g,'_');const data={title,bookTitle:title,category:cat,subject:cat,code,barcode:code,bookCode:code,textbookNumber:code,status:'AVAILABLE',schoolId:SCHOOL_ID,schoolName:SCHOOL_NAME,createdAt:new Date().toISOString()};
     try{await db.collection('schools').doc(SCHOOL_ID).collection('books').doc(id).set(data);try{await rtdb.ref('schools/'+SCHOOL_ID+'/books/'+id).set(data);}catch(e){}}catch(e){let s=JSON.parse(localStorage.getItem('makhanani_books')||'[]');s.push({id,...data});localStorage.setItem('makhanani_books',JSON.stringify(s));}
-    added++;
+    ALL_BOOKS.push({id,...data}); added++;
   }
   msg.innerHTML=`<div class="ok">✅ Bulk done: Added <b>${added}</b>, Skipped <b>${skipped}</b><br><button class="btn btn-gold" onclick="location.href='barcode.html'">🏷️ Print All Barcodes →</button></div>`;loadBooks();
 }
 function editBook(id){
   const b=ALL_BOOKS.find(x=>x.id===id);if(!b)return;
-  const title=prompt('Book Title:',b.title);if(title===null)return;
+  const title=prompt('Textbook Title:',b.title);if(title===null)return;
   const cat=prompt('Category:',b.category);if(cat===null)return;
-  const code=prompt('Code:',b.code);if(code===null)return;
-  (async()=>{const data={title:title.trim(),bookTitle:title.trim(),category:cat.trim(),subject:cat.trim(),code:code.trim().toUpperCase(),barcode:code.trim().toUpperCase(),bookCode:code.trim().toUpperCase()};try{await db.collection('schools').doc(SCHOOL_ID).collection('books').doc(id).set(data,{merge:true});try{await rtdb.ref('schools/'+SCHOOL_ID+'/books/'+id).update(data);}catch(e){}}catch(e){}loadBooks();})();
+  const code=prompt('Textbook Number ('+PREFIX+' + 6 digits):',b.code);if(code===null)return;
+  (async()=>{const data={title:title.trim(),bookTitle:title.trim(),category:cat.trim(),subject:cat.trim(),code:code.trim().toUpperCase(),barcode:code.trim().toUpperCase(),bookCode:code.trim().toUpperCase(),textbookNumber:code.trim().toUpperCase()};try{await db.collection('schools').doc(SCHOOL_ID).collection('books').doc(id).set(data,{merge:true});try{await rtdb.ref('schools/'+SCHOOL_ID+'/books/'+id).update(data);}catch(e){}}catch(e){}loadBooks();})();
 }
 async function deleteBook(id,title){
   if(!confirm('🗑️ Delete '+title+'?'))return;
