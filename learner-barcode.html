@@ -1,288 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Learners v2.3 — Camera Fixed — No unpkg</title>
-<meta name="theme-color" content="#0a1f4d">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makhanani LTSM — Learner Barcode</title><meta name="theme-color" content="#0a1f4d">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const rtdb = firebase.database();
+</script>
 <style>
-*{box-sizing:border-box}
-body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
-header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}
-header h1{margin:0;font-size:22px}
-header p{margin:6px 0 0;opacity:.9;font-size:13px}
-.logoRow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
-.logoRow img{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:2px solid #d4af37}
-main{max-width:900px;margin:auto;padding:14px}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}
-label{font-weight:700;font-size:13px;display:block;margin:12px 0 4px}
-input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:15px;background:#fff}
-.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:12px}
-.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-grey{background:#e2e8f0}.btn-red{background:#dc2626;color:#fff}.btn-orange{background:#ea580c;color:#fff}
-.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
-.pill-green{background:#dcfce7;color:#166534}.pill-red{background:#fee2e2;color:#991b1b}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}
-.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
+header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;line-height:1.6;font-size:13px}
+header img{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;display:block;margin:0 auto 10px}
+main{max-width:1100px;margin:auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}h3{color:#0a1f4d;margin:14px 0 6px;font-size:15px}
+p,li{font-size:14px;line-height:1.6}ul,ol{padding-left:20px}li{margin-bottom:6px}
+.btn{padding:11px 14px;border:none;border-radius:8px;font-weight:900;font-size:13px;cursor:pointer;margin-top:8px}
+.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}
+.btn-full{width:100%}.btn-small{padding:6px 9px;font-size:11px;margin:2px}
+input,select{width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px}label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:10px}
+.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
+.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
+.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;line-height:1.6;margin-top:10px}
+.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:10px;line-height:1.6;margin-top:10px}
+.topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{padding:10px 14px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
 .small{font-size:12px;color:#64748b}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
-.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}
-.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}
-.topnav a.safe{background:#dcfce7;color:#166534;border:1.5px solid #059669}
-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
-th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
-th{background:#0a1f4d;color:#fff}
-.miniBtn{padding:6px 10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;margin:2px}
-.modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;overflow:auto;padding:14px}
-.modalBox{background:#fff;border-radius:12px;max-width:900px;margin:20px auto;padding:16px}
-#cameraReader{width:100%;max-width:500px;margin:10px auto;border:3px solid #0a1f4d;border-radius:12px;overflow:hidden;background:#000;min-height:260px}
-#cameraReader video{width:100%!important}
-.cameraFrame{border:3px solid #059669;border-radius:12px;padding:10px;text-align:center;background:#f0fdf4}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}
+.badge-green{background:#dcfce7;color:#166534}.badge-blue{background:#dbeafe;color:#1e40af}.badge-grey{background:#e2e8f0;color:#334155}
+/* PRINT SHEET - A4, 3 x 5 = 15 per page */
+.sheet{width:210mm;min-height:297mm;margin:10px auto;background:#fff;padding:8mm 8mm;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:repeat(5,54mm);gap:3mm}
+.label{border:1.5px dashed #94a3b8;border-radius:6px;padding:3mm 2mm 2mm;text-align:center;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;page-break-inside:avoid}
+.label .emis{font-size:8.5pt;font-weight:900;color:#0a1f4d;line-height:1.2;white-space:nowrap}
+.label .title{font-size:7.5pt;font-weight:900;color:#dc2626;line-height:1.2;white-space:nowrap}
+.label .type{font-size:7.5pt;font-weight:900;color:#0a1f4d;line-height:1.2;letter-spacing:1px}
+.label svg{width:100%;height:26mm;max-height:26mm}
+.label .code{font-size:10pt;font-weight:900;color:#0a1f4d;line-height:1.2;margin-top:1mm}
+.label .name{font-size:7.5pt;color:#475569;line-height:1.2;white-space:nowrap;overflow:hidden;max-width:100%}
+.label .class{font-size:7.5pt;font-weight:900;color:#0a1f4d;line-height:1.2}
+.singlePreview{background:#fff;border:2px solid #0a1f4d;border-radius:12px;padding:16px;text-align:center;max-width:320px;margin:12px auto}
+.singlePreview svg{width:100%;height:60px}
+@media print{
+  body{background:#fff;margin:0} header, .no-print{display:none!important}
+  .sheet{margin:0;padding:5mm 5mm;width:210mm;min-height:297mm;grid-template-rows:repeat(5,56mm)}
+  @page{size:A4 portrait;margin:0}
+}
 </style>
 </head>
 <body>
-<div id="offlineBanner" data-offline-status style="background:#059669;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:13px">🟢 Online</div>
 <header>
-<div class="logoRow"><img src="logo.png" alt="Makhanani LTSM Logo"><h1>🎓📷 Makhanani LTSM — Learners v2.3</h1></div>
-<p>Xintimani Group (Pty) Ltd • <span id="whoLine">Not logged in</span><br>Camera Fixed — No unpkg — Built-in Scanner • Learner ID 9E003 / 10A001 • My School Only</p>
+<img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+<h1>🏷️ Learner Barcode</h1>
+<p>Makhanani LTSM • Xintimani Group<br>Generate Learner Barcodes • Print • Stick On Learner Card</p>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="home.html">🏠 Home</a><a href="learners.html">👩‍🎓 Learners</a><a href="books.html">📚 Books</a><a href="book_barcode.html">📚 Book Barcode</a></div>
 </header>
-<main>
-<div class="card">
-<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="issue.html">📚 Issue / Return</a><a href="textbook-barcode.html">📖 Textbooks</a><a href="librarian.html">📚 Librarian</a><a href="barcode-print.html">🖨️ Print Barcodes A4 3x5</a><a href="principal.html">👩🏾‍🏫 Principal</a><a href="profile.html">👤 Profile</a></div>
-<div class="info" id="loginInfo">Checking login...</div>
-<div id="blockedBox" class="warn" style="display:none">🔒 Not logged in. Go to <a href="index.html">Login</a> first.</div>
-<div id="subBlockedBox" class="warn" style="display:none"></div>
-</div>
+<main class="no-print">
 
-<div id="learnerBody" style="display:none">
 <div class="card">
-<h2>📷 Camera Verify — Scan Printed Learner Card — FIXED v2.3</h2>
-<div class="info"><b>Use after printing:</b> Print card in Barcode Print → Cut → Tap <b>📷 Scan Card To Verify</b> → Point at card → BEEP + Finds learner = Card works ✅<br>If NOT found, re-print that card — barcode too light / wrinkled.<br><b>v2.3 Fix:</b> Uses phone's built-in scanner — No unpkg error. Use <b>Chrome / Safari</b>, NOT WhatsApp browser.</div>
-<div class="grid2">
-<button class="btn btn-green" onclick="openCamera()">📷 Scan Card To Verify</button>
-<button class="btn btn-gold" onclick="testBeep()">🔊 Test Beep</button>
+<div id="authMsg"></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn btn-blue" onclick="loadLearners()">🔄 Load Learners</button>
+<button class="btn btn-green" onclick="window.print()">🖨️ Print Labels</button>
+<button class="btn btn-gold" onclick="location.href='home.html'">🏠 Back To Home →</button>
 </div>
-<label>📷 Or Type / USB Scan Learner ID To Verify</label>
-<input id="scanVerify" placeholder="Scan 9E003 here + Enter..." autocomplete="off">
-<div id="verifyMsg"></div>
+<div class="info"><b>How learner barcode works:</b> Each learner gets 1 unique code — e.g. <b>10A001</b> = Prefix 10A + Number 001. Teacher scans this barcode in Home → Search → Learner opens → Issue / Return book in 10 seconds. <b>No typing.</b></div>
 </div>
 
 <div class="card">
-<h2>➕ Add New Learner — Auto Learner ID</h2>
-<div class="goldBox" id="schoolInfo">Loading...</div>
-<div class="info"><b>Learner ID Format:</b> Grade + Class + Number — e.g. Grade 9 + Class E + 003 = <b>9E003</b> • Grade 10 + A + 001 = <b>10A001</b> • Grade 8 + B + 015 = <b>8B015</b><br>Pick Grade + Class, type Name, we auto-make the ID. No typing ID.</div>
-<label>Learner Full Name *</label>
-<input id="learnerName" placeholder="e.g. Thato Mashele" autocomplete="off">
-<div class="grid2">
-<label>Grade *</label>
-<label>Class *</label>
-</div>
-<div class="grid2">
-<select id="grade"><option value="">Select Grade</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
-<select id="classLetter"><option value="">Select Class</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option><option>H</option></select>
-</div>
-<label>🔢 Auto Learner ID — Preview</label>
-<input id="learnerIdPreview" placeholder="Pick Grade + Class + Name to preview ID" readonly style="background:#fef3c7;font-weight:900;font-size:18px;text-align:center">
-<div class="grid2">
-<button class="btn btn-green" onclick="addLearner()">➕ Add Learner</button>
-<button class="btn btn-gold" onclick="addLearnerAndVerify()">➕ Add + 📷 Verify Card</button>
-</div>
-<div id="addMsg"></div>
+<div class="tabs">
+<button id="tabBtn-class" class="active" onclick="showTab('class')">👩‍🎓 Whole Class</button>
+<button id="tabBtn-single" onclick="showTab('single')">➕ 1 Learner</button>
+<button id="tabBtn-list" onclick="showTab('list')">📋 All Learners</button>
+<button id="tabBtn-scan" onclick="showTab('scan')">📱 How To Scan</button>
 </div>
 
-<div class="card">
-<h2>🎓 Learners — <span id="learnerCount">0</span> — <span id="schoolNameTitle"></span></h2>
-<div class="grid2">
-<label>Search Learner</label>
-<label>Filter Grade</label>
+<div id="tab-class">
+<h3>👩‍🎓 Generate Whole Class — Print All At Once</h3>
+<label>Class — Dropdown (Pick One)</label>
+<select id="classFilter" onchange="renderClassPreview()"><option value="">-- Pick Class --</option></select>
+<label>Or Type Class Manually (If Not In List)</label>
+<input id="classManual" placeholder="e.g. Grade 10A, 10A, Grade 4B">
+<label>Start Number? (e.g. 1 = 10A001)</label>
+<input id="startNum" type="number" value="1">
+<label>How Many Labels? (15 = 1 page, 30 = 2 pages)</label>
+<input id="countNum" type="number" value="15">
+<button class="btn btn-green btn-full" onclick="generateClassLabels()">🏷️ GENERATE CLASS LABELS →</button>
+<div id="classMsg"></div>
+<div id="classPreview"></div>
 </div>
-<div class="grid2">
-<input id="searchBox" placeholder="Thato, 9E003..." oninput="renderList()">
-<select id="filterGrade" onchange="renderList()"><option value="ALL">All Grades</option><option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
+
+<div id="tab-single" style="display:none">
+<h3>➕ 1 Learner Barcode — For New Learner / Lost Card</h3>
+<label>Learner Name *</label><input id="singleName" placeholder="e.g. Thabo Chauke">
+<label>Class *</label><input id="singleClass" placeholder="e.g. 10A">
+<label>Learner Code * (e.g. 10A001)</label><input id="singleCode" placeholder="e.g. 10A001">
+<div class="goldBox"><b>Code rule:</b> Prefix (from your school) + 3-digit number. Example: School Prefix <b>10A</b> + <b>001</b> = <b>10A001</b>. Do NOT reuse a code — Each learner must have unique code.</div>
+<button class="btn btn-green btn-full" onclick="generateSingle()">🏷️ GENERATE 1 BARCODE →</button>
+<div id="singleMsg"></div>
+<div id="singlePreviewBox"></div>
+<button class="btn btn-blue btn-full" id="singlePrintBtn" style="display:none" onclick="printSingle()">🖨️ Print This 1 Label</button>
 </div>
-<div class="grid2">
-<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh</button>
-<button class="btn btn-gold" onclick="window.location.href='barcode-print.html'">🖨️ Print All Cards A4 3x5</button>
+
+<div id="tab-list" style="display:none">
+<h3>📋 All Learners — Search + Print 1 By 1</h3>
+<label>🔍 Search Learner Name / Code / Class</label><input id="searchBox" placeholder="e.g. Thabo, 10A001, 10A" oninput="renderLearnerList()">
+<label>Filter Class — Dropdown</label><select id="filterClassList" onchange="renderLearnerList()"><option value="">All Classes</option></select>
+<div id="learnerList"></div>
 </div>
-<div id="listBody"></div>
+
+<div id="tab-scan" style="display:none">
+<h3>📱 How To Scan Learner Barcode</h3>
+<ol>
+<li><b>Print labels</b> from this page — 15 per A4 page, cut along dashed lines.</li>
+<li><b>Stick 1 label</b> on learner card / learner file / exercise book.</li>
+<li><b>Teacher opens</b> `home.html` → Search box at top.</li>
+<li><b>Scan barcode</b> with phone camera / barcode scanner — Code `10A001` types itself into Search box.</li>
+<li><b>Learner opens</b> → Click <b>Issue Book</b> → Scan book barcode → Done in 10 seconds.</li>
+<li><b>Return:</b> Same — Scan learner → Click <b>Return</b> → Scan book.</li>
+</ol>
+<div class="goldBox"><b>No scanner?</b> Type code manually: In Home Search, type `10A001` → Press Enter → Learner opens. Scanner just types faster.</div>
+<h3>📱 Test Scan Without Printer</h3>
+<p>Open phone camera → Point at barcode below → It should show code `10A001`.</p>
+<div class="singlePreview"><div style="font-size:11px;font-weight:900">EMIS 700310854</div><div style="font-size:11px;font-weight:900;color:#dc2626">MAKHANANI LTSM • XINTIMANI GROUP</div><div style="font-size:11px;font-weight:900">LEARNER</div><svg id="testBc"></svg><div style="font-size:16px;font-weight:900">10A001</div><div style="font-size:12px;color:#64748b">Test Learner</div></div>
 </div>
 </div>
+
+<div class="card no-print">
+<h2>⚡ Quick Rules</h2>
+<ul>
+<li><b>1 learner = 1 code.</b> Never give 2 learners same code — System will mix up their books.</li>
+<li><b>Lost card?</b> Use Tab 1 Learner → Same name + Same code → Print again. Do NOT make new code.</li>
+<li><b>New learner?</b> Use next number — If last learner is 10A015, new learner is 10A016.</li>
+<li><b>Print test first:</b> Print 1 page on plain paper, scan 1 barcode with phone camera — Must show code. Then print on sticker paper.</li>
+</ul>
+</div>
+
 </main>
 
-<div class="modalOverlay" id="cameraModal">
-<div class="modalBox">
-<h2>📷 Scan Learner Card — Point At Barcode</h2>
-<div class="info">Hold phone <b>15-20cm</b> from card. Barcode inside box, flat, good light. BEEP = Verified ✅</div>
-<div class="cameraFrame"><div id="cameraReader"></div><div class="small" id="cameraStatus">Starting camera...</div><div id="cameraLastScan"></div></div>
-<div class="grid2"><button class="btn btn-green" onclick="closeCamera(true)">✅ Done — Close</button><button class="btn btn-grey" onclick="closeCamera(false)">❌ Cancel</button></div>
-<div class="small">Scanned: <span id="cameraScanCount">0</span></div>
-</div>
-</div>
+<!-- PRINT SHEET - Hidden in normal view? No, shown below main for printing -->
+<div id="sheet" class="sheet"></div>
 
-<script src="offline-queue.js"></script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
-let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){ console.error(e); }
-const $ = id => document.getElementById(id);
-function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
-let login=getLogin();
-let learners=[], schoolStatus='ACTIVE';
-let audioCtx=null;
-function beep(freq=880, dur=0.12, type='square', vol=0.25){ try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=vol; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur); }catch(e){} }
-function beepSuccess(){ beep(880,0.12,'square',0.25); setTimeout(()=>beep(1320,0.15,'square',0.25),80); }
-function beepError(){ beep(220,0.2,'square',0.25); setTimeout(()=>beep(180,0.25,'square',0.25),120); }
-window.testBeep=function(){ beepSuccess(); $('verifyMsg').innerHTML='<div class="ok">🔊 Beep played!</div>'; };
-async function auditLog(action, details){ try{ await addDoc(collection(db,'auditLog'),{ when:new Date().toISOString(), who:login?.name||'', role:(login?.role||'').toUpperCase(), school:login?.school||'', emis:String(login?.emis||''), action, details:String(details||'') }); }catch(e){} }
-async function loadSchoolMeta(){ try{ const snap=await getDocs(collection(db,'schools')); snap.forEach(ds=>{ if(String(ds.id)==='EMIS_'+login.emis){ const v=ds.data(); schoolStatus=(v.status||v.subscription||'ACTIVE').toUpperCase(); } }); }catch(e){} }
-// ===== CAMERA VERIFY v2.3 — FIX: No unpkg, Native + jsDelivr =====
-let html5Qr=null, cameraRunning=false, nativeStream=null, nativeRaf=null, nativeDetector=null, lastCameraCode='', lastCameraTime=0, cameraScanCount=0;
-window.openCamera=function(){
-  $('cameraModal').style.display='block';
-  $('cameraStatus').textContent='Starting camera... Allow Camera when asked...';
-  $('cameraLastScan').innerHTML='';
-  if('BarcodeDetector' in window){ startNativeCamera(); return; }
-  if(window.Html5Qrcode){ startHtml5Camera(); return; }
-  $('cameraStatus').textContent='Loading camera library from jsDelivr...';
-  const s=document.createElement('script');
-  s.src='https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode/html5-qrcode.min.js';
-  s.onload=()=>{ if(window.Html5Qrcode) startHtml5Camera(); else $('cameraStatus').textContent='❌ Camera library still failed — Use Type / USB below.'; };
-  s.onerror=()=>{ $('cameraStatus').textContent='❌ No internet for camera library — Use Type / USB below.'; $('cameraLastScan').innerHTML='<div class="warn">No internet. Fix: Turn WiFi ON, Open in Chrome (not WhatsApp), Refresh. Or type 9E003 + Enter — That still works.</div>'; };
-  document.head.appendChild(s);
-};
-async function startNativeCamera(){
-  try{
-    $('cameraStatus').textContent='✅ Using phone built-in scanner — Point at card...';
-    let reader=$('cameraReader');
-    reader.innerHTML='<video id="nativeVideo" autoplay playsinline muted style="width:100%;height:auto;background:#000;border-radius:8px"></video><div style="border:2px dashed #059669;margin:8px;padding:6px;text-align:center;color:#059669;font-weight:900">⬜ Put Barcode Inside Here ⬜</div>';
-    const video=document.getElementById('nativeVideo');
-    nativeStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
-    video.srcObject=nativeStream; await video.play(); cameraRunning=true;
-    nativeDetector=new BarcodeDetector({formats:['code_128','code_39','ean_13','ean_8','upc_a','upc_e','qr_code']});
-    const loop=async()=>{ if(!cameraRunning) return; try{ const codes=await nativeDetector.detect(video); if(codes && codes.length) onCameraScan(codes[0].rawValue); }catch(e){} nativeRaf=requestAnimationFrame(loop); };
-    loop();
-  }catch(e){ $('cameraStatus').textContent='❌ Camera failed: '+e.message; $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? 1) Use Chrome / Safari (not WhatsApp) 2) Padlock → Camera → Allow 3) HTTPS only 4) Close Zoom.</div>'; }
-}
-function startHtml5Camera(){
-  if(cameraRunning) return;
-  html5Qr=new Html5Qrcode('cameraReader');
-  const config={fps:10, qrbox:{width:280,height:120}, aspectRatio:1.2, supportedScanTypes:[Html5QrcodeScanType.SCAN_TYPE_CAMERA]};
-  html5Qr.start({facingMode:'environment'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at learner card...'; }).catch(()=>{
-    html5Qr.start({facingMode:'user'}, config, onCameraScan, ()=>{}).then(()=>{ cameraRunning=true; $('cameraStatus').textContent='✅ Camera ON — Point at card...'; }).catch(e2=>{ $('cameraStatus').textContent='❌ Camera failed: '+esc(e2.message||e2); $('cameraLastScan').innerHTML='<div class="warn">Camera blocked? Use Chrome, Allow Camera, HTTPS only.</div>'; });
+<script>
+let ALL_LEARNERS=[];
+let SCHOOL_ID='', PREFIX='10A', EMIS='700310854', SCHOOL_NAME='';
+function esc(s){return String(s||'').replace(/</g,'&lt;');}
+function showTab(name){
+  ['class','single','list','scan'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===name?'block':'none';
+    document.getElementById('tabBtn-'+t).classList.toggle('active',t===name);
   });
+  if(name==='list') renderLearnerList();
+  if(name==='scan'){ try{ JsBarcode('#testBc', '10A001', {format:'CODE128', displayValue:false, height:55, width:1.8, margin:0}); }catch(e){} }
 }
-function onCameraScan(decodedText){
-  const code=String(decodedText||'').trim().toUpperCase(); if(!code) return;
-  const now=Date.now(); if(code===lastCameraCode && now-lastCameraTime<2000) return;
-  lastCameraCode=code; lastCameraTime=now; cameraScanCount++; $('cameraScanCount').textContent=cameraScanCount;
-  handleVerify(code, true);
-}
-async function closeCameraSilent(){ cameraRunning=false; if(nativeRaf) cancelAnimationFrame(nativeRaf); if(nativeStream){ nativeStream.getTracks().forEach(t=>t.stop()); nativeStream=null; } try{ if(html5Qr){ await html5Qr.stop(); await html5Qr.clear(); } }catch(e){} html5Qr=null; $('cameraModal').style.display='none'; }
-window.closeCamera=async function(done){ await closeCameraSilent(); };
-// ===== END CAMERA =====
-function handleVerify(code, fromCamera){
-  code=String(code||'').trim().toUpperCase(); if(!code) return;
-  const l=learners.find(x=>String(x.learnerId||'').toUpperCase()===code && x.archived!==true);
-  if(l){
-    beepSuccess();
-    const html='<div class="ok">🔊 BEEP! ✅ VERIFIED! Card works!<br><b>'+esc(l.name)+'</b> • ID: <b>'+esc(l.learnerId)+'</b> • '+esc(l.grade)+' • '+esc(l.class)+'<br>Top: '+esc(login.school||'')+' • MAKHANANI LTSM • LEARNER • Bottom: '+esc(l.learnerId)+'</div>';
-    $('verifyMsg').innerHTML=html;
-    if(fromCamera) $('cameraLastScan').innerHTML=html;
+async function loadLearners(){
+  const msg=document.getElementById('authMsg');
+  let u=null;
+  try{ u=JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){}
+  if(!u){
+    msg.innerHTML='<div class="warn">⚠️ Login first in <b>index.html</b> as Teacher / Principal. Demo: teacher@thuto.co.za / 1234<br><button class="btn btn-blue" onclick="location.href=\'index.html\'">Go To Login →</button></div>';
     return;
   }
-  beepError();
-  const html='<div class="warn">🔊 BEEP-BEEP! ❌ NOT FOUND: <b>'+esc(code)+'</b><br>Card may be from another school, or learner not added yet, or barcode too light / wrinkled — Re-print.</div>';
-  $('verifyMsg').innerHTML=html;
-  if(fromCamera) $('cameraLastScan').innerHTML=html;
-}
-function makeLearnerId(grade, cls){
-  const gNum=String(grade||'').replace('Grade','').trim();
-  if(!gNum || !cls) return '';
-  const existing=learners.filter(l=>l.grade===grade && l.class===cls && l.archived!==true).length;
-  const next=String(existing+1).padStart(3,'0');
-  return gNum+cls+next;
-}
-function updatePreview(){
-  const grade=$('grade').value||''; const cls=$('classLetter').value||'';
-  $('learnerIdPreview').value=makeLearnerId(grade, cls);
-}
-window.loadAll=async function(){
-  await loadSchoolMeta();
-  if(schoolStatus!=='ACTIVE'){ $('subBlockedBox').style.display='block'; $('subBlockedBox').innerHTML='🟠 <b>'+esc(login.school||'')+'</b> is <b>'+esc(schoolStatus)+'</b> — Adding learners BLOCKED. Viewing still works.'; } else $('subBlockedBox').style.display='none';
+  SCHOOL_ID=u.schoolId||''; SCHOOL_NAME=u.schoolName||'';
+  // Prefix: From user, or from schoolName first letters, or 10A fallback
+  PREFIX = u.schoolPrefix || u.prefix || '';
+  if(!PREFIX){
+    // Try to get prefix from school info in localStorage, else use first letters
+    PREFIX = (SCHOOL_NAME||'').trim().split(/\s+/).map(w=>w.replace(/[^A-Za-z]/g,'').charAt(0).toUpperCase()).join('') || '10A';
+    if(PREFIX.length<2) PREFIX='10A';
+  }
+  EMIS = u.emis || '700310854';
+  msg.innerHTML=`<div class="ok">✅ Logged in as <b>${esc(u.name)}</b> — ${esc(u.role)} — ${esc(SCHOOL_NAME)}<br>Prefix: <b>${esc(PREFIX)}</b> • EMIS: <b>${esc(EMIS)}</b> • School ID: ${esc(SCHOOL_ID)}</div>`;
+  // Load learners from Firestore + RTDB
+  ALL_LEARNERS=[];
   try{
-    const base='EMIS_'+login.emis;
-    const ls=await getDocs(collection(db,'schools',base,'learners'));
-    learners=[]; ls.forEach(d=>learners.push({id:d.id,...d.data()}));
-    learners=learners.filter(l=>l.archived!==true).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
-    $('schoolInfo').innerHTML='School: <b>'+esc(login.school||'')+'</b> • EMIS <b>'+esc(login.emis||'')+'</b> • Learners: <b>'+learners.length+'</b>';
-    $('schoolNameTitle').textContent=login.school||'';
-    updatePreview(); renderList();
-  }catch(e){ $('listBody').innerHTML='<div class="warn">❌ Load failed: '+esc(e.message)+'</div>'; }
-};
-window.addLearner=async function(){
-  const name=($('learnerName').value||'').trim();
-  const grade=$('grade').value||''; const cls=$('classLetter').value||'';
-  if(!name){ $('addMsg').innerHTML='<div class="warn">⚠️ Type learner name.</div>'; beepError(); return; }
-  if(!grade){ $('addMsg').innerHTML='<div class="warn">⚠️ Pick Grade.</div>'; beepError(); return; }
-  if(!cls){ $('addMsg').innerHTML='<div class="warn">⚠️ Pick Class.</div>'; beepError(); return; }
-  if(schoolStatus!=='ACTIVE'){ $('addMsg').innerHTML='<div class="warn">🟠 Adding BLOCKED — School is '+esc(schoolStatus)+'</div>'; beepError(); return; }
-  const learnerId=makeLearnerId(grade, cls);
+    const snap=await db.collection('schools').doc(SCHOOL_ID).collection('learners').get();
+    snap.forEach(d=>{ const l=d.data(); ALL_LEARNERS.push({id:d.id, name:l.name||l.learnerName||'', code:l.barcode||l.code||l.learnerCode||d.id, className:l.className||l.class||'', ...l}); });
+  }catch(e){}
   try{
-    const id='LEARNER_'+login.emis+'_'+learnerId;
-    await setDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{ name, grade, class:cls, learnerId, archived:false, createdAt:new Date().toISOString(), createdBy:login?.name||'' });
-    await auditLog('LEARNER_ADDED','Added learner '+name+' ('+learnerId+') • '+grade+' • '+cls);
-    beepSuccess();
-    $('addMsg').innerHTML='<div class="ok">✅ Added: <b>'+esc(name)+'</b> • ID: <b>'+esc(learnerId)+'</b> • '+esc(grade)+' • '+esc(cls)+'<br>Next: Go to Print Barcodes → Print card for '+esc(learnerId)+'</div>';
-    $('learnerName').value=''; await loadAll();
-  }catch(e){ $('addMsg').innerHTML='<div class="warn">❌ Add failed: '+esc(e.message)+'</div>'; beepError(); }
-};
-window.addLearnerAndVerify=async function(){
-  const before=learners.length;
-  await addLearner();
-  setTimeout(()=>{ if(learners.length>before){ $('verifyMsg').innerHTML='<div class="info">✅ Learner added. Now go to <b>Print Barcodes</b> → Print card → Come back here → <b>📷 Scan Card To Verify</b>.</div>'; } }, 600);
-};
-window.renderList=function(){
-  const q=($('searchBox').value||'').trim().toLowerCase(); const gf=$('filterGrade').value||'ALL';
-  let list=learners.filter(l=>{ if(gf!=='ALL' && l.grade!==gf) return false; if(!q) return true; return (l.name+' '+l.learnerId+' '+l.grade+' '+l.class).toLowerCase().includes(q); });
-  $('learnerCount').textContent=list.length;
-  if(!list.length){ $('listBody').innerHTML='<div class="info">No learners found.</div>'; return; }
-  let html='<table><tr><th>Learner</th><th>Grade • Class</th><th>Learner ID</th><th>Barcode</th><th>Verify</th><th>Delete</th></tr>';
-  list.slice(0,100).forEach((l,idx)=>{
-    html+='<tr><td><b>'+esc(l.name||'')+'</b></td><td>'+esc(l.grade||'')+' • '+esc(l.class||'')+'</td><td><b>'+esc(l.learnerId||'')+'</b></td><td><svg id="lb_'+idx+'"></svg></td><td><button class="miniBtn btn-green" onclick="verifyOne(\''+esc(l.learnerId||'')+'\')">📷 Verify</button></td><td><button class="miniBtn btn-red" onclick="deleteLearner(\''+esc(l.id)+'\',\''+esc(l.name||'')+'\')">🗑️</button></td></tr>';
+    const rs=await rtdb.ref('schools/'+SCHOOL_ID+'/learners').once('value');
+    const rv=rs.val()||{};
+    Object.entries(rv).forEach(([id,l])=>{
+      if(!ALL_LEARNERS.find(x=>x.id===id)){
+        ALL_LEARNERS.push({id, name:l.name||l.learnerName||'', code:l.barcode||l.code||l.learnerCode||id, className:l.className||l.class||'', ...l});
+      }
+    });
+  }catch(e){}
+  // Fallback: localStorage
+  if(ALL_LEARNERS.length===0){
+    try{ const saved=JSON.parse(localStorage.getItem('makhanani_learners')||'[]'); ALL_LEARNERS=saved.map((l,i)=>({id:l.id||('L'+i), name:l.name||'', code:l.code||l.barcode||'', className:l.className||l.class||''})); }catch(e){}
+  }
+  ALL_LEARNERS.sort((a,b)=>String(a.code||'').localeCompare(String(b.code||'')));
+  const classes=[...new Set(ALL_LEARNERS.map(l=>l.className).filter(Boolean))].sort();
+  const sel=document.getElementById('classFilter');
+  sel.innerHTML='<option value="">-- Pick Class --</option>'+classes.map(c=>`<option>${esc(c)}</option>`).join('');
+  const sel2=document.getElementById('filterClassList');
+  sel2.innerHTML='<option value="">All Classes</option>'+classes.map(c=>`<option>${esc(c)}</option>`).join('');
+  document.getElementById('classMsg').innerHTML=`<div class="info">✅ Loaded <b>${ALL_LEARNERS.length}</b> learners${classes.length?` • Classes: ${classes.join(', ')}`:''}<br>${ALL_LEARNERS.length===0?'<b>No learners found.</b> Add learners in Learners page first, or use Manual mode below — Type Class + Start Number + Count, it will generate codes even without learners list.':''}</div>`;
+  renderLearnerList();
+  renderClassPreview();
+}
+function renderClassPreview(){
+  const cls=document.getElementById('classFilter').value || document.getElementById('classManual').value.trim();
+  if(cls) document.getElementById('classManual').value=cls;
+}
+function makeLabel(code, name, className){
+  const div=document.createElement('div');
+  div.className='label';
+  div.innerHTML=`<div class="emis">EMIS ${esc(EMIS)}</div><div class="title">MAKHANANI LTSM • XINTIMANI GROUP</div><div class="type">LEARNER${className?` • ${esc(className)}`:''}</div><svg class="bc"></svg><div class="code">${esc(code)}</div><div class="name">${esc(name||('Learner '+code))}</div>`;
+  return div;
+}
+function generateClassLabels(){
+  const cls=document.getElementById('classFilter').value || document.getElementById('classManual').value.trim();
+  const start=parseInt(document.getElementById('startNum').value||'1');
+  const count=parseInt(document.getElementById('countNum').value||'15');
+  const msg=document.getElementById('classMsg');
+  if(!cls){ msg.innerHTML='<div class="warn">⚠️ Pick Class from dropdown, or type Class manually.</div>'; return; }
+  const sheet=document.getElementById('sheet');
+  sheet.innerHTML='';
+  // Use real learners in that class if we have them, else generate by number
+  let classLearners=ALL_LEARNERS.filter(l=> (l.className||'')===cls);
+  for(let i=0;i<count;i++){
+    const num=start+i;
+    const code=PREFIX+String(num).padStart(3,'0');
+    const learner=classLearners[i];
+    const name=learner ? learner.name : ('Learner '+code);
+    const useCode=learner && learner.code ? learner.code : code;
+    const div=makeLabel(useCode, name, cls);
+    sheet.appendChild(div);
+    try{ JsBarcode(div.querySelector('.bc'), useCode, {format:'CODE128', displayValue:false, height:55, width:1.6, margin:0}); }catch(e){}
+  }
+  msg.innerHTML=`<div class="ok">✅ Generated <b>${count}</b> labels for Class <b>${esc(cls)}</b>: ${PREFIX}${String(start).padStart(3,'0')} to ${PREFIX}${String(start+count-1).padStart(3,'0')}<br>Scroll down to see labels → Click <b>Print Labels</b> → Set <b>Margins None, Scale 100, Background ON, Headers OFF, Paper A4</b>.</div>`;
+  document.getElementById('classPreview').innerHTML=`<div class="goldBox">📄 <b>${count} labels generated below</b> — Scroll down to print sheet. 15 labels = 1 page.</div>`;
+  sheet.scrollIntoView({behavior:'smooth'});
+}
+function generateSingle(){
+  const name=document.getElementById('singleName').value.trim();
+  const cls=document.getElementById('singleClass').value.trim();
+  const code=document.getElementById('singleCode').value.trim().toUpperCase();
+  const msg=document.getElementById('singleMsg');
+  if(!name || !cls || !code){ msg.innerHTML='<div class="warn">⚠️ Fill Name + Class + Code.</div>'; return; }
+  const box=document.getElementById('singlePreviewBox');
+  box.innerHTML=`<div class="singlePreview"><div style="font-size:11px;font-weight:900">EMIS ${esc(EMIS)}</div><div style="font-size:11px;font-weight:900;color:#dc2626">MAKHANANI LTSM • XINTIMANI GROUP</div><div style="font-size:11px;font-weight:900">LEARNER • ${esc(cls)}</div><svg id="singleBc"></svg><div style="font-size:18px;font-weight:900">${esc(code)}</div><div style="font-size:13px;color:#64748b">${esc(name)}</div></div>`;
+  try{ JsBarcode('#singleBc', code, {format:'CODE128', displayValue:false, height:60, width:1.8, margin:0}); }catch(e){ msg.innerHTML='<div class="warn">⚠️ Barcode failed: '+esc(e.message)+'</div>'; return; }
+  msg.innerHTML=`<div class="ok">✅ Barcode for <b>${esc(name)}</b> — ${esc(code)} — Class ${esc(cls)}</div>`;
+  document.getElementById('singlePrintBtn').style.display='block';
+  // Also put it in print sheet as 1 label
+  const sheet=document.getElementById('sheet');
+  sheet.innerHTML='';
+  const div=makeLabel(code, name, cls);
+  sheet.appendChild(div);
+  try{ JsBarcode(div.querySelector('.bc'), code, {format:'CODE128', displayValue:false, height:55, width:1.6, margin:0}); }catch(e){}
+}
+function printSingle(){ window.print(); }
+function renderLearnerList(){
+  const q=(document.getElementById('searchBox').value||'').toLowerCase();
+  const fc=document.getElementById('filterClassList').value||'';
+  let list=ALL_LEARNERS.filter(l=>{
+    if(q && !((l.name||'').toLowerCase().includes(q) || (l.code||'').toLowerCase().includes(q) || (l.className||'').toLowerCase().includes(q))) return false;
+    if(fc && (l.className||'')!==fc) return false;
+    return true;
   });
-  html+='</table><div class="small">Showing first 100.</div>'; $('listBody').innerHTML=html;
-  setTimeout(()=>{ list.slice(0,100).forEach((l,idx)=>{ try{ JsBarcode('#lb_'+idx, String(l.learnerId||''), {format:'CODE128', lineColor:'#000', background:'#fff', width:1.2, height:32, displayValue:false, margin:0}); }catch(e){} }); },60);
-};
-window.verifyOne=function(code){ $('scanVerify').value=code; handleVerify(code, false); $('scanVerify').focus(); };
-window.deleteLearner=async function(id, name){
-  if(!confirm('🗑️ Delete learner '+name+'? This archives them.')) return;
-  try{ await setDoc(doc(db,'schools','EMIS_'+login.emis,'learners',id),{archived:true},{merge:true}); await auditLog('LEARNER_ARCHIVED','Archived learner '+name); await loadAll(); }catch(e){ alert('❌ Delete failed: '+e.message); }
-};
-document.addEventListener('DOMContentLoaded', async ()=>{
-  if(window.OfflineQueue) OfflineQueue.updateBadge();
-  login=getLogin();
-  if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login first</a>.'; $('blockedBox').style.display='block'; return; }
-  $('whoLine').textContent='Logged in: '+(login.name||'')+' • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
-  $('loginInfo').innerHTML='✅ Logged in: <b>'+esc(login.name||'')+'</b> • '+(login.role||'').toUpperCase()+' • '+(login.school||'')+' (EMIS '+(login.emis||'')+')';
-  $('learnerBody').style.display='block';
-  await loadAll();
-  $('grade').addEventListener('change', updatePreview);
-  $('classLetter').addEventListener('change', updatePreview);
-  $('scanVerify').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); handleVerify($('scanVerify').value, false); $('scanVerify').value=''; } });
-});
-</script>
-<script>
-if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW failed', e)); }); }
+  if(list.length===0){ document.getElementById('learnerList').innerHTML='<div class="info">No learners found. Load learners first, or add learners in Learners page.</div>'; return; }
+  let html='<table><tr><th>Code</th><th>Name</th><th>Class</th><th>Action</th></tr>';
+  list.forEach(l=>{
+    html+=`<tr><td><b>${esc(l.code||'—')}</b></td><td>${esc(l.name||'—')}</td><td>${esc(l.className||'—')}</td><td><button class="btn btn-green btn-small" onclick="printOneLearner('${esc(l.code)}','${esc(l.name)}','${esc(l.className)}')">🏷️ Print This Barcode</button></td></tr>`;
+  });
+  html+='</table>';
+  document.getElementById('learnerList').innerHTML=html;
+}
+function printOneLearner(code, name, cls){
+  document.getElementById('singleName').value=name;
+  document.getElementById('singleClass').value=cls;
+  document.getElementById('singleCode').value=code;
+  showTab('single');
+  generateSingle();
+  window.scrollTo(0,0);
+}
+window.onload=()=>{ loadLearners(); try{ JsBarcode('#testBc', '10A001', {format:'CODE128', displayValue:false, height:55, width:1.8, margin:0}); }catch(e){} };
 </script>
 </body>
 </html>
