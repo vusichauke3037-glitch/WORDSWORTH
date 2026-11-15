@@ -26,11 +26,12 @@ const rtdb = firebase.database();
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
 header{background:#0a1f4d;color:#fff;padding:14px;text-align:center}header h1{margin:0;font-size:20px}header p{margin:4px 0 0;opacity:.9;font-size:12px;line-height:1.5}
 header img{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;display:block;margin:0 auto 8px}
-main{max-width:1000px;margin:auto;padding:12px}.card{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+main{max-width:1100px;margin:auto;padding:12px}.card{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 h2{margin:0 0 10px;color:#0a1f4d;font-size:17px;border-bottom:2px solid #d4af37;padding-bottom:6px}
 h3{color:#0a1f4d;margin:14px 0 6px;font-size:14px}
 label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:10px}
 input,select{width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px}
+input:focus,select:focus{border-color:#0a1f4d;outline:none}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
 .btn-blue{background:#0a1f4d;color:#fff}.btn-green{background:#059669;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}
 .btn-small{width:auto;padding:7px 10px;font-size:12px;margin:2px}
@@ -40,244 +41,384 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{b
 .warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
 .ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
 .goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:10px;margin-top:10px;font-size:13px;line-height:1.6}
-.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
+.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
 .topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
 .small{font-size:12px;color:#64748b}
-@media(max-width:600px){.kpi{grid-template-columns:1fr 1fr}}
+.deptBadge{display:inline-block;background:#0a1f4d;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin-right:4px}
+.gradeBadge{display:inline-block;background:#d4af37;color:#0a1f4d;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin-right:4px}
+.subjectBadge{display:inline-block;background:#dcfce7;color:#166534;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin-right:4px}
+.groupCard{border:2px solid #0a1f4d;border-radius:12px;padding:12px;margin-top:12px;background:#fff}
+.filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+.bar{height:14px;background:#e2e8f0;border-radius:10px;overflow:hidden;margin-top:4px}.bar div{height:100%;background:#059669}
+@media(max-width:700px){.kpi{grid-template-columns:1fr 1fr 1fr}.filters{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <header>
 <img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'">
 <h1>📊 Principal Dashboard</h1><p id="userLine">Loading...</p>
-<div class="topnav"><a href="index.html">🏠 Login</a><a href="librarian.html">📚 Librarian</a><a href="issue.html">📖 Issue / Return</a><a href="teachers.html">👩‍🏫 Teachers</a><a href="profile.html">👤 Profile</a><a href="user-manual.html">📖 Manual</a></div>
+<div class="topnav"><a href="index.html">🏠 Login</a><a href="librarian.html">📚 Librarian</a><a href="issue.html">📖 Issue / Return</a><a href="teachers.html">👩‍🏫 Teachers</a><a href="stock.html">📦 Stock</a><a href="barcode.html">🏷️ Barcodes</a><a href="profile.html">👤 Profile</a></div>
 </header>
 <main>
 <div class="card">
-<div class="kpi"><div><b id="kLearners">0</b><span>Learners</span></div><div><b id="kBooks">0</b><span>Books</span></div><div><b id="kOut">0</b><span>Books Out</span></div><div><b id="kOverdue">0</b><span>Overdue</span></div></div>
+<div class="kpi"><div><b id="kLearners">0</b><span>Learners</span></div><div><b id="kBooks">0</b><span>Total Books</span></div><div><b id="kAvail">0</b><span>Available</span></div><div><b id="kOut">0</b><span>Out</span></div><div><b id="kOverdue">0</b><span>Overdue</span></div><div><b id="kLost">0</b><span>Lost / Damaged</span></div></div>
 <div id="statusBox" class="info">⏳ Loading your school from Firebase...</div>
-<div id="schoolBox" class="goldBox" style="display:none"></div>
-<div class="tabs" style="margin-top:10px"><button class="active" onclick="showTab('overview',this)">📊 Overview</button><button onclick="showTab('teachers',this)">👩‍🏫 Teachers</button><button onclick="showTab('learners',this)">👥 Learners</button><button onclick="showTab('overdue',this)">⚠️ Overdue</button><button onclick="showTab('finance',this)">💰 Finance / Subscription</button></div>
-<input id="searchBox" placeholder="🔍 Search learner / teacher / book..." oninput="renderAll()">
+<div class="goldBox">📚 <b>Rule:</b> All books due <b>30 November every year</b>. • Teachers issue own subject only. • One Learner = One Title. • Grade must match.</div>
+<div class="tabs" style="margin-top:10px"><button class="active" onclick="showTab('overview',this)">📊 By Group / Dept</button><button onclick="showTab('classes',this)">🏫 By Class</button><button onclick="showTab('teachers',this)">👩‍🏫 Teachers</button><button onclick="showTab('overdue',this)">⚠️ Overdue + Lost</button><button onclick="showTab('report',this)">📱 WhatsApp Report</button></div>
+<div class="filters">
+<div><label style="margin-top:0">Group / Dept</label><select id="fGroup" onchange="renderAll()"><option value="">All Groups</option></select></div>
+<div><label style="margin-top:0">Grade</label><select id="fGrade" onchange="renderAll()"><option value="">All Grades</option></select></div>
+<div><label style="margin-top:0">Subject</label><select id="fSubject" onchange="renderAll()"><option value="">All Subjects</option></select></div>
+<div><label style="margin-top:0">Search</label><input id="searchBox" placeholder="🔍 Title / Learner / Teacher..." oninput="renderAll()" style="margin-top:0"></div>
+</div>
+<button class="btn btn-grey" onclick="clearFilters()">🔄 Clear Filters — Show All</button>
 </div>
 
-<!-- OVERVIEW -->
 <div class="card" id="tab-overview">
-<h2>📊 Overview — Your School Today</h2>
+<h2>📊 Stock + Issues By Group / Department → Grade → Subject</h2>
 <div id="overviewBox"></div>
-<h3>Top Classes — Books Out By Class</h3>
-<div id="classBox"></div>
-<h3>Recent Issues — Last 10</h3>
-<div id="recentBox"></div>
-<button class="btn btn-blue" onclick="location.href='issue.html'">📖 Go To Issue / Return →</button>
-<button class="btn btn-gold" onclick="location.href='librarian.html'">📚 Go To Librarian →</button>
+<div id="groupList"></div>
+<h3>Low Stock — Less Than 5 Available (Filtered View)</h3>
+<div id="lowBox"></div>
 </div>
 
-<!-- TEACHERS -->
+<div class="card" id="tab-classes" style="display:none">
+<h2>🏫 By Class — Learners, Books Out, Overdue Per Class</h2>
+<div id="classList"></div>
+</div>
+
 <div class="card" id="tab-teachers" style="display:none">
-<h2>👩‍🏫 Teachers — Add / Reset Password</h2>
-<div class="goldBox"><b>Teacher login:</b> School Dropdown → Email below → Password below. Tell password 1-to-1.</div>
-<label>Teacher Name</label><input id="tName" placeholder="e.g. Mr. Nkosi">
-<label>Teacher Email — Login Email</label><input id="tEmail" type="email" placeholder="e.g. teacher@school.co.za">
-<label>Teacher Password</label><input id="tPass" placeholder="e.g. Nkosi2026">
-<label>Subject</label><input id="tSubject" placeholder="e.g. Mathematics">
+<h2>👩‍🏫 Teachers — Manage Class + Subject + Reset Password</h2>
+<div class="goldBox">Principal can see all Teachers, change their Class / Subject, and reset password to <b>1234</b>. Teachers see only their Class in `teachers.html`.<br>⛔ <b>Teacher MUST have at least 1 Teaching Subject</b> — Cannot save without Subject. Subjects from dropdown ALL CAPS.</div>
+<label>Add Teacher — Name *</label><input id="tName" placeholder="e.g. Mr. Nkosi">
+<label>Email — Login *</label><input id="tEmail" type="email" placeholder="e.g. teacher@school.co.za">
+<label>Password</label><input id="tPass" placeholder="e.g. Nkosi2026" value="1234">
+<label>Teaching Subject 1 * — Required — Dropdown ALL CAPS</label><select id="tSubject"></select>
+<label>Teaching Subject 2 (Optional — Second Subject)</label><select id="tSubject2"></select>
 <label>Class — e.g. 10A</label><input id="tClass" placeholder="e.g. 10A">
-<button class="btn btn-green" onclick="addTeacher()">➕ Add Teacher</button>
+<button class="btn btn-green" onclick="addTeacher()">➕ ADD TEACHER</button>
+<div id="teacherMsg"></div>
 <div id="teachersList"></div>
 </div>
 
-<!-- LEARNERS -->
-<div class="card" id="tab-learners" style="display:none">
-<h2>👥 Learners — View Only (Librarian Edits)</h2>
-<div id="learnersList"></div>
-</div>
-
-<!-- OVERDUE -->
 <div class="card" id="tab-overdue" style="display:none">
-<h2>⚠️ Overdue — WhatsApp Parents</h2>
+<h2>⚠️ Overdue Books — By Group / Class — Due 30 November</h2>
 <div id="overdueList"></div>
-<button class="btn btn-gold" onclick="whatsappAllOverdue()">📱 WhatsApp ALL Overdue Parents</button>
+<h2>⚠️ Lost / Damaged — By Group / Dept / Grade / Subject</h2>
+<div id="lostList"></div>
+<button class="btn btn-gold" onclick="fixOldDueDates()">📅 Fix All Due Dates To 30 Nov</button>
+<div id="fixMsg"></div>
 </div>
 
-<!-- FINANCE -->
-<div class="card" id="tab-finance" style="display:none">
-<h2>💰 Finance / Subscription</h2>
-<div id="financeBox"></div>
-<button class="btn btn-green" onclick="whatsappVusi()">📱 WhatsApp Vusi — Payment / Renewal</button>
-<button class="btn btn-blue" onclick="location.href='subscriptions.html'">📝 View Subscription Plans</button>
+<div class="card" id="tab-report" style="display:none">
+<h2>📱 WhatsApp Report — Send To SGB / Circuit / Vusi</h2>
+<div class="goldBox">Report respects filters at top. Filter to one Group / Grade / Subject first, then send that report only. All books due 30 November.</div>
+<label>Send Report To — Phone / WhatsApp</label><input id="reportPhone" placeholder="e.g. 0780233263" value="0780233263">
+<button class="btn btn-green" onclick="sendWhatsAppReport()">📱 SEND WHATSAPP REPORT (Filtered)</button>
+<button class="btn btn-blue" onclick="sendFullReport()">📱 SEND FULL SCHOOL REPORT</button>
+<button class="btn btn-gold" onclick="printReport()">🖨️ PRINT REPORT</button>
+<button class="btn btn-gold" onclick="fixOldDueDates()">📅 Fix All Due Dates To 30 Nov</button>
+<div id="reportPreview"></div>
 </div>
 
-<div class="card"><button class="btn btn-grey" onclick="logout()">🚪 Logout</button></div>
+<div class="card"><button class="btn btn-grey" onclick="logout()">🚪 Logout</button><button class="btn btn-blue" onclick="location.href='stock.html'">📦 Go To Stock →</button><button class="btn btn-blue" onclick="location.href='librarian.html'">📚 Go To Librarian →</button></div>
 </main>
 
 <script>
-let currentUser=null, schoolId='', schoolData=null, learners=[], books=[], teachers=[], issues=[];
+let currentUser=null, schoolId='', schoolName='', books=[], learners=[], users=[], issues=[];
 let useDemo=false;
+const SUBJECTS=["MATHEMATICS","MATHEMATICAL LITERACY","ENGLISH HOME LANGUAGE","ENGLISH FIRST ADDITIONAL LANGUAGE","AFRIKAANS HOME LANGUAGE","AFRIKAANS FIRST ADDITIONAL LANGUAGE","ISIZULU HOME LANGUAGE","ISIZULU FIRST ADDITIONAL LANGUAGE","SEPEDI HOME LANGUAGE","XITSONGA HOME LANGUAGE","TSHIVENDA HOME LANGUAGE","SETSWANA HOME LANGUAGE","SESOTHO HOME LANGUAGE","SISWATI HOME LANGUAGE","ISINDEBELE HOME LANGUAGE","ISIXHOSA HOME LANGUAGE","PHYSICAL SCIENCES","LIFE SCIENCES","NATURAL SCIENCES","SOCIAL SCIENCES","HISTORY","GEOGRAPHY","ACCOUNTING","BUSINESS STUDIES","ECONOMICS","ECONOMIC AND MANAGEMENT SCIENCES","TECHNOLOGY","CREATIVE ARTS","LIFE SKILLS","LIFE ORIENTATION","COMPUTER APPLICATIONS TECHNOLOGY","INFORMATION TECHNOLOGY","TOURISM","CONSUMER STUDIES","AGRICULTURAL SCIENCES","ENGINEERING GRAPHICS AND DESIGN"];
+function getDueDate(){ const now=new Date(); const y=now.getFullYear(); const nov30=new Date(y,10,30); if(now>nov30) return `${y+1}-11-30`; return `${y}-11-30`; }
 const DEMO={
-  school:{name:"WORDSWORTH PRIMARY", emis:"123456", package:"STANDARD", monthly:500, status:"ACTIVE", principalName:"Principal Wordsworth", principalEmail:"principal@wordsworth.co.za", principalPhone:"0780233263"},
-  learners:[{id:'L001', name:'Thandi Mokoena', learnerId:'L001', className:'10A', grade:'10', phone:'0780233263'},
-  {id:'L002', name:'Sipho Dube', learnerId:'L002', className:'10A', grade:'10', phone:'0781112222'}],
-  books:[{id:'BK001', title:'Mathematics Grade 10', barcode:'BK001', subject:'Mathematics', grade:'10', status:'OUT'},
-  {id:'BK002', title:'English Grade 10', barcode:'BK002', subject:'English', grade:'10', status:'AVAILABLE'}],
-  teachers:[{id:'teacher_wordsworth_co_za', name:'Mr. Nkosi', email:'teacher@wordsworth.co.za', password:'1234', pin:'1234', subject:'Mathematics', className:'10A', role:'TEACHER', status:'ACTIVE'}],
-  issues:[{id:'i1', learnerId:'L001', learnerName:'Thandi Mokoena', className:'10A', phone:'0780233263', barcode:'BK001', bookTitle:'Mathematics Grade 10', dueDate:new Date(Date.now()-2*86400000).toISOString().slice(0,10), issueDate:new Date(Date.now()-10*86400000).toISOString().slice(0,10), status:'OUT'}]
+  schoolName:'THUTO PRIMARY',
+  books:[
+    {id:'TP000001', title:'Mathematics Grade 10', barcode:'TP000001', subject:'MATHEMATICS', grade:'10', group:'MATHEMATICS & SCIENCES', status:'AVAILABLE'},
+    {id:'TP000002', title:'Mathematics Grade 10', barcode:'TP000002', subject:'MATHEMATICS', grade:'10', group:'MATHEMATICS & SCIENCES', status:'AVAILABLE'},
+    {id:'TP000003', title:'English Grade 10', barcode:'TP000003', subject:'ENGLISH HOME LANGUAGE', grade:'10', group:'LANGUAGES', status:'OUT'},
+    {id:'TP000004', title:'English Grade 10', barcode:'TP000004', subject:'ENGLISH HOME LANGUAGE', grade:'10', group:'LANGUAGES', status:'LOST', lostLearner:'Thandi — 10A001', lostCost:150},
+    {id:'TP000005', title:'Life Skills Grade 3', barcode:'TP000005', subject:'LIFE SKILLS', grade:'3', group:'FOUNDATION PHASE', status:'AVAILABLE'},
+  ],
+  learners:[{id:'10A001', name:'Thandi Mokoena', learnerId:'10A001', className:'10A', grade:'10', phone:'0780233263'}, {id:'10A002', name:'Sipho Dube', learnerId:'10A002', className:'10A', grade:'10', phone:'0781112222'}, {id:'3A001', name:'Zanele Nkosi', learnerId:'3A001', className:'3A', grade:'3', phone:'0782223333'}],
+  users:[{id:'teacher_thuto_co_za', name:'Mr. Nkosi', email:'teacher@thuto.co.za', password:'1234', pin:'1234', role:'TEACHER', subject:'MATHEMATICS', subjects:['MATHEMATICS'], className:'10A', status:'ACTIVE'}, {id:'librarian_thuto_co_za', name:'Ms. Mokoena', email:'lib@thuto.co.za', password:'1234', pin:'1234', role:'LIBRARIAN', subject:'', className:'', status:'ACTIVE'}],
+  issues:[{id:'i1', barcode:'TP000003', bookTitle:'English Grade 10', learnerName:'Thandi Mokoena', learnerId:'10A001', className:'10A', phone:'0780233263', dueDate:'2026-11-30', issueDate:'2026-02-10', status:'OUT'}]
 };
+function autoGroup(subject, grade){
+  const s=(subject||'').toLowerCase(); const g=parseInt(grade)||0;
+  if(g>=1 && g<=3) return 'FOUNDATION PHASE';
+  if(g>=4 && g<=6) return 'INTERMEDIATE PHASE';
+  if(s.includes('math') || s.includes('science') || s.includes('physics') || s.includes('chemistry') || s.includes('biology') || s.includes('life science') || s.includes('natural')) return 'MATHEMATICS & SCIENCES';
+  if(s.includes('english') || s.includes('afrikaans') || s.includes('zulu') || s.includes('xhosa') || s.includes('sepedi') || s.includes('language')) return 'LANGUAGES';
+  if(s.includes('history') || s.includes('geography') || s.includes('social')) return 'HUMANITIES';
+  if(s.includes('account') || s.includes('business') || s.includes('econom') || s.includes('ems')) return 'COMMERCE';
+  if(s.includes('technology') || s.includes('art') || s.includes('creative')) return 'TECHNOLOGY & ARTS';
+  if(s.includes('life orientation') || s.includes('life skill')) return 'LIFE SKILLS / LO';
+  if(g>=7 && g<=9) return 'SENIOR PHASE';
+  if(g>=10 && g<=12) return 'FET PHASE';
+  return 'GENERAL';
+}
+function getBookGroup(b){ return b.group || b.department || autoGroup(b.subject, b.grade); }
 function esc(s){ return String(s||'').replace(/</g,'&lt;'); }
 function getUser(){ try{ return JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){ return null; } }
 function logout(){ localStorage.removeItem('makhanani_user'); location.href='index.html'; }
 function showTab(name, btn){
-  ['overview','teachers','learners','overdue','finance'].forEach(t=>document.getElementById('tab-'+t).style.display = t===name ? 'block':'none');
+  ['overview','classes','teachers','overdue','report'].forEach(t=>document.getElementById('tab-'+t).style.display = t===name ? 'block':'none');
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
 }
+function clearFilters(){ document.getElementById('fGroup').value=''; document.getElementById('fGrade').value=''; document.getElementById('fSubject').value=''; document.getElementById('searchBox').value=''; renderAll(); }
+function getFilteredBooks(){
+  const fg=document.getElementById('fGroup').value; const fgr=document.getElementById('fGrade').value; const fs=document.getElementById('fSubject').value; const q=(document.getElementById('searchBox').value||'').toLowerCase();
+  return books.filter(b=>{
+    if(fg && getBookGroup(b)!==fg) return false;
+    if(fgr && String(b.grade)!==fgr) return false;
+    if(fs && (b.subject||'')!==fs) return false;
+    if(q && !(b.title+' '+b.barcode+' '+(b.subject||'')).toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
 function getPw(u){ return u.password || u.pin || '1234'; }
-
-// ===== LOAD =====
 async function loadAll(){
-  currentUser=getUser();
-  if(!currentUser){ location.href='index.html'; return; }
-  if(currentUser.role!=='PRINCIPAL' && currentUser.role!=='SUPER_ADMIN'){
-    document.getElementById('statusBox').innerHTML=`⚠️ You are logged in as <b>${currentUser.role}</b> — Principal Dashboard is for Principal. You can view, but Librarian edits.`;
-  }
-  schoolId=currentUser.schoolId;
-  document.getElementById('userLine').innerHTML=`👋 ${esc(currentUser.name)} • ${esc(currentUser.schoolName)} • ${esc(currentUser.role)} • <a href="profile.html" style="color:#fff">Profile</a>`;
+  currentUser=getUser(); if(!currentUser){ location.href='index.html'; return; }
+  schoolId=currentUser.schoolId; schoolName=currentUser.schoolName||'SCHOOL';
+  document.getElementById('userLine').innerHTML=`👋 ${esc(currentUser.name)} • ${esc(schoolName)} • ${esc(currentUser.role)}`;
+  document.getElementById('tSubject').innerHTML=`<option value="">-- Pick Subject --</option>`+SUBJECTS.map(s=>`<option>${s}</option>`).join('');
+  document.getElementById('tSubject2').innerHTML=`<option value="">-- None / Second Subject --</option>`+SUBJECTS.map(s=>`<option>${s}</option>`).join('');
   try{
-    const sDoc=await db.collection('schools').doc(schoolId).get();
-    const lSnap=await db.collection('schools').doc(schoolId).collection('learners').get();
     const bSnap=await db.collection('schools').doc(schoolId).collection('books').get();
-    const tSnap=await db.collection('schools').doc(schoolId).collection('users').where('role','==','TEACHER').get();
+    const lSnap=await db.collection('schools').doc(schoolId).collection('learners').get();
+    const uSnap=await db.collection('schools').doc(schoolId).collection('users').get();
     const iSnap=await db.collection('schools').doc(schoolId).collection('issues').get();
-    if(sDoc.exists || !lSnap.empty || !bSnap.empty){
-      schoolData={id:sDoc.id, ...sDoc.data()};
-      learners=lSnap.docs.map(d=>({id:d.id, ...d.data()}));
-      books=bSnap.docs.map(d=>({id:d.id, ...d.data()}));
-      teachers=tSnap.docs.map(d=>({id:d.id, ...d.data()}));
-      issues=iSnap.docs.map(d=>({id:d.id, ...d.data()}));
+    if(!bSnap.empty || !lSnap.empty || !uSnap.empty){
+      books=bSnap.docs.map(d=>({id:d.id, ...d.data()})); learners=lSnap.docs.map(d=>({id:d.id, ...d.data()})); users=uSnap.docs.map(d=>({id:d.id, ...d.data()})); issues=iSnap.docs.map(d=>({id:d.id, ...d.data()}));
       document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Firestore — ${schoolId}`;
-      renderAll(); return;
+      buildFilters(); renderAll(); return;
     }
-    const rSnap=await rtdb.ref('schools/'+schoolId).once('value');
-    const rv=rSnap.val();
-    if(rv){
-      schoolData={id:schoolId, ...rv};
-      learners=Object.values(rv.learners||{});
-      books=Object.values(rv.books||{});
-      teachers=Object.values(rv.users||{}).filter(u=>u.role==='TEACHER');
-      issues=Object.values(rv.issues||{});
+    const rs=await rtdb.ref('schools/'+schoolId).once('value'); const rv=rs.val();
+    if(rv && (rv.books || rv.learners)){
+      books=Object.values(rv.books||{}); learners=Object.values(rv.learners||{}); users=Object.values(rv.users||{}); issues=Object.values(rv.issues||{});
       document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Realtime — ${schoolId}`;
-      renderAll(); return;
+      buildFilters(); renderAll(); return;
     }
     throw new Error('No data');
   }catch(e){
-    console.log('Demo:', e.message);
-    useDemo=true; schoolData=DEMO.school; learners=[...DEMO.learners]; books=[...DEMO.books]; teachers=[...DEMO.teachers]; issues=[...DEMO.issues];
-    document.getElementById('statusBox').innerHTML=`⚠️ Firebase has no data yet — Showing Demo. Add real data in Librarian page.`;
-    renderAll();
+    useDemo=true; schoolName=DEMO.schoolName; books=[...DEMO.books]; learners=[...DEMO.learners]; users=[...DEMO.users]; issues=[...DEMO.issues];
+    document.getElementById('statusBox').innerHTML=`⚠️ Firebase empty — Showing Demo.`;
+    buildFilters(); renderAll();
   }
 }
-
-// ===== TEACHER ACTIONS =====
-async function saveTeacher(docId, data){
-  if(useDemo) return;
-  try{ await db.collection('schools').doc(schoolId).collection('users').doc(docId).set(data, {merge:true}); }catch(e){}
-  try{ await rtdb.ref('schools/'+schoolId+'/users/'+docId).set(data); }catch(e){}
+function buildFilters(){
+  const groups=[...new Set(books.map(b=>getBookGroup(b)))].sort();
+  const grades=[...new Set(books.map(b=>String(b.grade||'')))].filter(Boolean).sort((a,b)=>(parseInt(a)||99)-(parseInt(b)||99));
+  const subjects=[...new Set(books.map(b=>b.subject||''))].filter(Boolean).sort();
+  const curG=document.getElementById('fGroup').value; const curGr=document.getElementById('fGrade').value; const curS=document.getElementById('fSubject').value;
+  document.getElementById('fGroup').innerHTML='<option value="">All Groups</option>'+groups.map(g=>`<option ${g===curG?'selected':''}>${esc(g)}</option>`).join('');
+  document.getElementById('fGrade').innerHTML='<option value="">All Grades</option>'+grades.map(g=>`<option ${g===curGr?'selected':''}>${esc(g)}</option>`).join('');
+  document.getElementById('fSubject').innerHTML='<option value="">All Subjects</option>'+subjects.map(s=>`<option ${s===curS?'selected':''}>${esc(s)}</option>`).join('');
 }
+async function saveDoc(col, id, data){
+  if(useDemo) return;
+  try{ await db.collection('schools').doc(schoolId).collection(col).doc(id).set(data, {merge:true}); }catch(e){}
+  try{ await rtdb.ref('schools/'+schoolId+'/'+col+'/'+id).set(data); }catch(e){}
+}
+async function fixOldDueDates(){
+  if(!confirm('Change ALL books OUT to Due 30 November '+getDueDate().split('-')[0]+' ?')) return;
+  const due=getDueDate(); let f=0;
+  for(const iss of issues){
+    if(iss.status==='OUT' && iss.dueDate!==due){ iss.dueDate=due; await saveDoc('issues', iss.id, iss); f++; }
+  }
+  const el=document.getElementById('fixMsg'); if(el) el.innerHTML=`<div class="ok">✅ Fixed ${f} books — All now due ${due}</div>`;
+  alert(`✅ Fixed ${f} books — All now due ${due}`); renderAll();
+}
+// ===== TEACHERS — MUST HAVE AT LEAST 1 SUBJECT =====
 async function addTeacher(){
   const name=document.getElementById('tName').value.trim();
   const email=document.getElementById('tEmail').value.trim().toLowerCase();
-  const password=document.getElementById('tPass').value.trim();
-  const subject=document.getElementById('tSubject').value.trim();
-  const className=document.getElementById('tClass').value.trim();
-  if(!name||!email||!password){ alert('Fill Name, Email, Password'); return; }
-  if(password.length<6){ alert('Password min 6'); return; }
+  const password=document.getElementById('tPass').value.trim()||'1234';
+  const subject=document.getElementById('tSubject').value;
+  const subject2=document.getElementById('tSubject2').value;
+  const className=document.getElementById('tClass').value.trim().toUpperCase();
+  const msg=document.getElementById('teacherMsg');
+  if(!name||!email){ msg.innerHTML='<div class="warn">⚠️ Fill Name + Email.</div>'; return; }
+  if(password.length<6){ msg.innerHTML='<div class="warn">⚠️ Password min 6.</div>'; return; }
+  if(!subject){ msg.innerHTML='<div class="warn">⛔ BLOCKED — Teacher must have at least 1 Teaching Subject. Pick from dropdown.</div>'; return; }
+  const subjects=[subject, subject2].filter(Boolean);
   const docId=email.replace(/[@.]/g,'_');
-  const data={name, email, password, pin:password, role:'TEACHER', subject, className, schoolId, schoolName:currentUser.schoolName, status:'ACTIVE', createdAt:new Date().toISOString()};
-  teachers.push({id:docId, ...data}); await saveTeacher(docId, data);
-  ['tName','tEmail','tPass','tSubject','tClass'].forEach(id=>document.getElementById(id).value='');
-  renderAll(); alert(`✅ Teacher added: ${name}\nLogin: ${email} / ${password}`);
+  const data={name, email, password, pin:password, role:'TEACHER', subject, subject2, subjects, className, schoolId, schoolName, status:'ACTIVE', createdAt:new Date().toISOString()};
+  const existing=users.find(u=>u.id===docId); if(existing) Object.assign(existing, data); else users.push({id:docId, ...data});
+  await saveDoc('users', docId, data);
+  msg.innerHTML=`<div class="ok">✅ Teacher saved: <b>${esc(name)}</b> — Class ${esc(className)} — Subject(s): ${esc(subjects.join(', '))} — Login: ${esc(email)} / ${esc(password)}</div>`;
+  ['tName','tEmail','tSubject','tSubject2','tClass'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('tPass').value='1234';
+  renderAll();
 }
 async function resetTeacher(id, email){
-  if(!confirm(`Reset password for ${email} to 1234?`)) return;
-  const t=teachers.find(x=>x.id===id); if(t){ t.password='1234'; t.pin='1234'; await saveTeacher(id, {password:'1234', pin:'1234'}); }
+  if(!confirm(`Reset ${email} to 1234?`)) return;
+  const u=users.find(x=>x.id===id); if(u){ u.password='1234'; u.pin='1234'; await saveDoc('users', id, {password:'1234', pin:'1234'}); }
   renderAll(); alert(`✅ Reset to 1234 for ${email}`);
 }
 async function deleteTeacher(id){
-  if(!confirm('Delete this teacher?')) return;
-  teachers=teachers.filter(t=>t.id!==id);
+  if(!confirm('Delete this user?')) return;
+  users=users.filter(u=>u.id!==id);
   if(!useDemo){ try{ await db.collection('schools').doc(schoolId).collection('users').doc(id).delete(); }catch(e){} try{ await rtdb.ref('schools/'+schoolId+'/users/'+id).remove(); }catch(e){} }
   renderAll();
 }
-function whatsappVusi(){
-  const txt=`Hello Vusi, this is ${currentUser.name} — ${currentUser.schoolName}. I want to pay / renew my subscription. Package: ${schoolData?.package||'STANDARD'} Monthly: R${schoolData?.monthly||500}. Please send invoice.`;
-  window.open('https://wa.me/27780233263?text='+encodeURIComponent(txt),'_blank');
+async function changeTeacherClass(id){
+  const u=users.find(x=>x.id===id); if(!u) return;
+  const newClass=prompt(`Change Class for ${u.name} (${u.email})\nCurrent: ${u.className||'-'}\nType new Class e.g. 10A:`, u.className||'');
+  if(newClass===null) return;
+  const newSubject=prompt(`Change Subject 1 for ${u.name}\nCurrent: ${u.subject||'-'}\nType / Pick: ${SUBJECTS.slice(0,10).join(', ')} ...`, u.subject||'');
+  if(newSubject===null) return;
+  if(!newSubject.trim()){ alert('⛔ Teacher must have at least 1 subject. Not changed.'); return; }
+  u.className=newClass.trim().toUpperCase(); u.subject=newSubject.trim().toUpperCase();
+  if(!u.subjects) u.subjects=[]; u.subjects[0]=u.subject;
+  await saveDoc('users', id, {className:u.className, subject:u.subject, subjects:u.subjects});
+  renderAll();
+}
+// ===== REPORT =====
+function buildReportText(filteredOnly){
+  const today=new Date().toISOString().slice(0,10);
+  let fBooks=filteredOnly ? getFilteredBooks() : books;
+  let fIssues=filteredOnly ? issues.filter(i=>i.status==='OUT' && fBooks.find(b=>b.barcode===i.barcode)) : issues.filter(i=>i.status==='OUT');
+  const avail=fBooks.filter(b=>b.status==='AVAILABLE').length;
+  const lost=fBooks.filter(b=>['LOST','DAMAGED','STOLEN','WORN OUT'].includes(b.status));
+  const overdue=fIssues.filter(i=>i.dueDate && i.dueDate < today);
+  const fg=document.getElementById('fGroup').value||'All Groups'; const fgr=document.getElementById('fGrade').value||'All Grades'; const fs=document.getElementById('fSubject').value||'All Subjects';
+  let txt=`📊 MAKHANANI LTSM — PRINCIPAL REPORT\n${schoolName}\nDate: ${today}\n${filteredOnly ? `Filter: ${fg} / Grade ${fgr} / ${fs}\n` : 'Filter: FULL SCHOOL\n'}`;
+  txt+=`\n📚 STOCK\nTotal Books: ${fBooks.length}\nAvailable: ${avail}\nOut: ${fIssues.length}\nOverdue: ${overdue.length}\nLost/Damaged: ${lost.length}\nLearners: ${learners.length}\nTeachers: ${users.filter(u=>u.role==='TEACHER').length}\nDue Date Rule: All books due 30 November ${getDueDate().split('-')[0]}\n`;
+  const byGroup={};
+  fBooks.forEach(b=>{ const g=getBookGroup(b); if(!byGroup[g]) byGroup[g]={total:0, avail:0, lost:0}; byGroup[g].total++; if(b.status==='AVAILABLE') byGroup[g].avail++; if(['LOST','DAMAGED'].includes(b.status)) byGroup[g].lost++; });
+  txt+=`\n🏷️ BY GROUP / DEPARTMENT\n`+Object.keys(byGroup).sort().map(g=>`${g}: Total ${byGroup[g].total} | Avail ${byGroup[g].avail} | Lost ${byGroup[g].lost}`).join('\n');
+  const byGrade={};
+  fBooks.forEach(b=>{ const g='Grade '+(b.grade||'-'); if(!byGrade[g]) byGrade[g]={total:0, avail:0}; byGrade[g].total++; if(b.status==='AVAILABLE') byGrade[g].avail++; });
+  txt+=`\n\n📚 BY GRADE\n`+Object.keys(byGrade).sort().map(g=>`${g}: Total ${byGrade[g].total} | Avail ${byGrade[g].avail}`).join('\n');
+  const bySub={};
+  fBooks.forEach(b=>{ const s=b.subject||'No Subject'; if(!bySub[s]) bySub[s]={total:0, avail:0}; bySub[s].total++; if(b.status==='AVAILABLE') bySub[s].avail++; });
+  txt+=`\n\n📖 BY SUBJECT\n`+Object.keys(bySub).sort().map(s=>`${s}: Total ${bySub[s].total} | Avail ${bySub[s].avail}`).join('\n');
+  if(overdue.length) txt+=`\n\n⚠️ OVERDUE (${overdue.length})\n`+overdue.slice(0,20).map(i=>`${i.learnerName} (${i.learnerId}, ${i.className}) — ${i.bookTitle} (${i.barcode}) — Due ${i.dueDate}`).join('\n');
+  if(lost.length) txt+=`\n\n⚠️ LOST / DAMAGED (${lost.length})\n`+lost.slice(0,20).map(b=>`${b.barcode} — ${b.title} — ${b.status} — ${b.lostLearner||'-'} — R${b.lostCost||0}`).join('\n');
+  txt+=`\n\n— Makhanani LTSM • Xintimani Group • Vusi Chauke 078 023 3263`;
+  return txt;
+}
+function sendWhatsAppReport(){
+  const phone=document.getElementById('reportPhone').value.replace(/\D/g,'');
+  if(!phone){ alert('Type phone number'); return; }
+  const wa=phone.startsWith('0') ? '27'+phone.slice(1) : phone;
+  const txt=buildReportText(true);
+  document.getElementById('reportPreview').innerHTML=`<div class="goldBox" style="white-space:pre-wrap">${esc(txt)}</div>`;
+  window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(txt),'_blank');
+}
+function sendFullReport(){
+  const phone=document.getElementById('reportPhone').value.replace(/\D/g,'');
+  if(!phone){ alert('Type phone number'); return; }
+  const wa=phone.startsWith('0') ? '27'+phone.slice(1) : phone;
+  const txt=buildReportText(false);
+  document.getElementById('reportPreview').innerHTML=`<div class="goldBox" style="white-space:pre-wrap">${esc(txt)}</div>`;
+  window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(txt),'_blank');
+}
+function printReport(){
+  const txt=buildReportText(true);
+  const w=window.open('','_blank'); w.document.write(`<pre style="font-family:Arial;white-space:pre-wrap">${esc(txt)}</pre>`); w.document.close(); w.print();
+}
+// ===== RENDER =====
+function renderAll(){
+  const today=new Date().toISOString().slice(0,10);
+  const filtered=getFilteredBooks();
+  const availAll=books.filter(b=>b.status==='AVAILABLE').length;
+  const outAll=issues.filter(i=>i.status==='OUT');
+  const overdueAll=outAll.filter(i=>i.dueDate && i.dueDate < today);
+  const lostAll=books.filter(b=>['LOST','DAMAGED','STOLEN','WORN OUT'].includes(b.status));
+  document.getElementById('kLearners').textContent=learners.length;
+  document.getElementById('kBooks').textContent=books.length;
+  document.getElementById('kAvail').textContent=availAll;
+  document.getElementById('kOut').textContent=outAll.length;
+  document.getElementById('kOverdue').textContent=overdueAll.length;
+  document.getElementById('kLost').textContent=lostAll.length;
+
+  const tree={};
+  filtered.forEach(b=>{
+    const g=getBookGroup(b); const gr=String(b.grade||'No Grade'); const s=b.subject||'No Subject'; const t=b.title||'No Title';
+    if(!tree[g]) tree[g]={total:0, avail:0, out:0, lost:0, grades:{}};
+    tree[g].total++; if(b.status==='AVAILABLE') tree[g].avail++;
+    if(['LOST','DAMAGED','STOLEN','WORN OUT'].includes(b.status)) tree[g].lost++;
+    if(!tree[g].grades[gr]) tree[g].grades[gr]={total:0, avail:0, subjects:{}};
+    tree[g].grades[gr].total++; if(b.status==='AVAILABLE') tree[g].grades[gr].avail++;
+    if(!tree[g].grades[gr].subjects[s]) tree[g].grades[gr].subjects[s]={total:0, avail:0, titles:{}};
+    tree[g].grades[gr].subjects[s].total++; if(b.status==='AVAILABLE') tree[g].grades[gr].subjects[s].avail++;
+    if(!tree[g].grades[gr].subjects[s].titles[t]) tree[g].grades[gr].subjects[s].titles[t]={total:0, avail:0, out:0, lost:0};
+    const tt=tree[g].grades[gr].subjects[s].titles[t]; tt.total++; if(b.status==='AVAILABLE') tt.avail++; if(['LOST','DAMAGED'].includes(b.status)) tt.lost++;
+  });
+  issues.filter(i=>i.status==='OUT').forEach(i=>{
+    const b=books.find(x=>x.barcode===i.barcode); if(!b) return;
+    const g=getBookGroup(b); const gr=String(b.grade||'No Grade'); const s=b.subject||'No Subject'; const t=b.title||'No Title';
+    if(tree[g]?.grades[gr]?.subjects[s]?.titles[t]) tree[g].grades[gr].subjects[s].titles[t].out++;
+    if(tree[g]) tree[g].out++;
+  });
+  let html='';
+  Object.keys(tree).sort().forEach(g=>{
+    const grp=tree[g];
+    const pct=grp.total ? Math.round(grp.avail/grp.total*100) : 0;
+    html+=`<div class="groupCard"><h3><span class="deptBadge">${esc(g)}</span> Total: ${grp.total} • Avail: ${grp.avail} (${pct}%) • Out: ${grp.out} • Lost: ${grp.lost}</h3><div class="bar"><div style="width:${pct}%"></div></div>`;
+    Object.keys(grp.grades).sort((a,b)=>(parseInt(a)||99)-(parseInt(b)||99)).forEach(gr=>{
+      const gg=grp.grades[gr];
+      html+=`<div style="margin-left:8px;margin-top:10px"><b><span class="gradeBadge">Grade ${esc(gr)}</span> Total: ${gg.total} • Avail: ${gg.avail}</b>`;
+      Object.keys(gg.subjects).sort().forEach(s=>{
+        const ss=gg.subjects[s];
+        html+=`<div style="margin-left:16px;margin-top:6px"><b><span class="subjectBadge">${esc(s)}</span> Total: ${ss.total} • Avail: ${ss.avail}</b><table><tr><th>Title</th><th>Total</th><th>Avail</th><th>Out</th><th>Lost</th></tr>`;
+        Object.keys(ss.titles).sort().forEach(t=>{
+          const tt=ss.titles[t];
+          html+=`<tr><td><b>${esc(t)}</b></td><td>${tt.total}</td><td>${tt.avail}</td><td>${tt.out}</td><td>${tt.lost ? `<b style="color:#dc2626">${tt.lost}</b>` : '0'}</td></tr>`;
+        });
+        html+=`</table></div>`;
+      });
+      html+=`</div>`;
+    });
+    html+=`</div>`;
+  });
+  document.getElementById('groupList').innerHTML = html || '<p class="small">No stock in this filter.</p>';
+  document.getElementById('overviewBox').innerHTML=`<div class="goldBox">📦 Filtered: <b>${filtered.length}</b> books • Total School: <b>${books.length}</b> • Learners: <b>${learners.length}</b> • Teachers: <b>${users.filter(u=>u.role==='TEACHER').length}</b> • Due: <b>30 November ${getDueDate().split('-')[0]}</b></div>`;
+
+  const byTitle={};
+  filtered.forEach(b=>{ const k=b.title+'|'+b.subject+'|'+b.grade+'|'+getBookGroup(b); if(!byTitle[k]) byTitle[k]={title:b.title, subject:b.subject, grade:b.grade, group:getBookGroup(b), total:0, avail:0}; byTitle[k].total++; if(b.status==='AVAILABLE') byTitle[k].avail++; });
+  const low=Object.values(byTitle).filter(t=>t.avail<5);
+  document.getElementById('lowBox').innerHTML = low.length ? `<table><tr><th>Title</th><th>Group / Grade / Subject</th><th>Avail</th></tr>${low.map(t=>`<tr><td><b>${esc(t.title)}</b></td><td><span class="deptBadge">${esc(t.group)}</span> <span class="gradeBadge">Grade ${esc(t.grade)}</span> <span class="subjectBadge">${esc(t.subject)}</span></td><td><b style="color:#dc2626">${t.avail}</b> / ${t.total}</td></tr>`).join('')}</table>` : '<p class="small">No low stock in filtered view. 🎉</p>';
+
+  const byClass={};
+  learners.forEach(l=>{ const c=l.className||'No Class'; if(!byClass[c]) byClass[c]={className:c, learners:0, out:0, overdue:0}; byClass[c].learners++; });
+  outAll.forEach(i=>{ const c=i.className||'No Class'; if(!byClass[c]) byClass[c]={className:c, learners:0, out:0, overdue:0}; byClass[c].out++; if(i.dueDate && i.dueDate < today) byClass[c].overdue++; });
+  const fClasses=Object.values(byClass).filter(c=> (c.className+'').toLowerCase().includes((document.getElementById('searchBox').value||'').toLowerCase())).sort((a,b)=>a.className.localeCompare(b.className));
+  document.getElementById('classList').innerHTML = fClasses.length ? `<table><tr><th>Class</th><th>Learners</th><th>Books Out</th><th>Overdue</th><th>Teacher</th></tr>${fClasses.map(c=>{
+    const teacher=users.find(u=>u.className===c.className && u.role==='TEACHER');
+    return `<tr><td><b>${esc(c.className)}</b></td><td>${c.learners}</td><td>${c.out}</td><td>${c.overdue ? `<b style="color:#dc2626">${c.overdue}</b>` : '0'}</td><td>${teacher ? esc(teacher.name)+' — '+esc((teacher.subjects||[teacher.subject]).filter(Boolean).join(', ')) : '<span style="color:#dc2626">No Teacher Assigned</span>'}</td></tr>`;
+  }).join('')}</table>` : '<p class="small">No classes yet.</p>';
+
+  const q=(document.getElementById('searchBox').value||'').toLowerCase();
+  const fTeachers=users.filter(u=>(u.name+' '+u.email+' '+u.role).toLowerCase().includes(q));
+  document.getElementById('teachersList').innerHTML = fTeachers.length ? `<table><tr><th>Name</th><th>Email / Login</th><th>Role / Class / Subject</th><th>Password</th><th>Action</th></tr>${fTeachers.map(u=>{
+    const myLearners=learners.filter(l=>l.className===u.className).length;
+    const myOut=issues.filter(i=>i.className===u.className && i.status==='OUT').length;
+    const subs=(u.subjects||[u.subject,u.subject2]).filter(Boolean).join(', ');
+    return `<tr><td><b>${esc(u.name)}</b></td><td>${esc(u.email)}</td><td>${esc(u.role)} • Class ${esc(u.className||'-')} • ${esc(subs||'-')}<br>Learners: ${myLearners} • Books Out: ${myOut}</td><td><b>${esc(getPw(u))}</b></td><td><button class="btn-small btn-blue" onclick="changeTeacherClass('${esc(u.id)}')">✏️ Change Class / Subject</button><button class="btn-small btn-gold" onclick="resetTeacher('${esc(u.id)}','${esc(u.email)}')">🔑 Reset 1234</button><button class="btn-small btn-red" onclick="deleteTeacher('${esc(u.id)}')">Delete</button></td></tr>`;
+  }).join('')}</table>` : '<p class="small">No users yet.</p>';
+
+  const fOverdue=outAll.filter(i=>i.dueDate && i.dueDate < today && (i.learnerName+' '+i.bookTitle).toLowerCase().includes(q));
+  const fOverdueFiltered = document.getElementById('fGroup').value || document.getElementById('fGrade').value || document.getElementById('fSubject').value ? fOverdue.filter(i=> filtered.find(f=>f.barcode===i.barcode)) : fOverdue;
+  document.getElementById('overdueList').innerHTML = fOverdueFiltered.length ? `<table><tr><th>Learner</th><th>Book</th><th>Due / Days Late</th><th>Action</th></tr>${fOverdueFiltered.map(i=>{
+    const days=Math.ceil((new Date(today)-new Date(i.dueDate))/86400000);
+    const b=books.find(x=>x.barcode===i.barcode);
+    return `<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}<br>Parent: ${esc(i.phone||'-')}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}${b ? `<br><span class="deptBadge">${esc(getBookGroup(b))}</span> <span class="gradeBadge">Grade ${esc(b.grade)}</span> <span class="subjectBadge">${esc(b.subject)}</span>` : ''}</td><td>${esc(i.dueDate)}<br><b style="color:#dc2626">${days} days late</b></td><td><button class="btn-small btn-gold" onclick="whatsappParent(${JSON.stringify(i).replace(/"/g,'&quot;')})">📱 Parent</button></td></tr>`;
+  }).join('')}</table>` : '<p class="small">No overdue books. 🎉</p>';
+
+  const fLost=filtered.filter(b=>['LOST','DAMAGED','STOLEN','WORN OUT'].includes(b.status));
+  document.getElementById('lostList').innerHTML = fLost.length ? `<table><tr><th>Barcode</th><th>Title</th><th>Group / Grade / Subject</th><th>Reason / Learner / Cost</th></tr>${fLost.map(b=>`<tr><td><b>${esc(b.barcode)}</b></td><td>${esc(b.title)}</td><td><span class="deptBadge">${esc(getBookGroup(b))}</span> <span class="gradeBadge">Grade ${esc(b.grade)}</span> <span class="subjectBadge">${esc(b.subject)}</span></td><td><b style="color:#dc2626">${esc(b.status)}</b><br>${esc(b.lostLearner||'-')} • R${b.lostCost||0}</td></tr>`).join('')}</table><p><b>Total Lost Cost (Filtered): R${fLost.reduce((s,b)=>s+(parseInt(b.lostCost)||0),0)}</b></p>` : '<p class="small">No lost / damaged in filtered view. 🎉</p>';
+
+  document.getElementById('reportPreview').innerHTML=`<div class="goldBox" style="white-space:pre-wrap">${esc(buildReportText(true))}</div>`;
 }
 function whatsappParent(issue){
   const phone=issue.phone || learners.find(l=>l.learnerId===issue.learnerId)?.phone || '';
-  if(!phone){ alert('No parent phone. Add in Librarian → Learners.'); return; }
+  if(!phone){ alert('No parent phone.'); return; }
   const clean=phone.replace(/\D/g,''); const wa=clean.startsWith('0') ? '27'+clean.slice(1) : clean;
-  const txt=`Hello, this is ${currentUser.schoolName} Library. ⚠️ OVERDUE: Your child ${issue.learnerName} (${issue.learnerId}, ${issue.className}) has not returned: ${issue.bookTitle} (${issue.barcode}) — Was due ${issue.dueDate}. Please return tomorrow, or replace / pay. Thank you. — ${currentUser.schoolName}`;
+  const txt=`Hello, this is ${schoolName} — Principal. ⚠️ OVERDUE: Your child ${issue.learnerName} (${issue.learnerId}, ${issue.className}) has not returned: ${issue.bookTitle} (${issue.barcode}) — Due ${issue.dueDate}. Please return tomorrow, or replace / pay. Thank you.`;
   window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(txt),'_blank');
-}
-function whatsappAllOverdue(){
-  const today=new Date().toISOString().slice(0,10);
-  const overdue=issues.filter(i=>i.status==='OUT' && i.dueDate && i.dueDate < today);
-  if(!overdue.length){ alert('No overdue books.'); return; }
-  if(!confirm(`WhatsApp ${overdue.length} overdue parents one by one?`)) return;
-  overdue.forEach((o,idx)=>setTimeout(()=>whatsappParent(o), idx*800));
-}
-
-// ===== RENDER =====
-function renderAll(){
-  const q=(document.getElementById('searchBox').value||'').toLowerCase();
-  const today=new Date().toISOString().slice(0,10);
-  const outIssues=issues.filter(i=>i.status==='OUT');
-  const overdue=outIssues.filter(i=>i.dueDate && i.dueDate < today);
-  const returned=issues.filter(i=>i.status==='RETURNED').length;
-  document.getElementById('kLearners').textContent=learners.length;
-  document.getElementById('kBooks').textContent=books.length;
-  document.getElementById('kOut').textContent=outIssues.length;
-  document.getElementById('kOverdue').textContent=overdue.length;
-
-  if(schoolData){
-    const sb=document.getElementById('schoolBox'); sb.style.display='block';
-    sb.innerHTML=`<b>${esc(schoolData.name)}</b> • EMIS: ${esc(schoolData.emis||'-')} • Package: <b>${esc(schoolData.package||'STANDARD')}</b> • Monthly: <b>R${schoolData.monthly||500}</b> • Status: <b>${esc(schoolData.status||'ACTIVE')}</b>${schoolData.status==='SUSPENDED' ? ' — ⛔ SUSPENDED. Pay to reactivate. WhatsApp Vusi.' : ''}`;
-  }
-
-  // Overview
-  const totalBooks=books.length || 1;
-  const avail=books.filter(b=>b.status!=='OUT').length;
-  const outRate=Math.round((outIssues.length/totalBooks)*100);
-  document.getElementById('overviewBox').innerHTML=`<div class="goldBox">📚 <b>${avail}</b> books available / <b>${outIssues.length}</b> out / <b>${overdue.length}</b> overdue • <b>${returned}</b> returned total<br>👥 Learners: <b>${learners.length}</b> • Teachers: <b>${teachers.length}</b> • Books Out Rate: <b>${outRate}%</b><br>${overdue.length ? `⚠️ <b>${overdue.length}</b> overdue — WhatsApp parents in Overdue tab.` : '🎉 No overdue books.'}</div>`;
-
-  // By class
-  const byClass={};
-  outIssues.forEach(i=>{ byClass[i.className||'No Class']=(byClass[i.className||'No Class']||0)+1; });
-  const classRows=Object.entries(byClass).sort((a,b)=>b[1]-a[1]);
-  document.getElementById('classBox').innerHTML = classRows.length ? `<table><tr><th>Class</th><th>Books Out</th></tr>${classRows.map(([c,n])=>`<tr><td>${esc(c)}</td><td><b>${n}</b></td></tr>`).join('')}</table>` : '<p class="small">No books out yet.</p>';
-
-  const recent=[...issues].sort((a,b)=>(b.issueDate||'').localeCompare(a.issueDate||'')).slice(0,10);
-  document.getElementById('recentBox').innerHTML = recent.length ? `<table><tr><th>Learner</th><th>Book</th><th>Due</th><th>Status</th></tr>${recent.map(i=>`<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}</td><td>${esc(i.dueDate||'-')}</td><td>${i.status==='OUT' ? (i.dueDate < today ? '<b style="color:#dc2626">OVERDUE</b>' : 'OUT') : 'RETURNED'}</td></tr>`).join('')}</table>` : '<p class="small">No issues yet.</p>';
-
-  // Teachers
-  const fTeachers=teachers.filter(t=>(t.name+' '+t.email+' '+t.className).toLowerCase().includes(q));
-  document.getElementById('teachersList').innerHTML = fTeachers.length ? `<table><tr><th>Name</th><th>Email (Login)</th><th>Class / Subject</th><th>Password</th><th>Action</th></tr>${fTeachers.map(t=>`<tr><td><b>${esc(t.name)}</b><br>${esc(t.role)}</td><td>${esc(t.email)}</td><td>${esc(t.className||'-')} / ${esc(t.subject||'-')}</td><td><b>${esc(getPw(t))}</b></td><td><button class="btn-small btn-gold" onclick="resetTeacher('${esc(t.id)}','${esc(t.email)}')">🔑 Reset to 1234</button><button class="btn-small btn-red" onclick="deleteTeacher('${esc(t.id)}')">Delete</button></td></tr>`).join('')}</table>` : '<p class="small">No teachers yet. Add above, or in Librarian page.</p>';
-
-  // Learners
-  const fLearners=learners.filter(l=>(l.name+' '+l.learnerId+' '+l.className).toLowerCase().includes(q));
-  document.getElementById('learnersList').innerHTML = fLearners.length ? `<table><tr><th>Name</th><th>ID</th><th>Class</th><th>Phone</th><th>Books Out</th></tr>${fLearners.map(l=>{
-    const cnt=outIssues.filter(i=>i.learnerId===l.learnerId).length;
-    return `<tr><td>${esc(l.name)}</td><td>${esc(l.learnerId)}</td><td>${esc(l.className)}</td><td>${esc(l.phone||'-')}</td><td><b>${cnt}</b></td></tr>`;
-  }).join('')}</table>` : '<p class="small">No learners yet. Librarian adds them.</p>';
-
-  // Overdue
-  const fOver=overdue.filter(i=>(i.learnerName+' '+i.bookTitle+' '+i.barcode).toLowerCase().includes(q));
-  document.getElementById('overdueList').innerHTML = fOver.length ? `<table><tr><th>Learner</th><th>Book</th><th>Due</th><th>Days Late</th><th>Action</th></tr>${fOver.map(i=>{
-    const days=Math.ceil((new Date(today)-new Date(i.dueDate))/86400000);
-    return `<tr><td>${esc(i.learnerName)}<br>${esc(i.learnerId)} — ${esc(i.className)}<br>Parent: ${esc(i.phone||'-')}</td><td>${esc(i.bookTitle)}<br>${esc(i.barcode)}</td><td>${esc(i.dueDate)}</td><td><b style="color:#dc2626">${days} days</b></td><td><button class="btn-small btn-gold" onclick="whatsappParent(${JSON.stringify(i).replace(/"/g,'&quot;')})">📱 Parent</button></td></tr>`;
-  }).join('')}</table>` : '<p class="small">No overdue books. 🎉</p>';
-
-  // Finance
-  document.getElementById('financeBox').innerHTML=`<div class="goldBox"><b>School:</b> ${esc(schoolData?.name||currentUser.schoolName)}<br><b>Package:</b> ${esc(schoolData?.package||'STANDARD')} • <b>Monthly:</b> R${schoolData?.monthly||500}<br><b>Status:</b> ${esc(schoolData?.status||'ACTIVE')}<br><b>Principal:</b> ${esc(schoolData?.principalName||currentUser.name)} • ${esc(schoolData?.principalEmail||currentUser.email)}<br><br>${schoolData?.status==='SUSPENDED' ? '<b style="color:#dc2626">⛔ SUSPENDED — Pay to reactivate. WhatsApp Vusi below.</b>' : '✅ ACTIVE — You can use all features.'}</div><p class="small">For invoice / payment proof, WhatsApp Vusi on 078 023 3263. Keep proof of payment.</p>`;
 }
 loadAll();
 </script>
