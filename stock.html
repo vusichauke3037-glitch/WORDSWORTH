@@ -1,437 +1,245 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Stock Organized By Group / Department / Grade / Subject</title><meta name="theme-color" content="#0a1f4d">
-<link rel="icon" type="image/png" href="logo.png">
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stock - Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
-  authDomain: "makhanani-ltsm.firebaseapp.com",
-  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
-  projectId: "makhanani-ltsm",
-  storageBucket: "makhanani-ltsm.firebasestorage.app",
-  messagingSenderId: "247180363183",
-  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
-  measurementId: "G-PEST1XFCR8"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const rtdb = firebase.database();
-</script>
 <style>
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}
-header{background:#0a1f4d;color:#fff;padding:14px;text-align:center}header h1{margin:0;font-size:20px}header p{margin:4px 0 0;opacity:.9;font-size:12px;line-height:1.5}
-header img{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:50%;padding:6px;display:block;margin:0 auto 8px}
-main{max-width:1100px;margin:auto;padding:12px}.card{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-h2{margin:0 0 10px;color:#0a1f4d;font-size:17px;border-bottom:2px solid #d4af37;padding-bottom:6px}
-h3{color:#0a1f4d;margin:14px 0 6px;font-size:14px}
-label{font-weight:900;font-size:12px;color:#0a1f4d;display:block;margin-top:10px}
-input,select,textarea{width:100%;padding:11px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;margin-top:5px}
-input:focus,select:focus{border-color:#0a1f4d;outline:none}
-.btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer;margin-top:10px}
-.btn-blue{background:#0a1f4d;color:#fff}.btn-green{background:#059669;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-red{background:#dc2626;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}
-.btn-small{width:auto;padding:7px 10px;font-size:12px;margin:2px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{flex:1;min-width:90px;padding:10px;border:none;border-radius:20px;font-weight:900;font-size:12px;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}
-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:7px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
-.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
-.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
-.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
-.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:10px;margin-top:10px;font-size:13px;line-height:1.6}
-.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}.kpi div{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}.kpi b{display:block;font-size:18px;color:#0a1f4d}.kpi span{font-size:11px;color:#64748b}
-.topnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}.topnav a{background:rgba(255,255,255,.2);color:#fff;text-decoration:none;padding:6px 10px;border-radius:20px;font-weight:900;font-size:11px}
-.small{font-size:12px;color:#64748b}
-#reader{width:100%;max-width:420px;margin:10px auto;border:2px solid #0a1f4d;border-radius:12px;overflow:hidden;display:none}
-#reader video{width:100% !important}
-.scanBox{border:2px dashed #0a1f4d;border-radius:12px;padding:10px;text-align:center;margin-top:10px;background:#f8fafc}
-.lastScan{background:#dcfce7;border:2px solid #059669;border-radius:10px;padding:10px;font-size:16px;font-weight:900;text-align:center;margin-top:10px;display:none}
-.groupCard{border:2px solid #0a1f4d;border-radius:12px;padding:12px;margin-top:12px;background:#fff}
-.groupCard h3{margin:0 0 6px;font-size:16px}
-.deptBadge{display:inline-block;background:#0a1f4d;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin-right:4px}
-.gradeBadge{display:inline-block;background:#d4af37;color:#0a1f4d;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin-right:4px}
-.subjectBadge{display:inline-block;background:#dcfce7;color:#166534;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin-right:4px}
-.filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
-@media(max-width:700px){.kpi{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr 1fr}}
-</style>
-</head>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
+header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
+header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
+.wrap{max-width:1200px;margin:0 auto;padding:12px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+h2{margin:0 0 10px;font-size:16px}h3{margin:12px 0 8px;font-size:14px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
+input{cursor:text}
+select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
+.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}
+.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-teal{background:#0d9488;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
+.kpi b{font-size:20px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:middle}th{background:#0a1f4d;color:#fff}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-ok{background:#dcfce7;color:#166534}.badge-low{background:#fef3c7;color:#92400e}.badge-out{background:#fee2e2;color:#991b1b}.badge-lost{background:#111827;color:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{flex:1;min-width:110px;padding:12px;border:none;border-radius:8px;background:#e2e8f0;font-weight:900;cursor:pointer}.tabs button.active{background:#0a1f4d;color:#fff}
+.tab{display:none}.tab.active{display:block}
+.group{background:#0a1f4d;color:#fff;border-radius:10px;padding:12px;margin-top:14px;font-weight:900}
+.subgroup{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;margin-top:10px;font-weight:900;color:#0a1f4d}
+.search-box{position:relative}.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#ef4444;color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-weight:900;cursor:pointer;font-size:14px;display:none}.search-count{font-size:11px;color:#64748b;margin-top:4px;font-weight:700}
+@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}table{font-size:12px}}
+</style></head>
 <body>
-<header>
-<img src="logo.png" alt="Makhanani Logo" onerror="this.style.display='none'">
-<h1>📦 Stock — Group / Department / Grade / Subject</h1><p id="userLine">Loading...</p>
-<div class="topnav"><a href="index.html">🏠 Login</a><a href="librarian.html">📚 Librarian</a><a href="issue.html">📖 Issue / Return</a><a href="principal.html">📊 Principal</a><a href="barcode.html">🏷️ Barcodes</a><a href="profile.html">👤 Profile</a></div>
+<header><h1>📦 STOCK — MAKHANANI LTSM 2.0</h1><p>GROUP / DEPARTMENT / GRADE / SUBJECT • YOUR SCHOOL ONLY • ALL RANKS CAN VIEW • ADMIN / LIBRARIAN CAN EDIT</p>
+<div id="taskbar"></div><script src="nav.js"></script>
+<script>guardPage(1,'Stock');</script>
 </header>
-<main>
-<div class="card">
-<div class="kpi"><div><b id="kTotal">0</b><span>Total Books</span></div><div><b id="kAvail">0</b><span>Available</span></div><div><b id="kOut">0</b><span>Out</span></div><div><b id="kLost">0</b><span>Lost / Damaged</span></div></div>
-<div id="statusBox" class="info">⏳ Loading stock from Firebase...</div>
-<div class="goldBox"><b>How Stock Is Organized:</b><br>🏷️ <b>Group / Department</b> → e.g. FOUNDATION PHASE, LANGUAGES, MATHEMATICS & SCIENCES, HUMANITIES, COMMERCE<br>📚 <b>Grade</b> inside Group → e.g. Grade 10 inside MATHEMATICS & SCIENCES<br>📖 <b>Subject</b> inside Grade → e.g. Mathematics, Physical Sciences<br>📗 <b>Title</b> inside Subject → e.g. Mathematics Grade 10 — Copies counted per Title</div>
-<div class="tabs" style="margin-top:10px"><button class="active" onclick="showTab('overview',this)">📊 By Group / Dept</button><button onclick="showTab('add',this)">➕ Add Stock</button><button onclick="showTab('take',this)">📷 Stock Take</button><button onclick="showTab('lost',this)">⚠️ Lost / Damaged</button></div>
-<div class="filters">
-<div><label style="margin-top:0">Filter Group / Dept</label><select id="fGroup" onchange="renderAll()"><option value="">All Groups</option></select></div>
-<div><label style="margin-top:0">Filter Grade</label><select id="fGrade" onchange="renderAll()"><option value="">All Grades</option></select></div>
-<div><label style="margin-top:0">Filter Subject</label><select id="fSubject" onchange="renderAll()"><option value="">All Subjects</option></select></div>
-<div><label style="margin-top:0">Search</label><input id="searchBox" placeholder="🔍 Title / Barcode..." oninput="renderAll()" style="margin-top:0"></div>
-</div>
-<button class="btn btn-grey" onclick="clearFilters()">🔄 Clear Filters — Show All</button>
+<div class="wrap">
+<div class="info" id="roleInfo">Loading...</div>
+
+<div class="kpi">
+<div onclick="showTab('bygroup')"><b id="kpiTotal">0</b><span>📖 TOTAL BOOKS</span></div>
+<div onclick="showTab('bygroup')"><b id="kpiAvail">0</b><span>✅ AVAILABLE</span></div>
+<div onclick="showTab('bygroup')"><b id="kpiOut">0</b><span>📤 OUT / ISSUED</span></div>
+<div onclick="showTab('bygroup')"><b id="kpiLost">0</b><span>⚫ LOST / DAMAGED</span></div>
 </div>
 
-<!-- OVERVIEW -->
-<div class="card" id="tab-overview">
-<h2>📊 Stock By Group / Department → Grade → Subject</h2>
-<div id="overviewBox"></div>
-<div id="groupList"></div>
-<h3>Low Stock — Less Than 5 Available (In Filtered View)</h3>
-<div id="lowBox"></div>
+<div class="card"><h2>📦 How Stock Is Organized</h2><div class="info"><b>🏷️ Group / Department</b> → e.g. FOUNDATION PHASE, LANGUAGES, MATHEMATICS & SCIENCES, HUMANITIES, COMMERCE<br><b>📚 Grade</b> inside Group → e.g. Grade 10 inside MATHEMATICS & SCIENCES<br><b>📖 Subject</b> inside Grade → e.g. Mathematics, Physical Sciences<br><b>📗 Title</b> inside Subject → e.g. Mathematics Grade 10 — Copies counted per Title</div></div>
+
+<div class="tabs">
+<button id="tabBtnBygroup" class="active" onclick="showTab('bygroup')">📊 By Group / Dept</button>
+<button id="tabBtnAdd" onclick="showTab('add')">➕ Add Stock</button>
+<button id="tabBtnTake" onclick="showTab('take')">📷 Stock Take</button>
 </div>
 
-<!-- ADD STOCK -->
-<div class="card" id="tab-add" style="display:none">
-<h2>➕ Add Stock — Must Pick Group / Dept + Grade + Subject</h2>
-<div class="goldBox">Every book MUST have Group + Grade + Subject. That is how Stock, Principal Report, and Teacher lists are organized. Old books without Group get auto-grouped from Subject below.</div>
-<label>🏷️ Group / Department *</label>
-<select id="aGroup">
-<option value="">-- Pick Group / Department --</option>
-<option>FOUNDATION PHASE</option>
-<option>INTERMEDIATE PHASE</option>
-<option>SENIOR PHASE</option>
-<option>FET PHASE</option>
-<option>LANGUAGES</option>
-<option>MATHEMATICS & SCIENCES</option>
-<option>HUMANITIES</option>
-<option>COMMERCE</option>
-<option>TECHNOLOGY & ARTS</option>
-<option>LIFE SKILLS / LO</option>
-</select>
-<label>Or Type New Group / Department (If Not In List)</label><input id="aGroupCustom" placeholder="e.g. SPORTS">
-<label>📚 Grade *</label><select id="aGrade"><option value="">-- Pick Grade --</option><option>R</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select>
-<label>📖 Subject *</label><input id="aSubject" placeholder="e.g. Mathematics" list="subjectList"><datalist id="subjectList"></datalist>
-<label>📗 Title *</label><input id="aTitle" placeholder="e.g. Mathematics Grade 10" list="titleList"><datalist id="titleList"></datalist>
-<label>Author</label><input id="aAuthor" placeholder="e.g. Maskew Miller">
-<label>How Many Copies Arrived?</label><input id="aCount" type="number" value="10" min="1" max="200">
-<label>Supplier / Note</label><input id="aNote" placeholder="e.g. DBE Delivery 12 Nov">
-<button class="btn btn-green" onclick="addStock()">➕ ADD STOCK + GENERATE BARCODES</button>
+<!-- BY GROUP -->
+<div id="tab-bygroup" class="tab active"><div class="card">
+<h2>📊 Stock — By Group / Dept</h2>
+<label>🔍 Search Stock — Title / Subject / Group / Grade</label>
+<div class="search-box"><input id="stockSearch" placeholder="🔍 Type to search... e.g. MATHS, ENGLISH, GRADE 10" oninput="renderStock()"><button class="search-clear" id="clearStockSearchBtn" onclick="clearStockSearch()">✕</button></div>
+<div class="search-count" id="stockCount">Showing stock</div>
+<div class="row"><div><label>🏷️ Filter Group</label><select id="filterGroup" onchange="renderStock()"><option value="">🏷️ ALL GROUPS</option><option value="FOUNDATION PHASE">FOUNDATION PHASE</option><option value="LANGUAGES">LANGUAGES</option><option value="MATHEMATICS & SCIENCES">MATHEMATICS & SCIENCES</option><option value="HUMANITIES">HUMANITIES</option><option value="COMMERCE">COMMERCE</option></select></div><div><label>📚 Filter Grade</label><select id="filterGrade" onchange="renderStock()"><option value="">📚 ALL GRADES</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option></select></div><div><label>📖 Filter Subject</label><select id="filterSubject" onchange="renderStock()"><option value="">📖 ALL SUBJECTS</option><option value="MATHS">MATHS</option><option value="MATHEMATICS">MATHEMATICS</option><option value="ENGLISH">ENGLISH</option><option value="SCIENCE">SCIENCE</option><option value="PHYSICAL SCIENCES">PHYSICAL SCIENCES</option><option value="HISTORY">HISTORY</option><option value="GEOGRAPHY">GEOGRAPHY</option><option value="ACCOUNTING">ACCOUNTING</option><option value="BUSINESS">BUSINESS</option><option value="LIFE SCIENCES">LIFE SCIENCES</option></select></div></div>
+<div id="stockList"></div>
+</div></div>
+
+<!-- ADD -->
+<div id="tab-add" class="tab"><div class="card">
+<h2>➕ Add Stock — New Title</h2>
+<div class="info" id="addInfo"></div>
+<label>🏷️ Group / Department *</label><select id="newGroup"><option value="">-- PICK GROUP --</option><option value="FOUNDATION PHASE">FOUNDATION PHASE</option><option value="LANGUAGES">LANGUAGES</option><option value="MATHEMATICS & SCIENCES">MATHEMATICS & SCIENCES</option><option value="HUMANITIES">HUMANITIES</option><option value="COMMERCE">COMMERCE</option></select>
+<label>📚 Grade *</label><select id="newGrade"><option value="">-- PICK GRADE --</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option></select>
+<label>📖 Subject *</label><select id="newSubject"><option value="">-- PICK SUBJECT --</option><option value="MATHS">MATHS</option><option value="MATHEMATICS">MATHEMATICS</option><option value="ENGLISH">ENGLISH</option><option value="SCIENCE">SCIENCE</option><option value="PHYSICAL SCIENCES">PHYSICAL SCIENCES</option><option value="HISTORY">HISTORY</option><option value="GEOGRAPHY">GEOGRAPHY</option><option value="ACCOUNTING">ACCOUNTING</option><option value="BUSINESS">BUSINESS</option><option value="LIFE SCIENCES">LIFE SCIENCES</option></select>
+<label>📗 Title *</label><input id="newTitle" placeholder="e.g. MATHEMATICS GRADE 10 TEXTBOOK">
+<label>📦 Total Copies *</label><input id="newTotal" type="number" value="20" min="1">
+<label>📤 Out / Issued Now</label><input id="newOut" type="number" value="0" min="0">
+<label>⚫ Lost / Damaged</label><input id="newLost" type="number" value="0" min="0">
+<button class="btn btn-green btn-full" onclick="addStock()">➕ ADD STOCK →</button>
 <div id="addMsg"></div>
-<button class="btn btn-gold" onclick="goPrintLast()">🏷️ Print Barcodes For Last Added →</button>
-</div>
+</div></div>
 
-<!-- STOCK TAKE -->
-<div class="card" id="tab-take" style="display:none">
-<h2>📷 Stock Take — Scan Books On Shelf</h2>
-<div class="goldBox">Filter by Group / Grade / Subject at top first, then Stock Take will check <b>only that filtered group</b>. Example: Filter Group = MATHEMATICS & SCIENCES + Grade 10 → Take only counts those books.</div>
-<div class="scanBox">
-<b>📷 Camera Scan — Stock Take</b><br><span class="small">Scan each book once. Duplicate ignored. Camera keeps scanning.</span><br>
-<button class="btn btn-blue" id="scanBtn" onclick="toggleScanner()">📷 START CAMERA SCAN</button>
-<div id="reader"></div>
-<div id="lastScan" class="lastScan"></div>
-<div id="scanMsg" class="small"></div>
-</div>
-<label>Or Type Barcode + Enter</label>
-<input id="takeBarcode" placeholder="Type TP000001 + Enter" onkeydown="if(event.key==='Enter'){event.preventDefault(); addTakeCode(this.value.trim().toUpperCase()); this.value='';}">
-<div id="takeInfo" class="info">Scanned: <b id="takeCount">0</b> • In Filtered Group: <b id="takeUnique">0</b></div>
+<!-- TAKE -->
+<div id="tab-take" class="tab"><div class="card">
+<h2>📷 Stock Take — Count What Is On Shelf</h2>
+<div class="info">Count each title on the shelf. Type the <b>Actual Count</b>. Tap <b>SAVE</b> to update Available.<br>Available = Total - Out - Lost. Stock Take sets Total = Actual + Out + Lost.</div>
 <div id="takeList"></div>
-<button class="btn btn-green" onclick="finishTake()">✅ FINISH STOCK TAKE — Show Missing</button>
-<button class="btn btn-red" onclick="clearTake()">🗑️ Clear Stock Take</button>
+<button class="btn btn-gold btn-full" onclick="saveStockTake()">💾 SAVE STOCK TAKE →</button>
 <div id="takeMsg"></div>
+</div></div>
+
 </div>
-
-<!-- LOST -->
-<div class="card" id="tab-lost" style="display:none">
-<h2>⚠️ Lost / Damaged — By Group / Dept</h2>
-<div id="lostList"></div>
-<label>Barcode — Scan or Type</label><input id="lostBarcode" placeholder="e.g. TP000001">
-<label>Reason</label><select id="lostReason"><option>LOST</option><option>DAMAGED</option><option>STOLEN</option><option>WORN OUT</option></select>
-<label>Learner Who Lost It</label><input id="lostLearner" placeholder="e.g. Thandi Mokoena — 10A001">
-<label>Charge (R)</label><input id="lostCost" type="number" value="150">
-<label>Note</label><input id="lostNote" placeholder="e.g. Will replace next week">
-<button class="btn btn-red" onclick="markLost()">⚠️ MARK LOST / DAMAGED</button>
-<div id="lostMsg"></div>
-<button class="btn btn-green" onclick="exportLostWhatsApp()">📱 WhatsApp Lost List To Principal</button>
-</div>
-
-<div class="card"><button class="btn btn-grey" onclick="logout()">🚪 Logout</button><button class="btn btn-blue" onclick="location.href='librarian.html'">📚 Go To Librarian →</button></div>
-</main>
-
 <script>
-let currentUser=null, schoolId='', schoolName='', schoolPrefix='', books=[], issues=[], learners=[];
-let useDemo=false, lastAdded=[];
-let scanner=null, scanning=false, lastCode='', lastTime=0, takeCodes=[];
-const DEMO={
-  schoolName:'THUTO PRIMARY',
-  books:[
-    {id:'TP000001', title:'Mathematics Grade 10', barcode:'TP000001', subject:'Mathematics', grade:'10', group:'MATHEMATICS & SCIENCES', author:'Maskew Miller', status:'AVAILABLE'},
-    {id:'TP000002', title:'Mathematics Grade 10', barcode:'TP000002', subject:'Mathematics', grade:'10', group:'MATHEMATICS & SCIENCES', author:'Maskew Miller', status:'AVAILABLE'},
-    {id:'TP000003', title:'English Grade 10', barcode:'TP000003', subject:'English', grade:'10', group:'LANGUAGES', author:'Oxford', status:'OUT'},
-    {id:'TP000004', title:'English Grade 10', barcode:'TP000004', subject:'English', grade:'10', group:'LANGUAGES', author:'Oxford', status:'LOST'},
-    {id:'TP000005', title:'Life Skills Grade 3', barcode:'TP000005', subject:'Life Skills', grade:'3', group:'FOUNDATION PHASE', author:'DBE', status:'AVAILABLE'},
-  ],
-  issues:[{id:'i1', barcode:'TP000003', bookTitle:'English Grade 10', learnerName:'Thandi Mokoena', learnerId:'10A001', className:'10A', dueDate:'2026-11-10', status:'OUT'}],
-  learners:[{learnerId:'10A001', name:'Thandi Mokoena', className:'10A'}]
-};
-// Auto Group from Subject if old book has no group
-function autoGroup(subject, grade){
-  const s=(subject||'').toLowerCase(); const g=parseInt(grade)||0;
-  if(g>=1 && g<=3) return 'FOUNDATION PHASE';
-  if(g>=4 && g<=6) return 'INTERMEDIATE PHASE';
-  if(s.includes('math') || s.includes('science') || s.includes('physics') || s.includes('chemistry') || s.includes('biology') || s.includes('life science') || s.includes('natural')) return 'MATHEMATICS & SCIENCES';
-  if(s.includes('english') || s.includes('afrikaans') || s.includes('zulu') || s.includes('xhosa') || s.includes('sepedi') || s.includes('language') || s.includes('home language') || s.includes('first additional')) return 'LANGUAGES';
-  if(s.includes('history') || s.includes('geography') || s.includes('social')) return 'HUMANITIES';
-  if(s.includes('account') || s.includes('business') || s.includes('econom') || s.includes('ems')) return 'COMMERCE';
-  if(s.includes('technology') || s.includes('art') || s.includes('creative')) return 'TECHNOLOGY & ARTS';
-  if(s.includes('life orientation') || s.includes('lo') || s.includes('life skill')) return 'LIFE SKILLS / LO';
-  if(g>=7 && g<=9) return 'SENIOR PHASE';
-  if(g>=10 && g<=12) return 'FET PHASE';
-  return 'GENERAL';
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const rtdb=firebase.database();
+function toCaps(s){return String(s||'').trim().toUpperCase();}
+let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
+let mySchoolId=user?.schoolId||'WHS';
+let mySchoolName=user?.schoolName||mySchoolId;
+let myRole=user?.role||'Teacher';
+let canEdit=['Super Admin','Admin','Principal','Librarian','HOD'].includes(myRole);
+let stock=[];
+function showTab(t){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');if(t==='take') renderTake();}
+function clearStockSearch(){document.getElementById('stockSearch').value='';document.getElementById('clearStockSearchBtn').style.display='none';renderStock();}
+
+// ===== FIX: DEMO FIRST, NEVER STUCK =====
+function demoData(){
+  stock=[
+    {id:'s1',group:'MATHEMATICS & SCIENCES',grade:'10',subject:'MATHEMATICS',title:'MATHEMATICS GRADE 10 TEXTBOOK',total:25,out:5,lost:0,schoolId:mySchoolId},
+    {id:'s2',group:'MATHEMATICS & SCIENCES',grade:'10',subject:'MATHEMATICS',title:'MATHEMATICS GRADE 10 WORKBOOK',total:20,out:2,lost:1,schoolId:mySchoolId},
+    {id:'s3',group:'LANGUAGES',grade:'10',subject:'ENGLISH',title:'ENGLISH GRADE 10 TEXTBOOK',total:18,out:3,lost:0,schoolId:mySchoolId},
+    {id:'s4',group:'LANGUAGES',grade:'11',subject:'ENGLISH',title:'ENGLISH GRADE 11 TEXTBOOK',total:15,out:4,lost:0,schoolId:mySchoolId},
+    {id:'s5',group:'MATHEMATICS & SCIENCES',grade:'11',subject:'PHYSICAL SCIENCES',title:'PHYSICAL SCIENCES GRADE 11 TEXTBOOK',total:12,out:6,lost:1,schoolId:mySchoolId},
+    {id:'s6',group:'MATHEMATICS & SCIENCES',grade:'11',subject:'LIFE SCIENCES',title:'LIFE SCIENCES GRADE 11 TEXTBOOK',total:14,out:1,lost:0,schoolId:mySchoolId},
+    {id:'s7',group:'HUMANITIES',grade:'12',subject:'HISTORY',title:'HISTORY GRADE 12 TEXTBOOK',total:12,out:2,lost:0,schoolId:mySchoolId},
+    {id:'s8',group:'COMMERCE',grade:'10',subject:'ACCOUNTING',title:'ACCOUNTING GRADE 10 TEXTBOOK',total:10,out:0,lost:0,schoolId:mySchoolId},
+    {id:'s9',group:'COMMERCE',grade:'11',subject:'BUSINESS',title:'BUSINESS STUDIES GRADE 11 TEXTBOOK',total:9,out:1,lost:0,schoolId:mySchoolId},
+    {id:'s10',group:'MATHEMATICS & SCIENCES',grade:'12',subject:'PHYSICAL SCIENCES',title:'PHYSICAL SCIENCES GRADE 12 TEXTBOOK',total:8,out:3,lost:2,schoolId:mySchoolId},
+  ];
+  renderAll('Demo stock — Loading real stock...');
 }
-function getBookGroup(b){ return b.group || b.department || autoGroup(b.subject, b.grade); }
-function esc(s){ return String(s||'').replace(/</g,'&lt;'); }
-function getUser(){ try{ return JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){ return null; } }
-function logout(){ stopScanner(); localStorage.removeItem('makhanani_user'); location.href='index.html'; }
-function showTab(name, btn){
-  ['overview','add','take','lost'].forEach(t=>document.getElementById('tab-'+t).style.display = t===name ? 'block':'none');
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  if(name!=='take' && scanning) stopScanner();
+function avail(b){return Math.max(0,parseInt(b.total||0)-parseInt(b.out||0)-parseInt(b.lost||0));}
+function renderAll(note){
+  document.getElementById('roleInfo').innerHTML=`📦 <b>${toCaps(user?.name||'')}</b> — Role: <b>${toCaps(myRole)}</b> — School: <b>${toCaps(mySchoolName)} (${mySchoolId})</b> — ${canEdit?'You can <b>Add / Edit Stock</b>':'You can <b>View Only</b> — Librarian / Admin can edit'} ${note?'<br><small>'+note+'</small>':''}`;
+  document.getElementById('addInfo').innerHTML=canEdit?`<b>You can add stock.</b> Fill Group / Grade / Subject / Title / Copies.`:`<b>View Only:</b> Only Super Admin / Admin / Principal / Librarian / HOD can add stock. You are ${myRole}.`;
+  let total=stock.reduce((s,b)=>s+parseInt(b.total||0),0);
+  let out=stock.reduce((s,b)=>s+parseInt(b.out||0),0);
+  let lost=stock.reduce((s,b)=>s+parseInt(b.lost||0),0);
+  document.getElementById('kpiTotal').textContent=total;
+  document.getElementById('kpiAvail').textContent=Math.max(0,total-out-lost);
+  document.getElementById('kpiOut').textContent=out;
+  document.getElementById('kpiLost').textContent=lost;
+  renderStock();
 }
-function getPrefix(name){ return (name||'SCHOOL').trim().split(/\s+/).map(w=>w.replace(/[^A-Za-z]/g,'').charAt(0).toUpperCase()).join('') || 'SC'; }
-function pad(n,len){ return String(n).padStart(len,'0'); }
-function clearFilters(){ document.getElementById('fGroup').value=''; document.getElementById('fGrade').value=''; document.getElementById('fSubject').value=''; document.getElementById('searchBox').value=''; renderAll(); }
-function beep(){
-  try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(); const g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value=880; o.type='sine'; g.gain.value=0.2; o.start(); o.stop(ctx.currentTime+0.15); }catch(e){}
-  try{ if(navigator.vibrate) navigator.vibrate(100); }catch(e){}
-}
-function getFiltered(){
-  const fg=document.getElementById('fGroup').value; const fgr=document.getElementById('fGrade').value; const fs=document.getElementById('fSubject').value; const q=(document.getElementById('searchBox').value||'').toLowerCase();
-  return books.filter(b=>{
-    if(fg && getBookGroup(b)!==fg) return false;
-    if(fgr && String(b.grade)!==fgr) return false;
-    if(fs && (b.subject||'')!==fs) return false;
-    if(q && !(b.title+' '+b.barcode+' '+(b.subject||'')).toLowerCase().includes(q)) return false;
+function renderStock(){
+  let q=document.getElementById('stockSearch').value.trim().toUpperCase();
+  document.getElementById('clearStockSearchBtn').style.display=q?'block':'none';
+  let fg=document.getElementById('filterGroup').value;
+  let fgrade=document.getElementById('filterGrade').value;
+  let fsub=document.getElementById('filterSubject').value;
+  let list=stock.filter(b=>{
+    if(fg && b.group!==fg) return false;
+    if(fgrade && String(b.grade)!==String(fgrade)) return false;
+    if(fsub && b.subject!==fsub) return false;
+    if(q && !(toCaps(b.title)+' '+toCaps(b.subject)+' '+toCaps(b.group)+' GRADE '+toCaps(b.grade)).toUpperCase().includes(q)) return false;
     return true;
   });
-}
-
-// ===== CAMERA =====
-async function toggleScanner(){
-  if(scanning){ await stopScanner(); return; }
-  document.getElementById('reader').style.display='block';
-  document.getElementById('scanBtn').textContent='⏹️ STOP CAMERA';
-  document.getElementById('scanMsg').textContent='📷 Point at barcode...';
-  scanning=true; scanner=new Html5Qrcode("reader");
-  try{ await scanner.start({facingMode:"environment"}, {fps:10, qrbox:{width:260, height:120}}, (d)=>{ const now=Date.now(); if(d===lastCode && now-lastTime<2000) return; lastCode=d; lastTime=now; onScan(d.trim().toUpperCase()); }, ()=>{}); }
-  catch(e){ document.getElementById('scanMsg').textContent='⚠️ Camera failed: '+e.message; scanning=false; document.getElementById('scanBtn').textContent='📷 START CAMERA SCAN'; }
-}
-async function stopScanner(){ try{ if(scanner){ await scanner.stop(); await scanner.clear(); scanner=null; } }catch(e){} scanning=false; document.getElementById('reader').style.display='none'; document.getElementById('scanBtn').textContent='📷 START CAMERA SCAN'; }
-function onScan(code){ beep(); const el=document.getElementById('lastScan'); el.style.display='block'; el.innerHTML=`✅ Scanned: <b>${code}</b>`; addTakeCode(code); }
-function addTakeCode(code){
-  if(!code) return;
-  if(takeCodes.includes(code)){ document.getElementById('scanMsg').textContent=`⚠️ ${code} already scanned — Duplicate ignored.`; return; }
-  takeCodes.push(code);
-  const b=books.find(x=>x.barcode===code);
-  document.getElementById('scanMsg').textContent = b ? `✅ ${code} — ${b.title} — ${getBookGroup(b)} / Grade ${b.grade} / ${b.subject}` : `⚠️ ${code} — NOT in system — Extra.`;
-  renderTake();
+  document.getElementById('stockCount').textContent=!q?`Showing ${list.length} title(s) of ${stock.length}`:(list.length?`✅ Found ${list.length} title(s) for "${document.getElementById('stockSearch').value}"`:`❌ No stock for "${document.getElementById('stockSearch').value}"`);
+  if(!list.length){document.getElementById('stockList').innerHTML=`<div class="warn">No stock for this search / filter. Try clearing search or filters, or Add Stock.</div>`;return;}
+  // Group by Group → Grade → Subject
+  let groups={};
+  list.forEach(b=>{ let g=b.group||'OTHER'; if(!groups[g]) groups[g]=[]; groups[g].push(b); });
+  let html='';
+  for(let g in groups){
+    let gTotal=groups[g].reduce((s,b)=>s+parseInt(b.total||0),0);
+    let gAvail=groups[g].reduce((s,b)=>s+avail(b),0);
+    html+=`<div class="group">🏷️ ${g} — ${groups[g].length} titles — Total ${gTotal} — Available ${gAvail}</div>`;
+    let byGrade={};
+    groups[g].forEach(b=>{ let gr='Grade '+b.grade; if(!byGrade[gr]) byGrade[gr]=[]; byGrade[gr].push(b); });
+    for(let gr in byGrade){
+      html+=`<div class="subgroup">📚 ${gr} — ${byGrade[gr].length} titles</div>`;
+      html+=`<div style="overflow-x:auto"><table><thead><tr><th>Subject</th><th>Title</th><th>Total</th><th>Avail</th><th>Out</th><th>Lost</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
+      byGrade[gr].forEach(b=>{
+        let a=avail(b);
+        let st=a<=0?'OUT':a<=5?'LOW':'OK';
+        let cls=a<=0?'badge-out':a<=5?'badge-low':'badge-ok';
+        html+=`<tr><td><b>${toCaps(b.subject||'')}</b></td><td><b>${toCaps(b.title||'')}</b></td><td><b>${b.total}</b></td><td><b>${a}</b></td><td>${b.out||0}</td><td>${b.lost||0}</td><td><span class="badge ${cls}">${st}</span></td><td>${canEdit?`<button class="btn btn-teal" onclick="adjustStock('${b.id}',1)">+1</button> <button class="btn btn-grey" onclick="adjustStock('${b.id}',-1)">-1</button> <button class="btn btn-red" onclick="deleteStock('${b.id}')">🗑️</button>`:'View only'}</td></tr>`;
+      });
+      html+=`</tbody></table></div>`;
+    }
+  }
+  document.getElementById('stockList').innerHTML=html;
 }
 function renderTake(){
-  document.getElementById('takeCount').textContent=takeCodes.length;
-  const filtered=getFiltered();
-  const inFiltered=takeCodes.filter(c=> filtered.find(b=>b.barcode===c)).length;
-  document.getElementById('takeUnique').textContent=inFiltered;
-  document.getElementById('takeList').innerHTML = takeCodes.length ? `<table><tr><th>#</th><th>Barcode</th><th>Title</th><th>Group / Grade / Subject</th></tr>${takeCodes.map((c,i)=>{ const b=books.find(x=>x.barcode===c); return `<tr><td>${i+1}</td><td><b>${c}</b></td><td>${b ? esc(b.title) : '— NOT IN SYSTEM'}</td><td>${b ? `<span class="deptBadge">${esc(getBookGroup(b))}</span> <span class="gradeBadge">Grade ${esc(b.grade)}</span> <span class="subjectBadge">${esc(b.subject)}</span>` : '⚠️ Extra'}</td></tr>`; }).join('')}</table>` : '<p class="small">No books scanned yet.</p>';
+  document.getElementById('takeList').innerHTML=stock.map(b=>`<div class="row" style="align-items:end;border-bottom:1px solid #eee;padding:10px 0"><div style="flex:2"><b>${toCaps(b.title||'')}</b><br><small>${toCaps(b.group||'')} — Grade ${b.grade} — ${toCaps(b.subject||'')}</small><br><small>System: Total ${b.total} — Out ${b.out||0} — Lost ${b.lost||0} — Avail ${avail(b)}</small></div><div><label>📦 Actual On Shelf</label><input type="number" id="take_${b.id}" value="${avail(b)}" min="0"></div></div>`).join('');
 }
-function clearTake(){ takeCodes=[]; document.getElementById('takeMsg').innerHTML=''; renderTake(); }
-function finishTake(){
-  if(!takeCodes.length){ alert('Scan at least 1 book first.'); return; }
-  const filtered=getFiltered().filter(b=> !['LOST','DAMAGED'].includes(b.status));
-  const missing=filtered.filter(b=> !takeCodes.includes(b.barcode));
-  const extra=takeCodes.filter(c=> !books.find(b=>b.barcode===c));
-  const found=takeCodes.filter(c=> filtered.find(b=>b.barcode===c)).length;
-  const fg=document.getElementById('fGroup').value||'All Groups'; const fgr=document.getElementById('fGrade').value||'All Grades'; const fs=document.getElementById('fSubject').value||'All Subjects';
-  document.getElementById('takeMsg').innerHTML=`<div class="goldBox"><b>Stock Take — ${esc(fg)} / ${esc(fgr)} / ${esc(fs)}</b><br>✅ Found In This Group: <b>${found}</b> / ${filtered.length}<br>❌ Missing In This Group: <b>${missing.length}</b><br>⚠️ Extra: <b>${extra.length}</b><br><br>${missing.length ? '<b>Missing:</b><br>'+missing.slice(0,40).map(b=>`${esc(b.barcode)} — ${esc(b.title)} — ${esc(getBookGroup(b))} / Grade ${esc(b.grade)} / ${esc(b.subject)}`).join('<br>') : '🎉 No missing in this group.'}</div>`;
-  if(missing.length && confirm(`WhatsApp Missing (${missing.length}) to Principal?`)){
-    const txt=`Stock Take — ${schoolName}\nGroup: ${fg} / Grade: ${fgr} / Subject: ${fs}\nFound: ${found}/${filtered.length}\nMissing: ${missing.length}\n\n`+missing.map(b=>`${b.barcode} — ${b.title}`).join('\n');
-    window.open('https://wa.me/27780233263?text='+encodeURIComponent(txt),'_blank');
-  }
-}
-
-// ===== LOAD =====
-async function loadAll(){
-  currentUser=getUser(); if(!currentUser){ location.href='index.html'; return; }
-  schoolId=currentUser.schoolId; schoolName=currentUser.schoolName||'SCHOOL'; schoolPrefix=getPrefix(schoolName);
-  document.getElementById('userLine').innerHTML=`👋 ${esc(currentUser.name)} • ${esc(schoolName)} • ${esc(currentUser.role)} • Prefix: <b>${schoolPrefix}</b>`;
+async function loadData(){
+  demoData();
   try{
-    const bSnap=await db.collection('schools').doc(schoolId).collection('books').get();
-    const iSnap=await db.collection('schools').doc(schoolId).collection('issues').get();
-    const lSnap=await db.collection('schools').doc(schoolId).collection('learners').get();
-    if(!bSnap.empty || !iSnap.empty){
-      books=bSnap.docs.map(d=>({id:d.id, ...d.data()})); issues=iSnap.docs.map(d=>({id:d.id, ...d.data()})); learners=lSnap.docs.map(d=>({id:d.id, ...d.data()}));
-      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Firestore — ${schoolId} • 📷 Camera Scan Ready`;
-      buildFilters(); renderAll(); return;
+    let [b, st]=await Promise.all([rtdb.ref('books').once('value'), rtdb.ref('stock').once('value')]);
+    let fb=[];
+    let bObj=b.val()||{}; for(let id in bObj){ fb.push({id,...bObj[id]}); }
+    let sObj=st.val()||{}; for(let id in sObj){ if(!fb.find(x=>String(x.id)===String(id))) fb.push({id,...sObj[id]}); }
+    // If Firebase uses schoolId, filter to my school, else show all
+    let mine=fb.filter(x=>!x.schoolId||x.schoolId===mySchoolId||x.schoolId==='ALL');
+    if(fb.length>0 && mine.length>0){
+      stock=mine.map(x=>({id:x.id,group:x.group||x.department||'OTHER',grade:String(x.grade||x.grd||''),subject:x.subject||'',title:x.title||x.name||'',total:parseInt(x.total||x.qty||x.copies||0),out:parseInt(x.out||x.issued||0),lost:parseInt(x.lost||x.damaged||0),schoolId:x.schoolId||mySchoolId}));
+      renderAll('Real stock loaded from Firebase ✅');
+    } else {
+      renderAll('Showing demo stock — Firebase stock is empty. Add stock below to fill it.');
     }
-    const rs=await rtdb.ref('schools/'+schoolId).once('value'); const rv=rs.val();
-    if(rv && (rv.books || rv.issues)){
-      books=Object.values(rv.books||{}); issues=Object.values(rv.issues||{}); learners=Object.values(rv.learners||{});
-      document.getElementById('statusBox').innerHTML=`✅ Connected to Firebase Realtime — ${schoolId}`;
-      buildFilters(); renderAll(); return;
-    }
-    throw new Error('No data');
-  }catch(e){
-    useDemo=true; schoolName=DEMO.schoolName; schoolPrefix=getPrefix(schoolName); books=[...DEMO.books]; issues=[...DEMO.issues]; learners=[...DEMO.learners];
-    document.getElementById('statusBox').innerHTML=`⚠️ Firebase empty — Showing Demo Groups.`;
-    buildFilters(); renderAll();
-  }
+  }catch(e){ console.log('Firebase stock failed',e); renderAll('Showing demo stock — Firebase not reachable / empty.'); }
 }
-function buildFilters(){
-  const groups=[...new Set(books.map(b=>getBookGroup(b)))].sort();
-  const grades=[...new Set(books.map(b=>String(b.grade||'')))].filter(Boolean).sort((a,b)=> (parseInt(a)||99)-(parseInt(b)||99));
-  const subjects=[...new Set(books.map(b=>b.subject||''))].filter(Boolean).sort();
-  const curG=document.getElementById('fGroup').value; const curGr=document.getElementById('fGrade').value; const curS=document.getElementById('fSubject').value;
-  document.getElementById('fGroup').innerHTML='<option value="">All Groups</option>'+groups.map(g=>`<option ${g===curG?'selected':''}>${esc(g)}</option>`).join('');
-  document.getElementById('fGrade').innerHTML='<option value="">All Grades</option>'+grades.map(g=>`<option ${g===curGr?'selected':''}>${esc(g)}</option>`).join('');
-  document.getElementById('fSubject').innerHTML='<option value="">All Subjects</option>'+subjects.map(s=>`<option ${s===curS?'selected':''}>${esc(s)}</option>`).join('');
-}
-async function saveBook(data){
-  if(useDemo) return;
-  try{ await db.collection('schools').doc(schoolId).collection('books').doc(data.barcode).set(data, {merge:true}); }catch(e){}
-  try{ await rtdb.ref('schools/'+schoolId+'/books/'+data.barcode).set(data); }catch(e){}
-}
-// ===== ADD STOCK =====
 async function addStock(){
-  const groupCustom=document.getElementById('aGroupCustom').value.trim().toUpperCase();
-  const group=document.getElementById('aGroup').value || groupCustom;
-  const grade=document.getElementById('aGrade').value;
-  const subject=document.getElementById('aSubject').value.trim();
-  const title=document.getElementById('aTitle').value.trim();
-  const author=document.getElementById('aAuthor').value.trim();
-  const count=parseInt(document.getElementById('aCount').value)||10;
-  const note=document.getElementById('aNote').value.trim();
-  const msg=document.getElementById('addMsg');
-  if(!group||!grade||!subject||!title){ msg.innerHTML='<div class="warn">⚠️ Fill Group + Grade + Subject + Title — All 4 required.</div>'; return; }
-  let maxNum=Math.max(0, ...books.map(b=>parseInt(String(b.barcode||'').replace(/\D/g,''))||0));
-  lastAdded=[];
-  for(let i=0;i<count;i++){
-    maxNum++; const code=schoolPrefix+pad(maxNum,6);
-    const data={barcode:code, title, subject, grade, group, department:group, author, condition:'NEW', note, schoolId, schoolName, status:'AVAILABLE', createdAt:new Date().toISOString()};
-    books.push(data); lastAdded.push(data); await saveBook(data);
-  }
-  msg.innerHTML=`<div class="ok">✅ Added <b>${count}</b> copies<br><b>${esc(title)}</b><br><span class="deptBadge">${esc(group)}</span> <span class="gradeBadge">Grade ${esc(grade)}</span> <span class="subjectBadge">${esc(subject)}</span><br>Barcodes: <b>${lastAdded[0].barcode}</b> to <b>${lastAdded[lastAdded.length-1].barcode}</b></div>`;
-  ['aGroupCustom','aSubject','aTitle','aAuthor','aNote'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('aGroup').value=''; document.getElementById('aGrade').value='';
-  try{ localStorage.setItem('makhanani_last_added', JSON.stringify(lastAdded)); }catch(e){}
-  buildFilters(); renderAll();
-}
-function goPrintLast(){ if(!lastAdded.length){ alert('Add stock first.'); return; } location.href='barcode.html'; }
-// ===== LOST =====
-async function markLost(){
-  const barcode=document.getElementById('lostBarcode').value.trim().toUpperCase();
-  const reason=document.getElementById('lostReason').value;
-  const learner=document.getElementById('lostLearner').value.trim();
-  const cost=parseInt(document.getElementById('lostCost').value)||0;
-  const note=document.getElementById('lostNote').value.trim();
-  const msg=document.getElementById('lostMsg');
-  if(!barcode){ msg.innerHTML='<div class="warn">⚠️ Type / Scan Barcode.</div>'; return; }
-  const b=books.find(x=>x.barcode===barcode);
-  if(!b){ msg.innerHTML=`<div class="warn">⚠️ ${esc(barcode)} not found.</div>`; return; }
-  b.status=reason; b.lostReason=reason; b.lostLearner=learner; b.lostCost=cost; b.lostNote=note; b.lostDate=new Date().toISOString().slice(0,10);
-  await saveBook(b);
-  msg.innerHTML=`<div class="ok">✅ Marked <b>${esc(b.title)}</b> (${esc(barcode)}) as <b>${reason}</b> — ${esc(getBookGroup(b))} / Grade ${esc(b.grade)} / ${esc(b.subject)}</div>`;
-  document.getElementById('lostBarcode').value=''; document.getElementById('lostLearner').value=''; document.getElementById('lostNote').value='';
+  if(!canEdit){document.getElementById('addMsg').innerHTML='<div class="warn">⛔ Only Super Admin / Admin / Principal / Librarian / HOD can add stock.</div>';return;}
+  let group=document.getElementById('newGroup').value;
+  let grade=document.getElementById('newGrade').value;
+  let subject=document.getElementById('newSubject').value;
+  let title=document.getElementById('newTitle').value.trim();
+  let total=parseInt(document.getElementById('newTotal').value)||0;
+  let out=parseInt(document.getElementById('newOut').value)||0;
+  let lost=parseInt(document.getElementById('newLost').value)||0;
+  let msg=document.getElementById('addMsg');
+  if(!group){msg.innerHTML='<div class="warn">⚠️ Pick Group / Department.</div>';return;}
+  if(!grade){msg.innerHTML='<div class="warn">⚠️ Pick Grade.</div>';return;}
+  if(!subject){msg.innerHTML='<div class="warn">⚠️ Pick Subject.</div>';return;}
+  if(!title){msg.innerHTML='<div class="warn">⚠️ Type Title.</div>';return;}
+  if(total<=0){msg.innerHTML='<div class="warn">⚠️ Total Copies must be > 0.</div>';return;}
+  let rec={group,grade,subject:toCaps(subject),title:toCaps(title),total,out,lost,schoolId:mySchoolId,createdAt:Date.now(),createdBy:user?.email||''};
+  try{let ref=rtdb.ref('books').push();await ref.set(rec);rec.id=ref.key;}catch(e){rec.id='tmp'+Date.now();}
+  stock.push(rec);
+  msg.innerHTML=`<div class="ok">✅ Added: <b>${toCaps(title)}</b> — ${subject} Grade ${grade} — Total ${total} — Available ${avail(rec)}</div>`;
+  document.getElementById('newTitle').value='';
   renderAll();
 }
-async function restoreBook(barcode){
-  const b=books.find(x=>x.barcode===barcode); if(!b) return;
-  if(!confirm(`Restore ${barcode} to AVAILABLE?`)) return;
-  b.status='AVAILABLE'; delete b.lostReason; await saveBook(b); renderAll();
+async function adjustStock(id,delta){
+  let b=stock.find(x=>String(x.id)===String(id)); if(!b) return;
+  b.total=Math.max(0,parseInt(b.total||0)+delta);
+  try{await rtdb.ref('books/'+id).update({total:b.total});}catch(e){}
+  try{await rtdb.ref('stock/'+id).update({total:b.total});}catch(e){}
+  renderAll();
 }
-function exportLostWhatsApp(){
-  const filtered=getFiltered(); const lost=filtered.filter(b=>['LOST','DAMAGED','STOLEN','WORN OUT'].includes(b.status));
-  if(!lost.length){ alert('No lost/damaged in filtered view.'); return; }
-  const total=lost.reduce((s,b)=>s+(parseInt(b.lostCost)||0),0);
-  const txt=`Lost / Damaged — ${schoolName}\nFilter: ${document.getElementById('fGroup').value||'All'} / ${document.getElementById('fGrade').value||'All'} / ${document.getElementById('fSubject').value||'All'}\nTotal: ${lost.length} • Charge: R${total}\n\n`+lost.map(b=>`${b.barcode} — ${b.title} — ${b.status} — ${b.lostLearner||'-'} — R${b.lostCost||0}`).join('\n');
-  window.open('https://wa.me/27780233263?text='+encodeURIComponent(txt),'_blank');
+async function deleteStock(id){
+  if(!confirm('Delete this stock title?')) return;
+  try{await rtdb.ref('books/'+id).remove();}catch(e){}
+  try{await rtdb.ref('stock/'+id).remove();}catch(e){}
+  stock=stock.filter(x=>String(x.id)!==String(id));
+  renderAll();
 }
-// ===== RENDER =====
-function renderAll(){
-  const filtered=getFiltered();
-  const totalAll=books.length;
-  const availAll=books.filter(b=>b.status==='AVAILABLE').length;
-  const outAll=issues.filter(i=>i.status==='OUT').length;
-  const lostAll=books.filter(b=>['LOST','DAMAGED','STOLEN','WORN OUT'].includes(b.status)).length;
-  document.getElementById('kTotal').textContent=totalAll;
-  document.getElementById('kAvail').textContent=availAll;
-  document.getElementById('kOut').textContent=outAll;
-  document.getElementById('kLost').textContent=lostAll;
-  const fAvail=filtered.filter(b=>b.status==='AVAILABLE').length;
-  const fOut=issues.filter(i=>i.status==='OUT' && filtered.find(b=>b.barcode===i.barcode)).length;
-  const fLost=filtered.filter(b=>['LOST','DAMAGED','STOLEN','WORN OUT'].includes(b.status)).length;
-  document.getElementById('overviewBox').innerHTML=`<div class="goldBox">📦 Filtered View: <b>${filtered.length}</b> books • Available: <b>${fAvail}</b> • Out: <b>${fOut}</b> • Lost/Damaged: <b>${fLost}</b><br>Total School: <b>${totalAll}</b> books</div>`;
-
-  // Group by Group -> Grade -> Subject -> Title
-  const tree={};
-  filtered.forEach(b=>{
-    const g=getBookGroup(b); const gr=String(b.grade||'No Grade'); const s=b.subject||'No Subject'; const t=b.title||'No Title';
-    if(!tree[g]) tree[g]={total:0, avail:0, out:0, lost:0, grades:{}};
-    tree[g].total++; if(b.status==='AVAILABLE') tree[g].avail++;
-    if(['LOST','DAMAGED','STOLEN','WORN OUT'].includes(b.status)) tree[g].lost++;
-    if(!tree[g].grades[gr]) tree[g].grades[gr]={total:0, avail:0, subjects:{}};
-    tree[g].grades[gr].total++; if(b.status==='AVAILABLE') tree[g].grades[gr].avail++;
-    if(!tree[g].grades[gr].subjects[s]) tree[g].grades[gr].subjects[s]={total:0, avail:0, titles:{}};
-    tree[g].grades[gr].subjects[s].total++; if(b.status==='AVAILABLE') tree[g].grades[gr].subjects[s].avail++;
-    if(!tree[g].grades[gr].subjects[s].titles[t]) tree[g].grades[gr].subjects[s].titles[t]={total:0, avail:0, out:0, lost:0};
-    const tt=tree[g].grades[gr].subjects[s].titles[t]; tt.total++; if(b.status==='AVAILABLE') tt.avail++; if(['LOST','DAMAGED'].includes(b.status)) tt.lost++;
+async function saveStockTake(){
+  let updates=[];
+  stock.forEach(b=>{
+    let el=document.getElementById('take_'+b.id);
+    if(!el) return;
+    let actual=parseInt(el.value)||0;
+    let newTotal=actual+parseInt(b.out||0)+parseInt(b.lost||0);
+    updates.push({id:b.id,total:newTotal});
+    b.total=newTotal;
   });
-  // Out per title
-  issues.filter(i=>i.status==='OUT').forEach(i=>{
-    const b=books.find(x=>x.barcode===i.barcode); if(!b) return;
-    const g=getBookGroup(b); const gr=String(b.grade||'No Grade'); const s=b.subject||'No Subject'; const t=b.title||'No Title';
-    if(tree[g]?.grades[gr]?.subjects[s]?.titles[t]) tree[g].grades[gr].subjects[s].titles[t].out++;
-    if(tree[g]) tree[g].out++;
-  });
-
-  let html='';
-  Object.keys(tree).sort().forEach(g=>{
-    const grp=tree[g];
-    html+=`<div class="groupCard"><h3><span class="deptBadge">${esc(g)}</span> Total: ${grp.total} • Avail: ${grp.avail} • Out: ${grp.out} • Lost: ${grp.lost}</h3>`;
-    Object.keys(grp.grades).sort((a,b)=>(parseInt(a)||99)-(parseInt(b)||99)).forEach(gr=>{
-      const gg=grp.grades[gr];
-      html+=`<div style="margin-left:8px;margin-top:8px"><b><span class="gradeBadge">Grade ${esc(gr)}</span> Total: ${gg.total} • Avail: ${gg.avail}</b>`;
-      Object.keys(gg.subjects).sort().forEach(s=>{
-        const ss=gg.subjects[s];
-        html+=`<div style="margin-left:16px;margin-top:6px"><b><span class="subjectBadge">${esc(s)}</span> Total: ${ss.total} • Avail: ${ss.avail}</b><table><tr><th>Title</th><th>Total</th><th>Avail</th><th>Out</th><th>Lost</th></tr>`;
-        Object.keys(ss.titles).sort().forEach(t=>{
-          const tt=ss.titles[t];
-          html+=`<tr><td><b>${esc(t)}</b></td><td>${tt.total}</td><td>${tt.avail}</td><td>${tt.out}</td><td>${tt.lost ? `<b style="color:#dc2626">${tt.lost}</b>` : '0'}</td></tr>`;
-        });
-        html+=`</table></div>`;
-      });
-      html+=`</div>`;
-    });
-    html+=`</div>`;
-  });
-  document.getElementById('groupList').innerHTML = html || '<p class="small">No stock in this filter.</p>';
-
-  // Low Stock per Title in filtered view
-  const byTitle={};
-  filtered.forEach(b=>{ const k=b.title+'|'+b.subject+'|'+b.grade+'|'+getBookGroup(b); if(!byTitle[k]) byTitle[k]={title:b.title, subject:b.subject, grade:b.grade, group:getBookGroup(b), total:0, avail:0}; byTitle[k].total++; if(b.status==='AVAILABLE') byTitle[k].avail++; });
-  const low=Object.values(byTitle).filter(t=>t.avail<5);
-  document.getElementById('lowBox').innerHTML = low.length ? `<table><tr><th>Title</th><th>Group / Grade / Subject</th><th>Avail</th><th>Action</th></tr>${low.map(t=>`<tr><td><b>${esc(t.title)}</b></td><td><span class="deptBadge">${esc(t.group)}</span> <span class="gradeBadge">Grade ${esc(t.grade)}</span> <span class="subjectBadge">${esc(t.subject)}</span></td><td><b style="color:#dc2626">${t.avail}</b> / ${t.total}</td><td><button class="btn-small btn-green" onclick="fillAdd('${esc(t.group).replace(/'/g,"")}','${esc(t.grade)}','${esc(t.subject).replace(/'/g,"")}','${esc(t.title).replace(/'/g,"")}')">➕ Add Stock</button></td></tr>`).join('')}</table>` : '<p class="small">No low stock in filtered view. 🎉</p>';
-
-  // Datalists
-  document.getElementById('titleList').innerHTML=[...new Set(books.map(b=>b.title))].map(t=>`<option value="${esc(t)}">`).join('');
-  document.getElementById('subjectList').innerHTML=[...new Set(books.map(b=>b.subject))].filter(Boolean).map(s=>`<option value="${esc(s)}">`).join('');
-
-  // Lost list in filtered view
-  const fLost=filtered.filter(b=>['LOST','DAMAGED','STOLEN','WORN OUT'].includes(b.status));
-  document.getElementById('lostList').innerHTML = fLost.length ? `<table><tr><th>Barcode</th><th>Title</th><th>Group / Grade / Subject</th><th>Reason / Learner / Cost</th><th>Action</th></tr>${fLost.map(b=>`<tr><td><b>${esc(b.barcode)}</b></td><td>${esc(b.title)}</td><td><span class="deptBadge">${esc(getBookGroup(b))}</span> <span class="gradeBadge">Grade ${esc(b.grade)}</span> <span class="subjectBadge">${esc(b.subject)}</span></td><td><b style="color:#dc2626">${esc(b.status)}</b><br>${esc(b.lostLearner||'-')} • R${b.lostCost||0}</td><td><button class="btn-small btn-green" onclick="restoreBook('${esc(b.barcode)}')">✅ Restore</button></td></tr>`).join('')}</table>` : '<p class="small">No lost / damaged in filtered view. 🎉</p>';
-  renderTake();
+  for(let u of updates){ try{await rtdb.ref('books/'+u.id).update({total:u.total});}catch(e){} }
+  document.getElementById('takeMsg').innerHTML=`<div class="ok">✅ Stock Take saved — ${updates.length} titles updated.</div>`;
+  renderAll();
 }
-function fillAdd(group, grade, subject, title){
-  document.getElementById('aGroup').value=group; document.getElementById('aGrade').value=grade; document.getElementById('aSubject').value=subject; document.getElementById('aTitle').value=title;
-  showTab('add', document.querySelectorAll('.tabs button')[1]); window.scrollTo(0,0);
-}
-loadAll();
-</script>
-</body>
-</html>
+loadData();
+</script></body></html>
