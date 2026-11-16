@@ -11,237 +11,181 @@ header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
-input{cursor:text}input[type="password"]{text-transform:none}
+input{cursor:text}input[type="password"]{text-transform:none}input[type="email"]{text-transform:none}
 select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 .btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}
 .btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-teal{background:#0d9488;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.kpi{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px}
-.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
-.kpi b{font-size:20px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:middle}th{background:#0a1f4d;color:#fff}
 .badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-5{background:#0a1f4d;color:#d4af37}.badge-4{background:#7c3aed;color:#fff}.badge-3{background:#0d9488;color:#fff}.badge-2{background:#d97706;color:#fff}.badge-1{background:#64748b;color:#fff}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}table{font-size:12px}}
+.search-box{position:relative}.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#ef4444;color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-weight:900;cursor:pointer;font-size:14px;display:none}.search-count{font-size:11px;color:#64748b;margin-top:4px;font-weight:700}
+@media(max-width:700px){.row{flex-direction:column}table{font-size:12px}}
 </style></head>
 <body>
-<header><h1>👥 USERS — MAKHANANI LTSM 2.0</h1><p>RANKS: SUPER ADMIN 5 • ADMIN 4 • PRINCIPAL 3 • LIBRARIAN / HOD 2 • TEACHER 1</p>
+<header><h1>👥 USERS — MAKHANANI LTSM 2.0</h1><p>RANK 4+ ONLY • SUPER ADMIN CAN CREATE ANY RANK • ADMIN CAN CREATE 3 / 2 / 1 IN OWN SCHOOL</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 <script>guardPage(4,'Users');</script>
 </header>
 <div class="wrap">
 <div class="info" id="roleInfo">Loading...</div>
 
-<div class="kpi">
-<div onclick="filterRole('')"><b id="kpiTotal">0</b><span>👥 ALL USERS</span></div>
-<div onclick="filterRole('Super Admin')"><b id="kpiSuper">0</b><span>👑 SUPER ADMIN 5</span></div>
-<div onclick="filterRole('Admin')"><b id="kpiAdmin">0</b><span>🛡️ ADMIN 4</span></div>
-<div onclick="filterRole('Principal')"><b id="kpiPrincipal">0</b><span>🏫 PRINCIPAL 3</span></div>
-<div onclick="filterRole('Librarian')"><b id="kpiLib">0</b><span>📚 LIB / HOD 2</span></div>
-<div onclick="filterRole('Teacher')"><b id="kpiTeacher">0</b><span>👩‍🏫 TEACHER 1</span></div>
-</div>
-
 <div class="card">
-<h2>➕ Create User — MAKHANANI 2.0 Ranks</h2>
-<div class="info" id="canCreateInfo">Loading...</div>
-<label>🏫 School *</label><select id="newSchool"><option value="">-- PICK SCHOOL * --</option></select>
+<h2>➕ Create User</h2>
+<div class="info" id="createInfo"></div>
 <label>👤 Full Name *</label><input id="newName" placeholder="e.g. MRS DUBE">
-<label>📧 Email *</label><input id="newEmail" placeholder="e.g. dube@wordsworth.co.za" style="text-transform:none">
-<label>🔐 Password *</label><input id="newPassword" type="password" placeholder="e.g. 1234" value="1234">
-<label>🎖️ Role / Rank *</label><select id="newRole" onchange="onRoleChange()"><option value="">-- PICK ROLE --</option></select>
-<div id="roleDesc" class="info" style="display:none"></div>
-<label>📚 Subject (Teacher / HOD / Librarian)</label><select id="newSubject"><option value="">-- NO SUBJECT --</option><option value="MATHS">MATHS</option><option value="ENGLISH">ENGLISH</option><option value="SCIENCE">SCIENCE</option><option value="HISTORY">HISTORY</option><option value="GEOGRAPHY">GEOGRAPHY</option><option value="LIFE SCIENCES">LIFE SCIENCES</option><option value="ACCOUNTING">ACCOUNTING</option><option value="BUSINESS">BUSINESS</option><option value="PHYSICAL SCIENCES">PHYSICAL SCIENCES</option><option value="ALL">ALL SUBJECTS</option></select>
-<label>🏫 Classes (Teacher / HOD — e.g. 10A, 10B)</label><input id="newClasses" placeholder="e.g. 10A, 10B, 11A">
-<label>📱 Phone (Optional)</label><input id="newPhone" placeholder="e.g. 0821234567">
+<label>📧 Email *</label><input id="newEmail" type="email" placeholder="e.g. dube@wordsworth.co.za">
+<label>🔐 Password *</label><input id="newPassword" type="password" value="1234">
+
+<!-- ★ PICK OR SEARCH SCHOOL — V2.1 ★ -->
+<label>🏫 School — Pick OR Search *</label>
+<div class="search-box">
+<input id="schoolSearch" placeholder="🔍 Type to search school... e.g. WORDSWORTH, WHS, MAKHANANI" oninput="filterSchools()" autocomplete="off">
+<button class="search-clear" id="clearSearchBtn" onclick="clearSchoolSearch()">✕</button>
+</div>
+<div class="search-count" id="schoolCount">Showing schools — Type to search</div>
+<select id="newSchool"><option value="">-- PICK SCHOOL --</option></select>
+
+<label>🎖️ Role — Rank *</label><select id="newRole" onchange="toggleSubjectFields()"><option value="">-- PICK ROLE --</option><option value="Super Admin">👑 SUPER ADMIN — RANK 5/5 — ALL SCHOOLS — Super Admin Only</option><option value="Admin">🛡️ ADMIN — RANK 4/5 — 1 School</option><option value="Principal">🏫 PRINCIPAL — RANK 3/5 — 1 School</option><option value="Librarian">📚 LIBRARIAN — RANK 2/5 — 1 School</option><option value="HOD">📚 HOD — RANK 2/5 — 1 School — Subject + Classes</option><option value="Teacher">👩‍🏫 TEACHER — RANK 1/5 — Own Classes Only</option></select>
+<div id="subjectFields" style="display:none">
+<label>📚 Subject * (Teacher / HOD)</label><select id="newSubject"><option value="">-- PICK SUBJECT --</option><option value="MATHS">MATHS</option><option value="ENGLISH">ENGLISH</option><option value="SCIENCE">SCIENCE</option><option value="HISTORY">HISTORY</option><option value="GEOGRAPHY">GEOGRAPHY</option><option value="LIFE SCIENCES">LIFE SCIENCES</option><option value="ACCOUNTING">ACCOUNTING</option><option value="BUSINESS">BUSINESS</option><option value="PHYSICAL SCIENCES">PHYSICAL SCIENCES</option></select>
+<label>🏫 Classes (Comma Separated) *</label><input id="newClasses" placeholder="e.g. 10A, 10B, 11A">
+</div>
 <button class="btn btn-purple btn-full" onclick="createUser()">➕ CREATE USER →</button>
-<div id="userMsg"></div>
+<div id="createMsg"></div>
 </div>
 
 <div class="card">
 <h2>👥 All Users</h2>
-<div class="row">
-<div><label>🏫 Filter School</label><select id="filterSchool" onchange="renderList()"><option value="">🏫 ALL SCHOOLS</option></select></div>
-<div><label>🎖️ Filter Role / Rank</label><select id="filterRole" onchange="renderList()"><option value="">🎖️ ALL RANKS</option><option value="Super Admin">👑 SUPER ADMIN — 5</option><option value="Admin">🛡️ ADMIN — 4</option><option value="Principal">🏫 PRINCIPAL — 3</option><option value="Librarian">📚 LIBRARIAN — 2</option><option value="HOD">📚 HOD — 2</option><option value="Teacher">👩‍🏫 TEACHER — 1</option></select></div>
-<div><label>🔍 Search</label><input id="searchUser" placeholder="e.g. DUBE or dube@..." oninput="renderList()" style="text-transform:none"></div>
-</div>
-<div class="row"><button class="btn btn-gold" style="flex:1" onclick="window.print()">🖨️ PRINT</button><button class="btn btn-grey" style="flex:1" onclick="loadData()">🔄 REFRESH</button></div>
-<div id="listInfo" class="info">Loading...</div>
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Name</th><th>Email</th><th>School</th><th>Role / Rank</th><th>Subject</th><th>Classes</th><th>Password</th><th>Action</th></tr></thead><tbody id="usersTable"></tbody></table></div>
+<div class="row"><div><label>🏫 Filter School — Pick OR Search</label><input id="filterSchoolSearch" placeholder="🔍 Type to filter... e.g. WORDS" oninput="filterFilterSchools()"><select id="filterSchool" onchange="renderUsers()"><option value="">🏫 ALL SCHOOLS</option></select></div><div><label>🎖️ Filter Role</label><select id="filterRole" onchange="renderUsers()"><option value="">🎖️ ALL RANKS</option><option value="Super Admin">👑 SUPER ADMIN — 5</option><option value="Admin">🛡️ ADMIN — 4</option><option value="Principal">🏫 PRINCIPAL — 3</option><option value="Librarian">📚 LIBRARIAN — 2</option><option value="HOD">📚 HOD — 2</option><option value="Teacher">👩‍🏫 TEACHER — 1</option></select></div></div>
+<div id="usersInfo" class="info">Loading...</div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Name</th><th>Email</th><th>School</th><th>Role / Rank</th><th>Subject</th><th>Classes</th><th>Action</th></tr></thead><tbody id="usersTable"></tbody></table></div>
 </div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
-// ===== MAKHANANI 2.0 RANKS =====
 const RANKS={ 'Super Admin':5, 'Admin':4, 'Principal':3, 'Librarian':2, 'HOD':2, 'Teacher':1 };
-const ROLE_DESC={
-  'Super Admin':'👑 RANK 5 — ALL SCHOOLS — Can do EVERYTHING: Create any user, Change subscriptions, See all schools, Bypass sub block. Only Super Admin can create another Super Admin.',
-  'Admin':'🛡️ RANK 4 — 1 SCHOOL — Can create Teacher / Librarian / HOD / Principal in OWN school. Can manage stock, approve orders, view reports. CANNOT create Super Admin / Admin. CANNOT see other schools.',
-  'Principal':'🏫 RANK 3 — 1 SCHOOL — Can view users, approve orders, view reports, view subscription for own school. CANNOT create users (Admin does that).',
-  'Librarian':'📚 RANK 2 — 1 SCHOOL — Manages books, stock, issues. CANNOT create users, CANNOT approve orders.',
-  'HOD':'📚 RANK 2 — 1 SCHOOL — Head Of Department. Same as Librarian rank, but teaches classes + manages subject. CANNOT create users.',
-  'Teacher':'👩‍🏫 RANK 1 — 1 SCHOOL — Own classes only. Can request orders, view books, view own reports. CANNOT create users, CANNOT approve.'
-};
-// Who can create who
-function canCreateRoles(myRole){
-  if(myRole==='Super Admin') return ['Super Admin','Admin','Principal','Librarian','HOD','Teacher'];
-  if(myRole==='Admin') return ['Principal','Librarian','HOD','Teacher'];
-  return []; // Principal / Librarian / Teacher cannot create - but this page is guardPage(4) so only Admin+ see it
-}
 function rankOf(r){return RANKS[r]||0;}
 function toCaps(s){return String(s||'').trim().toUpperCase();}
 let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-let myRole=user?.role||'Admin';
-let myRank=rankOf(myRole);
-let mySchoolId=user?.schoolId||'';
-let schools=[],usersList=[];
-function onRoleChange(){
-  let role=document.getElementById('newRole').value;
-  let desc=document.getElementById('roleDesc');
-  if(!role){desc.style.display='none';return;}
-  desc.style.display='block';
-  desc.innerHTML=`<b>${role} — Rank ${rankOf(role)}/5</b><br>${ROLE_DESC[role]||''}`;
-}
-function filterRole(role){document.getElementById('filterRole').value=role;renderList();}
+let isSuper = user?.role==='Super Admin';
+let mySchoolId = user?.schoolId||'WHS';
+let schools=[], usersList=[];
+function toggleSubjectFields(){ let r=document.getElementById('newRole').value; document.getElementById('subjectFields').style.display=(r==='Teacher'||r==='HOD')?'block':'none'; }
 
+// ===== PICK OR SEARCH — CREATE FORM =====
+function filterSchools(){
+  let q=document.getElementById('schoolSearch').value.trim().toUpperCase();
+  let sel=document.getElementById('newSchool');
+  document.getElementById('clearSearchBtn').style.display=q?'block':'none';
+  let list = !q ? schools : schools.filter(s=>{
+    let hay=(toCaps(s.schoolName)+' '+toCaps(s.schoolId)+' '+(s.emis||'')).toUpperCase();
+    return q.split(/\s+/).every(w=>hay.includes(w));
+  });
+  // Admin: only own school — never show others
+  if(!isSuper) list = list.filter(s=>s.schoolId===mySchoolId);
+  let cur=sel.value;
+  sel.innerHTML='<option value="">-- PICK SCHOOL --</option>'+list.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('')+(isSuper?'<option value="ALL">👑 SUPER ADMIN — ALL SCHOOLS</option>':'');
+  if(cur && (list.some(s=>s.schoolId===cur)||cur==='ALL')) sel.value=cur; else sel.value='';
+  let c=document.getElementById('schoolCount');
+  if(!q) c.textContent=`Showing ${list.length} school(s) — Type to search`;
+  else if(list.length===0) c.textContent=`❌ No school for "${document.getElementById('schoolSearch').value}" — Try WHS / WORDSWORTH`;
+  else c.textContent=`✅ Found ${list.length} school(s) for "${document.getElementById('schoolSearch').value}"`;
+  if(q && list.length===1) sel.value=list[0].schoolId;
+  if(q && isSuper && (q.includes('ALL')||q.includes('SUPER'))) sel.value='ALL';
+}
+function clearSchoolSearch(){ document.getElementById('schoolSearch').value=''; document.getElementById('clearSearchBtn').style.display='none'; filterSchools(); }
+// ===== PICK OR SEARCH — FILTER DROPDOWN =====
+function filterFilterSchools(){
+  let q=document.getElementById('filterSchoolSearch').value.trim().toUpperCase();
+  let sel=document.getElementById('filterSchool');
+  let list = !q ? schools : schools.filter(s=> (toCaps(s.schoolName)+' '+toCaps(s.schoolId)).toUpperCase().includes(q) );
+  if(!isSuper) list = list.filter(s=>s.schoolId===mySchoolId);
+  let cur=sel.value;
+  sel.innerHTML='<option value="">🏫 ALL SCHOOLS</option>'+list.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('');
+  if(cur && list.some(s=>s.schoolId===cur)) sel.value=cur;
+  if(q && list.length===1) sel.value=list[0].schoolId;
+  renderUsers();
+}
 async function loadData(){
-  try{let sc=await rtdb.ref('schools').once('value');schools=Object.entries(sc.val()||{}).map(([id,v])=>({id,...v,schoolName:toCaps(v.schoolName||v.name||''),schoolId:toCaps(v.schoolId||id)}));}catch(e){}
-  if(schools.length===0) schools=[{id:'WHS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)'},{id:'MHS',schoolId:'MHS',schoolName:'MAKHANANI HIGH SCHOOL (MHS)'}];
-  // Load users from all school nodes
-  usersList=[];
-  try{
-    let u=await rtdb.ref('users').once('value');
-    let obj=u.val()||{};
-    for(let sid in obj){
-      for(let uid in obj[sid]){
-        usersList.push({id:uid,schoolId:sid,...obj[sid][uid]});
-      }
-    }
-  }catch(e){}
-  if(usersList.length===0){
-    usersList=[
-      {id:'1',schoolId:'WHS',name:'VUSI CHAUKE',email:'vusi@makhanani.co.za',password:'1234',role:'Super Admin',schoolName:'ALL SCHOOLS'},
-      {id:'2',schoolId:'WHS',name:'ADMIN WHS',email:'admin@wordsworth.co.za',password:'1234',role:'Admin',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)'},
-      {id:'3',schoolId:'WHS',name:'PRINCIPAL WHS',email:'principal@wordsworth.co.za',password:'1234',role:'Principal',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)'},
-      {id:'4',schoolId:'WHS',name:'LIBRARIAN WHS',email:'librarian@wordsworth.co.za',password:'1234',role:'Librarian',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)'},
-      {id:'5',schoolId:'WHS',name:'HOD MATHS',email:'hod@wordsworth.co.za',password:'1234',role:'HOD',subject:'MATHS',teachingClasses:['10A','10B'],schoolName:'WORDSWORTH HIGH SCHOOL (WHS)'},
-      {id:'6',schoolId:'WHS',name:'MRS DUBE',email:'dube@wordsworth.co.za',password:'1234',role:'Teacher',subject:'MATHS',teachingClasses:['10A','10B','11A'],schoolName:'WORDSWORTH HIGH SCHOOL (WHS)'},
-    ];
+  try{let sc=await rtdb.ref('schools').once('value');schools=Object.entries(sc.val()||{}).map(([id,v])=>({id,...v,schoolName:toCaps(v.schoolName||v.name||''),schoolId:toCaps(v.schoolId||id),emis:v.emis||''}));}catch(e){}
+  if(schools.length===0) schools=[{id:'WHS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',emis:'700310854'},{id:'MHS',schoolId:'MHS',schoolName:'MAKHANANI HIGH SCHOOL (MHS)',emis:''}];
+  if(!isSuper){
+    let mine=schools.find(s=>s.schoolId===mySchoolId);
+    document.getElementById('schoolSearch').value=mine?mine.schoolName:'';
+    document.getElementById('schoolSearch').disabled=true;
+    document.getElementById('schoolSearch').placeholder='🔒 Locked to your school';
   }
-  // Admin sees only own school, Super Admin sees all
-  if(myRole!=='Super Admin'){
-    usersList=usersList.filter(u=>u.schoolId===mySchoolId || u.schoolId==='ALL');
-  }
-  document.getElementById('roleInfo').innerHTML=`${myRole==='Super Admin'?'👑':'🛡️'} <b>${toCaps(user?.name||'')}</b> — Role: <b>${toCaps(myRole)} — RANK ${myRank}/5</b> — School: <b>${myRole==='Super Admin'?'ALL SCHOOLS':toCaps(user?.schoolName||mySchoolId)+' ('+mySchoolId+')'}</b> — You can create: <b>${canCreateRoles(myRole).join(' • ')||'NONE'}</b>`;
-
-  // Role dropdown - only roles I can create
-  let allowed=canCreateRoles(myRole);
-  let roleOpts=allowed.map(r=>{
-    let icon=r==='Super Admin'?'👑':r==='Admin'?'🛡️':r==='Principal'?'🏫':(r==='Librarian'||r==='HOD')?'📚':'👩‍🏫';
-    return `<option value="${r}">${icon} ${toCaps(r)} — RANK ${rankOf(r)}/5</option>`;
-  }).join('');
-  document.getElementById('newRole').innerHTML='<option value="">-- PICK ROLE --</option>'+roleOpts;
-
-  // School dropdown - Super Admin all, Admin own only
-  let schoolOpts = myRole==='Super Admin'
-    ? schools.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('') + '<option value="ALL">👑 SUPER ADMIN — ALL SCHOOLS</option>'
-    : `<option value="${mySchoolId}">${toCaps(user?.schoolName||mySchoolId)} (${mySchoolId}) — YOUR SCHOOL ONLY</option>`;
-  document.getElementById('newSchool').innerHTML='<option value="">-- PICK SCHOOL * --</option>'+schoolOpts;
-  document.getElementById('filterSchool').innerHTML='<option value="">🏫 ALL SCHOOLS</option>'+schools.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('')+'<option value="ALL">👑 ALL SCHOOLS</option>';
-
-  document.getElementById('canCreateInfo').innerHTML=`<b>You are ${toCaps(myRole)} — Rank ${myRank}/5</b><br>${myRole==='Super Admin'?'✅ You can create <b>ALL ranks</b> in <b>ANY school</b> — Super Admin / Admin / Principal / Librarian / HOD / Teacher.':myRole==='Admin'?'✅ You can create <b>Principal (3) • Librarian (2) • HOD (2) • Teacher (1)</b> in <b>YOUR school ('+mySchoolId+') only</b>.<br>❌ You <b>cannot</b> create Super Admin (5) or Admin (4) — Only Super Admin can.':''}<br>New users get the password you type (default <b>1234</b>) — Tell them to login with School <b>${myRole==='Super Admin'?'their school':' '+mySchoolId}</b>.`;
-  if(myRole==='Super Admin'){
-    // Default school for Super Admin = WHS for demo, but they can pick ALL for Super Admin users
-  }
-  renderList();
+  filterSchools(); filterFilterSchools();
+  if(!isSuper){ document.getElementById('newSchool').value=mySchoolId; }
+  try{let u=await rtdb.ref('users').once('value');let obj=u.val()||{};usersList=[];for(let sid in obj){for(let uid in obj[sid]){usersList.push({id:uid,schoolId:sid,...obj[sid][uid]});}}}catch(e){}
+  if(usersList.length===0) usersList=[{id:'1',schoolId:'ALL',name:'VUSI CHAUKE',email:'vusi@makhanani.co.za',password:'1234',role:'Super Admin'},{id:'2',schoolId:'WHS',name:'ADMIN WHS',email:'admin@wordsworth.co.za',password:'1234',role:'Admin'},{id:'3',schoolId:'WHS',name:'PRINCIPAL WHS',email:'principal@wordsworth.co.za',password:'1234',role:'Principal'},{id:'4',schoolId:'WHS',name:'LIBRARIAN WHS',email:'librarian@wordsworth.co.za',password:'1234',role:'Librarian'},{id:'5',schoolId:'WHS',name:'HOD MATHS',email:'hod@wordsworth.co.za',password:'1234',role:'HOD',subject:'MATHS',teachingClasses:['10A','10B']},{id:'6',schoolId:'WHS',name:'MRS DUBE',email:'dube@wordsworth.co.za',password:'1234',role:'Teacher',subject:'MATHS',teachingClasses:['10A','10B','11A']}];
+  document.getElementById('roleInfo').innerHTML=`👥 <b>${toCaps(user?.name||'')}</b> — Role: <b>${toCaps(user?.role||'')} — RANK ${rankOf(user?.role)}/5</b> — School: <b>${isSuper?'ALL SCHOOLS':toCaps(mySchoolId)}</b>`;
+  document.getElementById('createInfo').innerHTML=isSuper
+    ? `<b>Super Admin CAN:</b> ✅ Create ANY rank (Super Admin / Admin / Principal / Librarian / HOD / Teacher) in ANY school — Use Search to find school fast.`
+    : `<b>Admin CAN:</b> ✅ Create Principal (3) / Librarian / HOD (2) / Teacher (1) in <b>YOUR school only (${mySchoolId})</b><br><b>Admin CANNOT:</b> ❌ Create Super Admin (5) ❌ Create Admin (4) ❌ Create in other schools — School is locked to ${mySchoolId}`;
+  renderUsers();
 }
-function renderList(){
-  let scFilter=document.getElementById('filterSchool').value;
-  let roleFilter=document.getElementById('filterRole').value;
-  let search=document.getElementById('searchUser').value.trim().toLowerCase();
+function renderUsers(){
+  let sc=document.getElementById('filterSchool').value;
+  let role=document.getElementById('filterRole').value;
   let list=[...usersList];
-  if(scFilter) list=list.filter(u=>u.schoolId===scFilter);
-  if(roleFilter){
-    if(roleFilter==='Librarian') list=list.filter(u=>u.role==='Librarian'||u.role==='HOD');
-    else list=list.filter(u=>u.role===roleFilter);
-  }
-  if(search) list=list.filter(u=>(u.name||'').toLowerCase().includes(search)||(u.email||'').toLowerCase().includes(search));
-
-  document.getElementById('kpiTotal').textContent=usersList.length;
-  document.getElementById('kpiSuper').textContent=usersList.filter(u=>u.role==='Super Admin').length;
-  document.getElementById('kpiAdmin').textContent=usersList.filter(u=>u.role==='Admin').length;
-  document.getElementById('kpiPrincipal').textContent=usersList.filter(u=>u.role==='Principal').length;
-  document.getElementById('kpiLib').textContent=usersList.filter(u=>u.role==='Librarian'||u.role==='HOD').length;
-  document.getElementById('kpiTeacher').textContent=usersList.filter(u=>u.role==='Teacher').length;
-
-  document.getElementById('listInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${usersList.length}</b> — Super Admin <b>${usersList.filter(u=>u.role==='Super Admin').length}</b> • Admin <b>${usersList.filter(u=>u.role==='Admin').length}</b> • Principal <b>${usersList.filter(u=>u.role==='Principal').length}</b> • Lib/HOD <b>${usersList.filter(u=>u.role==='Librarian'||u.role==='HOD').length}</b> • Teacher <b>${usersList.filter(u=>u.role==='Teacher').length}</b>`;
+  if(!isSuper) list=list.filter(u=>u.schoolId===mySchoolId);
+  if(sc) list=list.filter(u=>u.schoolId===sc);
+  if(role) list=list.filter(u=>u.role===role);
+  document.getElementById('usersInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${usersList.length}</b> users`;
   list.sort((a,b)=>rankOf(b.role)-rankOf(a.role));
   document.getElementById('usersTable').innerHTML=list.length?list.map(u=>{
     let icon=u.role==='Super Admin'?'👑':u.role==='Admin'?'🛡️':u.role==='Principal'?'🏫':(u.role==='Librarian'||u.role==='HOD')?'📚':'👩‍🏫';
-    let canDelete = myRole==='Super Admin' ? true : (u.role!=='Super Admin' && u.role!=='Admin' && u.schoolId===mySchoolId);
-    let canReset = myRole==='Super Admin' || (u.schoolId===mySchoolId && u.role!=='Super Admin');
-    return `<tr><td><b>${toCaps(u.name||'')}</b></td><td>${u.email||''}</td><td><b>${u.schoolId||''}</b><br><small>${toCaps(u.schoolName||'')}</small></td><td><span class="badge badge-${rankOf(u.role)}">${icon} ${toCaps(u.role)} — ${rankOf(u.role)}/5</span></td><td>${toCaps(u.subject||'—')}</td><td>${(u.teachingClasses||[]).join(', ')||'—'}</td><td><code>${u.password||'1234'}</code></td><td><button class="btn btn-teal" onclick="resetPassword('${u.schoolId}','${u.id}')" ${canReset?'':'disabled'}>🔑 RESET TO 1234</button> <button class="btn btn-red" onclick="deleteUser('${u.schoolId}','${u.id}','${u.email||''}')" ${canDelete?'':'disabled'}>🗑️ DELETE</button></td></tr>`;
-  }).join(''):`<tr><td colspan="8" style="text-align:center;padding:20px">No users for this filter.</td></tr>`;
+    let canDelete = isSuper ? true : (rankOf(u.role)<4 && u.schoolId===mySchoolId);
+    return `<tr><td><b>${toCaps(u.name||'')}</b></td><td>${u.email||''}</td><td><b>${u.schoolId||''}</b></td><td><span class="badge badge-${rankOf(u.role)}">${icon} ${toCaps(u.role)} — ${rankOf(u.role)}/5</span></td><td>${toCaps(u.subject||'—')}</td><td>${(u.teachingClasses||[]).join(', ')||'—'}</td><td><button class="btn btn-teal" onclick="resetPass('${u.schoolId}','${u.id}')">🔑 RESET 1234</button> ${canDelete?`<button class="btn btn-red" onclick="deleteUser('${u.schoolId}','${u.id}','${u.email||''}')">🗑️</button>`:'🔒'}</td></tr>`;
+  }).join(''):`<tr><td colspan="7" style="text-align:center;padding:20px">No users for this filter.</td></tr>`;
 }
 async function createUser(){
-  let schoolId=document.getElementById('newSchool').value;
   let name=document.getElementById('newName').value.trim();
   let email=document.getElementById('newEmail').value.trim().toLowerCase();
   let pass=document.getElementById('newPassword').value.trim()||'1234';
+  let schoolId=document.getElementById('newSchool').value;
   let role=document.getElementById('newRole').value;
   let subject=document.getElementById('newSubject').value;
-  let classesRaw=document.getElementById('newClasses').value.trim();
-  let phone=document.getElementById('newPhone').value.trim();
-  let msg=document.getElementById('userMsg');
-  if(!schoolId){msg.innerHTML='<div class="warn">⚠️ Pick School first.</div>';return;}
+  let classes=document.getElementById('newClasses').value.trim();
+  let msg=document.getElementById('createMsg');
+  // Fallback: if dropdown empty but search has school, use search
+  if(!schoolId){
+    let q=document.getElementById('schoolSearch').value.trim().toUpperCase();
+    if(q){ let m=schools.find(s=>toCaps(s.schoolId)===q||toCaps(s.schoolName).includes(q)); if(m) schoolId=m.schoolId; }
+  }
   if(!name){msg.innerHTML='<div class="warn">⚠️ Type Full Name.</div>';return;}
   if(!email||!email.includes('@')){msg.innerHTML='<div class="warn">⚠️ Type valid Email.</div>';return;}
-  if(!role){msg.innerHTML='<div class="warn">⚠️ Pick Role / Rank.</div>';return;}
-  // Permission check - who can create who
-  if(!canCreateRoles(myRole).includes(role)){
-    msg.innerHTML=`<div class="warn">⛔ <b>NOT ALLOWED</b><br>You are <b>${myRole} — Rank ${myRank}/5</b>.<br>You cannot create <b>${role} — Rank ${rankOf(role)}/5</b>.<br>You can only create: <b>${canCreateRoles(myRole).join(' • ')}</b>.<br>${myRole==='Admin'?'Only Super Admin can create Super Admin / Admin.':''}</div>`;return;
-  }
-  // Admin can only create in own school
-  if(myRole==='Admin' && schoolId!==mySchoolId){
-    msg.innerHTML='<div class="warn">⛔ Admin can only create users in <b>own school ('+mySchoolId+')</b>. You picked '+schoolId+'.</div>';return;
-  }
-  // Super Admin role must be in ALL school
-  if(role==='Super Admin' && schoolId!=='ALL'){
-    if(!confirm('Super Admin should be in ALL SCHOOLS, not '+schoolId+'.\n\nClick OK to save as ALL SCHOOLS, Cancel to keep '+schoolId+'.')){ /* keep */ } else { schoolId='ALL'; }
-  }
-  // Duplicate check across all users
-  if(usersList.find(u=>String(u.email||'').toLowerCase()===email)){
-    msg.innerHTML='<div class="warn">⚠️ Email already exists: <b>'+email+'</b></div>';return;
-  }
+  if(!schoolId){msg.innerHTML='<div class="warn">⚠️ Pick School — Type in search (e.g. WORDSWORTH) then pick from dropdown.</div>';return;}
+  if(!role){msg.innerHTML='<div class="warn">⚠️ Pick Role.</div>';return;}
+  if(!isSuper && rankOf(role)>=4){msg.innerHTML='<div class="warn">⛔ Admin cannot create '+role+' (Rank '+rankOf(role)+'/5). Only Super Admin can. You can create Principal / Librarian / HOD / Teacher.</div>';return;}
+  if(!isSuper && schoolId!==mySchoolId){msg.innerHTML='<div class="warn">⛔ Admin can only create users in own school ('+mySchoolId+').</div>';return;}
+  if((role==='Teacher'||role==='HOD') && !subject){msg.innerHTML='<div class="warn">⚠️ Pick Subject for '+role+'.</div>';return;}
+  if((role==='Teacher'||role==='HOD') && !classes){msg.innerHTML='<div class="warn">⚠️ Type Classes for '+role+' (e.g. 10A, 10B).</div>';return;}
+  if(usersList.some(u=>String(u.email||'').toLowerCase()===email && u.schoolId===schoolId)){msg.innerHTML='<div class="warn">⚠️ User with this email already exists in '+schoolId+'.</div>';return;}
   let sc=schools.find(s=>s.schoolId===schoolId);
-  let rec={
-    name:toCaps(name), email, password:pass, role, rank:rankOf(role),
-    subject:subject||'', teachingClasses:classesRaw?classesRaw.split(',').map(s=>s.trim().toUpperCase()).filter(Boolean):[],
-    teachingGrades:[], phone,
-    schoolId, prefix:schoolId, schoolName: schoolId==='ALL'?'ALL SCHOOLS':(sc?sc.schoolName:schoolId),
-    createdAt:Date.now(), createdBy:user?.email||''
-  };
+  let rec={name:toCaps(name),email,password:pass,role,subject:subject||'',teachingClasses:classes?classes.split(',').map(c=>c.trim().toUpperCase()).filter(Boolean):[],schoolId,schoolName:sc?sc.schoolName:schoolId,createdAt:Date.now(),createdBy:user?.email||''};
   try{let ref=rtdb.ref('users/'+schoolId).push();await ref.set(rec);rec.id=ref.key;}catch(e){rec.id='tmp'+Date.now();}
   usersList.push(rec);
-  msg.innerHTML=`<div class="ok">✅ Created: <b>${toCaps(name)}</b> — ${role} — Rank ${rankOf(role)}/5 — School: <b>${schoolId}</b><br>Email: <b>${email}</b> — Password: <b>${pass}</b><br>Tell them: Login with School <b>${schoolId==='ALL'?'ALL SCHOOLS':schoolId}</b> — Email — Password ${pass}</div>`;
-  document.getElementById('newName').value='';document.getElementById('newEmail').value='';document.getElementById('newClasses').value='';document.getElementById('newPhone').value='';
-  renderList();
-}
-async function resetPassword(schoolId,id){
-  if(!confirm('Reset this user password to 1234?')) return;
-  try{await rtdb.ref('users/'+schoolId+'/'+id).update({password:'1234'});}catch(e){}
-  let u=usersList.find(x=>String(x.id)===String(id)); if(u) u.password='1234';
-  renderList();
-  alert('✅ Password reset to 1234 for '+ (u?.name||''));
+  msg.innerHTML=`<div class="ok">✅ Created: <b>${toCaps(name)}</b> — ${email} / ${pass} — Role: <b>${role} — Rank ${rankOf(role)}/5</b> — School: <b>${schoolId}</b> ${subject?'— Subject: '+subject:''} ${classes?'— Classes: '+classes:''}<br>They can login now — Search school, pick it, login.</div>`;
+  document.getElementById('newName').value='';document.getElementById('newEmail').value='';
+  renderUsers();
 }
 async function deleteUser(schoolId,id,email){
-  if(!confirm('Delete user '+email+'?\n\nThey will not be able to login.')) return;
+  if(!confirm('Delete user '+email+'?')) return;
   try{await rtdb.ref('users/'+schoolId+'/'+id).remove();}catch(e){}
   usersList=usersList.filter(u=>String(u.id)!==String(id));
-  renderList();
+  renderUsers();
+}
+async function resetPass(schoolId,id){
+  if(!confirm('Reset this user password to 1234?')) return;
+  try{await rtdb.ref('users/'+schoolId+'/'+id).update({password:'1234'});}catch(e){}
+  alert('✅ Password reset to 1234');
 }
 loadData();
 </script></body></html>
