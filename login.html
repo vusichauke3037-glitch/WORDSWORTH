@@ -1,19 +1,157 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Login — Makhanani LTSM</title>
-<style>*{box-sizing:border-box}body{font-family:Arial;margin:0;background:#e5e7eb;padding:16px}header{text-align:center;background:#0a1f4d;color:#fff;padding:18px;border-radius:14px}header h1{margin:0}header h1 span{color:#d4af37}.wrap{max-width:520px;margin:0 auto}.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0}.nav a{padding:12px 16px;border-radius:10px;font-weight:900;text-decoration:none;font-size:13px;color:#fff;background:#0a1f4d}.nav a.home{background:#f59e0b;color:#111}.card{background:#fff;border-radius:14px;padding:18px;margin:14px 0}input,select{width:100%;padding:13px;border-radius:10px;border:1px solid #ddd;margin:6px 0;font-size:14px}label{font-size:12px;font-weight:800;color:#555}.btn{display:block;text-align:center;padding:14px;border-radius:11px;font-weight:900;border:none;cursor:pointer;width:100%;font-size:15px}.gold{background:#d4af37}.blue{background:#0a1f4d;color:#fff}.hint{font-size:12px;color:#666;text-align:center;line-height:1.6}</style></head>
-<body><div class="wrap">
-<header><h1>📚 MAKHANANI <span>LTSM</span></h1><p>XINTIMANI GROUP • Mr Vusi Chauke • 078 023 3263</p></header>
-<nav class="nav"><a href="index.html" class="home">🏠 HOME</a><a href="admin.html">👑 ADMIN</a><a href="index.html#ltsm">📚 LTSM</a><a href="issue.html">📖 ISSUE / RETRIEVE</a><a href="staff.html">👥 STAFF</a><a href="librarian.html">📚 LIBRARIAN</a></nav>
-<div class="card"><h2 style="margin:0">🔐 LOGIN — Password Required — Select Your School</h2><p class="hint">V1.58 — Passwords HASHED (SHA-256) + HIDDEN from public. WORDSWORTH auto-selected.<br>Demo: Any password works for now. Select Role to enter.</p>
-<label>Role</label><select id="role"><option>ADMIN</option><option>STAFF</option><option>LIBRARIAN</option><option>TEACHER</option><option>LEARNER</option></select>
-<label>School — Type to filter. Tap to pick</label><input id="school" list="schools" value="WORDSWORTH HIGH SCHOOL"><datalist id="schools"><option value="WORDSWORTH HIGH SCHOOL"><option value="MAKHANANI PRIMARY"><option value="XINTIMANI HIGH"></datalist>
-<label>Your Name</label><input id="name" placeholder="e.g. Mr Vusi Chauke" value="Mr Vusi Chauke">
-<label>Password</label><input id="pass" type="password" placeholder="Enter password">
-<button class="btn gold" onclick="doLogin()">🔓 LOGIN →</button>
-<button class="btn blue" style="margin-top:8px" onclick="window.location.href='index.html'">🏠 Back To Home</button>
-<p class="hint" id="msg"></p></div>
-<div class="card"><b>💳 SUBSCRIPTION — SHARED BY ALL STAFF</b><br>School: WORDSWORTH HIGH SCHOOL (700310854)<br>Plan: PREMIUM | Status: ✅ Active | End: 2027-12-31<br>Shared by: All 10 staff</div>
-</div><script>
-function doLogin(){let r=document.getElementById('role').value,s=document.getElementById('school').value||'WORDSWORTH HIGH SCHOOL',n=document.getElementById('name').value||'User',p=document.getElementById('pass').value;if(!p)return alert('Enter password');localStorage.setItem('MAKHANANI_LOGGED_IN',JSON.stringify({role:r,school:s,name:n}));localStorage.setItem('MAKHANANI_SCHOOL_NAME',s);document.getElementById('msg').textContent='✅ Welcome '+n+' ('+r+') — Redirecting...';setTimeout(()=>{if(r==='ADMIN')location.href='admin.html';else if(r==='LIBRARIAN')location.href='librarian.html';else if(r==='STAFF')location.href='staff.html';else location.href='index.html';},800);}
+<title>Login - Makhanani LTSM 2.0</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
+header{background:#0a1f4d;color:#fff;padding:18px 12px;text-align:center;border-bottom:4px solid #d4af37}
+header h1{margin:0;font-size:22px}header p{margin:6px 0 0;font-size:12px;color:#d4af37}
+.wrap{max-width:520px;margin:0 auto;padding:12px}
+.card{background:#fff;border-radius:12px;padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
+input:focus,select:focus{border-color:#d4af37;outline:none;background:#fef3c7}
+.btn{border:none;border-radius:8px;padding:12px;font-weight:900;cursor:pointer;font-size:13px;width:100%;margin-top:12px}
+.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.demo-grid button{border:2px solid #0a1f4d;border-radius:8px;padding:10px;font-weight:900;cursor:pointer;font-size:12px;background:#fff;color:#0a1f4d;text-align:left;line-height:1.4}
+.demo-grid button:hover{background:#fef3c7}
+.demo-grid button b{color:#0a1f4d}
+</style></head>
+<body>
+<header><h1>🏫 MAKHANANI LTSM 2.0</h1><p>LEARNING & TEACHING SUPPORT MATERIAL • WORDSWORTH HIGH SCHOOL</p></header>
+<div class="wrap">
+<div class="card">
+<h2>🔐 Login</h2>
+<label>📧 Email</label><input id="email" placeholder="e.g. dube@wordsworth.co.za" autocomplete="username">
+<label>🔑 Password</label><input id="password" type="password" placeholder="1234" autocomplete="current-password">
+<label>🏫 School — Type to Search</label><input id="schoolSearch" placeholder="🔍 Type school... e.g. WORDS" oninput="filterSchools()">
+<select id="school" size="5"><option value="">-- PICK SCHOOL --</option></select>
+<div class="info" id="schoolInfo">Pick school, or type to search. Demo: WORDSWORTH HIGH SCHOOL (WHS).</div>
+<button class="btn btn-green" onclick="doLogin()">🔐 LOGIN →</button>
+<div id="msg"></div>
+<div class="info">No account? Ask Admin to add you in Users page.<br>Forgot password? Demo password is <b>1234</b> for all demo users.</div>
+</div>
+
+<div class="card">
+<h2>⚡ 1-Tap Demo Logins — Tap To Fill + Login</h2>
+<div class="info">Tap a role → Email + Password + School auto-fill → Tap LOGIN.<br>All demo passwords: <b>1234</b></div>
+<div class="demo-grid" id="demoGrid"></div>
+<button class="btn btn-gold" onclick="seedDemoUsers()">🌱 SEED / RESET DEMO USERS → (If login says User Not Found)</button>
+<div id="seedMsg"></div>
+</div>
+
+<div class="card"><h2>👥 Who Does What — Ranks</h2><div class="info">
+<b>Rank 1 — Teacher:</b> Issue to MY class + MY subject only. Return ANY book.<br>
+<b>Rank 2 — Librarian:</b> Issue to Teacher ONLY after HOD / Principal APPROVES. Cannot approve.<br>
+<b>Rank 3 — HOD:</b> Approve / Reject MY subject requests only.<br>
+<b>Rank 4 — Principal:</b> Approve / Reject ANY request. Overrides HOD.<br>
+<b>Rank 5 — Admin:</b> All schools, all users, all stock, all reports.
+</div></div>
+</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const rtdb=firebase.database();
+function toCaps(s){return String(s||'').trim().toUpperCase();}
+let schools=[
+  {id:'WHS',name:'WORDSWORTH HIGH SCHOOL'},
+  {id:'EHS',name:'ELDORADO PARK HIGH SCHOOL'},
+  {id:'MHS',name:'MAKHANANI HIGH SCHOOL'},
+  {id:'LHS',name:'LENASIA HIGH SCHOOL'},
+];
+let demoUsers=[
+  {email:'dube@wordsworth.co.za',pass:'1234',name:'MRS DUBE',role:'Teacher',rank:1,subject:'MATHEMATICS',teachingClasses:['10A','10B','11A'],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'teacher.html'},
+  {email:'smith@wordsworth.co.za',pass:'1234',name:'MR SMITH',role:'Teacher',rank:1,subject:'ENGLISH',teachingClasses:['10A','10B'],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'teacher.html'},
+  {email:'jones@wordsworth.co.za',pass:'1234',name:'MS JONES',role:'Teacher',rank:1,subject:'HISTORY',teachingClasses:['12A'],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'teacher.html'},
+  {email:'librarian@wordsworth.co.za',pass:'1234',name:'LIBRARIAN WHS',role:'Librarian',rank:2,subject:'',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'librarian.html'},
+  {email:'hod.maths@wordsworth.co.za',pass:'1234',name:'HOD MATHS',role:'HOD',rank:3,subject:'MATHEMATICS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'hod.html'},
+  {email:'hod.english@wordsworth.co.za',pass:'1234',name:'HOD ENGLISH',role:'HOD',rank:3,subject:'ENGLISH',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'hod.html'},
+  {email:'principal@wordsworth.co.za',pass:'1234',name:'PRINCIPAL WHS',role:'Principal',rank:4,subject:'',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'principal.html'},
+  {email:'admin@wordsworth.co.za',pass:'1234',name:'ADMIN WHS',role:'Admin',rank:5,subject:'',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'admin.html'},
+];
+let rolePages={Teacher:'teacher.html',Librarian:'librarian.html',HOD:'hod.html',Principal:'principal.html',Admin:'admin.html'};
+function renderSchools(filter){
+  let list=schools.filter(s=> !filter || (s.name+' '+s.id).toUpperCase().includes(filter.toUpperCase()));
+  document.getElementById('school').innerHTML='<option value="">-- PICK SCHOOL --</option>'+list.map(s=>`<option value="${s.id}">${s.name} (${s.id})</option>`).join('');
+  document.getElementById('schoolInfo').textContent=list.length?`Found ${list.length} school(s) — Pick one.`:`No school for "${filter}" — Try WORDS`;
+}
+function filterSchools(){ renderSchools(document.getElementById('schoolSearch').value.trim()); }
+function renderDemo(){
+  document.getElementById('demoGrid').innerHTML=demoUsers.map((u,i)=>`<button onclick="fillDemo(${i})"><b>${u.role.toUpperCase()}</b><br>${u.name}<br><small>${u.subject||'ALL SUBJECTS'}${u.teachingClasses?` — ${u.teachingClasses.join(', ')}`:''}<br>${u.email}</small></button>`).join('');
+}
+function fillDemo(i){
+  let u=demoUsers[i];
+  document.getElementById('email').value=u.email;
+  document.getElementById('password').value=u.pass;
+  document.getElementById('schoolSearch').value='WORDS';
+  renderSchools('WORDS');
+  document.getElementById('school').value=u.schoolId;
+  document.getElementById('msg').innerHTML=`<div class="ok">✅ Filled: <b>${u.name}</b> — ${u.role} — ${u.schoolId}<br>Tap <b>LOGIN</b> to continue → ${u.page}</div>`;
+  document.getElementById('email').scrollIntoView({behavior:'smooth',block:'center'});
+}
+async function seedDemoUsers(){
+  let el=document.getElementById('seedMsg');
+  el.innerHTML='<div class="info">Seeding demo users...</div>';
+  try{
+    for(let u of demoUsers){
+      let key=u.email.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();
+      await rtdb.ref('users/WHS/'+key).set({name:u.name,email:u.email.toLowerCase(),password:u.pass,role:u.role,rank:u.rank,subject:u.subject||'',teachingClasses:u.teachingClasses||[],schoolId:u.schoolId,schoolName:u.schoolName,active:true});
+      await rtdb.ref('usersByEmail/'+key).set({name:u.name,email:u.email.toLowerCase(),password:u.pass,role:u.role,rank:u.rank,subject:u.subject||'',teachingClasses:u.teachingClasses||[],schoolId:u.schoolId,schoolName:u.schoolName,active:true});
+    }
+    el.innerHTML=`<div class="ok">✅ Seeded <b>${demoUsers.length}</b> demo users to Firebase (users/WHS + usersByEmail)<br>HOD MATHS + HOD ENGLISH + PRINCIPAL now exist.<br>Tap any demo button above, then LOGIN.</div>`;
+  }catch(e){ el.innerHTML=`<div class="warn">⛔ Seed failed: ${e.message}<br>Login will still work offline with demo list below — Tap demo, then LOGIN.</div>`; }
+}
+async function doLogin(){
+  let email=document.getElementById('email').value.trim().toLowerCase();
+  let pass=document.getElementById('password').value.trim();
+  let schoolId=document.getElementById('school').value;
+  let msg=document.getElementById('msg');
+  if(!email){ msg.innerHTML='<div class="warn">⚠️ Type Email.</div>'; return; }
+  if(!pass){ msg.innerHTML='<div class="warn">⚠️ Type Password.</div>'; return; }
+  if(!schoolId){ msg.innerHTML='<div class="warn">⚠️ Pick School — Type WORDS in Search, then pick WORDSWORTH.</div>'; return; }
+  // 1. Try demo list first — Works even if Firebase empty / offline
+  let demo=demoUsers.find(u=>u.email.toLowerCase()===email);
+  if(demo && demo.pass===pass && demo.schoolId===schoolId){
+    localStorage.setItem('makhanani_user', JSON.stringify({...demo, password:undefined}));
+    msg.innerHTML=`<div class="ok">✅ Welcome <b>${demo.name}</b> — ${demo.role} — Going to ${demo.page}...</div>`;
+    setTimeout(()=>location.href=demo.page, 600);
+    return;
+  }
+  // 2. Try Firebase usersByEmail + users/WHS
+  try{
+    let key=email.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();
+    let snap=await rtdb.ref('usersByEmail/'+key).once('value');
+    let u=snap.val();
+    if(!u){
+      let snap2=await rtdb.ref('users/'+schoolId+'/'+key).once('value');
+      u=snap2.val();
+    }
+    if(u && String(u.password||'1234')===pass){
+      let role=toCaps(u.role||'Teacher');
+      let page=rolePages[role]||'teacher.html';
+      let clean={name:u.name||email,email:u.email||email,role:u.role||'Teacher',rank:u.rank||1,subject:u.subject||'',teachingClasses:u.teachingClasses||[],schoolId:u.schoolId||schoolId,schoolName:u.schoolName||schoolId};
+      localStorage.setItem('makhanani_user', JSON.stringify(clean));
+      msg.innerHTML=`<div class="ok">✅ Welcome <b>${clean.name}</b> — ${clean.role} — Going to ${page}...</div>`;
+      setTimeout(()=>location.href=page, 600);
+      return;
+    }
+    msg.innerHTML=`<div class="warn">⛔ User not found / Wrong password.<br>Tap <b>🌱 SEED / RESET DEMO USERS</b> above, then tap a demo button, then LOGIN.<br>Demo password is <b>1234</b>.</div>`;
+  }catch(e){
+    // 3. Offline fallback — If demo email matches but school differs, still allow if password matches
+    if(demo && demo.pass===pass){
+      localStorage.setItem('makhanani_user', JSON.stringify({...demo, schoolId, password:undefined}));
+      msg.innerHTML=`<div class="ok">✅ Welcome (offline) <b>${demo.name}</b> — Going to ${demo.page}...</div>`;
+      setTimeout(()=>location.href=demo.page, 600);
+      return;
+    }
+    msg.innerHTML=`<div class="warn">⛔ Login failed: ${e.message}<br>Tap SEED, then demo, then LOGIN.</div>`;
+  }
+}
+renderSchools('');
+renderDemo();
 </script></body></html>
