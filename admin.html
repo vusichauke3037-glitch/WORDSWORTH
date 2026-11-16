@@ -1,269 +1,149 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Admin v3.3</title><meta name="theme-color" content="#0a1f4d">
-<link rel="icon" type="image/png" href="logo.png">
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin - Makhanani LTSM 2.0</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9;color:#111}header{background:#0a1f4d;color:#fff;padding:18px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:13px}main{max-width:950px;margin:auto;padding:14px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}h2{margin:0 0 10px;color:#0a1f4d;font-size:18px;border-bottom:2px solid #d4af37;padding-bottom:6px}label{font-weight:700;font-size:13px;display:block;margin:12px 0 4px}input,select{width:100%;padding:13px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:15px;background:#fff}.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:10px}.btn-blue{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-green{background:#059669;color:#fff}.btn-red{background:#dc2626;color:#fff}.info{background:#dbeafe;border:1.5px solid #2563eb;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.warn{background:#fee2e2;border:1.5px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.ok{background:#dcfce7;border:1.5px solid #059669;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.goldBox{background:#fef3c7;border:2px solid #d4af37;border-radius:12px;padding:12px;margin-top:10px;font-size:13px}.small{font-size:12px;color:#64748b}.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 12px;border-radius:20px;font-weight:900;font-size:12px}.topnav a.gold{background:#d4af37}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}.pill{padding:3px 8px;border-radius:20px;font-weight:900;font-size:11px}.pill-green{background:#dcfce7;color:#059669}.pill-red{background:#fee2e2;color:#dc2626}.pill-gold{background:#fef3c7;color:#92400e}.pill-blue{background:#dbeafe;color:#1e40af}.stat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}.statBox{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center}.statBox b{font-size:24px;color:#0a1f4d;display:block}.statBox span{font-size:12px;color:#64748b}.tabBtn{padding:11px 14px;border:2px solid #0a1f4d;border-radius:20px;font-weight:900;font-size:13px;cursor:pointer;background:#fff;color:#0a1f4d}.tabBtn.active{background:#0a1f4d;color:#fff}.miniBtn{padding:8px 10px;border:none;border-radius:6px;font-weight:900;font-size:12px;cursor:pointer;margin:2px 0;width:100%}
-</style>
-</head>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
+header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
+header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
+.wrap{max-width:1200px;margin:0 auto;padding:12px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
+input{cursor:text}input[type="number"]{text-transform:none}
+select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
+.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}
+.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-teal{background:#0d9488;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.grace{background:#fffbeb;border:2px solid #f59e0b;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
+.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
+.kpi b{font-size:20px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:middle}th{background:#0a1f4d;color:#fff}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-active{background:#dcfce7;color:#166534}.badge-trial{background:#dbeafe;color:#1e40af}.badge-expired{background:#fee2e2;color:#991b1b}.badge-expiring{background:#fef3c7;color:#92400e}.badge-suspended{background:#111827;color:#fff}.badge-grace{background:#f59e0b;color:#fff}.badge-pending{background:#fef3c7;color:#92400e}.badge-approved{background:#dcfce7;color:#166534}.badge-rejected{background:#fee2e2;color:#991b1b}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{flex:1;min-width:110px;padding:12px;border:none;border-radius:8px;background:#e2e8f0;font-weight:900;cursor:pointer}.tabs button.active{background:#0a1f4d;color:#fff}
+.tab{display:none}.tab.active{display:block}
+@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}table{font-size:12px}}
+</style></head>
 <body>
-<header><h1>⚙️ Makhanani LTSM — Admin v3.3</h1><p>Xintimani Group (Pty) Ltd • <span id="whoLine">Checking...</span><br>Admin Only • Schools + Subscription + Bin + Audit + SGB + Finance • WhatsApp: 078 023 3263</p></header>
-<main>
-<div class="card">
-<div class="topnav"><a href="index.html">🏠 Home / Login</a><a href="super_admin.html" class="gold">👑 Super Admin</a><a href="school.html">🏫 Schools</a><a href="subscriptions.html">💰 Subscriptions</a><a href="issue.html">📖 Issue / Return</a><a href="librarian.html">📚 Librarian</a><a href="principal.html">📊 Principal</a><a href="profile.html">👤 Profile</a><a href="https://wa.me/27780233263?text=Hello%20Makhanani">📱 WhatsApp 078 023 3263</a></div>
-<div class="info" id="loginInfo">Checking login...</div>
-<div id="blockedBox" class="warn" style="display:none">🔒 Admin ONLY. You are logged in as <span id="blockedRole"></span>. <a href="index.html">Go to Login and login as Admin / SUPER ADMIN</a>.<br>Logged in as: <span id="blockedWho"></span></div>
+<header><h1>🛡️ ADMIN — MAKHANANI LTSM 2.0</h1><p>RANK 4/5 • YOUR SCHOOL ONLY • USERS • STOCK • ORDERS • REPORTS • SUB VIEW</p>
+<div id="taskbar"></div><script src="nav.js"></script>
+<script>guardPage(4,'Admin');</script>
+</header>
+<div class="wrap">
+<div class="info" id="roleInfo">Loading...</div>
+
+<!-- SUBSCRIPTION STATUS FOR MY SCHOOL -->
+<div class="card" id="subCard">
+<h2>💰 My School Subscription — View Only (Super Admin Changes This)</h2>
+<div id="subInfo" class="info">Loading...</div>
+<div class="row"><button class="btn btn-gold" style="flex:1" onclick="window.open('https://wa.me/27780233263?text='+encodeURIComponent('Hello Makhanani! Admin for '+mySchoolId+' — Please renew our subscription.'),'_blank')">📱 WHATSAPP SUPER ADMIN TO RENEW (0780233263) →</button><button class="btn btn-grey" style="flex:1" onclick="location.href='pricing.html'">💰 SEE PRICING →</button></div>
 </div>
 
-<div id="body" style="display:none">
-<div class="card">
-<h2>📊 Admin Stats — All Schools</h2>
-<div class="stat">
-<div class="statBox"><b id="tSchools">—</b><span>Total Schools</span></div>
-<div class="statBox"><b id="tActive">—</b><span>Active</span></div>
-<div class="statBox"><b id="tSuspended">—</b><span>Suspended</span></div>
-<div class="statBox"><b id="tReq">—</b><span>Requests</span></div>
-<div class="statBox"><b id="tNewReq">—</b><span>New Requests</span></div>
-<div class="statBox"><b id="tRevenue">—</b><span>Est. Monthly (R)</span></div>
-</div>
-<button class="btn btn-blue" onclick="loadAll()">🔄 Refresh All</button>
+<div class="kpi">
+<div onclick="showTab('users')"><b id="kpiUsers">0</b><span>👥 USERS IN MY SCHOOL</span></div>
+<div onclick="showTab('users')"><b id="kpiTeachers">0</b><span>👩‍🏫 TEACHERS</span></div>
+<div onclick="showTab('stock')"><b id="kpiBooks">0</b><span>📖 BOOKS</span></div>
+<div onclick="showTab('stock')"><b id="kpiLowStock">0</b><span>⚠️ LOW STOCK</span></div>
+<div onclick="showTab('orders')"><b id="kpiPendingOrders">0</b><span>🧾 PENDING ORDERS</span></div>
 </div>
 
-<div class="card">
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-<button class="tabBtn active" id="tabReq" onclick="setTab('REQ')">📥 Requests</button>
-<button class="tabBtn" id="tabSchools" onclick="setTab('SCHOOLS')">🏫 Schools</button>
-<button class="tabBtn" id="tabUsers" onclick="setTab('USERS')">👥 Users — School Drop-down</button>
-<button class="tabBtn" id="tabSGB" onclick="setTab('SGB')">🏛️ SGB</button>
-<button class="tabBtn" id="tabFinance" onclick="setTab('FINANCE')">💰 Finance</button>
-<button class="tabBtn" id="tabAudit" onclick="setTab('AUDIT')">📋 Audit / Bin</button>
-</div>
+<div class="tabs">
+<button id="tabBtnOverview" class="active" onclick="showTab('overview')">📊 Overview</button>
+<button id="tabBtnUsers" onclick="showTab('users')">👥 Users</button>
+<button id="tabBtnStock" onclick="showTab('stock')">📦 Stock / Books</button>
+<button id="tabBtnOrders" onclick="showTab('orders')">🧾 Orders — Approve</button>
+<button id="tabBtnReports" onclick="showTab('reports')">📊 Reports</button>
 </div>
 
-<div class="card" id="secReq">
-<h2>📥 Subscription Requests</h2>
-<div id="reqBox"><div class="info">⏳ Loading...</div></div>
+<!-- OVERVIEW -->
+<div id="tab-overview" class="tab active">
+<div class="card"><h2>📊 Overview — Today — My School</h2><div id="overviewInfo" class="info">Loading...</div></div>
+<div class="card"><h2>⚡ Quick Links — Admin</h2><div class="row">
+<button class="btn btn-green" onclick="showTab('users')">👥 MANAGE USERS →</button>
+<button class="btn btn-purple" onclick="showTab('stock')">📦 CHECK STOCK →</button>
+<button class="btn btn-gold" onclick="showTab('orders')">🧾 APPROVE ORDERS →</button>
+<button class="btn btn-teal" onclick="showTab('reports')">📊 VIEW REPORTS →</button>
+<button class="btn btn-grey" onclick="location.href='books.html'">📖 BOOKS →</button>
+</div><div class="info" style="margin-top:12px"><b>Admin CANNOT:</b> ❌ See Super Admin page ❌ See other schools ❌ Change subscription price ❌ Delete school<br><b>Admin CAN:</b> ✅ Create users in own school (Teacher / Librarian / HOD / Principal) ✅ Manage stock ✅ Approve orders ✅ View reports for own school</div></div>
+<div class="card"><h2>🧾 Pending Orders — Need Your Approval</h2><div id="pendingList"></div></div>
 </div>
 
-<div class="card" id="secSchools" style="display:none">
-<h2>🏫 All Schools — Suspend / Activate / WhatsApp</h2>
-<label>Search School / EMIS / Package</label><input id="searchSchool" placeholder="Type to filter..." oninput="renderSchools()">
-<div id="schoolsBox"></div>
-<button class="btn btn-green" onclick="location.href='school.html'">➕ Create New School →</button>
+<!-- USERS -->
+<div id="tab-users" class="tab"><div class="card">
+<h2>👥 Users In My School — Create / View</h2>
+<div class="info">Admin can create: <b>Teacher (Rank 1) • Librarian / HOD (Rank 2) • Principal (Rank 3)</b> in <b>own school only</b>.<br>Admin <b>cannot</b> create Super Admin (Rank 5) or another Admin (Rank 4) — Only Super Admin can do that.<br>All new users get password <b>1234</b> — Tell them to change it.</div>
+<label>👤 Full Name *</label><input id="newName" placeholder="e.g. MRS DUBE">
+<label>📧 Email *</label><input id="newEmail" placeholder="e.g. dube@wordsworth.co.za" style="text-transform:none">
+<label>🎖️ Role / Rank *</label><select id="newRole"><option value="Teacher">👩‍🏫 TEACHER — RANK 1</option><option value="Librarian">📚 LIBRARIAN — RANK 2</option><option value="HOD">📚 HOD — RANK 2</option><option value="Principal">🏫 PRINCIPAL — RANK 3</option></select>
+<label>📚 Subject (Teacher / HOD)</label><select id="newSubject"><option value="">-- NO SUBJECT --</option><option value="MATHS">MATHS</option><option value="ENGLISH">ENGLISH</option><option value="SCIENCE">SCIENCE</option><option value="HISTORY">HISTORY</option><option value="GEOGRAPHY">GEOGRAPHY</option><option value="LIFE SCIENCES">LIFE SCIENCES</option><option value="ACCOUNTING">ACCOUNTING</option><option value="BUSINESS">BUSINESS</option></select>
+<label>🏫 Classes (Teacher / HOD — e.g. 10A, 10B)</label><input id="newClasses" placeholder="e.g. 10A, 10B, 11A">
+<button class="btn btn-purple btn-full" onclick="createUser()">➕ CREATE USER →</button>
+<div id="userMsg"></div>
+</div>
+<div class="card"><h2>👥 All Users — My School</h2><div id="usersInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Name</th><th>Email</th><th>Role / Rank</th><th>Subject</th><th>Classes</th><th>Action</th></tr></thead><tbody id="usersTable"></tbody></table></div></div>
 </div>
 
-<div class="card" id="secUsers" style="display:none">
-<h2>👥 Users — Pick School From Drop-down (No Typing EMIS)</h2>
-<label>🏫 Select School *</label>
-<select id="userSchoolSelect"><option value="">Loading schools...</option></select>
-<div class="small" id="userSchoolHint">Pick a school — Users load automatically.</div>
-<label>Search Email / Name (optional)</label><input id="userSearch" placeholder="e.g. chauke@school.co.za" oninput="renderUsers()">
-<div id="usersBox"></div>
-<div class="goldBox"><b>➕ Add User To Selected School</b><br>
-<label>Full Name *</label><input id="nName" placeholder="e.g. Thandi Mokoena">
-<label>Email *</label><input id="nEmail" placeholder="e.g. thandi@school.co.za">
-<label>Phone</label><input id="nPhone" placeholder="e.g. 0780233263">
-<label>Role</label><select id="nRole"><option value="TEACHER">TEACHER</option><option value="LIBRARIAN">LIBRARIAN</option><option value="PRINCIPAL">PRINCIPAL</option><option value="ADMIN">ADMIN</option><option value="SUPER ADMIN">SUPER ADMIN — All Schools</option></select>
-<label>PIN</label><input id="nPin" placeholder="e.g. 1234" maxlength="6">
-<button class="btn btn-gold" onclick="addUser()">➕ Add User</button>
-<div id="addUserMsg"></div></div>
-</div>
+<!-- STOCK -->
+<div id="tab-stock" class="tab"><div class="card">
+<h2>📦 Stock / Books — My School</h2>
+<div id="stockInfo" class="info">Loading...</div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Book / Item</th><th>Subject</th><th>Grade</th><th>Qty</th><th>Status</th><th>Action</th></tr></thead><tbody id="stockTable"></tbody></table></div>
+<div class="row"><button class="btn btn-green" style="flex:1" onclick="location.href='books.html'">📖 OPEN BOOKS →</button><button class="btn btn-purple" style="flex:1" onclick="location.href='stock.html'">📦 OPEN STOCK →</button></div>
+</div></div>
 
-<div class="card" id="secSGB" style="display:none">
-<h2>🏛️ SGB — Pick School, See SGB Members</h2>
-<label>🏫 Select School *</label>
-<select id="sgbSchoolSelect"><option value="">Loading schools...</option></select>
-<button class="btn btn-blue" onclick="loadSGB()">🏛️ Load SGB For This School</button>
-<div id="sgbBox"></div>
-<div class="goldBox"><b>➕ Add SGB Member</b><br>
-<label>Name *</label><input id="sgbName" placeholder="e.g. Mr. Chauke — Chairperson">
-<label>Role</label><select id="sgbRole"><option>Chairperson</option><option>Deputy Chairperson</option><option>Secretary</option><option>Treasurer</option><option>Member</option><option>Principal (Ex-Officio)</option></select>
-<label>Phone</label><input id="sgbPhone" placeholder="e.g. 0780233263">
-<button class="btn btn-gold" onclick="addSGB()">➕ Add SGB Member</button>
-<div id="sgbMsg"></div></div>
-</div>
+<!-- ORDERS -->
+<div id="tab-orders" class="tab"><div class="card">
+<h2>🧾 Orders — Approve / Reject — My School</h2>
+<div class="info">Teachers request orders → Admin + Principal approve → Librarian issues.<br>Admin can <b>Approve / Reject</b> orders in own school.</div>
+<div id="ordersInfo" class="info">Loading...</div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Date</th><th>By</th><th>Item</th><th>Qty</th><th>Status</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div>
+<button class="btn btn-gold btn-full" onclick="location.href='orders.html'">🧾 OPEN ALL ORDERS →</button>
+</div></div>
 
-<div class="card" id="secFinance" style="display:none">
-<h2>💰 Finance — Monthly Revenue By School</h2>
-<div id="financeBox"></div>
-<div class="goldBox">Monthly: STARTER R350 • STANDARD R500 • PREMIUM R600<br>Setup (once-off): STARTER R3 000 • STANDARD R4 500 • PREMIUM R5 500<br>WhatsApp invoices: 078 023 3263</div>
-</div>
+<!-- REPORTS -->
+<div id="tab-reports" class="tab"><div class="card">
+<h2>📊 Reports — My School</h2>
+<div id="reportsInfo" class="info">Loading...</div>
+<div class="row"><button class="btn btn-green" style="flex:1" onclick="location.href='reports.html'">📊 OPEN REPORTS →</button><button class="btn btn-grey" style="flex:1" onclick="window.print()">🖨️ PRINT THIS PAGE</button></div>
+<div class="card" style="margin-top:12px"><h2>📊 Users By Role</h2><div id="roleBreakdown"></div></div>
+<div class="card"><h2>📊 Stock Summary</h2><div id="stockSummary"></div></div>
+<div class="card"><h2>📊 Orders Summary</h2><div id="ordersSummary"></div></div>
+</div></div>
 
-<div class="card" id="secAudit" style="display:none">
-<h2>📋 Audit / Bin — Deleted Items (Last 30 Days)</h2>
-<div class="small">Shows archived / deleted users, learners, textbooks from selected school. Use Users tab to restore (Unblock).</div>
-<label>🏫 Select School *</label>
-<select id="auditSchoolSelect"><option value="">Loading schools...</option></select>
-<button class="btn btn-blue" onclick="loadAudit()">📋 Load Audit / Bin</button>
-<div id="auditBox"></div>
 </div>
-
-<div class="card">
-<h2>📱 Makhanani Support</h2>
-<button class="btn btn-green" onclick="window.open('https://wa.me/27780233263?text='+encodeURIComponent('Hello Makhanani Admin needs help.'),'_blank')">📱 WhatsApp — 078 023 3263</button>
-<button class="btn btn-red" onclick="doLogout()">🚪 Logout</button>
-</div>
-</div>
-</main>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:760b5163fdf421bae01b5a", measurementId: "G-TDFSSF6NTB" };
-let db; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){}
-const $ = id => document.getElementById(id);
-const esc = s => String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function getLogin(){ try{ return JSON.parse(localStorage.getItem('MAKHANANI_LOGGED_IN')||'null'); }catch(e){ return null; } }
-let login=getLogin();
-let allSchools=[], allReq=[], allUsers=[], currentUsersEmis='';
-function toWA(p){ let x=String(p||'').replace(/\D/g,''); if(!x) return ''; if(x.startsWith('27')) return x; if(x.startsWith('0')) return '27'+x.slice(1); return x; }
-function monthlyFor(pkg){ const p=String(pkg||'').toLowerCase(); if(p.includes('premium')) return 600; if(p.includes('standard')) return 500; if(p.includes('starter')) return 350; return 0; }
-window.setTab=function(t){
-  ['REQ','SCHOOLS','USERS','SGB','FINANCE','AUDIT'].forEach(k=>{ const tabId='tab'+(k==='REQ'?'Req':k==='SCHOOLS'?'Schools':k==='USERS'?'Users':k==='SGB'?'SGB':k==='FINANCE'?'Finance':'Audit'); const secId='sec'+(k==='REQ'?'Req':k==='SCHOOLS'?'Schools':k==='USERS'?'Users':k==='SGB'?'SGB':k==='FINANCE'?'Finance':'Audit'); $(tabId).className='tabBtn'+(t===k?' active':''); $(secId).style.display=t===k?'block':'none'; });
-  if(t==='FINANCE') renderFinance();
-};
-window.loadAll=async function(){ await loadRequests(); await loadSchools(); };
-window.loadRequests=async function(){
-  try{
-    const snap=await getDocs(collection(db,'subscription_requests'));
-    allReq=[]; snap.forEach(d=>{ allReq.push({id:d.id, ...d.data()}); });
-    allReq.sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
-    if(!allReq.length){ $('reqBox').innerHTML='<div class="info">No requests yet. Share subscriptions.html to get requests.</div>'; updateStats(); return; }
-    let html='<table><tr><th>School</th><th>Package</th><th>Contact</th><th>Action</th></tr>';
-    for(const r of allReq){
-      const pill=(r.status||'NEW')==='APPROVED'?'<span class="pill pill-green">APPROVED</span>':(r.status||'NEW')==='REJECTED'?'<span class="pill pill-red">REJECTED</span>':'<span class="pill pill-gold">NEW</span>';
-      html+='<tr><td><b>'+esc(r.school||'')+'</b><br><span class="small">EMIS: '+esc(r.emis||'—')+' • '+esc(String(r.createdAt||'').slice(0,10))+'</span><br>'+pill+'</td><td><b>'+esc(r.package||'')+'</b><br><span class="small">'+esc(r.payment||'')+'</span></td><td>'+esc(r.contactName||'')+'<br>'+esc(r.phone||'')+'</td><td><button class="miniBtn" style="background:#059669;color:#fff" onclick="approveReq(\''+r.id+'\')">✅ Approve → Create School</button><button class="miniBtn" style="background:#0a1f4d;color:#fff" onclick="waSchool(\''+toWA(r.phone)+'\',\''+esc(r.contactName||'')+'\',\''+esc(r.school||'')+'\',\''+esc(r.package||'')+'\')">📱 WhatsApp School</button><button class="miniBtn" style="background:#fee2e2;color:#dc2626" onclick="deleteReq(\''+r.id+'\')">🗑️ Delete</button></td></tr>';
-    }
-    html+='</table>'; $('reqBox').innerHTML=html; updateStats();
-  }catch(e){ $('reqBox').innerHTML='<div class="warn">❌ Failed: '+esc(e.message)+'<br>FIX: Firebase → Firestore → Rules → Allow subscription_requests → Publish</div>'; }
-};
-window.approveReq=function(id){ const r=allReq.find(x=>x.id===id); if(!r) return; localStorage.setItem('MAKHANANI_PENDING_SCHOOL', JSON.stringify({school:r.school||'', emis:r.emis||'', contactName:r.contactName||'', email:'', phone:r.phone||'', package:r.package||'STANDARD'})); alert('Approved: '+r.school+'\nGoing to school.html — Fill Principal Email + PIN'); location.href='school.html'; };
-window.deleteReq=async function(id){ if(!confirm('Delete request?')) return; try{ await deleteDoc(doc(db,'subscription_requests',id)); loadRequests(); }catch(e){ alert(e.message); } };
-window.waSchool=function(wa,name,school,pkg){ if(!wa){ alert('No phone'); return; } window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('Hello '+(name||'')+', This is Makhanani LTSM (078 023 3263). Thanks for requesting '+pkg+' for '+school+'. Please confirm EMIS + Principal Email + PIN.'),'_blank'); };
-window.loadSchools=async function(){
-  try{
-    const snap=await getDocs(collection(db,'schools'));
-    allSchools=[]; snap.forEach(d=>{ allSchools.push({id:d.id, ...d.data()}); });
-    allSchools.sort((a,b)=>String(a.schoolName||a.name||'').localeCompare(String(b.schoolName||b.name||'')));
-    let opt='<option value="">— Select School —</option>'; for(const s of allSchools){ opt+='<option value="'+esc(s.emis||'')+'">'+esc(s.schoolName||s.name||'')+' — EMIS '+esc(s.emis||'')+'</option>'; }
-    $('userSchoolSelect').innerHTML=opt; $('sgbSchoolSelect').innerHTML=opt; $('auditSchoolSelect').innerHTML=opt;
-    renderSchools(); updateStats(); renderFinance();
-  }catch(e){ $('schoolsBox').innerHTML='<div class="warn">❌ '+esc(e.message)+'</div>'; }
-};
-window.renderSchools=function(){
-  const q=($('searchSchool').value||'').toLowerCase();
-  const filtered=allSchools.filter(s=> (String(s.schoolName||s.name||'')+' '+String(s.emis||'')+' '+String(s.package||'')).toLowerCase().includes(q));
-  if(!filtered.length){ $('schoolsBox').innerHTML='<div class="info">No schools found.</div>'; return; }
-  let html='<table><tr><th>School</th><th>Package</th><th>Principal</th><th>Action</th></tr>';
-  for(const s of filtered){
-    const pill=s.status==='SUSPENDED'?'<span class="pill pill-red">SUSPENDED</span>':'<span class="pill pill-green">ACTIVE</span>';
-    html+='<tr><td><b>'+esc(s.schoolName||s.name||'')+'</b><br><span class="small">EMIS: '+esc(s.emis||'')+' • Prefix: '+esc(s.prefix||'—')+' • Expiry: '+esc(s.expiryDate||'—')+'</span></td><td><b>'+esc(s.package||'')+'</b><br>'+pill+'<br><span class="small">Monthly: R'+monthlyFor(s.package)+'</span></td><td>'+esc(s.principalName||'')+'<br><span class="small">'+esc(s.principalEmail||'')+'<br>'+esc(s.principalPhone||'')+'</span></td><td><button class="miniBtn" style="background:#059669;color:#fff" onclick="window.open(\'https://wa.me/'+toWA(s.principalPhone)+'?text='+encodeURIComponent('Hello '+ (s.principalName||'') +', Makhanani LTSM (078 023 3263).')+'\',\'_blank\')">📱 WhatsApp</button><button class="miniBtn" style="background:#0a1f4d;color:#fff" onclick="toggleSchool(\''+s.id+'\',\''+(s.status||'ACTIVE')+'\')">'+(s.status==='SUSPENDED'?'✅ Activate':'⏸️ Suspend')+'</button><button class="miniBtn" style="background:#d4af37" onclick="viewAsSchool(\''+esc(s.emis||'')+'\',\''+esc(s.schoolName||s.name||'')+'\')">👀 View As This School</button></td></tr>';
-  }
-  html+='</table>'; $('schoolsBox').innerHTML=html;
-};
-window.toggleSchool=async function(base,cur){ const next=cur==='ACTIVE'?'SUSPENDED':'ACTIVE'; if(!confirm('Change to '+next+'?')) return; try{ await updateDoc(doc(db,'schools',base),{status:next}); loadSchools(); }catch(e){ alert(e.message); } };
-window.viewAsSchool=function(emis,name){ const preview={emis, email:login.email, name:login.name, role:login.role, school:name, prefix:'', phone:login.phone||'', isPreview:true}; localStorage.setItem('MAKHANANI_LOGGED_IN', JSON.stringify(preview)); alert('Now viewing as: '+name+'\nYou are still '+login.role+'. Go to Principal to see their dashboard.'); location.href='principal.html'; };
-async function loadUsersFor(emis){
-  if(!emis){ $('usersBox').innerHTML='<div class="info">Select a school from drop-down above.</div>'; return; }
-  currentUsersEmis=emis; $('usersBox').innerHTML='<div class="info">⏳ Loading users...</div>';
-  try{
-    const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'users'));
-    allUsers=[]; snap.forEach(d=>{ allUsers.push({id:d.id, ...d.data()}); });
-    renderUsers();
-  }catch(e){ $('usersBox').innerHTML='<div class="warn">❌ '+esc(e.message)+'</div>'; }
+<script>
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const rtdb=firebase.database();
+const RANKS={ 'Super Admin':5, 'Admin':4, 'Principal':3, 'Librarian':2, 'HOD':2, 'Teacher':1 };
+function rankOf(r){return RANKS[r]||0;}
+function toCaps(s){return String(s||'').trim().toUpperCase();}
+function fmtDate(ts){if(!ts) return '—';return new Date(ts).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});}
+function fmtR(n){return 'R'+Math.round(n||0).toLocaleString('en-ZA');}
+let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
+let mySchoolId = user?.schoolId||'WHS';
+let mySchoolName = user?.schoolName||mySchoolId;
+let settings={graceDays:7,autoSuspend:true};
+try{let s=JSON.parse(localStorage.getItem('makhanani_sub_settings')||'{}');settings={...settings,...s};}catch(e){}
+let usersList=[],books=[],stock=[],orders=[],mySub=null;
+function showTab(t){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');}
+function graceEndFor(sub){return sub.endDate + ((settings.graceDays??7)*24*60*60*1000);}
+function getSubStatus(sub){
+  if(!sub) return 'NO SUBSCRIPTION';
+  if(sub.suspended) return 'SUSPENDED';
+  let now=Date.now();
+  if(sub.plan==='DEMO'||sub.payType==='Trial'){ if(sub.endDate<now) return 'EXPIRED'; return 'TRIAL'; }
+  if(sub.endDate>=now){ let dl=Math.ceil((sub.endDate-now)/(1000*60*60*24)); if(dl<=7) return 'EXPIRING'; return 'ACTIVE'; }
+  if(now<=graceEndFor(sub)) return 'GRACE';
+  return 'EXPIRED';
 }
-window.renderUsers=function(){
-  const search=($('userSearch').value||'').toLowerCase();
-  if(!currentUsersEmis){ $('usersBox').innerHTML='<div class="info">Select a school first.</div>'; return; }
-  const filtered=allUsers.filter(u=> !search || (String(u.name||'').toLowerCase().includes(search) || String(u.email||'').toLowerCase().includes(search)));
-  if(!filtered.length){ $('usersBox').innerHTML='<div class="info">No users found in this school.</div>'; return; }
-  let html='<table><tr><th>User</th><th>Role</th><th>Action</th></tr>';
-  for(const u of filtered){
-    html+='<tr><td><b>'+esc(u.name||'')+'</b><br><span class="small">'+esc(u.email||'')+'<br>PIN: <b>'+esc(u.pin||u.password||'—')+'</b></span></td><td>'+esc(u.role||'')+'<br>'+(u.blocked?'<span style="color:#dc2626;font-weight:900">BLOCKED</span>':'<span style="color:#059669;font-weight:900">ACTIVE</span>')+'</td><td><button class="miniBtn" style="background:#d4af37" onclick="resetPin(\''+currentUsersEmis+'\',\''+u.id+'\')">🔑 Reset to 1234</button><button class="miniBtn" style="background:#0a1f4d;color:#fff" onclick="toggleBlock(\''+currentUsersEmis+'\',\''+u.id+'\','+(u.blocked?'true':'false')+')">'+(u.blocked?'✅ Unblock':'🔒 Block')+'</button><button class="miniBtn" style="background:#059669;color:#fff" onclick="makeSuper(\''+currentUsersEmis+'\',\''+u.id+'\',\''+esc(u.name||'')+'\')">👑 Make SUPER ADMIN</button></td></tr>';
-  }
-  html+='</table><div class="small">Found: '+filtered.length+' / Total: '+allUsers.length+'</div>'; $('usersBox').innerHTML=html;
-};
-window.resetPin=async function(emis,uid){ if(!confirm('Reset PIN to 1234?')) return; try{ await updateDoc(doc(db,'schools','EMIS_'+emis,'users',uid),{pin:'1234', password:'1234'}); alert('PIN reset to 1234'); loadUsersFor(emis); }catch(e){ alert(e.message); } };
-window.toggleBlock=async function(emis,uid,isBlocked){ try{ await updateDoc(doc(db,'schools','EMIS_'+emis,'users',uid),{blocked:!isBlocked}); loadUsersFor(emis); }catch(e){ alert(e.message); } };
-window.makeSuper=async function(emis,uid,name){ if(!confirm('Make '+name+' SUPER ADMIN? They will see ALL schools.')) return; try{ await updateDoc(doc(db,'schools','EMIS_'+emis,'users',uid),{role:'SUPER ADMIN'}); alert(name+' is now SUPER ADMIN'); loadUsersFor(emis); }catch(e){ alert(e.message); } };
-window.addUser=async function(){
-  const emis=$('userSchoolSelect').value, name=$('nName').value.trim(), email=$('nEmail').value.trim().toLowerCase(), phone=$('nPhone').value.trim(), role=$('nRole').value, pin=$('nPin').value.trim()||'1234';
-  if(!emis){ $('addUserMsg').innerHTML='<div class="warn">⚠️ Select school from drop-down first.</div>'; return; }
-  if(!name||!email){ $('addUserMsg').innerHTML='<div class="warn">⚠️ Fill Name and Email.</div>'; return; }
-  try{
-    const docId=email.replace(/[^a-z0-9]/g,'_');
-    await setDoc(doc(db,'schools','EMIS_'+emis,'users',docId),{name, email, phone, role, pin, password:pin, archived:false, blocked:false, createdAt:new Date().toISOString()});
-    $('addUserMsg').innerHTML='<div class="ok">✅ Added: <b>'+esc(name)+'</b> as <b>'+esc(role)+'</b><br>Login: School drop-down → EMIS '+esc(emis)+' → '+esc(email)+' → PIN '+esc(pin)+'</div>';
-    $('nName').value=''; $('nEmail').value=''; $('nPhone').value=''; $('nPin').value='';
-    loadUsersFor(emis);
-  }catch(e){ $('addUserMsg').innerHTML='<div class="warn">❌ '+esc(e.message)+'</div>'; }
-};
-window.loadSGB=async function(){
-  const emis=$('sgbSchoolSelect').value, box=$('sgbBox');
-  if(!emis){ box.innerHTML='<div class="warn">⚠️ Select school first.</div>'; return; }
-  box.innerHTML='<div class="info">⏳ Loading SGB...</div>';
-  try{
-    const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'sgb'));
-    if(snap.empty){ box.innerHTML='<div class="info">No SGB members yet. Add one below.</div>'; return; }
-    let html='<table><tr><th>Name</th><th>Role</th><th>Phone</th><th>Action</th></tr>';
-    snap.forEach(d=>{ const m=d.data(); html+='<tr><td><b>'+esc(m.name||'')+'</b></td><td>'+esc(m.role||'')+'</td><td>'+esc(m.phone||'')+'</td><td><button class="miniBtn" style="background:#fee2e2;color:#dc2626" onclick="deleteSGB(\''+emis+'\',\''+d.id+'\')">🗑️ Delete</button></td></tr>'; });
-    html+='</table>'; box.innerHTML=html;
-  }catch(e){ box.innerHTML='<div class="warn">❌ '+esc(e.message)+'</div>'; }
-};
-window.addSGB=async function(){
-  const emis=$('sgbSchoolSelect').value, name=$('sgbName').value.trim(), role=$('sgbRole').value, phone=$('sgbPhone').value.trim();
-  if(!emis||!name){ $('sgbMsg').innerHTML='<div class="warn">⚠️ Select school + fill Name.</div>'; return; }
-  try{ await setDoc(doc(db,'schools','EMIS_'+emis,'sgb',name.replace(/[^a-z0-9]/g,'_')+'_'+Date.now()),{name, role, phone, createdAt:new Date().toISOString()}); $('sgbMsg').innerHTML='<div class="ok">✅ SGB member added.</div>'; $('sgbName').value=''; $('sgbPhone').value=''; loadSGB(); }catch(e){ $('sgbMsg').innerHTML='<div class="warn">❌ '+esc(e.message)+'</div>'; }
-};
-window.deleteSGB=async function(emis,id){ if(!confirm('Delete SGB member?')) return; try{ await deleteDoc(doc(db,'schools','EMIS_'+emis,'sgb',id)); loadSGB(); }catch(e){ alert(e.message); } };
-window.renderFinance=function(){
-  if(!allSchools.length){ $('financeBox').innerHTML='<div class="info">Loading schools...</div>'; return; }
-  let total=0, html='<table><tr><th>School</th><th>Package</th><th>Status</th><th>Monthly</th></tr>';
-  for(const s of allSchools){
-    const m=s.status==='SUSPENDED'?0:monthlyFor(s.package); total+=m;
-    html+='<tr><td><b>'+esc(s.schoolName||s.name||'')+'</b><br><span class="small">EMIS '+esc(s.emis||'')+'</span></td><td>'+esc(s.package||'—')+'</td><td>'+(s.status==='SUSPENDED'?'<span class="pill pill-red">SUSPENDED</span>':'<span class="pill pill-green">ACTIVE</span>')+'</td><td><b>R'+m.toLocaleString()+'</b></td></tr>';
-  }
-  html+='<tr><td colspan="3"><b>TOTAL MONTHLY</b></td><td><b>R'+total.toLocaleString()+'</b></td></tr></table><div class="small">Total Yearly (Monthly x 12): <b>R'+(total*12).toLocaleString()+'</b></div>';
-  $('financeBox').innerHTML=html;
-};
-window.loadAudit=async function(){
-  const emis=$('auditSchoolSelect').value, box=$('auditBox');
-  if(!emis){ box.innerHTML='<div class="warn">⚠️ Select school first.</div>'; return; }
-  box.innerHTML='<div class="info">⏳ Loading audit / bin...</div>';
-  try{
-    const snap=await getDocs(collection(db,'schools','EMIS_'+emis,'users'));
-    let archived=[]; snap.forEach(d=>{ const u=d.data(); if(u.archived||u.blocked) archived.push({id:d.id, ...u}); });
-    if(!archived.length){ box.innerHTML='<div class="ok">✅ Bin empty — No archived / blocked users in this school.</div>'; return; }
-    let html='<table><tr><th>User</th><th>Reason</th><th>Action</th></tr>';
-    for(const u of archived){ html+='<tr><td><b>'+esc(u.name||'')+'</b><br><span class="small">'+esc(u.email||'')+'</span></td><td>'+(u.blocked?'BLOCKED':'ARCHIVED')+'</td><td><button class="miniBtn" style="background:#059669;color:#fff" onclick="toggleBlock(\''+emis+'\',\''+u.id+'\',true)">✅ Restore / Unblock</button></td></tr>'; }
-    html+='</table>'; box.innerHTML=html;
-  }catch(e){ box.innerHTML='<div class="warn">❌ '+esc(e.message)+'</div>'; }
-};
-function updateStats(){
-  const active=allSchools.filter(s=>s.status!=='SUSPENDED').length;
-  const newReq=allReq.filter(r=>(r.status||'NEW')==='NEW').length;
-  let rev=0; for(const s of allSchools){ if(s.status==='SUSPENDED') continue; rev+=monthlyFor(s.package); }
-  $('tSchools').textContent=allSchools.length; $('tActive').textContent=active; $('tSuspended').textContent=allSchools.length-active;
-  $('tReq').textContent=allReq.length; $('tNewReq').textContent=newReq; $('tRevenue').textContent='R'+rev.toLocaleString();
-}
-window.doLogout=function(){ localStorage.removeItem('MAKHANANI_LOGGED_IN'); location.href='index.html'; };
-document.addEventListener('DOMContentLoaded', ()=>{
-  login=getLogin();
-  if(!login){ $('loginInfo').innerHTML='🔒 Not logged in. <a href="index.html">Login</a> first.'; $('blockedBox').style.display='block'; return; }
-  const role=(login.role||'').toUpperCase();
-  // FIX v3.3: SUPER ADMIN is allowed — This was the bug in v3.2
-  if(!['ADMIN','SUPER ADMIN'].includes(role)){
-    $('loginInfo').innerHTML='🔒 You are <b>'+esc(login.name||'')+'</b> — Role <b>'+esc(role)+'</b> — Admin ONLY.';
-    $('blockedRole').textContent=role; $('blockedWho').textContent=login.name+' • '+role+' • '+(login.school||'');
-    $('blockedBox').style.display='block'; return;
-  }
-  $('whoLine').textContent=login.name+' • '+role+' • '+(login.school||'ALL SCHOOLS')+' (EMIS '+(login.emis||'')+')';
-  $('loginInfo').innerHTML='✅ Logged in as <b>'+esc(role)+'</b>: <b>'+esc(login.name||'')+'</b> • '+esc(login.email||'')+' • '+(login.school||'ALL SCHOOLS')+' • WhatsApp 078 023 3263';
-  $('body').style.display='block';
-  document.getElementById('userSchoolSelect').addEventListener('change', e=>loadUsersFor(e.target.value));
-  setTab('REQ'); loadAll();
-});
-</script>
-</body>
-</html>
+function statusBadge(st){let cls=st==='ACTIVE'?'badge-active':st==='TRIAL'?'badge-trial':st==='EXPIRING'?'badge-expiring':st==='GRACE'?'badge-grace':st==='EXPIRED'?'badge-expired':st==='SUSPENDED'?'badge-suspended':st==='PENDING'?'badge-pending':st==='APPROVED'?'badge-approved':st==='REJECTED'?'badge-rejected':'badge-active';return `<span class="badge ${cls}">${st}</span>`;}
+
+async function loadData(){
+  try{let st=await rtdb.ref('settings/subscriptions').once('value');if(st.val()) settings={...settings,...st.val()};}catch(e){}
+  try{let u=await rtdb.ref('users/'+mySchoolId).once('value');usersList=Object.entries(u.val()||{}).map(([id,v])=>({id,...v}));
