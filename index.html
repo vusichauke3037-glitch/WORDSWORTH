@@ -5,7 +5,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0a1f4d;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:12px}
-.box{background:#fff;color:#0a1f4d;border-radius:16px;padding:22px;width:100%;max-width:420px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.box{background:#fff;color:#0a1f4d;border-radius:16px;padding:22px;width:100%;max-width:460px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 h1{margin:0;text-align:center;font-size:22px}h1 span{color:#d4af37}p{font-size:12px;text-align:center;color:#64748b;margin:6px 0 0}
 label{font-weight:900;font-size:13px;display:block;margin-top:14px}
 input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
@@ -16,6 +16,7 @@ input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:12px;color:#0a1f4d}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:12px;color:#0a1f4d}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:12px;color:#0a1f4d}
+.grace{background:#fffbeb;border:2px solid #f59e0b;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:12px;color:#0a1f4d}
 .expired-box{background:#111827;color:#fff;border-radius:12px;padding:14px;margin-top:12px;font-size:13px;line-height:1.6;text-align:center}
 .expired-box b{color:#fbbf24}.expired-box a{color:#fff;font-weight:900}
 .link{text-align:center;margin-top:12px;font-size:13px}.link a{color:#0a1f4d;font-weight:900}
@@ -39,12 +40,18 @@ input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
+const ADMIN_WHATSAPP='27780233263'; // 0780233263 — Vusi Chauke — Super Admin
 function toCaps(s){return String(s||'').trim().toUpperCase();}
 function fmtDate(ts){if(!ts) return '—';return new Date(ts).toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'});}
+function fmtR(n){return 'R'+Math.round(n||0).toLocaleString('en-ZA');}
 let schools=[],subs=[];
+let settings={graceDays:7,autoSuspend:true,adminWhatsapp:ADMIN_WHATSAPP};
+try{let s=JSON.parse(localStorage.getItem('makhanani_sub_settings')||'{}');settings={...settings,...s};}catch(e){}
+function getGraceDays(){return settings.graceDays ?? 7;}
 
-// ===== LOAD SCHOOLS + SUBSCRIPTIONS ON PAGE LOAD =====
+// ===== LOAD SCHOOLS + SUBSCRIPTIONS + SETTINGS =====
 async function loadSchools(){
+  try{let st=await rtdb.ref('settings/subscriptions').once('value');if(st.val()){settings={...settings,...st.val()};localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));}}catch(e){}
   try{
     let sc=await rtdb.ref('schools').once('value');
     schools=Object.entries(sc.val()||{}).map(([id,v])=>({id,...v,schoolName:toCaps(v.schoolName||v.name||''),schoolId:toCaps(v.schoolId||id)}));
@@ -55,39 +62,75 @@ async function loadSchools(){
     let sb=await rtdb.ref('subscriptions').once('value');
     subs=Object.entries(sb.val()||{}).map(([id,v])=>({id,...v}));
   }catch(e){subs=[];}
-  // Show subscription status when school changes
   document.getElementById('schoolSelect').addEventListener('change',showSubStatus);
 }
 function getSubForSchool(schoolId){
-  // Latest subscription for this school (by endDate)
   let list=subs.filter(s=>s.schoolId===schoolId);
   if(!list.length) return null;
   list.sort((a,b)=>(b.endDate||0)-(a.endDate||0));
   return list[0];
 }
+function graceEndFor(sub){return sub.endDate + (getGraceDays()*24*60*60*1000);}
 function getSubStatus(sub){
   if(!sub) return {status:'NO SUBSCRIPTION',daysLeft:0};
-  if(sub.suspended) return {status:'SUSPENDED',daysLeft:Math.ceil((sub.endDate-Date.now())/(1000*60*60*24))};
-  let daysLeft=Math.ceil((sub.endDate-Date.now())/(1000*60*60*24));
-  if(sub.plan==='DEMO'||sub.payType==='Trial') return {status:daysLeft<0?'EXPIRED':'TRIAL',daysLeft};
-  if(daysLeft<0) return {status:'EXPIRED',daysLeft};
-  if(daysLeft<=7) return {status:'EXPIRING',daysLeft};
-  return {status:'ACTIVE',daysLeft};
+  if(sub.suspended) return {status:'SUSPENDED',daysLeft:0};
+  let now=Date.now();
+  let graceEnd=graceEndFor(sub);
+  // Trial / Demo: NO grace - expired = blocked immediately
+  if(sub.plan==='DEMO'||sub.payType==='Trial'){
+    if(sub.endDate<now) return {status:'EXPIRED',daysLeft:Math.ceil((sub.endDate-now)/(1000*60*60*24))};
+    return {status:'TRIAL',daysLeft:Math.ceil((sub.endDate-now)/(1000*60*60*24))};
+  }
+  if(sub.endDate>=now){
+    let dl=Math.ceil((sub.endDate-now)/(1000*60*60*24));
+    if(dl<=7) return {status:'EXPIRING',daysLeft:dl};
+    return {status:'ACTIVE',daysLeft:dl};
+  }
+  // Past End Date - check grace
+  if(now<=graceEnd) return {status:'GRACE',daysLeft:Math.ceil((graceEnd-now)/(1000*60*60*24)),graceDay:Math.floor((now-sub.endDate)/(1000*60*60*24))+1};
+  return {status:'EXPIRED',daysLeft:Math.ceil((sub.endDate-now)/(1000*60*60*24))};
+}
+function amountOwe(sub){
+  if(!sub) return 0;
+  return Math.max(0,((sub.setupDue||0)-(sub.setupPaid||0))+((sub.subDue||0)-(sub.subPaid||0)));
 }
 function showSubStatus(){
   let sid=document.getElementById('schoolSelect').value;
   let box=document.getElementById('subStatusBox');
   if(!sid||sid==='ALL'){box.innerHTML='';return;}
   let sub=getSubForSchool(sid);
-  if(!sub){box.innerHTML=`<div class="warn">⚠️ <b>NO SUBSCRIPTION</b> for this school.<br>Contact Super Admin to activate.<br><a href="pricing.html">💰 See Pricing →</a></div>`;return;}
+  if(!sub){box.innerHTML=`<div class="warn">⚠️ <b>NO SUBSCRIPTION</b> for this school.<br>Contact Super Admin (0780233263) to activate.<br><a href="pricing.html">💰 See Pricing →</a></div>`;return;}
   let st=getSubStatus(sub);
-  if(st.status==='ACTIVE') box.innerHTML=`<div class="ok">✅ Subscription: <b>${sub.plan} — ${sub.payType}</b><br>Ends: <b>${fmtDate(sub.endDate)}</b> — ${st.daysLeft} days left.</div>`;
-  else if(st.status==='TRIAL') box.innerHTML=`<div class="info">🆓 Trial: <b>${sub.plan}</b> — Ends: <b>${fmtDate(sub.endDate)}</b> — ${st.daysLeft} days left.<br>Upgrade to STANDARD / PREMIUM before it ends.</div>`;
-  else if(st.status==='EXPIRING') box.innerHTML=`<div class="warn">⚠️ <b>EXPIRING SOON</b> — ${sub.plan} ends in <b>${st.daysLeft} days</b> (${fmtDate(sub.endDate)}).<br>Pay now to avoid suspension.</div>`;
-  else box.innerHTML=`<div class="expired-box">⛔ <b>SUBSCRIPTION ${st.status}</b><br>${sub.plan} — Ended: <b>${fmtDate(sub.endDate)}</b><br>Your school is <b>SUSPENDED</b> until payment.<br>Contact Super Admin to renew.<br><a href="https://wa.me/27821234567?text=${encodeURIComponent('Hello Makhanani! Our subscription for '+sid+' expired. Please renew.')}">📱 WHATSAPP SUPER ADMIN →</a></div>`;
+  if(st.status==='ACTIVE') box.innerHTML=`<div class="ok">✅ Subscription: <b>${sub.plan} — ${sub.payType}</b><br>Ends: <b>${fmtDate(sub.endDate)}</b> — ${st.daysLeft} days left. — Grace: <b>${getGraceDays()} days</b></div>`;
+  else if(st.status==='TRIAL') box.innerHTML=`<div class="info">🆓 Trial: <b>${sub.plan}</b> — Ends: <b>${fmtDate(sub.endDate)}</b> — ${st.daysLeft} days left. (Trial: No grace)<br>Upgrade to STANDARD / PREMIUM before it ends.</div>`;
+  else if(st.status==='EXPIRING') box.innerHTML=`<div class="warn">⚠️ <b>EXPIRING SOON</b> — ${sub.plan} ends in <b>${st.daysLeft} days</b> (${fmtDate(sub.endDate)}).<br>Pay now to avoid suspension. Grace after expiry: <b>${getGraceDays()} days</b>.</div>`;
+  else if(st.status==='GRACE') box.innerHTML=`<div class="grace">🟡 <b>GRACE DAY ${st.graceDay}</b> — ${sub.plan} expired on <b>${fmtDate(sub.endDate)}</b><br>Grace Ends: <b>${fmtDate(graceEndFor(sub))}</b> — <b>${st.daysLeft} days grace left</b><br>Amount Owe: <b>${fmtR(amountOwe(sub))}</b><br><a href="https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent('Hello Makhanani! Grace Day '+st.graceDay+' — Subscription for '+sid+' expired. Please remind us to pay.')}">📱 WHATSAPP SUPER ADMIN (0780233263) →</a></div>`;
+  else if(st.status==='SUSPENDED') box.innerHTML=`<div class="expired-box">⛔ <b>SUBSCRIPTION SUSPENDED</b><br>${sub.plan} — Ended: <b>${fmtDate(sub.endDate)}</b><br>Your school is <b>SUSPENDED</b> until payment.<br>Amount Owe: <b>${fmtR(amountOwe(sub))}</b><br>Contact Super Admin to renew.<br><a href="https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent('Hello Makhanani! Our subscription for '+sid+' is suspended. Please renew.')}">📱 WHATSAPP SUPER ADMIN (0780233263) →</a></div>`;
+  else box.innerHTML=`<div class="expired-box">⛔ <b>SUBSCRIPTION EXPIRED</b><br>${sub.plan} — Ended: <b>${fmtDate(sub.endDate)}</b> — Grace Ended: <b>${fmtDate(graceEndFor(sub))}</b><br>Your school is <b>SUSPENDED</b> until payment.<br>Amount Owe: <b>${fmtR(amountOwe(sub))}</b><br>Contact Super Admin to renew.<br><a href="https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent('Hello Makhanani! Our subscription for '+sid+' expired on '+fmtDate(sub.endDate)+'. Please renew.')}">📱 WHATSAPP SUPER ADMIN (0780233263) →</a></div>`;
 }
 
-// ===== LOGIN WITH AUTO-SUSPEND =====
+// ===== SAVE GRACE DAY 1 ALERT FOR SUPER ADMIN =====
+async function saveGraceDay1Alert(sub, email){
+  try{
+    await rtdb.ref('graceAlerts').push().set({
+      schoolId: sub.schoolId,
+      schoolName: sub.schoolName || sub.schoolId,
+      plan: sub.plan,
+      payType: sub.payType,
+      endDate: sub.endDate,
+      graceEnds: graceEndFor(sub),
+      amountOwe: amountOwe(sub),
+      contact: sub.contact || '',
+      phone: sub.phone || '',
+      triggeredBy: email || '',
+      createdAt: Date.now(),
+      dateStr: new Date().toLocaleDateString('en-ZA'),
+      seen: false
+    });
+  }catch(e){console.log('Grace alert save failed',e);}
+}
+
+// ===== LOGIN WITH AUTO-SUSPEND + GRACE 7 DAYS + DAY 1 ALERT =====
 async function doLogin(){
   let email=document.getElementById('email').value.trim().toLowerCase();
   let pass=document.getElementById('password').value.trim();
@@ -98,10 +141,9 @@ async function doLogin(){
   if(!schoolId){msg.innerHTML='<div class="warn">⚠️ Pick School first.</div>';return;}
   msg.innerHTML='<div class="info">⏳ Checking login + subscription...</div>';
 
-  // 1. Find user - check in selected school + ALL (Super Admin)
+  // 1. Find user
   let user=null;
   let searchSchools = schoolId==='ALL' ? ['ALL','WHS'] : [schoolId,'ALL'];
-  // Try Firebase first
   for(let sid of searchSchools){
     try{
       let snap=await rtdb.ref('users/'+sid).once('value');
@@ -110,7 +152,7 @@ async function doLogin(){
       if(found){user=found;break;}
     }catch(e){}
   }
-  // 2. Fallback demo users if Firebase empty / offline
+  // 2. Fallback demo users
   if(!user){
     let demo=[
       {name:'VUSI CHAUKE',email:'vusichauke3037@gmail.com',password:'1234',role:'Super Admin',schoolId:'ALL',prefix:'ALL',schoolName:'ALL SCHOOLS'},
@@ -133,35 +175,51 @@ async function doLogin(){
     let effectiveSchoolId = user.schoolId && user.schoolId!=='ALL' ? user.schoolId : schoolId;
     let sub=getSubForSchool(effectiveSchoolId);
     let st=getSubStatus(sub);
-    // If no subscription at all -> BLOCK (except if school is WHS demo with no subs yet - allow once with warning)
     if(!sub){
-      // Allow first login if no subs in system at all (so Super Admin can create first sub)
       if(subs.length===0){
         // Allow - Super Admin will create sub next
       } else {
-        msg.innerHTML=`<div class="expired-box">⛔ <b>NO SUBSCRIPTION</b><br>School <b>${effectiveSchoolId}</b> has no active subscription.<br>Contact Super Admin to activate.<br><a href="pricing.html">💰 See Pricing →</a><br><a href="https://wa.me/27821234567?text=${encodeURIComponent('Hello! No subscription for '+effectiveSchoolId+'. Please activate.')}">📱 WHATSAPP SUPER ADMIN →</a></div>`;
+        msg.innerHTML=`<div class="expired-box">⛔ <b>NO SUBSCRIPTION</b><br>School <b>${effectiveSchoolId}</b> has no active subscription.<br>Contact Super Admin (0780233263) to activate.<br><a href="pricing.html">💰 See Pricing →</a><br><a href="https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent('Hello! No subscription for '+effectiveSchoolId+'. Please activate.')}">📱 WHATSAPP SUPER ADMIN (0780233263) →</a></div>`;
         return;
       }
     } else if(st.status==='EXPIRED' || st.status==='SUSPENDED'){
-      msg.innerHTML=`<div class="expired-box">⛔ <b>SUBSCRIPTION ${st.status}</b><br>School: <b>${effectiveSchoolId}</b> — Plan: <b>${sub.plan} — ${sub.payType}</b><br>Ended: <b>${fmtDate(sub.endDate)}</b><br><br>Your school is <b>SUSPENDED</b> until payment.<br>You cannot login until Super Admin renews.<br><br>Amount Owe: <b>R${Math.max(0,((sub.setupDue||0)-(sub.setupPaid||0))+((sub.subDue||0)-(sub.subPaid||0))).toLocaleString('en-ZA')}</b><br><br><a href="https://wa.me/27821234567?text=${encodeURIComponent('Hello Makhanani! Subscription for '+effectiveSchoolId+' expired on '+fmtDate(sub.endDate)+'. Please renew. We will pay now.')}">📱 WHATSAPP SUPER ADMIN TO RENEW →</a><br><br><a href="pricing.html">💰 See Pricing →</a></div>`;
+      msg.innerHTML=`<div class="expired-box">⛔ <b>SUBSCRIPTION ${st.status}</b><br>School: <b>${effectiveSchoolId}</b> — Plan: <b>${sub.plan} — ${sub.payType}</b><br>Ended: <b>${fmtDate(sub.endDate)}</b> — Grace Ended: <b>${fmtDate(graceEndFor(sub))}</b><br><br>Your school is <b>SUSPENDED</b> until payment.<br>You cannot login until Super Admin renews.<br><br>Amount Owe: <b>${fmtR(amountOwe(sub))}</b><br><br><a href="https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent('Hello Makhanani! Subscription for '+effectiveSchoolId+' expired on '+fmtDate(sub.endDate)+'. Please renew. We will pay now.')}">📱 WHATSAPP SUPER ADMIN TO RENEW (0780233263) →</a><br><br><a href="pricing.html">💰 See Pricing →</a></div>`;
       return;
     } else if(st.status==='EXPIRING'){
-      // Allow login but warn - 7 days left
-      msg.innerHTML=`<div class="warn">⚠️ <b>EXPIRING SOON</b> — ${sub.plan} ends in <b>${st.daysLeft} days</b> (${fmtDate(sub.endDate)}). Pay now to avoid suspension.</div>`;
-      // Continue to login below - do NOT block
+      msg.innerHTML=`<div class="warn">⚠️ <b>EXPIRING SOON</b> — ${sub.plan} ends in <b>${st.daysLeft} days</b> (${fmtDate(sub.endDate)}). Pay now to avoid suspension. Grace after expiry: <b>${getGraceDays()} days</b>.</div>`;
+    } else if(st.status==='GRACE'){
+      // ===== GRACE DAY 1 ONLY - Alert + Reminder =====
+      let daysSinceEnd=Math.floor((Date.now()-sub.endDate)/(1000*60*60*24))+1; // 1 = Day 1
+      if(daysSinceEnd===1){
+        let key='graceDay1_'+effectiveSchoolId+'_'+new Date().toDateString();
+        if(!sessionStorage.getItem(key)){
+          sessionStorage.setItem(key,'1');
+          await saveGraceDay1Alert(sub, email);
+          msg.innerHTML=`<div class="grace">🟡 <b>GRACE DAY 1 REMINDER</b><br>${sub.plan} expired yesterday (<b>${fmtDate(sub.endDate)}</b>) — You have <b>${getGraceDays()} days grace</b> left to pay.<br>Grace Ends: <b>${fmtDate(graceEndFor(sub))}</b> — Amount Owe: <b>${fmtR(amountOwe(sub))}</b><br>Super Admin (0780233263) has been notified.</div>`;
+          if(confirm('🟡 GRACE DAY 1 REMINDER\n\nYour '+sub.plan+' subscription expired yesterday ('+fmtDate(sub.endDate)+').\n\nYou have '+getGraceDays()+' days grace left to pay.\nGrace Ends: '+fmtDate(graceEndFor(sub))+'\nAmount Owe: '+fmtR(amountOwe(sub))+'\n\nSuper Admin (0780233263) has been notified.\nSend WhatsApp to Super Admin now?')){
+            window.open('https://wa.me/'+ADMIN_WHATSAPP+'?text='+encodeURIComponent('Hello Makhanani! Grace Day 1 — Subscription for '+effectiveSchoolId+' expired on '+fmtDate(sub.endDate)+'. Grace ends in '+getGraceDays()+' days. Amount Owe: '+fmtR(amountOwe(sub))+'. Please remind us to pay.'),'_blank');
+          }
+        } else {
+          msg.innerHTML=`<div class="grace">🟡 <b>GRACE DAY 1</b> — ${sub.plan} expired yesterday — <b>${st.daysLeft} days grace left</b>.</div>`;
+        }
+      } else {
+        // Day 2-7 - Quiet warning only, no reminder, no alert
+        msg.innerHTML=`<div class="grace">🟡 <b>GRACE DAY ${daysSinceEnd}</b> — ${sub.plan} expired on <b>${fmtDate(sub.endDate)}</b> — <b>${st.daysLeft} days grace left</b>. Pay now or you will be blocked on <b>${fmtDate(graceEndFor(sub))}</b>.</div>`;
+      }
+      // Continue to login - do NOT block in grace
     }
   }
 
   // 4. SAVE USER + LOGIN
   let saveUser={...user, schoolId: user.schoolId||schoolId, prefix: user.prefix||schoolId, schoolName: user.schoolName||schoolId};
   localStorage.setItem('makhanani_user',JSON.stringify(saveUser));
-  msg.innerHTML='<div class="ok">✅ Welcome, <b>'+toCaps(user.name)+'</b> — '+toCaps(user.role)+' — Logging in...</div>';
+  msg.innerHTML+='<div class="ok">✅ Welcome, <b>'+toCaps(user.name)+'</b> — '+toCaps(user.role)+' — Logging in...</div>';
   setTimeout(()=>{
     if(user.role==='Super Admin') location.href='super-admin.html';
     else if(user.role==='Principal') location.href='principal.html';
     else if(user.role==='Librarian') location.href='librarian.html';
     else location.href='teacher.html';
-  },800);
+  },900);
 }
 loadSchools();
 </script></body></html>
