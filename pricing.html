@@ -1,91 +1,228 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makhanani LTSM — Choose Plan v1.87</title>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pricing - Makhanani LTSM</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f1f5f9}
-header{background:#0a1f4d;color:#fff;padding:14px;text-align:center}
-header h1{margin:0;font-size:20px}
-.wrap{max-width:1000px;margin:auto;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:600px){.wrap{grid-template-columns:1fr}}
-.card{background:#fff;border:2px solid #0a1f4d;border-radius:16px;padding:18px 14px;text-align:center;position:relative}
-.card.selected{border:3px solid #059669;box-shadow:0 0 0 3px #dcfce7}
-.card h2{margin:0;font-size:22px}
-.card p{margin:8px 0;font-size:16px}
-.setup{color:#059669;font-weight:900;font-size:26px;line-height:1.1;margin:12px 0}
-.btn{width:100%;padding:13px;border:none;border-radius:10px;background:#059669;color:#fff;font-weight:900;font-size:16px;cursor:pointer;margin-top:12px}
-.btn-gold{background:#d4af37;color:#0a1f4d}
-.badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#059669;color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:900;white-space:nowrap}
-.topnav{text-align:center;padding:10px}
-.topnav a{background:#e2e8f0;color:#0a1f4d;text-decoration:none;padding:8px 14px;border-radius:20px;font-weight:900;font-size:13px;margin:2px;display:inline-block}
-.note{text-align:center;font-size:13px;color:#475569;padding:0 14px 14px}
-</style>
-</head>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0a1f4d;color:#0a1f4d}
+header{background:#0a1f4d;color:#fff;padding:16px 12px;text-align:center;border-bottom:4px solid #d4af37}
+header h1{margin:0;font-size:22px}header h1 span{color:#d4af37}header p{margin:6px 0 0;font-size:12px;color:#d4af37}
+.wrap{max-width:1100px;margin:0 auto;padding:12px}
+.hero{background:#fff;border-radius:16px;padding:20px;text-align:center;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.hero h2{margin:0;font-size:20px}.hero p{color:#64748b;font-size:13px;line-height:1.6}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:10px;padding:12px;font-size:13px;line-height:1.6;margin-top:12px}
+.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:10px;padding:12px;font-size:13px;line-height:1.6;margin-top:12px}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:10px;padding:12px;font-size:13px;line-height:1.6;margin-top:12px}
+.grace{background:#fffbeb;border:2px solid #f59e0b;border-radius:10px;padding:12px;font-size:13px;line-height:1.6;margin-top:12px}
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+.plan{background:#fff;border-radius:16px;padding:18px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.3);position:relative}
+.plan.popular{border:4px solid #d4af37;transform:scale(1.02)}
+.plan h3{margin:0;font-size:18px}.plan .price{font-size:28px;font-weight:900;margin:10px 0 4px}.plan .per{font-size:12px;color:#64748b}
+.plan ul{list-style:none;padding:0;margin:14px 0;text-align:left;font-size:13px;line-height:1.8}
+.plan ul li{padding-left:18px;position:relative}.plan ul li:before{content:"✅";position:absolute;left:0}
+.plan ul li.no:before{content:"❌";}
+.badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#d4af37;color:#0a1f4d;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:900;white-space:nowrap}
+label{font-weight:900;font-size:13px;display:block;margin-top:12px;text-align:left}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
+input:focus,select:focus{border-color:#d4af37;outline:none;background:#fef3c7}
+.btn{border:none;border-radius:8px;padding:14px;width:100%;font-weight:900;cursor:pointer;font-size:15px;margin-top:12px}
+.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}
+.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
+.compare{overflow-x:auto}
+@media(max-width:800px){.plans{grid-template-columns:1fr}.plan.popular{transform:none}}
+</style></head>
 <body>
-<header><h1>💳 Choose Your Plan</h1><p style="margin:4px 0 0;font-size:13px;opacity:.9">Makhanani LTSM • v1.87</p></header>
-<div class="topnav"><a href="index.html">🏠 Home</a><a href="admin.html">⚙️ Admin</a></div>
-
+<header><h1>📚 MAKHANANI <span>LTSM</span></h1><p>WORDSWORTH HIGH SCHOOL • EMIS 700310854 • PRICING • GRACE 7 DAYS • WHATSAPP 0780233263</p>
+<div id="taskbar"></div><script src="nav.js"></script>
+</header>
 <div class="wrap">
-  <!-- DEMO -->
-  <div class="card" id="card-DEMO">
-    <h2>DEMO</h2>
-    <p>7 days free trial</p>
-    <div class="setup">Setup:<br>FREE</div>
-    <p>Monthly: <b>FREE</b><br>Once-off: <b>FREE</b></p>
-    <button class="btn" onclick="selectPlan('DEMO','TRIAL',0,'FREE')">➡️ REQUEST DEMO</button>
-  </div>
 
-  <!-- STARTER -->
-  <div class="card" id="card-STARTER">
-    <h2>STARTER</h2>
-    <p>Starter — 1 school</p>
-    <div class="setup">Setup: R3<br>000</div>
-    <p>Monthly: <b>R350 / month</b><br>Once-off: <b>R4 500 once-off / year</b></p>
-    <button class="btn" onclick="selectPlan('STARTER','ACTIVE',4500,'ONCE_OFF')">➡️ REQUEST STARTER</button>
-  </div>
-
-  <!-- STANDARD -->
-  <div class="card" id="card-STANDARD">
-    <div class="badge">MOST POPULAR</div>
-    <h2>STANDARD</h2>
-    <p>Most popular</p>
-    <div class="setup">Setup: R4<br>500</div>
-    <p>Monthly: <b>R500 / month</b><br>Once-off: <b>R7 500 once-off / year</b></p>
-    <button class="btn" onclick="selectPlan('STANDARD','ACTIVE',7500,'ONCE_OFF')">➡️ REQUEST STANDARD</button>
-  </div>
-
-  <!-- PREMIUM - SELECTED -->
-  <div class="card selected" id="card-PREMIUM">
-    <div class="badge">✅ SELECTED FOR WORDSWORTH</div>
-    <h2>PREMIUM</h2>
-    <p>Premium</p>
-    <div class="setup">Setup: R5<br>500</div>
-    <p>Monthly: <b>R600 / month</b><br>Once-off: <b>R9 000 once-off / year</b></p>
-    <button class="btn btn-gold" onclick="selectPlan('PREMIUM','ACTIVE',9000,'ONCE_OFF')">➡️ REQUEST PREMIUM — R9 000 ONCE-OFF</button>
-    <p style="font-size:12px;color:#166534;font-weight:700;margin-top:8px">Wordsworth: Setup already paid / waived.<br>Pay only R9 000 once-off.</p>
-  </div>
+<div class="hero">
+<h2>💰 Simple Pricing — No Hidden Fees — Pay Once, Use For 1 Month / 1 Year</h2>
+<p>Start with <b>DEMO FREE 7 days</b> — No card needed.<br>Then pick <b>STARTER / STANDARD / PREMIUM</b>.<br>Setup is once-off. Subscription is Monthly or Yearly.<br><b>Grace Period: 7 days</b> — If you miss payment, you still have 7 days to pay before suspension. Trial has NO grace.</p>
+<div class="info" style="text-align:left"><b>How It Works:</b><br>1. Pick a plan below → Fill School + Name + Phone → Click <b>SEND VIA WHATSAPP</b><br>2. WhatsApp opens to Super Admin <b>0780233263</b> with your request pre-typed → Send it<br>3. Super Admin creates your subscription + sends you login details<br>4. You login → Use Makhanani LTSM for your school</div>
 </div>
 
-<p class="note" id="msg">Wordsworth High School is currently on <b>PREMIUM Once-off R9 000</b> — Valid to 31 Dec 2027.</p>
+<div class="plans">
+<!-- DEMO -->
+<div class="plan">
+<div class="badge">🆓 FREE TRIAL</div>
+<h3>🆓 DEMO</h3>
+<div class="price">R0</div><div class="per">FREE — 7 DAYS</div>
+<ul>
+<li>1 School</li>
+<li>Up to 5 Teachers</li>
+<li>Up to 100 Books</li>
+<li>Basic Catalogue</li>
+<li>Basic Stock</li>
+<li class="no">No Orders</li>
+<li class="no">No Reports</li>
+<li>7 Days Only — NO Grace</li>
+</ul>
+<p style="font-size:12px;color:#64748b">Setup: <b>R0</b><br>Monthly: <b>R0</b><br>Yearly: <b>R0</b></p>
+<button class="btn btn-grey" onclick="pickPlan('DEMO','Trial')">🆓 START FREE TRIAL →</button>
+</div>
 
+<!-- STARTER -->
+<div class="plan">
+<h3>🌱 STARTER</h3>
+<div class="price">R350<span style="font-size:14px">/mo</span></div><div class="per">OR R4 500 / year (Save R300)</div>
+<ul>
+<li>1 School</li>
+<li>Up to 20 Teachers</li>
+<li>Up to 500 Books</li>
+<li>Full Catalogue</li>
+<li>Full Stock</li>
+<li>Orders</li>
+<li>Basic Reports</li>
+<li>Grace: <b>7 days</b></li>
+</ul>
+<p style="font-size:12px;color:#64748b">Setup: <b>R3 000</b> once-off<br>Monthly: <b>R350</b><br>Yearly: <b>R4 500</b></p>
+<button class="btn btn-green" onclick="pickPlan('STARTER','Monthly')">🌱 PICK STARTER →</button>
+<button class="btn btn-grey" onclick="pickPlan('STARTER','Yearly')" style="margin-top:6px">🌱 STARTER YEARLY — R4 500 →</button>
+</div>
+
+<!-- STANDARD -->
+<div class="plan popular">
+<div class="badge">⭐ MOST POPULAR</div>
+<h3>⭐ STANDARD</h3>
+<div class="price">R500<span style="font-size:14px">/mo</span></div><div class="per">OR R7 500 / year (Save R1 500)</div>
+<ul>
+<li>1 School</li>
+<li>Unlimited Teachers</li>
+<li>Unlimited Books</li>
+<li>Full Catalogue</li>
+<li>Full Stock + Alerts</li>
+<li>Orders + Approvals</li>
+<li>Full Reports + Print</li>
+<li>Grace: <b>7 days</b></li>
+</ul>
+<p style="font-size:12px;color:#64748b">Setup: <b>R4 500</b> once-off<br>Monthly: <b>R500</b><br>Yearly: <b>R7 500</b></p>
+<button class="btn btn-gold" onclick="pickPlan('STANDARD','Monthly')">⭐ PICK STANDARD →</button>
+<button class="btn btn-green" onclick="pickPlan('STANDARD','Yearly')" style="margin-top:6px">⭐ STANDARD YEARLY — R7 500 →</button>
+</div>
+
+<!-- PREMIUM -->
+<div class="plan">
+<h3>👑 PREMIUM</h3>
+<div class="price">R600<span style="font-size:14px">/mo</span></div><div class="per">OR R9 000 / year (Save R1 800)</div>
+<ul>
+<li>1 School + Branches</li>
+<li>Unlimited Teachers</li>
+<li>Unlimited Books</li>
+<li>Everything in STANDARD</li>
+<li>Multi-School Dashboard</li>
+<li>Priority Support (0780233263)</li>
+<li>Training + Setup Help</li>
+<li>Grace: <b>7 days</b></li>
+</ul>
+<p style="font-size:12px;color:#64748b">Setup: <b>R5 500</b> once-off<br>Monthly: <b>R600</b><br>Yearly: <b>R9 000</b></p>
+<button class="btn btn-purple" onclick="pickPlan('PREMIUM','Monthly')">👑 PICK PREMIUM →</button>
+<button class="btn btn-grey" onclick="pickPlan('PREMIUM','Yearly')" style="margin-top:6px">👑 PREMIUM YEARLY — R9 000 →</button>
+</div>
+</div>
+
+<!-- COMPARE -->
+<div class="card">
+<h2>📊 Compare Plans</h2>
+<div class="compare"><table><thead><tr><th>Feature</th><th>🆓 DEMO</th><th>🌱 STARTER</th><th>⭐ STANDARD</th><th>👑 PREMIUM</th></tr></thead><tbody>
+<tr><td><b>Price / Month</b></td><td><b>R0</b></td><td><b>R350</b></td><td><b>R500</b></td><td><b>R600</b></td></tr>
+<tr><td><b>Price / Year</b></td><td><b>R0</b></td><td><b>R4 500</b></td><td><b>R7 500</b></td><td><b>R9 000</b></td></tr>
+<tr><td><b>Setup Once-Off</b></td><td>R0</td><td>R3 000</td><td>R4 500</td><td>R5 500</td></tr>
+<tr><td><b>Schools</b></td><td>1</td><td>1</td><td>1</td><td>1 + Branches</td></tr>
+<tr><td><b>Teachers</b></td><td>5</td><td>20</td><td>Unlimited</td><td>Unlimited</td></tr>
+<tr><td><b>Books</b></td><td>100</td><td>500</td><td>Unlimited</td><td>Unlimited</td></tr>
+<tr><td><b>Catalogue</b></td><td>Basic</td><td>Full</td><td>Full</td><td>Full</td></tr>
+<tr><td><b>Stock</b></td><td>Basic</td><td>Full</td><td>Full + Alerts</td><td>Full + Alerts</td></tr>
+<tr><td><b>Orders</b></td><td>❌</td><td>✅</td><td>✅ + Approvals</td><td>✅ + Approvals</td></tr>
+<tr><td><b>Reports</b></td><td>❌</td><td>Basic</td><td>Full + Print</td><td>Full + Print</td></tr>
+<tr><td><b>Grace Period</b></td><td><b>0 days — No grace</b></td><td><b>7 days</b></td><td><b>7 days</b></td><td><b>7 days</b></td></tr>
+<tr><td><b>Support</b></td><td>—</td><td>WhatsApp</td><td>WhatsApp</td><td>Priority WhatsApp</td></tr>
+</tbody></table></div>
+<div class="grace"><b>🟡 Grace 7 Days Explained:</b><br>Paid plans (STARTER / STANDARD / PREMIUM) get <b>7 days grace</b> after End Date.<br>Example: STANDARD Monthly Ends 06 Dec → You can still login 07 Dec to 13 Dec (Grace Day 1 to Day 7) → On 14 Dec you are blocked until you pay.<br><b>Day 1 Reminder:</b> On first day of grace, you see a reminder + Super Admin (0780233263) is notified.<br><b>Demo Trial:</b> No grace — Trial ends = Blocked immediately. Upgrade to STANDARD / PREMIUM to continue.</div>
+</div>
+
+<!-- REQUEST FORM -->
+<div class="card" id="requestForm">
+<h2>📝 Request Subscription — Send Via WhatsApp To 0780233263</h2>
+<div class="info">Fill this → Click <b>SEND VIA WHATSAPP</b> → WhatsApp opens to <b>0780233263</b> with your request pre-typed → Press Send in WhatsApp.<br>Super Admin will reply with payment details + login.</div>
+<label>🏫 School Name *</label><input id="reqSchool" placeholder="e.g. WORDSWORTH HIGH SCHOOL">
+<label>🏫 School ID / EMIS *</label><input id="reqEmis" placeholder="e.g. WHS / 700310854">
+<label>👤 Your Name *</label><input id="reqName" placeholder="e.g. MRS DUBE">
+<label>👤 Your Role *</label><select id="reqRole"><option value="Principal">Principal</option><option value="Teacher">Teacher</option><option value="Librarian">Librarian</option><option value="SGB">SGB</option><option value="Other">Other</option></select>
+<label>📱 Your Phone / WhatsApp *</label><input id="reqPhone" placeholder="e.g. 0821234567">
+<label>💰 Plan You Want *</label><select id="reqPlan"><option value="DEMO">🆓 DEMO — FREE — 7 DAYS TRIAL</option><option value="STARTER">🌱 STARTER — R350/mo / R4 500/yr — Setup R3 000</option><option value="STANDARD" selected>⭐ STANDARD — R500/mo / R7 500/yr — Setup R4 500</option><option value="PREMIUM">👑 PREMIUM — R600/mo / R9 000/yr — Setup R5 500</option></select>
+<label>💰 Pay Type *</label><select id="reqPayType"><option value="Monthly">💰 MONTHLY</option><option value="Yearly">💰 YEARLY</option><option value="Trial">🆓 TRIAL — 7 DAYS FREE</option></select>
+<label>📝 Message (Optional)</label><input id="reqMsg" placeholder="e.g. We want to start next week" style="text-transform:none">
+<div id="pricePreview" class="info">—</div>
+<button class="btn btn-green" onclick="sendWhatsAppRequest()">📱 SEND VIA WHATSAPP TO 0780233263 →</button>
+<button class="btn btn-gold" onclick="location.href='index.html'">🔐 ALREADY HAVE LOGIN? LOGIN →</button>
+<div id="reqResult"></div>
+</div>
+
+<div class="card" style="text-align:center">
+<h2>❓ Questions?</h2>
+<p style="font-size:13px;line-height:1.6">WhatsApp Super Admin: <b>0780233263</b><br>Email: <b>vusichauke3037@gmail.com</b><br>School: <b>Wordsworth High School • EMIS 700310854</b></p>
+<button class="btn btn-green" onclick="window.open('https://wa.me/27780233263?text='+encodeURIComponent('Hello Makhanani LTSM! I have a question about pricing.'),'_blank')">📱 WHATSAPP 0780233263 →</button>
+<button class="btn btn-grey" onclick="location.href='index.html'">🔐 BACK TO LOGIN →</button>
+</div>
+
+</div>
 <script>
-function selectPlan(plan, status, amount, billing){
-  // Save selection so Admin can pick it up
-  localStorage.setItem('MAKHANANI_SELECTED_PLAN', plan);
-  localStorage.setItem('MAKHANANI_SELECTED_AMOUNT', amount);
-  localStorage.setItem('MAKHANANI_SELECTED_BILLING', billing);
-  localStorage.setItem('MAKHANANI_SELECTED_STATUS', status);
-  // Highlight card
-  document.querySelectorAll('.card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('card-'+plan).classList.add('selected');
-  document.getElementById('msg').innerHTML = '✅ You selected <b>'+plan+'</b> — R'+amount+' '+billing+'. Redirecting to Admin to save...';
-  setTimeout(()=>{
-    // If school already selected, go to Admin Subscription tab
-    window.location.href = 'admin.html';
-  }, 800);
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const rtdb=firebase.database();
+const ADMIN_WHATSAPP='27780233263'; // 0780233263 - Vusi Chauke
+const PLANS={DEMO:{setup:0,monthly:0,yearly:0,label:'DEMO — FREE'},STARTER:{setup:3000,monthly:350,yearly:4500,label:'STARTER'},STANDARD:{setup:4500,monthly:500,yearly:7500,label:'STANDARD'},PREMIUM:{setup:5500,monthly:600,yearly:9000,label:'PREMIUM'}};
+function toCaps(s){return String(s||'').trim().toUpperCase();}
+function fmtR(n){return 'R'+Math.round(n||0).toLocaleString('en-ZA');}
+function updatePreview(){
+  let plan=document.getElementById('reqPlan').value;
+  let pay=document.getElementById('reqPayType').value;
+  let p=PLANS[plan]||PLANS.STANDARD;
+  let subAmt=pay==='Yearly'?p.yearly:pay==='Trial'?0:p.monthly;
+  let total=p.setup+subAmt;
+  let grace = (plan==='DEMO'||pay==='Trial') ? '0 days — NO grace — Trial ends = Blocked' : '7 days — Grace Day 1 reminder + 7 days to pay';
+  document.getElementById('pricePreview').innerHTML=`You picked: <b>${plan} — ${pay}</b><br>Setup Once-Off: <b>${fmtR(p.setup)}</b> + Subscription: <b>${fmtR(subAmt)}</b> ${pay==='Yearly'?'(per year)':pay==='Trial'?'(FREE 7 days)':'(per month)'} = <b>Total First Payment: ${fmtR(total)}</b><br>Grace: <b>${grace}</b><br>WhatsApp will go to: <b>0780233263</b>`;
 }
-</script>
-</body>
-</html>
+function pickPlan(plan,payType){
+  document.getElementById('reqPlan').value=plan;
+  document.getElementById('reqPayType').value=payType;
+  updatePreview();
+  document.getElementById('requestForm').scrollIntoView({behavior:'smooth'});
+  document.getElementById('reqSchool').focus();
+}
+async function sendWhatsAppRequest(){
+  let school=document.getElementById('reqSchool').value.trim();
+  let emis=document.getElementById('reqEmis').value.trim();
+  let name=document.getElementById('reqName').value.trim();
+  let role=document.getElementById('reqRole').value;
+  let phone=document.getElementById('reqPhone').value.trim();
+  let plan=document.getElementById('reqPlan').value;
+  let payType=document.getElementById('reqPayType').value;
+  let msgExtra=document.getElementById('reqMsg').value.trim();
+  let res=document.getElementById('reqResult');
+  if(!school){res.innerHTML='<div class="warn">⚠️ Type School Name.</div>';return;}
+  if(!name){res.innerHTML='<div class="warn">⚠️ Type Your Name.</div>';return;}
+  if(!phone){res.innerHTML='<div class="warn">⚠️ Type Your Phone.</div>';return;}
+  let p=PLANS[plan]||PLANS.STANDARD;
+  let subAmt=payType==='Yearly'?p.yearly:payType==='Trial'?0:p.monthly;
+  let total=p.setup+subAmt;
+  let grace = (plan==='DEMO'||payType==='Trial') ? '0 days — No grace' : '7 days grace';
+  let waMsg=`Hello Makhanani LTSM! I want to REQUEST ${plan} plan.%0A%0A🏫 School: ${toCaps(school)}%0A🏫 School ID / EMIS: ${toCaps(emis||'—')}%0A👤 Name: ${toCaps(name)}%0A👤 Role: ${role}%0A📱 Phone: ${phone}%0A💰 Plan: ${plan}%0A💰 Pay Type: ${payType}%0A💰 Setup: ${fmtR(p.setup)}%0A💰 Subscription: ${fmtR(subAmt)}%0A💰 Total First Payment: ${fmtR(total)}%0A🟡 Grace: ${grace}%0A📝 Message: ${msgExtra||'—'}%0A%0APlease create our subscription. Thank you!`;
+  // Save request to Firebase for Super Admin to see
+  try{
+    await rtdb.ref('pricingRequests').push().set({
+      school: toCaps(school), emis: toCaps(emis), name: toCaps(name), role, phone,
+      plan, payType, setupDue: p.setup, subDue: subAmt, total, grace,
+      message: msgExtra, createdAt: Date.now(), dateStr: new Date().toLocaleDateString('en-ZA'), status: 'NEW'
+    });
+  }catch(e){ console.log('Pricing request save failed', e); }
+  res.innerHTML=`<div class="ok">✅ Request saved + WhatsApp opening to <b>0780233263</b>...<br>Plan: <b>${plan} — ${payType}</b> — Total First Payment: <b>${fmtR(total)}</b><br>Press <b>Send</b> in WhatsApp to send it to Super Admin.</div>`;
+  window.open('https://wa.me/'+ADMIN_WHATSAPP+'?text='+waMsg,'_blank');
+}
+document.getElementById('reqPlan').addEventListener('change',updatePreview);
+document.getElementById('reqPayType').addEventListener('change',updatePreview);
+updatePreview();
+</script></body></html>
