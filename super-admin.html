@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Super Admin - Makhanani LTSM</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
+header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
+header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
+.wrap{max-width:1200px;margin:0 auto;padding:12px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
+input{cursor:text}input[type="number"],input[type="date"]{text-transform:none}
+select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
+.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}
+.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-teal{background:#0d9488;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.grace{background:#fffbeb;border:2px solid #f59e0b;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
+.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
+.kpi b{font-size:20px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:middle}th{background:#0a1f4d;color:#fff}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-active{background:#dcfce7;color:#166534}.badge-trial{background:#dbeafe;color:#1e40af}.badge-expired{background:#fee2e2;color:#991b1b}.badge-expiring{background:#fef3c7;color:#92400e}.badge-suspended{background:#111827;color:#fff}.badge-grace{background:#f59e0b;color:#fff}.badge-new{background:#7c3aed;color:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{flex:1;min-width:110px;padding:12px;border:none;border-radius:8px;background:#e2e8f0;font-weight:900;cursor:pointer}.tabs button.active{background:#0a1f4d;color:#fff}
+.tab{display:none}.tab.active{display:block}
+@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}table{font-size:12px}}
+</style></head>
+<body>
+<header><h1>👑 SUPER ADMIN — MAKHANANI LTSM</h1><p>ALL SCHOOLS • GRACE 7 DAYS • DAY 1 ALERTS • AUTO-SUSPEND • WHATSAPP 0780233263</p>
+<div id="taskbar"></div><script src="nav.js"></script>
+<script>guardPage(4,'Super Admin');</script>
+</header>
+<div class="wrap">
+<div class="info" id="roleInfo">Loading...</div>
+
+<!-- GRACE DAY 1 ALERTS -->
+<div class="card" id="graceAlertCard" style="display:none;border:3px solid #f59e0b;background:#fffbeb">
+<h2>🟡 GRACE DAY 1 ALERTS — Schools That Entered Grace Today — Action Needed</h2>
+<div id="graceAlertList"></div>
+<div class="row"><button class="btn btn-gold" style="flex:1" onclick="markAllGraceSeen()">✅ MARK ALL AS SEEN</button><button class="btn btn-purple" style="flex:1" onclick="location.href='subscriptions.html'">💰 GO TO SUBSCRIPTIONS →</button></div>
+</div>
+
+<!-- PRICING REQUESTS -->
+<div class="card" id="pricingReqCard" style="display:none;border:3px solid #7c3aed">
+<h2>💰 NEW PRICING REQUESTS — From pricing.html — WhatsApp 0780233263</h2>
+<div id="pricingReqList"></div>
+<div class="row"><button class="btn btn-purple" style="flex:1" onclick="markAllPricingSeen()">✅ MARK ALL AS SEEN</button><button class="btn btn-green" style="flex:1" onclick="location.href='subscriptions.html'">➕ CREATE SUBSCRIPTION →</button></div>
+</div>
+
+<div class="kpi">
+<div onclick="location.href='schools.html'"><b id="kpiSchools">0</b><span>🏫 SCHOOLS</span></div>
+<div onclick="location.href='users.html'"><b id="kpiUsers">0</b><span>👥 USERS</span></div>
+<div onclick="location.href='subscriptions.html'"><b id="kpiSubs">0</b><span>💰 SUBSCRIPTIONS</span></div>
+<div onclick="location.href='subscriptions.html'"><b id="kpiActiveSubs">0</b><span>✅ ACTIVE SUBS</span></div>
+<div onclick="location.href='subscriptions.html'"><b id="kpiGrace">0</b><span>🟡 GRACE / EXPIRING</span></div>
+</div>
+<div class="kpi">
+<div onclick="location.href='books.html'"><b id="kpiBooks">0</b><span>📖 BOOKS</span></div>
+<div onclick="location.href='stock.html'"><b id="kpiStock">0</b><span>📦 STOCK ITEMS</span></div>
+<div onclick="location.href='orders.html'"><b id="kpiOrders">0</b><span>🧾 ORDERS</span></div>
+<div onclick="location.href='subscriptions.html'"><b id="kpiMonthlyRev">R0</b><span>💰 MONTHLY REVENUE</span></div>
+<div onclick="location.href='subscriptions.html'"><b id="kpiOutstanding">R0</b><span>⚠️ OUTSTANDING</span></div>
+</div>
+
+<div class="tabs">
+<button id="tabBtnOverview" class="active" onclick="showTab('overview')">📊 Overview</button>
+<button id="tabBtnSubs" onclick="showTab('subs')">💰 Subscriptions</button>
+<button id="tabBtnSchools" onclick="showTab('schools')">🏫 Schools</button>
+<button id="tabBtnQuick" onclick="showTab('quick')">⚡ Quick Actions</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="tab-overview" class="tab active">
+<div class="card"><h2>📊 Overview — Today</h2><div id="overviewInfo" class="info">Loading...</div></div>
+<div class="card"><h2>⚡ Quick Links</h2><div class="row">
+<button class="btn btn-green" onclick="location.href='schools.html'">🏫 SCHOOLS →</button>
+<button class="btn btn-purple" onclick="location.href='users.html'">👥 USERS →</button>
+<button class="btn btn-gold" onclick="location.href='subscriptions.html'">💰 SUBSCRIPTIONS →</button>
+<button class="btn btn-teal" onclick="location.href='pricing.html'">💰 PRICING →</button>
+<button class="btn btn-green" onclick="location.href='books.html'">📖 BOOKS →</button>
+</div><div class="row" style="margin-top:8px">
+<button class="btn btn-grey" onclick="location.href='stock.html'">📦 STOCK →</button>
+<button class="btn btn-grey" onclick="location.href='orders.html'">🧾 ORDERS →</button>
+<button class="btn btn-grey" onclick="location.href='reports.html'">📊 REPORTS →</button>
+<button class="btn btn-grey" onclick="location.href='subjects.html'">📚 SUBJECTS →</button>
+<button class="btn btn-grey" onclick="location.href='catalogue.html'">📚 CATALOGUE →</button>
+</div></div>
+<div class="card"><h2>🟡 Grace + Expiring — Need Action</h2><div id="graceList"></div></div>
+</div>
+
+<!-- SUBS -->
+<div id="tab-subs" class="tab"><div class="card">
+<h2>💰 Subscriptions — Summary</h2>
+<div id="subsInfo" class="info">Loading...</div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>School</th><th>Plan</th><th>Pay Type</th><th>End</th><th>Grace Ends</th><th>Status</th><th>Owe</th><th>Action</th></tr></thead><tbody id="subsTable"></tbody></table></div>
+<div class="row"><button class="btn btn-gold" style="flex:1" onclick="location.href='subscriptions.html'">💰 OPEN SUBSCRIPTIONS →</button><button class="btn btn-red" style="flex:1" onclick="autoSuspendExpired()">⛔ AUTO-SUSPEND EXPIRED →</button></div>
+</div></div>
+
+<!-- SCHOOLS -->
+<div id="tab-schools" class="tab"><div class="card">
+<h2>🏫 Schools — Quick View</h2>
+<div id="schoolsInfo" class="info">Loading...</div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>School</th><th>EMIS</th><th>Plan</th><th>Sub Status</th><th>Users</th><th>Action</th></tr></thead><tbody id="schoolsTable"></tbody></table></div>
+<button class="btn btn-green btn-full" onclick="location.href='schools.html'">🏫 OPEN SCHOOLS →</button>
+</div></div>
+
+<!-- QUICK -->
+<div id="tab-quick" class="tab"><div class="card">
+<h2>⚡ Quick Actions — Super Admin</h2>
+<div class="info"><b>Your WhatsApp:</b> 0780233263 — Schools WhatsApp you to renew. Use the buttons below to act fast.</div>
+<label>🏫 School For Quick Action</label><select id="quickSchool"><option value="">-- PICK SCHOOL --</option></select>
+<div class="row"><button class="btn btn-teal" style="flex:1" onclick="quickRenew()">🔁 RENEW SELECTED SCHOOL</button><button class="btn btn-green" style="flex:1" onclick="quickUnsuspend()">✅ UNSUSPEND SELECTED</button><button class="btn btn-red" style="flex:1" onclick="quickSuspend()">⛔ SUSPEND SELECTED</button></div>
+<div class="row"><button class="btn btn-gold" style="flex:1" onclick="quickRemind()">📱 WHATSAPP REMIND SELECTED</button><button class="btn btn-purple" style="flex:1" onclick="location.href='subscriptions.html'">💰 OPEN SUBSCRIPTIONS →</button></div>
+<div id="quickMsg"></div>
+<div class="info" style="margin-top:16px"><b>Settings:</b><br>Grace: <b>7 days</b> • Day 1 Reminder: <b>ON</b> • Auto-Suspend: <b>ON</b> • WhatsApp: <b>0780233263</b> • Trial: <b>No grace</b><br>Change in: Subscriptions → ⚙️ Settings</div>
+<button class="btn btn-grey btn-full" onclick="window.open('https://wa.me/27780233263?text='+encodeURIComponent('Hello! This is Makhanani LTSM Super Admin test.'),'_blank')">📱 TEST MY WHATSAPP 0780233263 →</button>
+</div></div>
+
+</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const rtdb=firebase.database();
+const ADMIN_WHATSAPP='27780233263';
+function toCaps(s){return String(s||'').trim().toUpperCase();}
+function fmtR(n){return 'R'+Math.round(n||0).toLocaleString('en-ZA');}
+function fmtDate(ts){if(!ts) return '—';return new Date(ts).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});}
+let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
+let schools=[],subs=[],usersList=[],books=[],stock=[],orders=[],graceAlerts=[],pricingReqs=[];
+let settings={graceDays:7,autoSuspend:true,adminWhatsapp:ADMIN_WHATSAPP};
+try{let s=JSON.parse(localStorage.getItem('makhanani_sub_settings')||'{}');settings={...settings,...s};}catch(e){}
+function showTab(t){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');}
+function calcEnd(startTs,payType,plan){let d=new Date(startTs);if(payType==='Trial'||plan==='DEMO') d.setDate(d.getDate()+7);else if(payType==='Yearly') d.setFullYear(d.getFullYear()+1);else d.setMonth(d.getMonth()+1);return d.getTime();}
+function graceEnd(sub){return sub.endDate + (settings.graceDays*24*60*60*1000);}
+function graceDayNum(sub){return Math.floor((Date.now()-sub.endDate)/(1000*60*60*24))+1;}
+function getStatus(sub){
+  if(!sub) return 'NO SUB';
+  if(sub.suspended) return 'SUSPENDED';
+  let now=Date.now();
+  if(sub.plan==='DEMO'||sub.payType==='Trial'){ if(sub.endDate<now) return 'EXPIRED'; return 'TRIAL'; }
+  if(sub.endDate>=now){ let dl=Math.ceil((sub.endDate-now)/(1000*60*60*24)); if(dl<=7) return 'EXPIRING'; return 'ACTIVE'; }
+  if(now<=graceEnd(sub)) return 'GRACE';
+  return 'EXPIRED';
+}
+function statusBadge(st){let cls=st==='ACTIVE'?'badge-active':st==='TRIAL'?'badge-trial':st==='EXPIRING'?'badge-expiring':st==='GRACE'?'badge-grace':st==='EXPIRED'?'badge-expired':st==='SUSPENDED'?'badge-suspended':'badge-new';return `<span class="badge ${cls}">${st}</span>`;}
+function oweOf(s){return Math.max(0,(parseFloat(s.setupDue||0)-parseFloat(s.setupPaid||0))+(parseFloat(s.subDue||0)-parseFloat(s.subPaid||0)));}
+
+// ===== GRACE DAY 1 ALERTS =====
+async function loadGraceAlerts(){
+  let card=document.getElementById('graceAlertCard'); if(!card) return;
+  let today=new Date().toDateString();
+  let todayAlerts=graceAlerts.filter(a=>new Date(a.createdAt).toDateString()===today);
+  let unseen=graceAlerts.filter(a=>!a.seen);
+  if(!todayAlerts.length && !unseen.length){card.style.display='none';return;}
+  card.style.display='block';
+  let show=todayAlerts.length?todayAlerts:unseen.slice(-5);
+  document.getElementById('graceAlertList').innerHTML=show.map(a=>{
+    let owe=a.amountOwe||0; let phone=String(a.phone||'').replace(/\D/g,'');
+    let waMsg=`Hello ${(a.contact||a.schoolName)}! Grace Day 1 Reminder — Your ${a.plan} subscription expired on ${fmtDate(a.endDate)}. Grace ends ${fmtDate(a.graceEnds)}. Amount Owe: ${fmtR(owe)}. Please pay today to avoid suspension. — Makhanani LTSM 0780233263`;
+    return `<div class="grace"><b>🟡 GRACE DAY 1 — ${toCaps(a.schoolName||a.schoolId)}</b> (${a.schoolId}) — <b>${a.plan} — ${a.payType}</b><br>Expired: <b>${fmtDate(a.endDate)}</b> — Grace Ends: <b>${fmtDate(a.graceEnds)}</b> — Owe: <b>${fmtR(owe)}</b><br>Contact: <b>${toCaps(a.contact||'—')} — ${a.phone||'—'}</b> — By: <b>${a.triggeredBy||'—'}</b> — Time: <b>${new Date(a.createdAt).toLocaleTimeString('en-ZA')}</b><br><button class="btn btn-green" style="margin-top:8px" onclick="window.open('https://wa.me/${phone}?text=${encodeURIComponent(waMsg)}','_blank')">📱 WHATSAPP SCHOOL →</button> <button class="btn btn-grey" style="margin-top:8px" onclick="markGraceSeen('${a.id}')">✅ MARK SEEN</button> <button class="btn btn-teal" style="margin-top:8px" onclick="quickRenewById('${a.schoolId}')">🔁 RENEW →</button></div>`;
+  }).join('');
+}
+async function markGraceSeen(id){try{await rtdb.ref('graceAlerts/'+id).update({seen:true});}catch(e){}let a=graceAlerts.find(x=>x.id===id);if(a) a.seen=true;loadGraceAlerts();}
+async function markAllGraceSeen(){try{let snap=await rtdb.ref('graceAlerts').once('value');for(let [id,v] of Object.entries(snap.val()||{})){if(!v.seen) await rtdb.ref('graceAlerts/'+id).update({seen:true});}}catch(e){}graceAlerts.forEach(a=>a.seen=true);loadGraceAlerts();}
+
+// ===== PRICING REQUESTS =====
+async function loadPricingReqs(){
+  let card=document.getElementById('pricingReqCard'); if(!card) return;
+  let newReqs=pricingReqs.filter(r=>!r.seen && r.status!=='DONE');
+  // Show all NEW, or last 5 if none new but some exist today
+  let today=new Date().toDateString();
+  let todayReqs=pricingReqs.filter(r=>new Date(r.createdAt).toDateString()===today);
+  if(!newReqs.length && !todayReqs.length){card.style.display='none';return;}
+  card.style.display='block';
+  let show=newReqs.length?newReqs:todayReqs.slice(-5);
+  document.getElementById('pricingReqList').innerHTML=show.map(r=>{
+    return `<div class="info"><b>💰 NEW REQUEST — ${toCaps(r.school||'')}</b> (${toCaps(r.emis||'')}) — Plan: <b>${r.plan} — ${r.payType}</b> — Total: <b>${fmtR(r.total||0)}</b> — Grace: <b>${r.grace||'7 days'}</b><br>Contact: <b>${toCaps(r.name||'')} — ${r.role||''} — ${r.phone||''}</b> — Time: <b>${new Date(r.createdAt).toLocaleString('en-ZA')}</b> — Msg: <b>${r.message||'—'}</b><br><button class="btn btn-green" style="margin-top:8px" onclick="window.open('https://wa.me/${String(r.phone||'').replace(/\\D/g,'')}?text=${encodeURIComponent('Hello '+(r.name||'')+'! Thank you for requesting '+r.plan+' ('+r.payType+') for '+r.school+'. Total first payment: '+fmtR(r.total||0)+'. Please pay to activate. — Makhanani LTSM 0780233263')}','_blank')">📱 WHATSAPP THEM →</button> <button class="btn btn-purple" style="margin-top:8px" onclick="location.href='subscriptions.html'">➕ CREATE SUB →</button> <button class="btn btn-grey" style="margin-top:8px" onclick="markPricingSeen('${r.id}')">✅ MARK SEEN</button></div>`;
+  }).join('');
+}
+async function markPricingSeen(id){try{await rtdb.ref('pricingRequests/'+id).update({seen:true,status:'SEEN'});}catch(e){}let r=pricingReqs.find(x=>x.id===id);if(r){r.seen=true;r.status='SEEN';}loadPricingReqs();}
+async function markAllPricingSeen(){try{let snap=await rtdb.ref('pricingRequests').once('value');for(let [id,v] of Object.entries(snap.val()||{})){if(!v.seen) await rtdb.ref('pricingRequests/'+id).update({seen:true,status:'SEEN'});}}catch(e){}pricingReqs.forEach(r=>{r.seen=true;r.status='SEEN';});loadPricingReqs();}
+
+async function loadData(){
+  try{let s=await rtdb.ref('settings/subscriptions').once('value');if(s.val()) settings={...settings,...s.val()};localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));}catch(e){}
+  try{let sc=await rtdb.ref('schools').once('value');schools=Object.entries(sc.val()||{}).map(([id,v])=>({id,...v,schoolName:toCaps(v.schoolName||v.name||''),schoolId:toCaps(v.schoolId||id)}));}catch(e){}
+  try{let sb=await rtdb.ref('subscriptions').once('value');subs=Object.entries(sb.val()||{}).map(([id,v])=>({id,...v,schoolName:toCaps(v.schoolName||'')}));}catch(e){subs=[];}
+  try{let u=await rtdb.ref('users').once('value');let obj=u.val()||{};usersList=[];for(let sid in obj){for(let uid in obj[sid]){usersList.push({id:uid,schoolId:sid,...obj[sid][uid]});}}}catch(e){}
+  try{let b=await rtdb.ref('books').once('value');books=Object.entries(b.val()||{}).map(([id,v])=>({id,...v}));}catch(e){}
+  try{let st=await rtdb.ref('stock').once('value');stock=Object.entries(st.val()||{}).map(([id,v])=>({id,...v}));}catch(e){}
+  try{let o=await rtdb.ref('orders').once('value');orders=Object.entries(o.val()||{}).map(([id,v])=>({id,...v}));}catch(e){}
+  try{let g=await rtdb.ref('graceAlerts').once('value');graceAlerts=Object.entries(g.val()||{}).map(([id,v])=>({id,...v}));}catch(e){graceAlerts=[];}
+  try{let pr=await rtdb.ref('pricingRequests').once('value');pricingReqs=Object.entries(pr.val()||{}).map(([id,v])=>({id,...v}));}catch(e){pricingReqs=[];}
+  if(schools.length===0) schools=[{id:'WHS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',emis:'700310854',plan:'STANDARD'}];
+  if(subs.length===0){
+    let d1=new Date();d1.setDate(d1.getDate()-10);
+    subs=[
+      {id:'1',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',plan:'STANDARD',payType:'Monthly',startDate:d1.getTime(),endDate:calcEnd(d1.getTime(),'Monthly','STANDARD'),setupDue:4500,setupPaid:4500,subDue:500,subPaid:500,contact:'MRS DUBE',phone:'0821234567',suspended:false},
+      {id:'2',schoolId:'MHS',schoolName:'MAKHANANI HIGH SCHOOL (MHS)',plan:'DEMO',payType:'Trial',startDate:Date.now()-2*24*60*60*1000,endDate:calcEnd(Date.now()-2*24*60*60*1000,'Trial','DEMO'),setupDue:0,setupPaid:0,subDue:0,subPaid:0,contact:'MR TEST',phone:'0827654321',suspended:false},
+    ];
+  }
+  document.getElementById('roleInfo').innerHTML=`👑 <b>${toCaps(user?.name||'SUPER ADMIN')}</b> — Role: <b>SUPER ADMIN</b> — All Schools — Grace: <b>${settings.graceDays} days</b> • Auto-Suspend: <b>${settings.autoSuspend?'ON':'OFF'}</b> • Day 1 Reminder: <b>ON</b> • WhatsApp: <b>0780233263</b> • Today: <b>${new Date().toLocaleDateString('en-ZA',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</b>`;
+  document.getElementById('kpiSchools').textContent=schools.length;
+  document.getElementById('kpiUsers').textContent=usersList.length||4;
+  document.getElementById('kpiSubs').textContent=subs.length;
+  document.getElementById('kpiActiveSubs').textContent=subs.filter(s=>getStatus(s)==='ACTIVE').length;
+  document.getElementById('kpiGrace').textContent=subs.filter(s=>getStatus(s)==='GRACE'||getStatus(s)==='EXPIRING').length;
+  document.getElementById('kpiBooks').textContent=books.length||0;
+  document.getElementById('kpiStock').textContent=stock.length||0;
+  document.getElementById('kpiOrders').textContent=orders.length||0;
+  let monthlyRev=subs.filter(s=>s.payType==='Monthly'&&!s.suspended).reduce((sum,s)=>sum+parseFloat(s.subDue||0),0);
+  let collected=subs.reduce((sum,s)=>sum+parseFloat(s.setupPaid||0)+parseFloat(s.subPaid||0),0);
+  let due=subs.reduce((sum,s)=>sum+parseFloat(s.setupDue||0)+parseFloat(s.subDue||0),0);
+  document.getElementById('kpiMonthlyRev').textContent=fmtR(monthlyRev);
+  document.getElementById('kpiOutstanding').textContent=fmtR(Math.max(0,due-collected));
+  document.getElementById('overviewInfo').innerHTML=`<b>Schools:</b> ${schools.length} • <b>Users:</b> ${usersList.length||4} • <b>Subs:</b> ${subs.length} (Active ${subs.filter(s=>getStatus(s)==='ACTIVE').length} • Trial ${subs.filter(s=>getStatus(s)==='TRIAL').length} • Grace ${subs.filter(s=>getStatus(s)==='GRACE').length} • Expiring ${subs.filter(s=>getStatus(s)==='EXPIRING').length} • Expired ${subs.filter(s=>getStatus(s)==='EXPIRED').length} • Suspended ${subs.filter(s=>getStatus(s)==='SUSPENDED').length})<br><b>Monthly Revenue:</b> ${fmtR(monthlyRev)} / mo • <b>Collected:</b> ${fmtR(collected)} • <b>Outstanding:</b> ${fmtR(Math.max(0,due-collected))}<br><b>Grace:</b> ${settings.graceDays} days • <b>Day 1 Alerts Today:</b> ${graceAlerts.filter(a=>new Date(a.createdAt).toDateString()===new Date().toDateString()).length} • <b>New Pricing Requests:</b> ${pricingReqs.filter(r=>!r.seen).length}`;
+  // Grace + Expiring list
+  let needAction=subs.filter(s=>['GRACE','EXPIRING','EXPIRED','SUSPENDED'].includes(getStatus(s)));
+  document.getElementById('graceList').innerHTML=needAction.length?needAction.map(s=>{let st=getStatus(s);return `<div class="${st==='GRACE'?'grace':st==='EXPIRED'||st==='SUSPENDED'?'warn':'info'}"><b>${s.schoolName}</b> (${s.schoolId}) — <b>${s.plan} — ${s.payType}</b> — End: <b>${fmtDate(s.endDate)}</b> — Grace Ends: <b>${fmtDate(graceEnd(s))}</b> — ${statusBadge(st)} ${st==='GRACE'?`— <b>GRACE DAY ${graceDayNum(s)}</b>`:''} — Owe: <b>${fmtR(oweOf(s))}</b> — Contact: <b>${toCaps(s.contact||'')} — ${s.phone||''}</b> <button class="btn btn-teal" style="margin-top:6px" onclick="quickRenewById('${s.schoolId}')">🔁 RENEW</button> <button class="btn btn-gold" style="margin-top:6px" onclick="quickRemindById('${s.schoolId}')">📱 REMIND</button></div>`;}).join(''):`<div class="ok">✅ No schools in Grace / Expiring / Expired / Suspended. All good.</div>`;
+  // Subs table
+  document.getElementById('subsInfo').innerHTML=`Showing <b>${subs.length}</b> subscriptions — Monthly: <b>${fmtR(monthlyRev)}</b> — Outstanding: <b>${fmtR(Math.max(0,due-collected))}</b> — Grace: <b>${settings.graceDays} days</b>`;
+  document.getElementById('subsTable').innerHTML=subs.map(s=>{let st=getStatus(s);return `<tr><td><b>${s.schoolName}</b><br><small>${s.schoolId}</small></td><td><b>${s.plan}</b></td><td>${s.payType}</td><td>${fmtDate(s.endDate)}</td><td>${fmtDate(graceEnd(s))}</td><td>${statusBadge(st)} ${st==='GRACE'?`<br><small>DAY ${graceDayNum(s)}</small>`:''}</td><td><b>${fmtR(oweOf(s))}</b></td><td><button class="btn btn-teal" onclick="quickRenewById('${s.schoolId}')">🔁 RENEW</button> <button class="btn btn-gold" onclick="quickRemindById('${s.schoolId}')">📱 REMIND</button></td></tr>`;}).join('');
+  // Schools table
+  document.getElementById('schoolsInfo').innerHTML=`Showing <b>${schools.length}</b> schools`;
+  document.getElementById('schoolsTable').innerHTML=schools.map(sc=>{
+    let sub=subs.filter(s=>s.schoolId===sc.schoolId).sort((a,b)=>(b.endDate||0)-(a.endDate||0))[0];
+    let st=sub?getStatus(sub):'NO SUB';
+    let userCount=usersList.filter(u=>u.schoolId===sc.schoolId).length;
+    return `<tr><td><b>${sc.schoolName}</b><br><small>${sc.schoolId}</small></td><td>${sc.emis||'—'}</td><td><b>${sub?sub.plan:'—'}</b></td><td>${statusBadge(st)}</td><td>${userCount||'—'}</td><td><button class="btn btn-green" onclick="location.href='schools.html'">🏫 OPEN</button></td></tr>`;
+  }).join('');
+  // Quick school dropdown
+  document.getElementById('quickSchool').innerHTML='<option value="">-- PICK SCHOOL --</option>'+schools.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('');
+  loadGraceAlerts();loadPricingReqs();
+}
+async function autoSuspendExpired(){
+  let expired=subs.filter(s=>!s.suspended && getStatus(s)==='EXPIRED');
+  if(!expired.length){alert('✅ No expired subscriptions to suspend.');return;}
+  if(!confirm('Suspend '+expired.length+' expired school(s)?')) return;
+  for(let s of expired){s.suspended=true;try{await rtdb.ref('subscriptions/'+s.id).update({suspended:true});}catch(e){}}
+  alert('⛔ Suspended '+expired.length+' school(s).');loadData();
+}
+function getSubBySchoolId(schoolId){
+  let list=subs.filter(s=>s.schoolId===schoolId); if(!list.length) return null;
+  list.sort((a,b)=>(b.endDate||0)-(a.endDate||0)); return list[0];
+}
+async function quickRenewById(schoolId){
+  let s=getSubBySchoolId(schoolId); if(!s){alert('⚠️ No subscription for '+schoolId);return;}
+  let base=Math.max(s.endDate,Date.now()); let newEnd=calcEnd(base,s.payType,s.plan); let oldEnd=s.endDate;
+  s.endDate=newEnd; s.subPaid=0; s.suspended=false;
+  try{await rtdb.ref('subscriptions/'+s.id).update({endDate:newEnd,subPaid:0,suspended:false});}catch(e){}
+  alert(`✅ Renewed: ${s.schoolName} — ${s.plan}\nOld End: ${fmtDate(oldEnd)}\nNew End: ${fmtDate(newEnd)}\nGrace Ends: ${fmtDate(graceEnd(s))}\nSub Paid reset to R0 — Record payment in Subscriptions.`);
+  loadData();
+}
+async function quickRenew(){let sid=document.getElementById('quickSchool').value; if(!sid){document.getElementById('quickMsg').innerHTML='<div class="warn">⚠️ Pick School first.</div>';return;} await quickRenewById(sid); document.getElementById('quickMsg').innerHTML='<div class="ok">✅ Renewed '+sid+'.</div>';}
+async function quickUnsuspend(){
+  let sid=document.getElementById('quickSchool').value; if(!sid){document.getElementById('quickMsg').innerHTML='<div class="warn">⚠️ Pick School first.</div>';return;}
+  let s=getSubBySchoolId(sid); if(!s){document.getElementById('quickMsg').innerHTML='<div class="warn">⚠️ No subscription for '+sid+'</div>';return;}
+  s.suspended=false; try{await rtdb.ref('subscriptions/'+s.id).update({suspended:false});}catch(e){}
+  document.getElementById('quickMsg').innerHTML=`<div class="ok">✅ Unsuspended <b>${s.schoolName}</b> — Can login again.</div>`; loadData();
+}
+async function quickSuspend(){
+  let sid=document.getElementById('quickSchool').value; if(!sid){document.getElementById('quickMsg').innerHTML='<div class="warn">⚠️ Pick School first.</div>';return;}
+  let s=getSubBySchoolId(sid); if(!s){document.getElementById('quickMsg').innerHTML='<div class="warn">⚠️ No subscription for '+sid+'</div>';return;}
+  s.suspended=true; try{await rtdb.ref('subscriptions/'+s.id).update({suspended:true});}catch(e){}
+  document.getElementById('quickMsg').innerHTML=`<div class="warn">⛔ Suspended <b>${s.schoolName}</b> — Cannot login until renewed.</div>`; loadData();
+}
+function quickRemindById(schoolId){
+  let s=getSubBySchoolId(schoolId); if(!s){alert('⚠️ No subscription for '+schoolId);return;}
+  let owe=oweOf(s); let st=getStatus(s);
+  let prefix = st==='GRACE' && graceDayNum(s)===1 ? '🟡 GRACE DAY 1 REMINDER — ' : '';
+  let msg=prefix+`Hello ${s.contact||s.schoolName}! This is Makhanani LTSM.%0A%0AYour ${s.plan} subscription (${s.payType}) expired on ${fmtDate(s.endDate)} — Status: ${st} — Grace Ends: ${fmtDate(graceEnd(s))}%0A%0AAmount Owe: ${fmtR(owe)}%0A%0APlease pay today to avoid suspension. Contact: 0780233263. Thank you!`;
+  let phone=String(s.phone||'').replace(/\D/g,''); if(!phone){alert('⚠️ No phone for this school.');return;}
+  window.open('https://wa.me/'+phone+'?text='+msg,'_blank');
+}
+function quickRemind(){
+  let sid=document.getElementById('quickSchool').value; if(!sid){document.getElementById('quickMsg').innerHTML='<div class="warn">⚠️ Pick School first.</div>';return;}
+  quickRemindById(sid);
+}
+loadData();
+</script></body></html>
