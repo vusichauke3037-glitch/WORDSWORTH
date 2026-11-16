@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Subscriptions + Auto-Suspend - Makhanani LTSM</title>
+<title>Subscriptions - Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
@@ -11,356 +11,182 @@ header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
-input{cursor:text}input[type="number"],input[type="date"]{text-transform:none}select{appearance:auto;-webkit-appearance:auto}
+input{cursor:text}input[type="number"]{text-transform:none}input[type="date"]{text-transform:none}
 select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 .btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}
-.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-teal{background:#0d9488;color:#fff}
+.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.grace{background:#fffbeb;border:2px solid #f59e0b;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
-.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
-.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
-.kpi b{font-size:20px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:middle}th{background:#0a1f4d;color:#fff}
-.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-active{background:#dcfce7;color:#166534}.badge-trial{background:#dbeafe;color:#1e40af}.badge-expired{background:#fee2e2;color:#991b1b}.badge-expiring{background:#fef3c7;color:#92400e}.badge-suspended{background:#111827;color:#fff}.badge-grace{background:#f59e0b;color:#fff}.badge-paid{background:#dcfce7;color:#166534}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-active{background:#dcfce7;color:#166534}.badge-trial{background:#dbeafe;color:#1e40af}.badge-expired{background:#fee2e2;color:#991b1b}.badge-expiring{background:#fef3c7;color:#92400e}.badge-suspended{background:#111827;color:#fff}.badge-grace{background:#f59e0b;color:#fff}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{flex:1;min-width:110px;padding:12px;border:none;border-radius:8px;background:#e2e8f0;font-weight:900;cursor:pointer}.tabs button.active{background:#7c3aed;color:#fff}
-.tab{display:none}.tab.active{display:block}
-.switch{display:flex;align-items:center;gap:10px;background:#f1f5f9;border:2px solid #0a1f4d;border-radius:8px;padding:10px;margin-top:10px;font-size:13px;font-weight:900}
-.switch input{width:22px;height:22px;cursor:pointer}
-@media print{header,.no-print{display:none!important}.wrap{max-width:100%;padding:0}.card{box-shadow:none;border:1px solid #ddd}.tab{display:none!important}#tab-list{display:block!important}}
-@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}table{font-size:12px}}
+.search-box{position:relative}.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#ef4444;color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-weight:900;cursor:pointer;font-size:14px;display:none}.search-count{font-size:11px;color:#64748b;margin-top:4px;font-weight:700}
+@media(max-width:700px){.row{flex-direction:column}table{font-size:12px}}
 </style></head>
 <body>
-<header><h1>💰 SUBSCRIPTIONS — MAKHANANI LTSM</h1><p>TRIAL • MONTHLY • YEARLY • AUTO-SUSPEND • GRACE 7 DAYS • DAY 1 REMINDER • RENEW • REVENUE</p>
+<header><h1>💰 SUBSCRIPTIONS — MAKHANANI LTSM 2.0</h1><p>SUPER ADMIN ONLY TO CHANGE • PRINCIPAL / ADMIN VIEW ONLY • GRACE <span id="graceLabel">7</span> DAYS</p>
 <div id="taskbar"></div><script src="nav.js"></script>
-<script>guardPage(4,'Subscriptions');</script>
+<script>guardPage(3,'Subscriptions');</script>
 </header>
 <div class="wrap">
-<div class="info no-print" id="roleInfo">Loading...</div>
+<div class="info" id="roleInfo">Loading...</div>
 
-<!-- GRACE DAY 1 ALERTS FOR SUPER ADMIN -->
-<div class="card" id="graceAlertCard" style="display:none;border:3px solid #f59e0b;background:#fffbeb">
-<h2>🟡 GRACE DAY 1 ALERTS — Schools That Entered Grace Today — For Super Admin (0780233263)</h2>
-<div id="graceAlertList"></div>
-<button class="btn btn-gold btn-full" onclick="markAllGraceSeen()">✅ MARK ALL AS SEEN</button>
+<div class="card" id="createCard">
+<h2>💰 Create / Renew Subscription</h2>
+<div class="info" id="createInfo"></div>
+<!-- ★ PICK OR SEARCH SCHOOL — V2.1 ★ -->
+<label>🏫 School — Pick OR Search *</label>
+<div class="search-box">
+<input id="schoolSearch" placeholder="🔍 Type to search school... e.g. WORDSWORTH, WHS, MAKHANANI" oninput="filterSchools()" autocomplete="off">
+<button class="search-clear" id="clearSearchBtn" onclick="clearSchoolSearch()">✕</button>
 </div>
+<div class="search-count" id="schoolCount">Showing schools — Type to search</div>
+<select id="subSchool"><option value="">-- PICK SCHOOL --</option></select>
 
-<div class="kpi no-print">
-<div onclick="showTab('list')"><b id="kpiTotal">0</b><span>🏫 SUBSCRIPTIONS</span></div>
-<div onclick="showTab('list')"><b id="kpiActive">0</b><span>✅ ACTIVE</span></div>
-<div onclick="showTab('list')"><b id="kpiTrial">0</b><span>🆓 TRIAL</span></div>
-<div onclick="showTab('list')"><b id="kpiExpiring">0</b><span>⚠️ EXPIRING ≤7 DAYS</span></div>
-<div onclick="showTab('list')"><b id="kpiExpired">0</b><span>❌ EXPIRED / SUSPENDED</span></div>
-</div>
-<div class="kpi no-print">
-<div><b id="kpiMonthlyRev">R0</b><span>💰 MONTHLY REVENUE</span></div>
-<div><b id="kpiYearlyRev">R0</b><span>💰 YEARLY REVENUE</span></div>
-<div><b id="kpiCollected">R0</b><span>✅ COLLECTED</span></div>
-<div><b id="kpiOutstanding">R0</b><span>⚠️ OUTSTANDING</span></div>
-<div onclick="showTab('add')"><b>➕</b><span>ADD SUBSCRIPTION</span></div>
-</div>
-
-<div class="tabs no-print">
-<button id="tabBtnList" class="active" onclick="showTab('list')">📋 All Subscriptions</button>
-<button id="tabBtnAdd" onclick="showTab('add')">➕ New Subscription</button>
-<button id="tabBtnPayments" onclick="showTab('payments')">🧾 Payments</button>
-<button id="tabBtnRevenue" onclick="showTab('revenue')">📊 Revenue Report</button>
-<button id="tabBtnSettings" onclick="showTab('settings')">⚙️ Settings</button>
+<label>💰 Plan *</label><select id="subPlan"><option value="DEMO">🆓 DEMO — FREE — 14 DAYS</option><option value="STARTER">STARTER — R350/mo</option><option value="STANDARD">STANDARD — R500/mo</option><option value="PREMIUM">PREMIUM — R600/mo</option></select>
+<label>💳 Pay Type *</label><select id="subPayType"><option value="Monthly">Monthly</option><option value="Term">Term</option><option value="Yearly">Yearly</option><option value="Trial">Trial</option></select>
+<div class="row"><div><label>📅 Start Date *</label><input id="subStart" type="date"></div><div><label>📅 End Date *</label><input id="subEnd" type="date"></div></div>
+<div class="row"><div><label>💰 Setup Due</label><input id="subSetupDue" type="number" value="4500"></div><div><label>💰 Setup Paid</label><input id="subSetupPaid" type="number" value="4500"></div></div>
+<div class="row"><div><label>💰 Sub Due</label><input id="subSubDue" type="number" value="500"></div><div><label>💰 Sub Paid</label><input id="subSubPaid" type="number" value="500"></div></div>
+<button class="btn btn-gold btn-full" onclick="saveSub()">💰 SAVE / RENEW SUBSCRIPTION →</button>
+<div id="subMsg"></div>
 </div>
 
-<!-- LIST -->
-<div id="tab-list" class="tab active"><div class="card">
-<h2>📋 All Subscriptions — Auto Status + Auto-Suspend + Grace 7 Days</h2>
-<div class="info" style="margin-top:0"><b>Status is AUTO:</b> <b>TRIAL</b> = DEMO 7 days, NO grace • <b>ACTIVE</b> = Paid + Not Expired • <b>EXPIRING</b> = Expires in ≤7 days • <b>GRACE</b> = Expired but still in Grace 7 days (can still login, Day 1 reminder only) • <b>EXPIRED</b> = Past End + Grace 7 days → <b>BLOCKED</b> • <b>SUSPENDED</b> = You suspended it → <b>BLOCKED</b>.<br><b>Expiry:</b> DEMO = Start + 7 days • Monthly = Start + 1 month • Yearly = Start + 12 months. Renew adds 1 month / 12 months from End Date. Grace Ends = End + 7 days.</div>
-<div class="row">
-<div><label>🏫 School</label><select id="filterSchool" onchange="renderList()"><option value="">🏫 ALL SCHOOLS</option></select></div>
-<div><label>💰 Plan</label><select id="filterPlan" onchange="renderList()"><option value="">💰 ALL PLANS</option><option value="DEMO">DEMO — FREE</option><option value="STARTER">STARTER</option><option value="STANDARD">STANDARD</option><option value="PREMIUM">PREMIUM</option></select></div>
-<div><label>📊 Status</label><select id="filterStatus" onchange="renderList()"><option value="">📊 ALL STATUS</option><option value="ACTIVE">✅ ACTIVE</option><option value="TRIAL">🆓 TRIAL</option><option value="EXPIRING">⚠️ EXPIRING</option><option value="GRACE">🟡 GRACE</option><option value="EXPIRED">❌ EXPIRED</option><option value="SUSPENDED">⛔ SUSPENDED</option></select></div>
-<div><label>🔍 Search</label><input id="searchSub" placeholder="e.g. WHS or DUBE" oninput="renderList()" style="text-transform:uppercase"></div>
-</div>
-<div class="row no-print"><button class="btn btn-gold" style="flex:1" onclick="window.print()">🖨️ PRINT</button><button class="btn btn-grey" style="flex:1" onclick="loadData()">🔄 REFRESH</button><button class="btn btn-red" style="flex:1" onclick="autoSuspendExpired()">⛔ AUTO-SUSPEND ALL EXPIRED NOW</button></div>
-<div class="switch no-print"><input type="checkbox" id="autoSuspendToggle" checked onchange="saveSettingsFromToggle()"> <span>✅ AUTO-SUSPEND ON — When a school expires + grace 7 days ends, it is auto-suspended on next login / page load. Untick to turn OFF (manual only).</span></div>
-<div id="listInfo" class="info">Loading...</div>
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>School</th><th>Plan</th><th>Pay Type</th><th>Start</th><th>End</th><th>Grace Ends</th><th>Days Left</th><th>Status</th><th>Setup</th><th>Sub Amount</th><th>Paid / Owe</th><th>Action</th></tr></thead><tbody id="subTable"></tbody></table></div>
-</div></div>
+<div class="card"><h2>💰 All Subscriptions</h2>
+<label>🏫 Filter School — Pick OR Search</label><input id="filterSchoolSearch" placeholder="🔍 Type to filter... e.g. WORDS" oninput="filterFilterSchools()"><select id="filterSchool" onchange="renderSubs()"><option value="">🏫 ALL SCHOOLS</option></select>
+<div id="subsInfo" class="info">Loading...</div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>School</th><th>Plan</th><th>Pay Type</th><th>Start</th><th>End</th><th>Grace Ends</th><th>Status</th><th>Owe</th><th>Action</th></tr></thead><tbody id="subsTable"></tbody></table></div></div>
 
-<!-- ADD -->
-<div id="tab-add" class="tab"><div class="card">
-<h2>➕ New Subscription — For A School</h2>
-<div class="info">Plans:<br><b>DEMO:</b> Setup FREE • Monthly FREE • Yearly FREE • 7 days trial, NO grace<br><b>STARTER (1 school):</b> Setup R3 000 • Monthly R350 • Yearly R4 500<br><b>STANDARD:</b> Setup R4 500 • Monthly R500 • Yearly R7 500<br><b>PREMIUM:</b> Setup R5 500 • Monthly R600 • Yearly R9 000<br>Grace: <b>7 days</b> for paid plans. Trial: No grace.</div>
-<label>🏫 School *</label><select id="newSchool"><option value="">-- PICK SCHOOL * --</option></select>
-<label>💰 Plan *</label><select id="newPlan" onchange="onPlanChange()"><option value="DEMO">DEMO — FREE — 7 DAYS TRIAL</option><option value="STARTER">STARTER — 1 SCHOOL</option><option value="STANDARD" selected>STANDARD — MOST POPULAR</option><option value="PREMIUM">PREMIUM</option></select>
-<label>💰 Pay Type *</label><select id="newPayType" onchange="onPlanChange()"><option value="Monthly">💰 MONTHLY</option><option value="Yearly">💰 YEARLY / ONCE-OFF PER YEAR</option><option value="Trial">🆓 TRIAL — 7 DAYS FREE</option></select>
-<label>📅 Start Date *</label><input id="newStart" type="date">
-<label>📅 End Date — AUTO</label><input id="newEnd" type="date" readonly style="background:#fef3c7">
-<div id="priceInfo" class="info">—</div>
-<div class="row">
-<div><label>💰 Setup Fee Due (R)</label><input id="newSetupDue" type="number" readonly></div>
-<div><label>💰 Setup Paid (R)</label><input id="newSetupPaid" type="number" placeholder="e.g. 4500" value="0"></div>
-<div><label>💰 Subscription Amount Due (R)</label><input id="newSubDue" type="number" readonly></div>
-<div><label>💰 Subscription Paid (R)</label><input id="newSubPaid" type="number" placeholder="e.g. 500" value="0"></div>
-</div>
-<label>👤 Contact Person</label><input id="newContact" placeholder="e.g. MRS DUBE — PRINCIPAL">
-<label>📱 Contact Phone / WhatsApp</label><input id="newPhone" placeholder="e.g. 0821234567">
-<label>📝 Notes</label><input id="newNotes" placeholder="e.g. Paid via EFT — Receipt 123" style="text-transform:none">
-<button class="btn btn-purple btn-full" onclick="addSubscription()">➕ CREATE SUBSCRIPTION →</button>
-<div id="addMsg"></div>
-</div></div>
-
-<!-- PAYMENTS -->
-<div id="tab-payments" class="tab"><div class="card">
-<h2>🧾 Record Subscription Payment — Renew / Pay Setup</h2>
-<div class="info">Pick subscription → Type amount → Method → <b>RECORD PAYMENT</b>. If you click <b>RENEW</b>, End Date extends by 1 month (Monthly) or 12 months (Yearly) and Sub Paid resets to R0 for new period. If payment covers full owe, school is <b>auto-unsuspended</b>.</div>
-<div class="row">
-<div><label>🏫 Subscription *</label><select id="paySub"><option value="">-- PICK SUBSCRIPTION * --</option></select></div>
-<div><label>💰 Amount Paid (R) *</label><input id="payAmount" type="number" placeholder="e.g. 500"></div>
-<div><label>💰 What Is This For?</label><select id="payFor"><option value="Subscription">💰 SUBSCRIPTION</option><option value="Setup">🔧 SETUP FEE</option><option value="Both">💰 SETUP + SUBSCRIPTION</option></select></div>
-<div><label>🧾 Method</label><select id="payMethod"><option value="EFT">🏦 EFT / BANK</option><option value="CASH">💵 CASH</option><option value="CARD">💳 CARD</option><option value="DEBIT ORDER">🔁 DEBIT ORDER</option></select></div>
-</div>
-<label>🧾 Receipt No. / Reference</label><input id="payRef" placeholder="e.g. EFT REF 12345" style="text-transform:none">
-<div class="row"><button class="btn btn-teal" style="flex:1" onclick="recordSubPayment()">💰 RECORD PAYMENT →</button><button class="btn btn-gold" style="flex:1" onclick="renewSelected()">🔁 RENEW →</button><button class="btn btn-green" style="flex:1" onclick="unsuspendSelected()">✅ UNSUSPEND →</button></div>
-<div id="payMsg"></div>
-</div>
-<div class="card"><h2>🧾 All Subscription Payments</h2><div id="payInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Date</th><th>School</th><th>Plan</th><th>For</th><th>Amount</th><th>Method</th><th>Receipt</th></tr></thead><tbody id="payTable"></tbody></table></div></div>
-</div>
-
-<!-- REVENUE -->
-<div id="tab-revenue" class="tab"><div class="card">
-<h2>📊 Revenue Report</h2>
-<div class="row no-print"><button class="btn btn-gold" style="flex:1" onclick="window.print()">🖨️ PRINT REVENUE</button><button class="btn btn-grey" style="flex:1" onclick="renderRevenue()">🔄 REFRESH</button></div>
-<div id="revSummary" class="info">Loading...</div>
-<h2 style="margin-top:16px">💰 Revenue By Plan</h2><div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>Plan</th><th>Schools</th><th>Setup Due</th><th>Setup Paid</th><th>Sub Due</th><th>Sub Paid</th><th>Total Due</th><th>Total Paid</th><th>Outstanding</th></tr></thead><tbody id="revPlanTable"></tbody></table></div>
-<h2 style="margin-top:16px">🏫 Revenue By School</h2><div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>School</th><th>Plan</th><th>Pay Type</th><th>Setup Due / Paid</th><th>Sub Due / Paid</th><th>Total Owe</th><th>Status</th></tr></thead><tbody id="revSchoolTable"></tbody></table></div>
-<h2 style="margin-top:16px">📅 Expected Monthly Revenue</h2><div id="revMonthly" class="info">Loading...</div>
-</div></div>
-
-<!-- SETTINGS -->
-<div id="tab-settings" class="tab"><div class="card">
-<h2>⚙️ Subscription Settings — Grace 7 Days + Auto-Suspend + Day 1 Reminder</h2>
-<div class="info"><b>Grace Period = Extra days after End Date where school can STILL login, but sees warning.</b><br>Example: Grace <b>7 days</b> → Ends 06 Dec → Can still login until 13 Dec → On 14 Dec → BLOCKED.<br>Grace 0 days → Blocked on End Date + 1 day.<br><b>Demo / Trial has NO grace</b> — Trial ends = Blocked immediately.<br><b>Day 1 Reminder:</b> On first day of grace only, school sees pop-up + alert saved for Super Admin (0780233263). Day 2-7: No reminder, quiet.</div>
-<label>🟡 Grace Period (Days) — After Expiry Before Blocking *</label><input id="graceDays" type="number" value="7" min="0" max="14" placeholder="e.g. 7">
-<div class="switch"><input type="checkbox" id="autoSuspendSettings" checked> <span>✅ Auto-Suspend ON — Auto-block expired schools on login / page load.</span></div>
-<label>📱 Super Admin WhatsApp Number — For Renew Messages (No + , No Spaces)</label><input id="adminWhatsapp" placeholder="e.g. 27780233263">
-<button class="btn btn-purple btn-full" onclick="saveSettings()">💾 SAVE SETTINGS →</button>
-<div id="settingsMsg"></div>
-<div class="info"><b>How Auto-Suspend Works:</b><br>1. <b>Login Check (index.html):</b> Teacher / Principal / Librarian tries to login → System checks subscription for their school → If EXPIRED + Grace 7 days ended OR SUSPENDED → Login BLOCKED → Shows WhatsApp Renew button to 0780233263.<br>2. <b>Page Check (nav.js guardPage):</b> If teacher is already logged in and subscription expires while they are using it → Next page they open → Logged out → Back to login.<br>3. <b>Super Admin BYPASSES</b> — Can always login to renew.<br>4. <b>Renew</b> → End extends + Unsuspends automatically → School can login again.<br>5. <b>Grace Day 1:</b> First day of grace → School sees reminder + Alert saved to Firebase <b>graceAlerts</b> → Super Admin sees it on Super Admin Dashboard + Subscriptions top card → 1-click WhatsApp to school.</div>
-</div></div>
+<div class="card"><h2>⚙️ Subscription Settings — Grace Days — Super Admin Only</h2><label>Grace Days After Expiry (Default 7)</label><input id="graceDaysInput" type="number" value="7" min="0" max="30"><button class="btn btn-green btn-full" onclick="saveGraceDays()">💾 SAVE GRACE DAYS →</button><div id="graceMsg"></div></div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
-const ADMIN_WHATSAPP='27780233263'; // 0780233263
+const ADMIN_WHATSAPP='27780233263';
 function toCaps(s){return String(s||'').trim().toUpperCase();}
-function fmtR(n){return 'R'+Math.round(n||0).toLocaleString('en-ZA');}
 function fmtDate(ts){if(!ts) return '—';return new Date(ts).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});}
+function fmtR(n){return 'R'+Math.round(n||0).toLocaleString('en-ZA');}
 let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-let schools=[],subs=[],subPayments=[];
+let isSuper=user?.role==='Super Admin';
+let mySchoolId=user?.schoolId||'WHS';
+let schools=[],subs=[];
 let settings={graceDays:7,autoSuspend:true,adminWhatsapp:ADMIN_WHATSAPP};
 try{let s=JSON.parse(localStorage.getItem('makhanani_sub_settings')||'{}');settings={...settings,...s};}catch(e){}
-const PLANS={DEMO:{setup:0,monthly:0,yearly:0,label:'DEMO — FREE'},STARTER:{setup:3000,monthly:350,yearly:4500,label:'STARTER'},STANDARD:{setup:4500,monthly:500,yearly:7500,label:'STANDARD'},PREMIUM:{setup:5500,monthly:600,yearly:9000,label:'PREMIUM'}};
-function showTab(t){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active'); if(t==='revenue') renderRevenue(); if(t==='settings') loadSettingsUI();}
-function calcEnd(startTs,payType,plan){let d=new Date(startTs);if(payType==='Trial'||plan==='DEMO') d.setDate(d.getDate()+7);else if(payType==='Yearly') d.setFullYear(d.getFullYear()+1);else d.setMonth(d.getMonth()+1);return d.getTime();}
-function graceEnd(sub){return sub.endDate + (settings.graceDays*24*60*60*1000);}
-function graceDayNum(sub){return Math.floor((Date.now()-sub.endDate)/(1000*60*60*24))+1;}
-function getStatus(sub){
-  if(sub.suspended) return 'SUSPENDED';
-  let now=Date.now();
-  if(sub.plan==='DEMO'||sub.payType==='Trial'){
-    if(sub.endDate<now) return 'EXPIRED';
-    return 'TRIAL';
-  }
-  if(sub.endDate>=now){
-    let daysLeft=Math.ceil((sub.endDate-now)/(1000*60*60*24));
-    if(daysLeft<=7) return 'EXPIRING';
-    return 'ACTIVE';
-  }
-  if(now<=graceEnd(sub)) return 'GRACE';
-  return 'EXPIRED';
-}
-function daysLeft(sub){return Math.ceil((sub.endDate-Date.now())/(1000*60*60*24));}
-function statusBadge(st){let cls=st==='ACTIVE'?'badge-active':st==='TRIAL'?'badge-trial':st==='EXPIRING'?'badge-expiring':st==='GRACE'?'badge-grace':st==='EXPIRED'?'badge-expired':'badge-suspended';return `<span class="badge ${cls}">${st}</span>`;}
-function loadSettingsUI(){document.getElementById('graceDays').value=settings.graceDays;document.getElementById('autoSuspendSettings').checked=settings.autoSuspend;document.getElementById('autoSuspendToggle').checked=settings.autoSuspend;document.getElementById('adminWhatsapp').value=settings.adminWhatsapp;}
-function saveSettings(){
-  let grace=parseInt(document.getElementById('graceDays').value||7);if(isNaN(grace)||grace<0) grace=0;if(grace>14) grace=14;
-  let auto=document.getElementById('autoSuspendSettings').checked;
-  let wa=document.getElementById('adminWhatsapp').value.trim()||settings.adminWhatsapp;
-  settings={graceDays:grace,autoSuspend:auto,adminWhatsapp:wa};
-  localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));
-  try{rtdb.ref('settings/subscriptions').set(settings);}catch(e){}
-  document.getElementById('settingsMsg').innerHTML=`<div class="ok">✅ Settings Saved: Grace <b>${grace} days</b> • Auto-Suspend <b>${auto?'ON':'OFF'}</b> • WhatsApp <b>${wa}</b> • Day 1 Reminder: <b>ON</b></div>`;
-  document.getElementById('autoSuspendToggle').checked=auto;
-  renderList();
-}
-function saveSettingsFromToggle(){
-  let auto=document.getElementById('autoSuspendToggle').checked;
-  settings.autoSuspend=auto;
-  localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));
-  try{rtdb.ref('settings/subscriptions').set(settings);}catch(e){}
-  renderList();
-}
-function onPlanChange(){
-  let plan=document.getElementById('newPlan').value;
-  if(plan==='DEMO') document.getElementById('newPayType').value='Trial';
-  else if(document.getElementById('newPayType').value==='Trial') document.getElementById('newPayType').value='Monthly';
-  let pay=document.getElementById('newPayType').value;let p=PLANS[plan]||PLANS.STANDARD;
-  let setup=p.setup;let subAmt=pay==='Yearly'?p.yearly:pay==='Trial'?0:p.monthly;
-  document.getElementById('newSetupDue').value=setup;document.getElementById('newSubDue').value=subAmt;
-  document.getElementById('priceInfo').innerHTML=`Plan: <b>${plan}</b> — Pay: <b>${pay}</b> — Setup Due: <b>${fmtR(setup)}</b> — Subscription Due: <b>${fmtR(subAmt)}</b> ${pay==='Yearly'?'(per year)':pay==='Trial'?'(FREE 7 days, NO grace)':'(per month)'} — Grace: <b>${settings.graceDays} days</b> (Trial: No grace) — Grace Ends will be End + ${settings.graceDays} days`;
-  updateEndDate();
-}
-function updateEndDate(){let start=document.getElementById('newStart').value;if(!start) return;let startTs=new Date(start).getTime();let plan=document.getElementById('newPlan').value,pay=document.getElementById('newPayType').value;let end=calcEnd(startTs,pay,plan);document.getElementById('newEnd').value=new Date(end).toISOString().split('T')[0];}
-document.addEventListener('change',e=>{if(e.target.id==='newStart') updateEndDate();});
+function graceEndFor(sub){return sub.endDate + ((settings.graceDays??7)*24*60*60*1000);}
+function getSubStatus(sub){ if(!sub) return 'NO SUBSCRIPTION'; if(sub.suspended) return 'SUSPENDED'; let now=Date.now(); if(sub.plan==='DEMO'||sub.payType==='Trial'){ if(sub.endDate<now) return 'EXPIRED'; return 'TRIAL'; } if(sub.endDate>=now){ let dl=Math.ceil((sub.endDate-now)/(1000*60*60*24)); if(dl<=7) return 'EXPIRING'; return 'ACTIVE'; } if(now<=graceEndFor(sub)) return 'GRACE'; return 'EXPIRED'; }
+function statusBadge(st){let cls=st==='ACTIVE'?'badge-active':st==='TRIAL'?'badge-trial':st==='EXPIRING'?'badge-expiring':st==='GRACE'?'badge-grace':st==='EXPIRED'?'badge-expired':st==='SUSPENDED'?'badge-suspended':'badge-active';return `<span class="badge ${cls}">${st}</span>`;}
+function amountOwe(sub){return Math.max(0,((sub.setupDue||0)-(sub.setupPaid||0))+((sub.subDue||0)-(sub.subPaid||0)));}
 
-// ===== GRACE DAY 1 ALERTS FOR SUPER ADMIN =====
-async function loadGraceAlerts(){
-  let alerts=[]; try{let snap=await rtdb.ref('graceAlerts').once('value');alerts=Object.entries(snap.val()||{}).map(([id,v])=>({id,...v}));}catch(e){}
-  let today=new Date().toDateString();
-  let todayAlerts=alerts.filter(a=>new Date(a.createdAt).toDateString()===today);
-  let unseen=alerts.filter(a=>!a.seen);
-  let card=document.getElementById('graceAlertCard'); if(!card) return;
-  if(!todayAlerts.length && !unseen.length){card.style.display='none';return;}
-  card.style.display='block';
-  let show=todayAlerts.length?todayAlerts:unseen.slice(-5);
-  document.getElementById('graceAlertList').innerHTML=show.map(a=>{
-    let owe=a.amountOwe||0;
-    let phone=String(a.phone||'').replace(/\D/g,'');
-    let waMsg=`Hello ${(a.contact||a.schoolName)}! Grace Day 1 Reminder — Your ${a.plan} subscription expired on ${fmtDate(a.endDate)}. Grace ends ${fmtDate(a.graceEnds)}. Amount Owe: ${fmtR(owe)}. Please pay today to avoid suspension. — Makhanani LTSM 0780233263`;
-    return `<div class="grace"><b>🟡 GRACE DAY 1 — ${toCaps(a.schoolName||a.schoolId)}</b> (${a.schoolId}) — Plan: <b>${a.plan} — ${a.payType}</b><br>Expired: <b>${fmtDate(a.endDate)}</b> — Grace Ends: <b>${fmtDate(a.graceEnds)}</b> — Amount Owe: <b>${fmtR(owe)}</b><br>Contact: <b>${toCaps(a.contact||'—')} — ${a.phone||'—'}</b> — Triggered by login: <b>${a.triggeredBy||'—'}</b> — Time: <b>${new Date(a.createdAt).toLocaleTimeString('en-ZA')}</b><br><button class="btn btn-green" style="margin-top:8px" onclick="window.open('https://wa.me/${phone}?text=${encodeURIComponent(waMsg)}','_blank')">📱 WHATSAPP SCHOOL →</button> <button class="btn btn-grey" style="margin-top:8px" onclick="markGraceSeen('${a.id}')">✅ MARK SEEN</button></div>`;
-  }).join('') + `<div style="font-size:12px;text-align:center;margin-top:6px">${todayAlerts.length?`Showing <b>${todayAlerts.length}</b> Grace Day 1 alert(s) for today.`:`No new alerts today — Showing <b>${show.length}</b> unseen older alert(s).`}</div>`;
+// ===== PICK OR SEARCH — CREATE FORM =====
+function filterSchools(){
+  let q=document.getElementById('schoolSearch').value.trim().toUpperCase();
+  let sel=document.getElementById('subSchool');
+  document.getElementById('clearSearchBtn').style.display=q?'block':'none';
+  let list = !q ? schools : schools.filter(s=> (toCaps(s.schoolName)+' '+toCaps(s.schoolId)+' '+(s.emis||'')).toUpperCase().split(/\s+/).join(' ').includes(q) || q.split(/\s+/).every(w=>(toCaps(s.schoolName)+' '+toCaps(s.schoolId)).toUpperCase().includes(w)) );
+  if(!isSuper) list = list.filter(s=>s.schoolId===mySchoolId);
+  let cur=sel.value;
+  sel.innerHTML='<option value="">-- PICK SCHOOL --</option>'+list.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('');
+  if(cur && list.some(s=>s.schoolId===cur)) sel.value=cur; else sel.value='';
+  let c=document.getElementById('schoolCount');
+  if(!q) c.textContent=`Showing ${list.length} school(s) — Type to search`;
+  else if(list.length===0) c.textContent=`❌ No school for "${document.getElementById('schoolSearch').value}" — Try WHS / WORDSWORTH`;
+  else c.textContent=`✅ Found ${list.length} school(s) for "${document.getElementById('schoolSearch').value}"`;
+  if(q && list.length===1) sel.value=list[0].schoolId;
 }
-async function markGraceSeen(id){try{await rtdb.ref('graceAlerts/'+id).update({seen:true});}catch(e){}loadGraceAlerts();}
-async function markAllGraceSeen(){try{let snap=await rtdb.ref('graceAlerts').once('value');for(let [id,v] of Object.entries(snap.val()||{})){if(!v.seen) await rtdb.ref('graceAlerts/'+id).update({seen:true});}}catch(e){}loadGraceAlerts();}
-
+function clearSchoolSearch(){ document.getElementById('schoolSearch').value=''; document.getElementById('clearSearchBtn').style.display='none'; filterSchools(); }
+function filterFilterSchools(){
+  let q=document.getElementById('filterSchoolSearch').value.trim().toUpperCase();
+  let sel=document.getElementById('filterSchool');
+  let list = !q ? schools : schools.filter(s=> (toCaps(s.schoolName)+' '+toCaps(s.schoolId)).toUpperCase().includes(q) );
+  if(!isSuper) list = list.filter(s=>s.schoolId===mySchoolId);
+  let cur=sel.value;
+  sel.innerHTML='<option value="">🏫 ALL SCHOOLS</option>'+list.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('');
+  if(cur && list.some(s=>s.schoolId===cur)) sel.value=cur;
+  if(q && list.length===1) sel.value=list[0].schoolId;
+  renderSubs();
+}
 async function loadData(){
-  try{let s=await rtdb.ref('settings/subscriptions').once('value');if(s.val()) settings={...settings,...s.val()};localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));}catch(e){}
-  try{let sc=await rtdb.ref('schools').once('value');schools=Object.entries(sc.val()||{}).map(([id,v])=>({id,...v,schoolName:toCaps(v.schoolName||v.name||''),schoolId:toCaps(v.schoolId||id)}));}catch(e){}
-  if(schools.length===0) schools=[{id:'WHS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',prefix:'WHS',emis:'700310854'},{id:'MHS',schoolId:'MHS',schoolName:'MAKHANANI HIGH SCHOOL (MHS)',prefix:'MHS',emis:'700310855'}];
-  try{let sb=await rtdb.ref('subscriptions').once('value');subs=Object.entries(sb.val()||{}).map(([id,v])=>({id,...v,schoolName:toCaps(v.schoolName||'')}));}catch(e){subs=[];}
-  try{let py=await rtdb.ref('subscriptionPayments').once('value');subPayments=Object.entries(py.val()||{}).map(([id,v])=>({id,...v}));}catch(e){subPayments=[];}
-  if(subs.length===0){
-    let d1=new Date();d1.setDate(d1.getDate()-10);let d2=new Date();d2.setDate(d2.getDate()-2);
-    subs=[
-      {id:'1',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',plan:'STANDARD',payType:'Monthly',startDate:d1.getTime(),endDate:calcEnd(d1.getTime(),'Monthly','STANDARD'),setupDue:4500,setupPaid:4500,subDue:500,subPaid:500,contact:'MRS DUBE',phone:'0821234567',notes:'',suspended:false},
-      {id:'2',schoolId:'MHS',schoolName:'MAKHANANI HIGH SCHOOL (MHS)',plan:'DEMO',payType:'Trial',startDate:d2.getTime(),endDate:calcEnd(d2.getTime(),'Trial','DEMO'),setupDue:0,setupPaid:0,subDue:0,subPaid:0,contact:'MR TEST',phone:'0827654321',notes:'7 DAYS TRIAL',suspended:false},
-      {id:'3',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',plan:'PREMIUM',payType:'Yearly',startDate:new Date('2025-01-01').getTime(),endDate:new Date('2025-12-31').getTime(),setupDue:5500,setupPaid:3000,subDue:9000,subPaid:0,contact:'PRINCIPAL',phone:'0821112222',notes:'OWES SETUP + YEARLY',suspended:false},
-    ];
-    subPayments=[{id:'1',subId:'1',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',plan:'STANDARD',for:'Subscription',amount:500,method:'EFT',receipt:'EFT 123',createdAt:Date.now()}];
+  try{let st=await rtdb.ref('settings/subscriptions').once('value');if(st.val()){settings={...settings,...st.val()};localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));}}catch(e){}
+  try{let sc=await rtdb.ref('schools').once('value');schools=Object.entries(sc.val()||{}).map(([id,v])=>({id,...v,schoolName:toCaps(v.schoolName||v.name||''),schoolId:toCaps(v.schoolId||id),emis:v.emis||''}));}catch(e){}
+  if(schools.length===0) schools=[{id:'WHS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',emis:'700310854'},{id:'MHS',schoolId:'MHS',schoolName:'MAKHANANI HIGH SCHOOL (MHS)',emis:''}];
+  try{let sb=await rtdb.ref('subscriptions').once('value');subs=Object.entries(sb.val()||{}).map(([id,v])=>({id,...v}));}catch(e){}
+  if(subs.length===0){ let d1=new Date();d1.setDate(d1.getDate()-10);let end=new Date(d1);end.setMonth(end.getMonth()+1); subs=[{id:'s1',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',plan:'STANDARD',payType:'Monthly',startDate:d1.getTime(),endDate:end.getTime(),setupDue:4500,setupPaid:4500,subDue:500,subPaid:500,suspended:false}]; }
+  document.getElementById('graceLabel').textContent=settings.graceDays;
+  document.getElementById('graceDaysInput').value=settings.graceDays;
+  document.getElementById('roleInfo').innerHTML=`💰 <b>${toCaps(user?.name||'')}</b> — Role: <b>${toCaps(user?.role||'')}</b> — School: <b>${isSuper?'ALL SCHOOLS':toCaps(mySchoolId)}</b> — Grace: <b>${settings.graceDays} days</b>`;
+  document.getElementById('createInfo').innerHTML=isSuper
+    ? `<b>Super Admin CAN:</b> ✅ Create / Renew / Suspend any school's subscription — Use Search to find school fast.`
+    : `<b>${toCaps(user?.role||'')} — View Only:</b> You can view your school's subscription. Only Super Admin (0780233263) can change it. — Create form hidden.`;
+  if(!isSuper){
+    document.getElementById('createCard').style.display='none';
+    let mine=schools.find(s=>s.schoolId===mySchoolId);
+    document.getElementById('filterSchoolSearch').value=mine?mine.schoolName:'';
+    document.getElementById('filterSchoolSearch').disabled=true;
   }
-  document.getElementById('roleInfo').innerHTML=`👑 <b>${toCaps(user?.name||'SUPER ADMIN')}</b> — Role: <b>SUPER ADMIN</b> — Subscriptions for <b>ALL SCHOOLS</b> — Grace: <b>${settings.graceDays} days</b> • Auto-Suspend: <b>${settings.autoSuspend?'ON':'OFF'}</b> • Day 1 Reminder: <b>ON</b> • WhatsApp: <b>0780233263</b>`;
-  let schoolOpts=schools.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('');
-  document.getElementById('filterSchool').innerHTML='<option value="">🏫 ALL SCHOOLS</option>'+schoolOpts;
-  document.getElementById('newSchool').innerHTML='<option value="">-- PICK SCHOOL * --</option>'+schoolOpts;
-  document.getElementById('paySub').innerHTML='<option value="">-- PICK SUBSCRIPTION * --</option>'+subs.map(s=>`<option value="${s.id}">${s.schoolName} — ${s.plan} — ${s.payType} — Ends ${fmtDate(s.endDate)}</option>`).join('');
-  document.getElementById('newStart').value=new Date().toISOString().split('T')[0];
-  loadSettingsUI();onPlanChange();renderAll();loadGraceAlerts();
+  filterSchools(); filterFilterSchools();
+  if(!isSuper) document.getElementById('filterSchool').value=mySchoolId;
+  renderSubs();
 }
-function renderAll(){renderList();renderPayments();renderRevenue();}
-function renderList(){
-  let scFilter=document.getElementById('filterSchool').value,planFilter=document.getElementById('filterPlan').value,statusFilter=document.getElementById('filterStatus').value,search=toCaps(document.getElementById('searchSub').value);
+function renderSubs(){
+  let sc=document.getElementById('filterSchool').value;
   let list=[...subs];
-  if(scFilter) list=list.filter(s=>s.schoolId===scFilter);
-  if(planFilter) list=list.filter(s=>s.plan===planFilter);
-  if(search) list=list.filter(s=>toCaps(s.schoolName).includes(search)||toCaps(s.contact).includes(search)||toCaps(s.schoolId).includes(search));
-  if(statusFilter) list=list.filter(s=>getStatus(s)===statusFilter);
-  let active=subs.filter(s=>getStatus(s)==='ACTIVE').length;let trial=subs.filter(s=>getStatus(s)==='TRIAL').length;let expiring=subs.filter(s=>getStatus(s)==='EXPIRING').length;let expired=subs.filter(s=>getStatus(s)==='EXPIRED'||getStatus(s)==='SUSPENDED').length;let grace=subs.filter(s=>getStatus(s)==='GRACE').length;
-  document.getElementById('kpiTotal').textContent=subs.length;document.getElementById('kpiActive').textContent=active;document.getElementById('kpiTrial').textContent=trial;document.getElementById('kpiExpiring').textContent=expiring;document.getElementById('kpiExpired').textContent=expired;
-  let monthlyRev=subs.filter(s=>s.payType==='Monthly'&&!s.suspended).reduce((sum,s)=>sum+parseFloat(s.subDue||0),0);
-  let yearlyRev=subs.filter(s=>s.payType==='Yearly'&&!s.suspended).reduce((sum,s)=>sum+parseFloat(s.subDue||0),0);
-  let collected=subs.reduce((sum,s)=>sum+parseFloat(s.setupPaid||0)+parseFloat(s.subPaid||0),0);
-  let due=subs.reduce((sum,s)=>sum+parseFloat(s.setupDue||0)+parseFloat(s.subDue||0),0);
-  let outstanding=Math.max(0,due-collected);
-  document.getElementById('kpiMonthlyRev').textContent=fmtR(monthlyRev);document.getElementById('kpiYearlyRev').textContent=fmtR(yearlyRev);document.getElementById('kpiCollected').textContent=fmtR(collected);document.getElementById('kpiOutstanding').textContent=fmtR(outstanding);
-  document.getElementById('listInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${subs.length}</b> — Active <b>${active}</b> • Trial <b>${trial}</b> • Grace <b>${grace}</b> • Expiring <b>${expiring}</b> • Expired/Suspended <b>${expired}</b><br>Monthly: <b>${fmtR(monthlyRev)} / mo</b> • Yearly: <b>${fmtR(yearlyRev)} / yr</b> • Collected: <b>${fmtR(collected)}</b> • Outstanding: <b>${fmtR(outstanding)}</b> • Grace: <b>${settings.graceDays} days</b> • Auto-Suspend: <b>${settings.autoSuspend?'ON':'OFF'}</b> • Day 1 Reminder: <b>ON</b> • WhatsApp: <b>0780233263</b>`;
-  list.sort((a,b)=>a.endDate-b.endDate);
-  document.getElementById('subTable').innerHTML=list.length?list.map(s=>{
-    let st=getStatus(s);let dl=daysLeft(s);
-    let setupOwe=parseFloat(s.setupDue||0)-parseFloat(s.setupPaid||0);let subOwe=parseFloat(s.subDue||0)-parseFloat(s.subPaid||0);let totalOwe=Math.max(0,setupOwe+subOwe);let totalPaid=parseFloat(s.setupPaid||0)+parseFloat(s.subPaid||0);
-    let dlText=st==='GRACE'?`<b style="color:#d97706">🟡 GRACE DAY ${graceDayNum(s)} — ${Math.ceil((graceEnd(s)-Date.now())/(1000*60*60*24))} days grace left</b>`:dl<0?`<b style="color:#dc2626">${dl} days (OVERDUE)</b>`:dl===0?`<b style="color:#dc2626">TODAY</b>`:dl<=7?`<b style="color:#d97706">${dl} days left</b>`:`${dl} days`;
-    let isGraceDay1 = st==='GRACE' && graceDayNum(s)===1;
-    let actionBtns=`<button class="btn btn-teal" onclick="renewSub('${s.id}')">🔁 RENEW</button> `+(isGraceDay1?`<button class="btn btn-gold" onclick="remindSub('${s.id}')">📱 DAY 1 REMIND →</button> `:`<button class="btn btn-grey" onclick="remindSub('${s.id}')">📱 REMIND</button> `)+`<button class="btn ${s.suspended?'btn-green':'btn-red'}" onclick="toggleSuspend('${s.id}')">${s.suspended?'✅ UNSUSPEND':'⛔ SUSPEND'}</button>`;
-    return `<tr><td><b>${s.schoolName}</b><br><small>${s.schoolId} • ${toCaps(s.contact||'')}</small></td><td><b>${s.plan}</b></td><td>${s.payType}</td><td>${fmtDate(s.startDate)}</td><td>${fmtDate(s.endDate)}</td><td>${st==='GRACE'||st==='EXPIRED'?fmtDate(graceEnd(s)):'—'}</td><td>${dlText}</td><td>${statusBadge(st)}</td><td>${fmtR(s.setupDue)}<br><small>Paid: ${fmtR(s.setupPaid)}</small></td><td>${fmtR(s.subDue)}<br><small>Paid: ${fmtR(s.subPaid)}</small></td><td>Paid: <b>${fmtR(totalPaid)}</b><br>Owe: <b style="color:${totalOwe>0?'#dc2626':'#16a34a'}">${fmtR(totalOwe)}</b></td><td>${actionBtns}</td></tr>`;
-  }).join(''):`<tr><td colspan="12" style="text-align:center;padding:20px">No subscriptions for this filter.</td></tr>`;
-  document.getElementById('paySub').innerHTML='<option value="">-- PICK SUBSCRIPTION * --</option>'+subs.map(s=>`<option value="${s.id}">${s.schoolName} — ${s.plan} — ${s.payType} — Ends ${fmtDate(s.endDate)} — Owes ${fmtR(Math.max(0,(parseFloat(s.setupDue||0)-parseFloat(s.setupPaid||0))+(parseFloat(s.subDue||0)-parseFloat(s.subPaid||0))))}</option>`).join('');
+  if(!isSuper) list=list.filter(s=>s.schoolId===mySchoolId);
+  if(sc) list=list.filter(s=>s.schoolId===sc);
+  document.getElementById('subsInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${subs.length}</b> subscriptions — Grace <b>${settings.graceDays} days</b>`;
+  list.sort((a,b)=>(b.endDate||0)-(a.endDate||0));
+  document.getElementById('subsTable').innerHTML=list.length?list.map(s=>{
+    let st=getSubStatus(s);
+    return `<tr><td><b>${s.schoolId}</b><br><small>${toCaps(s.schoolName||'')}</small></td><td><b>${s.plan}</b></td><td>${s.payType}</td><td>${fmtDate(s.startDate)}</td><td>${fmtDate(s.endDate)}</td><td>${fmtDate(graceEndFor(s))}</td><td>${statusBadge(st)}</td><td><b>${fmtR(amountOwe(s))}</b></td><td>${isSuper?`<button class="btn btn-gold" onclick="renewSub('${s.schoolId}')">💰 RENEW</button> <button class="btn btn-red" onclick="suspendSub('${s.id}')">⛔ SUSPEND</button> <button class="btn btn-teal" onclick="unsuspendSub('${s.id}')">✅ UNSUSPEND</button>`:'View only'}</td></tr>`;
+  }).join(''):`<tr><td colspan="9" style="text-align:center;padding:20px">No subscriptions for this filter.</td></tr>`;
 }
-async function addSubscription(){
-  let schoolId=document.getElementById('newSchool').value,plan=document.getElementById('newPlan').value,payType=document.getElementById('newPayType').value,startVal=document.getElementById('newStart').value,msg=document.getElementById('addMsg');
-  if(!schoolId){msg.innerHTML='<div class="warn">⚠️ Pick School first.</div>';return;}
-  if(!startVal){msg.innerHTML='<div class="warn">⚠️ Pick Start Date.</div>';return;}
-  let sc=schools.find(s=>s.schoolId===schoolId);let startDate=new Date(startVal).getTime();let endDate=calcEnd(startDate,payType,plan);
-  let rec={schoolId,schoolName:sc?sc.schoolName:schoolId,plan,payType,startDate,endDate,setupDue:parseFloat(document.getElementById('newSetupDue').value||0)||0,setupPaid:parseFloat(document.getElementById('newSetupPaid').value||0)||0,subDue:parseFloat(document.getElementById('newSubDue').value||0)||0,subPaid:parseFloat(document.getElementById('newSubPaid').value||0)||0,contact:toCaps(document.getElementById('newContact').value),phone:document.getElementById('newPhone').value.trim(),notes:document.getElementById('newNotes').value.trim(),suspended:false,createdAt:Date.now()};
-  try{let ref=rtdb.ref('subscriptions').push();await ref.set(rec);rec.id=ref.key;}catch(e){rec.id='tmp'+Date.now();}
-  subs.push(rec);
-  try{await rtdb.ref('schools/'+schoolId).update({plan,payType,setupPaid:rec.setupPaid});}catch(e){}
-  let sc2=schools.find(s=>s.schoolId===schoolId);if(sc2){sc2.plan=plan;sc2.payType=payType;sc2.setupPaid=rec.setupPaid;}
-  msg.innerHTML=`<div class="ok">✅ Created: <b>${rec.schoolName} — ${plan} — ${payType}</b><br>Start: <b>${fmtDate(startDate)}</b> — End: <b>${fmtDate(endDate)}</b> — Grace Ends: <b>${fmtDate(graceEnd(rec))}</b> — Setup: <b>${fmtR(rec.setupDue)}</b> — Sub: <b>${fmtR(rec.subDue)}</b></div>`;
-  renderAll();setTimeout(()=>showTab('list'),800);
+function renewSub(schoolId){
+  let s=schools.find(x=>x.schoolId===schoolId);
+  document.getElementById('schoolSearch').value=s?s.schoolName:'';
+  filterSchools();
+  document.getElementById('subSchool').value=schoolId;
+  let sub=subs.filter(x=>x.schoolId===schoolId).sort((a,b)=>(b.endDate||0)-(a.endDate||0))[0];
+  if(sub){ document.getElementById('subPlan').value=sub.plan||'STANDARD'; document.getElementById('subPayType').value=sub.payType||'Monthly'; document.getElementById('subSetupDue').value=sub.setupDue||4500; document.getElementById('subSetupPaid').value=sub.setupPaid||4500; document.getElementById('subSubDue').value=sub.subDue||500; document.getElementById('subSubPaid').value=sub.subPaid||500; }
+  let today=new Date();let end=new Date(today);end.setMonth(end.getMonth()+1);
+  document.getElementById('subStart').value=today.toISOString().slice(0,10);
+  document.getElementById('subEnd').value=end.toISOString().slice(0,10);
+  document.getElementById('subMsg').innerHTML=`<div class="info">Renewing <b>${schoolId}</b> — Start today, End in 1 month — Edit then tap SAVE.</div>`;
+  window.scrollTo(0,0);
 }
-async function renewSub(id){
-  let s=subs.find(x=>String(x.id)===String(id));if(!s) return;
-  let base=Math.max(s.endDate,Date.now());let newEnd=calcEnd(base,s.payType,s.plan);let oldEnd=s.endDate;
-  s.endDate=newEnd;s.subPaid=0;s.suspended=false;
-  try{await rtdb.ref('subscriptions/'+id).update({endDate:newEnd,subPaid:0,suspended:false});}catch(e){}
-  alert(`✅ Renewed: ${s.schoolName} — ${s.plan} — ${s.payType}\nOld End: ${fmtDate(oldEnd)}\nNew End: ${fmtDate(newEnd)}\nGrace Ends: ${fmtDate(graceEnd(s))}\nSub Paid reset to R0 — Record new payment.`);
-  renderAll();
+async function saveSub(){
+  if(!isSuper){document.getElementById('subMsg').innerHTML='<div class="warn">⛔ Only Super Admin can change subscriptions.</div>';return;}
+  let schoolId=document.getElementById('subSchool').value;
+  if(!schoolId){ let q=document.getElementById('schoolSearch').value.trim().toUpperCase(); if(q){ let m=schools.find(s=>toCaps(s.schoolId)===q||toCaps(s.schoolName).includes(q)); if(m) schoolId=m.schoolId; } }
+  let plan=document.getElementById('subPlan').value;
+  let payType=document.getElementById('subPayType').value;
+  let start=document.getElementById('subStart').value;
+  let end=document.getElementById('subEnd').value;
+  let setupDue=parseFloat(document.getElementById('subSetupDue').value)||0;
+  let setupPaid=parseFloat(document.getElementById('subSetupPaid').value)||0;
+  let subDue=parseFloat(document.getElementById('subSubDue').value)||0;
+  let subPaid=parseFloat(document.getElementById('subSubPaid').value)||0;
+  let msg=document.getElementById('subMsg');
+  if(!schoolId){msg.innerHTML='<div class="warn">⚠️ Pick School — Type in search (e.g. WORDSWORTH) then pick from dropdown.</div>';return;}
+  if(!start||!end){msg.innerHTML='<div class="warn">⚠️ Pick Start + End dates.</div>';return;}
+  let sc=schools.find(s=>s.schoolId===schoolId);
+  let rec={schoolId,schoolName:sc?sc.schoolName:schoolId,plan,payType,startDate:new Date(start).getTime(),endDate:new Date(end).getTime(),setupDue,setupPaid,subDue,subPaid,suspended:false,updatedAt:Date.now(),updatedBy:user?.email||''};
+  let existing=subs.filter(s=>s.schoolId===schoolId).sort((a,b)=>(b.endDate||0)-(a.endDate||0))[0];
+  try{ if(existing && existing.id && !existing.id.startsWith('s1')){ await rtdb.ref('subscriptions/'+existing.id).set(rec); rec.id=existing.id; } else { let ref=rtdb.ref('subscriptions').push(); await ref.set(rec); rec.id=ref.key; } }catch(e){ rec.id=existing?existing.id:'tmp'+Date.now(); }
+  if(existing) subs=subs.map(s=>s.id===existing.id?rec:s); else subs.push(rec);
+  msg.innerHTML=`<div class="ok">✅ Saved: <b>${schoolId}</b> — ${plan} — ${payType} — ${fmtDate(rec.startDate)} to ${fmtDate(rec.endDate)} — Grace Ends ${fmtDate(graceEndFor(rec))} — Owe ${fmtR(amountOwe(rec))}</div>`;
+  loadData();
 }
-async function renewSelected(){let id=document.getElementById('paySub').value;if(!id){document.getElementById('payMsg').innerHTML='<div class="warn">⚠️ Pick Subscription first.</div>';return;}await renewSub(id);document.getElementById('payMsg').innerHTML='<div class="ok">✅ Renewed.</div>';}
-async function toggleSuspend(id){let s=subs.find(x=>String(x.id)===String(id));if(!s) return;s.suspended=!s.suspended;try{await rtdb.ref('subscriptions/'+id).update({suspended:s.suspended});}catch(e){}renderAll();}
-async function unsuspendSelected(){let id=document.getElementById('paySub').value;if(!id){document.getElementById('payMsg').innerHTML='<div class="warn">⚠️ Pick Subscription first.</div>';return;}let s=subs.find(x=>String(x.id)===String(id));if(!s) return;s.suspended=false;try{await rtdb.ref('subscriptions/'+id).update({suspended:false});}catch(e){}document.getElementById('payMsg').innerHTML='<div class="ok">✅ Unsuspended: <b>'+s.schoolName+'</b> — Can login again.</div>';renderAll();}
-function remindSub(id){
-  let s=subs.find(x=>String(x.id)===String(id));if(!s) return;
-  let owe=Math.max(0,(parseFloat(s.setupDue||0)-parseFloat(s.setupPaid||0))+(parseFloat(s.subDue||0)-parseFloat(s.subPaid||0)));
-  let st=getStatus(s);
-  let daysSinceEnd=graceDayNum(s);
-  let prefix = st==='GRACE' && daysSinceEnd===1 ? '🟡 GRACE DAY 1 REMINDER — ' : '';
-  let msg=prefix+`Hello ${s.contact||s.schoolName}! This is Makhanani LTSM.%0A%0AYour ${s.plan} subscription (${s.payType}) expired on ${fmtDate(s.endDate)} — Status: ${st} — Grace Ends: ${fmtDate(graceEnd(s))}%0A%0AAmount Owe: ${fmtR(owe)} (Setup Owe: ${fmtR(Math.max(0,parseFloat(s.setupDue||0)-parseFloat(s.setupPaid||0)))} + Sub Owe: ${fmtR(Math.max(0,parseFloat(s.subDue||0)-parseFloat(s.subPaid||0)))})%0A%0APlease pay today to avoid suspension. Contact: 0780233263. Thank you!`;
-  let phone=String(s.phone||'').replace(/\D/g,'');if(!phone){alert('⚠️ No phone for this school.');return;}
-  window.open('https://wa.me/'+phone+'?text='+msg,'_blank');
-}
-async function recordSubPayment(){
-  let subId=document.getElementById('paySub').value,amount=parseFloat(document.getElementById('payAmount').value||0),forWhat=document.getElementById('payFor').value,method=document.getElementById('payMethod').value,receipt=document.getElementById('payRef').value.trim(),msg=document.getElementById('payMsg');
-  if(!subId){msg.innerHTML='<div class="warn">⚠️ Pick Subscription first.</div>';return;}
-  if(!amount||amount<=0){msg.innerHTML='<div class="warn">⚠️ Type Amount Paid.</div>';return;}
-  let s=subs.find(x=>String(x.id)===String(subId));if(!s) return;
-  if(forWhat==='Setup') s.setupPaid=parseFloat(s.setupPaid||0)+amount;
-  else if(forWhat==='Subscription') s.subPaid=parseFloat(s.subPaid||0)+amount;
-  else{let setupOwe=Math.max(0,parseFloat(s.setupDue||0)-parseFloat(s.setupPaid||0));let toSetup=Math.min(amount,setupOwe);let toSub=amount-toSetup;s.setupPaid=parseFloat(s.setupPaid||0)+toSetup;s.subPaid=parseFloat(s.subPaid||0)+toSub;}
-  let totalOwe=Math.max(0,(parseFloat(s.setupDue||0)-parseFloat(s.setupPaid||0))+(parseFloat(s.subDue||0)-parseFloat(s.subPaid||0)));
-  let wasSuspended=s.suspended;
-  if(totalOwe===0) s.suspended=false;
-  try{await rtdb.ref('subscriptions/'+subId).update({setupPaid:s.setupPaid,subPaid:s.subPaid,suspended:s.suspended});}catch(e){}
-  let rec={subId:s.id,schoolId:s.schoolId,schoolName:s.schoolName,plan:s.plan,for:forWhat,amount,method,receipt,createdAt:Date.now()};
-  try{let ref=rtdb.ref('subscriptionPayments').push();await ref.set(rec);rec.id=ref.key;}catch(e){rec.id='tmp'+Date.now();}
-  subPayments.push(rec);
-  msg.innerHTML=`<div class="ok">✅ Payment Recorded: <b>${fmtR(amount)}</b> for <b>${s.schoolName} — ${s.plan}</b> — For: <b>${forWhat}</b> — Method: <b>${method}</b><br>Setup Paid: <b>${fmtR(s.setupPaid)} / ${fmtR(s.setupDue)}</b> • Sub Paid: <b>${fmtR(s.subPaid)} / ${fmtR(s.subDue)}</b>${wasSuspended&&!s.suspended?'<br>✅ <b>Auto-Unsuspended</b> — Fully paid — School can login again.':''}</div>`;
-  document.getElementById('payAmount').value='';document.getElementById('payRef').value='';renderAll();
-}
-function renderPayments(){
-  let pays=[...subPayments].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  document.getElementById('payInfo').innerHTML=`Showing <b>${pays.length}</b> payments — Total: <b>${fmtR(pays.reduce((sum,p)=>sum+parseFloat(p.amount||0),0))}</b>`;
-  document.getElementById('payTable').innerHTML=pays.length?pays.map(p=>`<tr><td>${fmtDate(p.createdAt)}</td><td><b>${toCaps(p.schoolName||'')}</b><br><small>${p.schoolId||''}</small></td><td><b>${p.plan||''}</b></td><td>${toCaps(p.for||'Subscription')}</td><td><b>${fmtR(p.amount)}</b></td><td>${toCaps(p.method||'')}</td><td>${p.receipt||'—'}</td></tr>`).join(''):`<tr><td colspan="7" style="text-align:center;padding:20px">No payments yet.</td></tr>`;
-}
-function renderRevenue(){
-  let totalDue=subs.reduce((sum,s)=>sum+parseFloat(s.setupDue||0)+parseFloat(s.subDue||0),0);
-  let totalPaid=subs.reduce((sum,s)=>sum+parseFloat(s.setupPaid||0)+parseFloat(s.subPaid||0),0);
-  let monthlyRev=subs.filter(s=>s.payType==='Monthly'&&!s.suspended).reduce((sum,s)=>sum+parseFloat(s.subDue||0),0);
-  let yearlyRev=subs.filter(s=>s.payType==='Yearly'&&!s.suspended).reduce((sum,s)=>sum+parseFloat(s.subDue||0),0);
-  document.getElementById('revSummary').innerHTML=`<b>Schools:</b> ${subs.length} • <b>Active:</b> ${subs.filter(s=>getStatus(s)==='ACTIVE').length} • <b>Trial:</b> ${subs.filter(s=>getStatus(s)==='TRIAL').length} • <b>Grace:</b> ${subs.filter(s=>getStatus(s)==='GRACE').length} • <b>Expired:</b> ${subs.filter(s=>getStatus(s)==='EXPIRED').length}<br><b>Total Due:</b> ${fmtR(totalDue)} • <b>Total Paid:</b> ${fmtR(totalPaid)} • <b>Outstanding:</b> ${fmtR(Math.max(0,totalDue-totalPaid))}<br><b>Monthly:</b> ${fmtR(monthlyRev)} / mo • <b>Yearly:</b> ${fmtR(yearlyRev)} / yr • <b>Grace:</b> ${settings.graceDays} days • <b>WhatsApp:</b> 0780233263`;
-  let plansList=['DEMO','STARTER','STANDARD','PREMIUM'];
-  document.getElementById('revPlanTable').innerHTML=plansList.map(p=>{let list=subs.filter(s=>s.plan===p);let setupDue=list.reduce((sum,s)=>sum+parseFloat(s.setupDue||0),0);let setupPaid=list.reduce((sum,s)=>sum+parseFloat(s.setupPaid||0),0);let subDue=list.reduce((sum,s)=>sum+parseFloat(s.subDue||0),0);let subPaid=list.reduce((sum,s)=>sum+parseFloat(s.subPaid||0),0);return `<tr><td><b>${p}</b></td><td>${list.length}</td><td>${fmtR(setupDue)}</td><td>${fmtR(setupPaid)}</td><td>${fmtR(subDue)}</td><td>${fmtR(subPaid)}</td><td>${fmtR(setupDue+subDue)}</td><td>${fmtR(setupPaid+subPaid)}</td><td><b style="color:#dc2626">${fmtR(Math.max(0,(setupDue+subDue)-(setupPaid+subPaid)))}</b></td></tr>`;}).join('');
-  document.getElementById('revSchoolTable').innerHTML=subs.map(s=>{let owe=Math.max(0,(parseFloat(s.setupDue||0)-parseFloat(s.setupPaid||0))+(parseFloat(s.subDue||0)-parseFloat(s.subPaid||0)));return `<tr><td><b>${s.schoolName}</b><br><small>${s.schoolId}</small></td><td><b>${s.plan}</b></td><td>${s.payType}</td><td>${fmtR(s.setupDue)} / ${fmtR(s.setupPaid)}</td><td>${fmtR(s.subDue)} / ${fmtR(s.subPaid)}</td><td><b style="color:${owe>0?'#dc2626':'#16a34a'}">${fmtR(owe)}</b></td><td>${statusBadge(getStatus(s))}</td></tr>`;}).join('');
-  document.getElementById('revMonthly').innerHTML=`If all <b>${subs.filter(s=>!s.suspended).length}</b> non-suspended schools pay, you get <b>${fmtR(monthlyRev)}</b> / month from Monthly + <b>${fmtR(yearlyRev)}</b> / year from Yearly.<br>Yearly / 12 = <b>${fmtR(yearlyRev/12)}</b> / month from Yearly.<br><b>Total expected per month:</b> <b>${fmtR(monthlyRev + yearlyRev/12)}</b> / month.`;
-}
-async function autoSuspendExpired(){
-  let now=Date.now();
-  let expired=subs.filter(s=>!s.suspended && getStatus(s)==='EXPIRED');
-  if(!expired.length){alert('✅ No expired subscriptions to suspend.\nAll active / in grace / trial.');return;}
-  if(!confirm('Suspend '+expired.length+' expired school(s)?\n\n'+expired.map(s=>s.schoolName+' — '+s.plan+' — Ended '+fmtDate(s.endDate)+' — Grace Ended '+fmtDate(graceEnd(s))).join('\n')+'\n\nThey will NOT be able to login until you renew them.')) return;
-  for(let s of expired){s.suspended=true;try{await rtdb.ref('subscriptions/'+s.id).update({suspended:true});}catch(e){}}
-  alert('⛔ Suspended '+expired.length+' school(s).\nThey cannot login until you renew them.\nTo unsuspend: Click UNSUSPEND or RENEW.');
-  renderAll();
+async function suspendSub(id){ if(!confirm('Suspend this subscription?')) return; try{await rtdb.ref('subscriptions/'+id).update({suspended:true});}catch(e){} let s=subs.find(x=>String(x.id)===String(id)); if(s) s.suspended=true; renderSubs(); }
+async function unsuspendSub(id){ try{await rtdb.ref('subscriptions/'+id).update({suspended:false});}catch(e){} let s=subs.find(x=>String(x.id)===String(id)); if(s) s.suspended=false; renderSubs(); }
+async function saveGraceDays(){
+  if(!isSuper){document.getElementById('graceMsg').innerHTML='<div class="warn">⛔ Only Super Admin can change Grace Days.</div>';return;}
+  let g=parseInt(document.getElementById('graceDaysInput').value);
+  if(isNaN(g)||g<0||g>30){document.getElementById('graceMsg').innerHTML='<div class="warn">⚠️ Grace days must be 0 to 30.</div>';return;}
+  settings.graceDays=g; localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));
+  try{await rtdb.ref('settings/subscriptions').update({graceDays:g});}catch(e){}
+  document.getElementById('graceMsg').innerHTML=`<div class="ok">✅ Grace Days saved: <b>${g} days</b></div>`;
+  loadData();
 }
 loadData();
 </script></body></html>
