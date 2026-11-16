@@ -28,12 +28,12 @@ input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 
 <label>📧 Email</label><input id="email" placeholder="e.g. dube@wordsworth.co.za" style="text-transform:none">
 <label>🔐 Password</label><input id="password" type="password" placeholder="e.g. 1234">
-<label>🏫 School — Pick Your School</label><select id="schoolSelect"><option value="">-- PICK SCHOOL --</option></select>
+<label>🏫 School — Pick Your School</label><select id="schoolSelect"><option value="">-- PICK SCHOOL --</option><option value="WHS">WORDSWORTH HIGH SCHOOL (WHS) (WHS)</option><option value="MHS">MAKHANANI HIGH SCHOOL (MHS) (MHS)</option><option value="ALL">👑 SUPER ADMIN — ALL SCHOOLS</option></select>
 <div id="msg"></div>
 <button class="btn btn-green" onclick="doLogin()">🔐 LOGIN →</button>
 <button class="btn btn-gold" onclick="location.href='pricing.html'">💰 SEE PRICING — DEMO FREE →</button>
 <div class="link"><a href="pricing.html">💰 Pricing — DEMO FREE • STARTER R350/mo • STANDARD R500/mo • PREMIUM R600/mo →</a></div>
-<div class="info">Demo Login:<br><b>Super Admin:</b> vusichauke3037@gmail.com / 1234<br><b>Principal:</b> principal@wordsworth.co.za / 1234<br><b>Teacher:</b> dube@wordsworth.co.za / 1234</div>
+<div class="info">Demo Login:<br><b>Super Admin:</b> vusichauke3037@gmail.com / 1234 — Pick <b>ALL SCHOOLS</b><br><b>Principal:</b> principal@wordsworth.co.za / 1234 — Pick <b>WHS</b><br><b>Teacher:</b> dube@wordsworth.co.za / 1234 — Pick <b>WHS</b></div>
 <div id="subStatusBox"></div>
 </div>
 <script>
@@ -44,20 +44,29 @@ const ADMIN_WHATSAPP='27780233263'; // 0780233263 — Vusi Chauke — Super Admi
 function toCaps(s){return String(s||'').trim().toUpperCase();}
 function fmtDate(ts){if(!ts) return '—';return new Date(ts).toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'});}
 function fmtR(n){return 'R'+Math.round(n||0).toLocaleString('en-ZA');}
-let schools=[],subs=[];
+let schools=[
+  {id:'WHS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)'},
+  {id:'MHS',schoolId:'MHS',schoolName:'MAKHANANI HIGH SCHOOL (MHS)'}
+];
+let subs=[];
 let settings={graceDays:7,autoSuspend:true,adminWhatsapp:ADMIN_WHATSAPP};
 try{let s=JSON.parse(localStorage.getItem('makhanani_sub_settings')||'{}');settings={...settings,...s};}catch(e){}
 function getGraceDays(){return settings.graceDays ?? 7;}
+function renderSchoolDropdown(){
+  // ALWAYS show WHS + MHS + ALL - never empty, even offline
+  document.getElementById('schoolSelect').innerHTML='<option value="">-- PICK SCHOOL --</option>'+schools.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('')+'<option value="ALL">👑 SUPER ADMIN — ALL SCHOOLS</option>';
+}
 
-// ===== LOAD SCHOOLS + SUBSCRIPTIONS + SETTINGS =====
+// ===== LOAD SCHOOLS + SUBSCRIPTIONS + SETTINGS - FIXED =====
 async function loadSchools(){
-  try{let st=await rtdb.ref('settings/subscriptions').once('value');if(st.val()){settings={...settings,...st.val()};localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));}}catch(e){}
+  renderSchoolDropdown(); // Show instantly - do NOT wait for Firebase
+  try{let st=await rtdb.ref('settings/subscriptions').once('value');if(st.val()){settings={...settings,...st.val()};localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));}}catch(e){console.log('settings load failed',e);}
   try{
     let sc=await rtdb.ref('schools').once('value');
-    schools=Object.entries(sc.val()||{}).map(([id,v])=>({id,...v,schoolName:toCaps(v.schoolName||v.name||''),schoolId:toCaps(v.schoolId||id)}));
-  }catch(e){}
-  if(schools.length===0) schools=[{id:'WHS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)'}];
-  document.getElementById('schoolSelect').innerHTML='<option value="">-- PICK SCHOOL --</option>'+schools.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('')+'<option value="ALL">👑 SUPER ADMIN — ALL SCHOOLS</option>';
+    let fbSchools=Object.entries(sc.val()||{}).map(([id,v])=>({id,...v,schoolName:toCaps(v.schoolName||v.name||''),schoolId:toCaps(v.schoolId||id)}));
+    if(fbSchools.length>0){ schools=fbSchools; renderSchoolDropdown(); }
+    // If Firebase empty, keep fallback WHS + MHS - do NOT clear
+  }catch(e){ console.log('schools load failed - using fallback WHS + MHS',e); }
   try{
     let sb=await rtdb.ref('subscriptions').once('value');
     subs=Object.entries(sb.val()||{}).map(([id,v])=>({id,...v}));
@@ -76,7 +85,6 @@ function getSubStatus(sub){
   if(sub.suspended) return {status:'SUSPENDED',daysLeft:0};
   let now=Date.now();
   let graceEnd=graceEndFor(sub);
-  // Trial / Demo: NO grace - expired = blocked immediately
   if(sub.plan==='DEMO'||sub.payType==='Trial'){
     if(sub.endDate<now) return {status:'EXPIRED',daysLeft:Math.ceil((sub.endDate-now)/(1000*60*60*24))};
     return {status:'TRIAL',daysLeft:Math.ceil((sub.endDate-now)/(1000*60*60*24))};
@@ -86,7 +94,6 @@ function getSubStatus(sub){
     if(dl<=7) return {status:'EXPIRING',daysLeft:dl};
     return {status:'ACTIVE',daysLeft:dl};
   }
-  // Past End Date - check grace
   if(now<=graceEnd) return {status:'GRACE',daysLeft:Math.ceil((graceEnd-now)/(1000*60*60*24)),graceDay:Math.floor((now-sub.endDate)/(1000*60*60*24))+1};
   return {status:'EXPIRED',daysLeft:Math.ceil((sub.endDate-now)/(1000*60*60*24))};
 }
@@ -108,8 +115,6 @@ function showSubStatus(){
   else if(st.status==='SUSPENDED') box.innerHTML=`<div class="expired-box">⛔ <b>SUBSCRIPTION SUSPENDED</b><br>${sub.plan} — Ended: <b>${fmtDate(sub.endDate)}</b><br>Your school is <b>SUSPENDED</b> until payment.<br>Amount Owe: <b>${fmtR(amountOwe(sub))}</b><br>Contact Super Admin to renew.<br><a href="https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent('Hello Makhanani! Our subscription for '+sid+' is suspended. Please renew.')}">📱 WHATSAPP SUPER ADMIN (0780233263) →</a></div>`;
   else box.innerHTML=`<div class="expired-box">⛔ <b>SUBSCRIPTION EXPIRED</b><br>${sub.plan} — Ended: <b>${fmtDate(sub.endDate)}</b> — Grace Ended: <b>${fmtDate(graceEndFor(sub))}</b><br>Your school is <b>SUSPENDED</b> until payment.<br>Amount Owe: <b>${fmtR(amountOwe(sub))}</b><br>Contact Super Admin to renew.<br><a href="https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent('Hello Makhanani! Our subscription for '+sid+' expired on '+fmtDate(sub.endDate)+'. Please renew.')}">📱 WHATSAPP SUPER ADMIN (0780233263) →</a></div>`;
 }
-
-// ===== SAVE GRACE DAY 1 ALERT FOR SUPER ADMIN =====
 async function saveGraceDay1Alert(sub, email){
   try{
     await rtdb.ref('graceAlerts').push().set({
@@ -129,8 +134,6 @@ async function saveGraceDay1Alert(sub, email){
     });
   }catch(e){console.log('Grace alert save failed',e);}
 }
-
-// ===== LOGIN WITH AUTO-SUSPEND + GRACE 7 DAYS + DAY 1 ALERT =====
 async function doLogin(){
   let email=document.getElementById('email').value.trim().toLowerCase();
   let pass=document.getElementById('password').value.trim();
@@ -140,8 +143,6 @@ async function doLogin(){
   if(!pass){msg.innerHTML='<div class="warn">⚠️ Type Password.</div>';return;}
   if(!schoolId){msg.innerHTML='<div class="warn">⚠️ Pick School first.</div>';return;}
   msg.innerHTML='<div class="info">⏳ Checking login + subscription...</div>';
-
-  // 1. Find user
   let user=null;
   let searchSchools = schoolId==='ALL' ? ['ALL','WHS'] : [schoolId,'ALL'];
   for(let sid of searchSchools){
@@ -152,7 +153,6 @@ async function doLogin(){
       if(found){user=found;break;}
     }catch(e){}
   }
-  // 2. Fallback demo users
   if(!user){
     let demo=[
       {name:'VUSI CHAUKE',email:'vusichauke3037@gmail.com',password:'1234',role:'Super Admin',schoolId:'ALL',prefix:'ALL',schoolName:'ALL SCHOOLS'},
@@ -169,15 +169,12 @@ async function doLogin(){
     }
   }
   if(!user){msg.innerHTML='<div class="warn">⛔ Wrong Email or Password. Try again.</div>';return;}
-
-  // 3. AUTO-SUSPEND CHECK - Super Admin BYPASSES - Everyone else BLOCKED if expired/suspended
   if(user.role!=='Super Admin'){
     let effectiveSchoolId = user.schoolId && user.schoolId!=='ALL' ? user.schoolId : schoolId;
     let sub=getSubForSchool(effectiveSchoolId);
     let st=getSubStatus(sub);
     if(!sub){
       if(subs.length===0){
-        // Allow - Super Admin will create sub next
       } else {
         msg.innerHTML=`<div class="expired-box">⛔ <b>NO SUBSCRIPTION</b><br>School <b>${effectiveSchoolId}</b> has no active subscription.<br>Contact Super Admin (0780233263) to activate.<br><a href="pricing.html">💰 See Pricing →</a><br><a href="https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent('Hello! No subscription for '+effectiveSchoolId+'. Please activate.')}">📱 WHATSAPP SUPER ADMIN (0780233263) →</a></div>`;
         return;
@@ -188,8 +185,7 @@ async function doLogin(){
     } else if(st.status==='EXPIRING'){
       msg.innerHTML=`<div class="warn">⚠️ <b>EXPIRING SOON</b> — ${sub.plan} ends in <b>${st.daysLeft} days</b> (${fmtDate(sub.endDate)}). Pay now to avoid suspension. Grace after expiry: <b>${getGraceDays()} days</b>.</div>`;
     } else if(st.status==='GRACE'){
-      // ===== GRACE DAY 1 ONLY - Alert + Reminder =====
-      let daysSinceEnd=Math.floor((Date.now()-sub.endDate)/(1000*60*60*24))+1; // 1 = Day 1
+      let daysSinceEnd=Math.floor((Date.now()-sub.endDate)/(1000*60*60*24))+1;
       if(daysSinceEnd===1){
         let key='graceDay1_'+effectiveSchoolId+'_'+new Date().toDateString();
         if(!sessionStorage.getItem(key)){
@@ -203,14 +199,10 @@ async function doLogin(){
           msg.innerHTML=`<div class="grace">🟡 <b>GRACE DAY 1</b> — ${sub.plan} expired yesterday — <b>${st.daysLeft} days grace left</b>.</div>`;
         }
       } else {
-        // Day 2-7 - Quiet warning only, no reminder, no alert
         msg.innerHTML=`<div class="grace">🟡 <b>GRACE DAY ${daysSinceEnd}</b> — ${sub.plan} expired on <b>${fmtDate(sub.endDate)}</b> — <b>${st.daysLeft} days grace left</b>. Pay now or you will be blocked on <b>${fmtDate(graceEndFor(sub))}</b>.</div>`;
       }
-      // Continue to login - do NOT block in grace
     }
   }
-
-  // 4. SAVE USER + LOGIN
   let saveUser={...user, schoolId: user.schoolId||schoolId, prefix: user.prefix||schoolId, schoolName: user.schoolName||schoolId};
   localStorage.setItem('makhanani_user',JSON.stringify(saveUser));
   msg.innerHTML+='<div class="ok">✅ Welcome, <b>'+toCaps(user.name)+'</b> — '+toCaps(user.role)+' — Logging in...</div>';
