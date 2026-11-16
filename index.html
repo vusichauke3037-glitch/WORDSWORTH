@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Login - Makhanani LTSM</title>
+<title>Login - Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0a1f4d;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:12px}
-.box{background:#fff;color:#0a1f4d;border-radius:16px;padding:22px;width:100%;max-width:460px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.box{background:#fff;color:#0a1f4d;border-radius:16px;padding:22px;width:100%;max-width:480px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 h1{margin:0;text-align:center;font-size:22px}h1 span{color:#d4af37}p{font-size:12px;text-align:center;color:#64748b;margin:6px 0 0}
 label{font-weight:900;font-size:13px;display:block;margin-top:14px}
 input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
@@ -20,10 +20,12 @@ input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 .expired-box{background:#111827;color:#fff;border-radius:12px;padding:14px;margin-top:12px;font-size:13px;line-height:1.6;text-align:center}
 .expired-box b{color:#fbbf24}.expired-box a{color:#fff;font-weight:900}
 .link{text-align:center;margin-top:12px;font-size:13px}.link a{color:#0a1f4d;font-weight:900}
+.rank-box{background:#0a1f4d;color:#fff;border-radius:10px;padding:10px;font-size:12px;line-height:1.8;margin-top:12px}
+.rank-box b{color:#d4af37}
 </style></head>
 <body>
 <div class="box">
-<h1>📚 MAKHANANI <span>LTSM</span></h1>
+<h1>📚 MAKHANANI <span>LTSM 2.0</span></h1>
 <p>WORDSWORTH HIGH SCHOOL • EMIS 700310854<br>Login To Continue</p>
 
 <label>📧 Email</label><input id="email" placeholder="e.g. vusi@makhanani.co.za" style="text-transform:none">
@@ -33,7 +35,10 @@ input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 <button class="btn btn-green" onclick="doLogin()">🔐 LOGIN →</button>
 <button class="btn btn-gold" onclick="location.href='pricing.html'">💰 SEE PRICING — DEMO FREE →</button>
 <div class="link"><a href="pricing.html">💰 Pricing — DEMO FREE • STARTER R350/mo • STANDARD R500/mo • PREMIUM R600/mo →</a></div>
-<div class="info">Demo Login:<br><b>Super Admin:</b> vusi@makhanani.co.za / 1234 — Pick <b>ALL SCHOOLS</b><br><b>Super Admin 2:</b> vusichauke3037@gmail.com / 1234 — Pick <b>ALL SCHOOLS</b><br><b>Principal:</b> principal@wordsworth.co.za / 1234 — Pick <b>WHS</b><br><b>Teacher:</b> dube@wordsworth.co.za / 1234 — Pick <b>WHS</b></div>
+
+<div class="rank-box"><b>MAKHANANI 2.0 — RANKS TOP TO BOTTOM:</b><br>👑 <b>5 — SUPER ADMIN</b> — All Schools<br>🛡️ <b>4 — ADMIN</b> — 1 School<br>🏫 <b>3 — PRINCIPAL</b> — 1 School<br>📚 <b>2 — LIBRARIAN / HOD</b> — 1 School<br>👩‍🏫 <b>1 — TEACHER</b> — Own Classes Only</div>
+
+<div class="info">Demo Login — MAKHANANI 2.0:<br><b>👑 5 Super Admin:</b> vusi@makhanani.co.za / 1234 — Pick <b>ALL SCHOOLS</b><br><b>🛡️ 4 Admin:</b> admin@wordsworth.co.za / 1234 — Pick <b>WHS</b><br><b>🏫 3 Principal:</b> principal@wordsworth.co.za / 1234 — Pick <b>WHS</b><br><b>📚 2 Librarian:</b> librarian@wordsworth.co.za / 1234 — Pick <b>WHS</b><br><b>📚 2 HOD:</b> hod@wordsworth.co.za / 1234 — Pick <b>WHS</b><br><b>👩‍🏫 1 Teacher:</b> dube@wordsworth.co.za / 1234 — Pick <b>WHS</b></div>
 <div id="subStatusBox"></div>
 </div>
 <script>
@@ -41,6 +46,10 @@ const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomai
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
 const ADMIN_WHATSAPP='27780233263'; // 0780233263 — Vusi Chauke — Super Admin
+// ===== MAKHANANI 2.0 RANKS =====
+const RANKS={ 'Super Admin':5, 'Admin':4, 'Principal':3, 'Librarian':2, 'HOD':2, 'Teacher':1 };
+function rankOf(role){ return RANKS[role]||0; }
+function rankLabel(role){ let r=rankOf(role); return r>=5?'👑 SUPER ADMIN':r>=4?'🛡️ ADMIN':r>=3?'🏫 PRINCIPAL':r>=2?'📚 LIBRARIAN / HOD':'👩‍🏫 TEACHER'; }
 function toCaps(s){return String(s||'').trim().toUpperCase();}
 function fmtDate(ts){if(!ts) return '—';return new Date(ts).toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'});}
 function fmtR(n){return 'R'+Math.round(n||0).toLocaleString('en-ZA');}
@@ -140,14 +149,21 @@ async function doLogin(){
   if(!schoolId){msg.innerHTML='<div class="warn">⚠️ Pick School first.</div>';return;}
   msg.innerHTML='<div class="info">⏳ Checking login + subscription...</div>';
 
-  // ===== DEMO USERS FIRST - NO FIREBASE WAIT - NEVER HANGS =====
+  // ===== MAKHANANI 2.0 DEMO USERS - CHECK FIRST - NEVER HANGS =====
   let demo=[
-    {name:'VUSI CHAUKE',email:'vusi@makhanani.co.za',password:'1234',role:'Super Admin',schoolId:'ALL',prefix:'ALL',schoolName:'ALL SCHOOLS'},
-    {name:'VUSI CHAUKE',email:'vusichauke3037@gmail.com',password:'1234',role:'Super Admin',schoolId:'ALL',prefix:'ALL',schoolName:'ALL SCHOOLS'},
-    {name:'VUSI CHAUKE',email:'vusi@wordsworth.co.za',password:'1234',role:'Super Admin',schoolId:'ALL',prefix:'ALL',schoolName:'ALL SCHOOLS'},
-    {name:'PRINCIPAL WHS',email:'principal@wordsworth.co.za',password:'1234',role:'Principal',schoolId:'WHS',prefix:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)'},
-    {name:'MRS DUBE',email:'dube@wordsworth.co.za',password:'1234',role:'Teacher',subject:'MATHS',schoolId:'WHS',prefix:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',teachingClasses:['10A','10B','11A'],teachingGrades:['10','11']},
-    {name:'LIBRARIAN WHS',email:'librarian@wordsworth.co.za',password:'1234',role:'Librarian',schoolId:'WHS',prefix:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',teachingClasses:['All Classes'],teachingGrades:['8','9','10','11','12']},
+    // 👑 RANK 5 - SUPER ADMIN - ALL SCHOOLS
+    {name:'VUSI CHAUKE',email:'vusi@makhanani.co.za',password:'1234',role:'Super Admin',rank:5,schoolId:'ALL',prefix:'ALL',schoolName:'ALL SCHOOLS'},
+    {name:'VUSI CHAUKE',email:'vusichauke3037@gmail.com',password:'1234',role:'Super Admin',rank:5,schoolId:'ALL',prefix:'ALL',schoolName:'ALL SCHOOLS'},
+    {name:'VUSI CHAUKE',email:'vusi@wordsworth.co.za',password:'1234',role:'Super Admin',rank:5,schoolId:'ALL',prefix:'ALL',schoolName:'ALL SCHOOLS'},
+    // 🛡️ RANK 4 - ADMIN - 1 SCHOOL
+    {name:'ADMIN WHS',email:'admin@wordsworth.co.za',password:'1234',role:'Admin',rank:4,schoolId:'WHS',prefix:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)'},
+    // 🏫 RANK 3 - PRINCIPAL - 1 SCHOOL
+    {name:'PRINCIPAL WHS',email:'principal@wordsworth.co.za',password:'1234',role:'Principal',rank:3,schoolId:'WHS',prefix:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)'},
+    // 📚 RANK 2 - LIBRARIAN / HOD - 1 SCHOOL
+    {name:'LIBRARIAN WHS',email:'librarian@wordsworth.co.za',password:'1234',role:'Librarian',rank:2,schoolId:'WHS',prefix:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',teachingClasses:['All Classes'],teachingGrades:['8','9','10','11','12']},
+    {name:'HOD MATHS',email:'hod@wordsworth.co.za',password:'1234',role:'HOD',rank:2,subject:'MATHS',schoolId:'WHS',prefix:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',teachingClasses:['10A','10B','11A','12A'],teachingGrades:['10','11','12']},
+    // 👩‍🏫 RANK 1 - TEACHER - 1 SCHOOL
+    {name:'MRS DUBE',email:'dube@wordsworth.co.za',password:'1234',role:'Teacher',rank:1,subject:'MATHS',schoolId:'WHS',prefix:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',teachingClasses:['10A','10B','11A'],teachingGrades:['10','11']},
   ];
   let user=demo.find(u=>u.email===email && u.password===pass);
   if(user){
@@ -155,10 +171,11 @@ async function doLogin(){
       msg.innerHTML='<div class="warn">⚠️ This user does not belong to '+schoolId+'. Pick correct school.</div>';return;
     }
     if(schoolId==='ALL' && user.role!=='Super Admin'){
-      msg.innerHTML='<div class="warn">⚠️ Only Super Admin can pick ALL SCHOOLS. Pick your school.</div>';return;
+      msg.innerHTML='<div class="warn">⚠️ Only Super Admin (Rank 5) can pick ALL SCHOOLS. Pick your school.</div>';return;
     }
+    // Ensure rank is set from role
+    user.rank = rankOf(user.role);
   } else {
-    // NOT demo - try Firebase with 5 sec timeout - never hang
     try{
       let searchSchools = schoolId==='ALL' ? ['ALL','WHS'] : [schoolId,'ALL'];
       for(let sid of searchSchools){
@@ -170,11 +187,12 @@ async function doLogin(){
         let found=list.find(u=>String(u.email||'').toLowerCase()===email && String(u.password||'')===pass);
         if(found){user=found;break;}
       }
+      if(user){ user.rank = rankOf(user.role); }
     }catch(e){ console.log('Firebase user lookup failed/timeout',e); }
   }
-  if(!user){msg.innerHTML='<div class="warn">⛔ Wrong Email or Password. Try again.<br><br>Try:<br><b>Super Admin:</b> vusi@makhanani.co.za / 1234 — Pick ALL SCHOOLS<br><b>Super Admin 2:</b> vusichauke3037@gmail.com / 1234 — Pick ALL SCHOOLS<br><b>Teacher:</b> dube@wordsworth.co.za / 1234 — Pick WHS</div>';return;}
+  if(!user){msg.innerHTML='<div class="warn">⛔ Wrong Email or Password. Try again.<br><br>Try:<br><b>👑 5 Super Admin:</b> vusi@makhanani.co.za / 1234 — Pick ALL SCHOOLS<br><b>🛡️ 4 Admin:</b> admin@wordsworth.co.za / 1234 — Pick WHS<br><b>🏫 3 Principal:</b> principal@wordsworth.co.za / 1234 — Pick WHS<br><b>📚 2 Librarian:</b> librarian@wordsworth.co.za / 1234 — Pick WHS<br><b>👩‍🏫 1 Teacher:</b> dube@wordsworth.co.za / 1234 — Pick WHS</div>';return;}
 
-  // ===== SUBSCRIPTION CHECK - Super Admin BYPASSES =====
+  // ===== SUBSCRIPTION CHECK - Super Admin (Rank 5) BYPASSES =====
   if(user.role!=='Super Admin'){
     let effectiveSchoolId = user.schoolId && user.schoolId!=='ALL' ? user.schoolId : schoolId;
     let sub=getSubForSchool(effectiveSchoolId);
@@ -208,13 +226,14 @@ async function doLogin(){
       }
     }
   }
-  let saveUser={...user, schoolId: user.schoolId||schoolId, prefix: user.prefix||schoolId, schoolName: user.schoolName||schoolId};
+  let saveUser={...user, rank: rankOf(user.role), schoolId: user.schoolId||schoolId, prefix: user.prefix||schoolId, schoolName: user.schoolName||schoolId};
   localStorage.setItem('makhanani_user',JSON.stringify(saveUser));
-  msg.innerHTML+='<div class="ok">✅ Welcome, <b>'+toCaps(user.name)+'</b> — '+toCaps(user.role)+' — Logging in...</div>';
+  msg.innerHTML+='<div class="ok">✅ Welcome, <b>'+toCaps(user.name)+'</b> — '+rankLabel(user.role)+' — RANK '+rankOf(user.role)+'/5 — Logging in...</div>';
   setTimeout(()=>{
     if(user.role==='Super Admin') location.href='super-admin.html';
+    else if(user.role==='Admin') location.href='admin.html';
     else if(user.role==='Principal') location.href='principal.html';
-    else if(user.role==='Librarian') location.href='librarian.html';
+    else if(user.role==='Librarian' || user.role==='HOD') location.href='librarian.html';
     else location.href='teacher.html';
   },900);
 }
