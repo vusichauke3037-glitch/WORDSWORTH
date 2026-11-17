@@ -1,177 +1,167 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Barcode - Makhanani LTSM</title>
+<title>Barcode Print - Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#0a1f4d}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
 header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:1100px;margin:0 auto;padding:12px}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.wrap{max-width:1000px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
-input{cursor:text}select{appearance:auto;-webkit-appearance:auto}
-select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
-.btn{border:none;border-radius:8px;padding:12px 14px;font-weight:900;cursor:pointer;font-size:14px}
-.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer}
+input{cursor:text}.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
-.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
-.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.kpi b{font-size:24px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
-.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-cat{background:#fef3c7;color:#92400e}.badge-issued{background:#fee2e2;color:#991b1b}.badge-free{background:#dcfce7;color:#166534}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{flex:1;min-width:100px;padding:12px;border:none;border-radius:8px;background:#e2e8f0;font-weight:900;cursor:pointer}.tabs button.active{background:#0a1f4d;color:#fff}
-.tab{display:none}.tab.active{display:block}
-#reader{width:100%;max-width:400px;margin:10px auto;border:2px solid #0a1f4d;border-radius:12px;overflow:hidden}
-/* ===== A4 3x5 ===== */
-.a4-page{width:210mm;min-height:297mm;margin:12px auto;background:#fff;padding:8mm 8mm 6mm;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,1fr);gap:3mm;box-shadow:0 4px 16px rgba(0,0,0,.2)}
-.label{border:1.5px solid #0a1f4d;border-radius:6px;padding:2mm 2mm 1.5mm;display:flex;flex-direction:column;justify-content:space-between;align-items:center;text-align:center;overflow:hidden;background:#fff}
-.label-top{width:100%;border-bottom:1.5px solid #d4af37;padding-bottom:1mm}
-.label-school{font-size:10.5pt;font-weight:900;letter-spacing:.3px;line-height:1.1}
-.label-brand{font-size:8pt;font-weight:900;color:#92400e;letter-spacing:1.5px;margin-top:.5mm}
-.label-book{font-size:9.5pt;font-weight:900;line-height:1.15;margin-top:1mm;word-break:break-word}
-.label-meta{font-size:7.5pt;font-weight:700;color:#475569;margin-top:.5mm}
-.label-barcode{flex:1;display:flex;align-items:center;justify-content:center;width:100%;padding:1mm 0}
-.label-barcode svg{width:100%;height:14mm;display:block}
-.label-bottom{width:100%;border-top:1.5px solid #d4af37;padding-top:1mm}
-.label-number{font-size:13pt;font-weight:900;letter-spacing:1px;line-height:1}
-.label-learner{font-size:8.5pt;font-weight:900;margin-top:.5mm}
-.label-learner-id{font-size:9pt;font-weight:900;letter-spacing:.5px}
-@media print{@page{size:A4 portrait;margin:0}body{background:#fff}header,.no-print{display:none!important}.wrap{max-width:100%;padding:0}.card{box-shadow:none;border:none}.a4-page{margin:0;box-shadow:none;page-break-after:always;width:210mm;height:297mm;padding:8mm 8mm 6mm}.a4-page:last-child{page-break-after:auto}}
-@media(max-width:700px){.kpi{grid-template-columns:repeat(3,1fr)}.row{flex-direction:column}.a4-page{width:100%;min-height:auto;grid-template-rows:auto}}
+/* SCREEN PREVIEW */
+.preview{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.label{border:2px solid #0a1f4d;border-radius:8px;padding:8px 6px 6px;text-align:center;background:#fff;overflow:hidden}
+.label .school{font-size:11px;font-weight:900;letter-spacing:.3px;line-height:1.2}
+.label .brand{font-size:10px;font-weight:900;color:#92400e;background:#fef3c7;border-radius:4px;padding:2px 4px;display:inline-block;margin:3px 0}
+.label .type{font-size:10px;font-weight:900;color:#0a1f4d}
+/* DO NOT STRETCH SVG — KEEP REAL BAR WIDTH */
+.label .bc-wrap{background:#fff;padding:4px 2px;margin:4px 0 2px}
+.label svg.bc{width:auto;max-width:100%;height:64px;display:block;margin:0 auto;image-rendering:pixelated}
+.label .code{font-size:17px;font-weight:900;letter-spacing:1px;line-height:1.1;font-family:'Courier New',monospace}
+.label .sub{font-size:9px;font-weight:700;color:#475569;line-height:1.2;word-break:break-word}
+.label .grade{font-size:9px;font-weight:900;color:#0a1f4d}
+.scan-test{border:2px dashed #0d9488;border-radius:8px;padding:10px;margin-top:10px;background:#f0fdfa}
+/* PRINT — A4 — 3x5 — DO NOT SCALE BARCODES */
+@page{size:A4 portrait;margin:8mm}
+@media print{
+  body{background:#fff;color:#000}
+  header,.no-print{display:none!important}
+  .wrap{max-width:none;margin:0;padding:0}
+  .card{box-shadow:none;border:none;padding:0;margin:0;border-radius:0}
+  .preview{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;grid-auto-rows:52mm;margin:0}
+  .label{border:1.2px solid #000;border-radius:2mm;padding:2mm 1.5mm 1.5mm;page-break-inside:avoid;overflow:hidden}
+  .label .school{font-size:9pt}
+  .label .brand{font-size:8pt}
+  .label .type{font-size:8pt}
+  .label .bc-wrap{padding:1mm 0;margin:1mm 0}
+  .label svg.bc{height:15mm;max-width:100%}
+  .label .code{font-size:13pt}
+  .label .sub{font-size:7pt}
+  .label .grade{font-size:7pt}
+}
+@media(max-width:700px){.preview{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>📷 Barcode — Scan / Print A4 3x5</h1><p id="schoolLine">Loading...</p>
+<header><h1>🖨️ BARCODE PRINT — MAKHANANI LTSM 2.0</h1><p>REAL SCANNABLE CODE128 — A4 — 3 COLUMNS x 5 ROWS = 15 PER PAGE — TOP: SCHOOL + BRAND + BOOK/LEARNER — BOTTOM: TEXTBOOK NUMBER / LEARNER ID</p>
 <div id="taskbar"></div><script src="nav.js"></script>
-<script>guardPage(1,'Barcode');</script>
+<script>guardPage(2,'Barcode');</script>
 </header>
 <div class="wrap">
-<div class="info no-print" id="roleInfo">Loading...</div>
-<div class="kpi no-print"><div><b id="kpiTotal">0</b><span>📚 TEXTBOOKS</span></div><div><b id="kpiFree">0</b><span>📗 FREE</span></div><div><b id="kpiIssued">0</b><span>📕 ISSUED</span></div></div>
+<div class="card no-print"><h2>🖨️ Print Real Barcodes — CODE128 — Scans With Any Scanner / Phone</h2>
+<div class="info">Real CODE128 — Not a picture. JsBarcode generates real checksum + start/stop.<br>Top: <b>SCHOOL + BRAND + 📖 BOOK / 👤 LEARNER</b> — Middle: <b>Real Barcode</b> — Bottom: <b>WHS000001 / 4J001</b> (same as barcode value).<br>Print: A4 → Margins None → Scale 100% → Background Graphics ON.</div>
+<div class="row"><div><label>🖨️ What To Print</label><select id="printType" onchange="buildPreview()"><option value="BOOK">📖 BOOK — Textbook Number</option><option value="LEARNER">👤 LEARNER — Learner ID</option></select></div><div><label>🏫 School Name (Top)</label><input id="schoolName" value="WORDSWORTH HIGH SCHOOL"></div><div><label>🏷️ Brand Name (Top)</label><input id="brandName" value="MAKHANANI LTSM 2.0"></div></div>
+<div class="row"><div><label>📚 Filter Subject — Books Only — ALL CAPS</label><select id="filterSubject" onchange="buildPreview()"><option value="">📚 ALL SUBJECTS</option></select></div><div><label>🎓 Filter Grade — 4 To 12</label><select id="filterGrade" onchange="buildPreview()"><option value="">🎓 ALL GRADES — 4 TO 12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>🏫 Filter Class — Learners Only — A To J</label><select id="filterClass" onchange="buildPreview()"><option value="">🏫 ALL CLASSES — 4A TO 12J</option></select></div></div>
+<div class="row"><div><label>🔢 How Many — 1 To 60 (15 Per Page)</label><input id="labelCount" type="number" value="15" min="1" max="60" onchange="buildPreview()"></div><div><label>🔢 Start From — e.g. WHS000001 / 4J001</label><input id="startFrom" placeholder="Leave blank = from first" onchange="buildPreview()"></div><div><label>🔍 Search</label><input id="searchPrint" placeholder="🔍 Title / Barcode / Learner" oninput="buildPreview()"></div></div>
+<div class="row"><button class="btn btn-green" onclick="buildPreview()">🔄 REFRESH PREVIEW</button><button class="btn btn-gold" onclick="window.print()">🖨️ PRINT A4 3x5 →</button><button class="btn btn-teal" onclick="printSelected()">🖨️ PRINT SELECTED ONLY</button><button class="btn btn-grey" onclick="selectAll(true)">✅ SELECT ALL</button><button class="btn btn-red" onclick="selectAll(false)">❌ CLEAR ALL</button></div>
+<div class="info" id="printInfo">Loading...</div>
 
-<div class="tabs no-print">
-<button id="tabBtnScan" class="active" onclick="showTab('scan')">📷 Scan Barcode</button>
-<button id="tabBtnManual" onclick="showTab('manual')">⌨️ Type Barcode</button>
-<button id="tabBtnPrint" onclick="showTab('print')">🖨️ Print A4 3x5</button>
+<!-- SINGLE TEST BARCODE -->
+<div class="scan-test"><b>🧪 Test One Barcode Before Printing 15</b><br>Type any code, tap Generate, then scan it with your phone camera / Teacher SCAN.<br><div class="row"><div><label>🧪 Test Code — Letters + Numbers Only — e.g. WHS000001 / 4J001</label><input id="testCode" value="WHS000001"></div><div><label>&nbsp;</label><button class="btn btn-teal btn-full" onclick="generateTest()">🧪 GENERATE TEST BARCODE</button></div></div><div style="text-align:center;background:#fff;border:2px solid #0a1f4d;border-radius:8px;padding:12px;margin-top:10px"><div style="font-size:11px;font-weight:900">WORDSWORTH HIGH SCHOOL</div><div style="font-size:10px;font-weight:900;color:#92400e">MAKHANANI LTSM 2.0</div><div style="font-size:10px;font-weight:900">📖 BOOK</div><div style="background:#fff;padding:6px"><svg id="testSvg" style="height:70px;max-width:100%"></svg></div><div id="testCodeText" style="font-size:18px;font-weight:900;font-family:'Courier New',monospace">WHS000001</div><div id="testScanMsg" class="info">Tap GENERATE, then point phone camera at barcode — Phone should show WHS000001.</div><div class="row"><button class="btn btn-purple" onclick="startTestScan()">📷 SCAN THIS BARCODE WITH THIS PHONE →</button><button class="btn btn-grey" onclick="stopTestScan()">✖️ STOP CAMERA</button></div><div id="testScanBox" style="display:none;margin-top:10px"><video id="testVideo" playsinline style="width:100%;border-radius:8px;background:#000"></video></div></div></div>
 </div>
 
-<div id="tab-scan" class="tab active"><div class="card">
-<h2>📷 Scan — Phone Camera</h2>
-<div class="info">1. Click <b>START CAMERA</b> → Point at barcode.<br>2. Number like <b>WHS000001</b> auto-fills.<br>3. Pick Learner → <b>ISSUE</b> / <b>RETURN</b>.</div>
-<div class="row"><button class="btn btn-green" style="flex:1" onclick="startScan()">📷 START CAMERA</button><button class="btn btn-red" style="flex:1" onclick="stopScan()">⏹️ STOP</button></div>
-<div id="reader"></div>
-<label>📷 Scanned Barcode *</label><input id="scanResult" placeholder="e.g. WHS000001" oninput="onScanInput()">
-<div id="scanBookInfo"></div>
-<label>👩‍🎓 Pick Learner *</label><select id="scanLearner"><option value="">-- PICK LEARNER * --</option></select>
-<div class="row"><button class="btn btn-green" style="flex:1" onclick="issueScanned()">📕 ISSUE</button><button class="btn btn-gold" style="flex:1" onclick="returnScanned()">↩️ RETURN</button></div>
-<div id="scanMsg"></div>
-</div></div>
-
-<div id="tab-manual" class="tab"><div class="card">
-<h2>⌨️ Type Barcode — No Camera / USB Scanner</h2>
-<div class="info">Type <b>WHS000001</b> or scan with USB scanner — Scanner types it automatically.</div>
-<label>🔢 Barcode Number *</label><input id="manualCode" placeholder="e.g. WHS000001" oninput="onManualInput()" autofocus>
-<div id="manualBookInfo"></div>
-<div id="manualBarcode" style="text-align:center;margin-top:12px"></div>
-<label>👩‍🎓 Pick Learner *</label><select id="manualLearner"><option value="">-- PICK LEARNER * --</option></select>
-<div class="row"><button class="btn btn-green" style="flex:1" onclick="issueManual()">📕 ISSUE</button><button class="btn btn-gold" style="flex:1" onclick="returnManual()">↩️ RETURN</button></div>
-<div id="manualMsg"></div>
-</div></div>
-
-<div id="tab-print" class="tab"><div class="card no-print">
-<h2>🖨️ Print A4 3x5 — 15 Labels Per Page</h2>
-<div class="tabs">
-<button id="printBtnBooks" class="active" onclick="setPrintMode('books')" style="background:#0a1f4d;color:#fff">📚 TEXTBOOKS</button>
-<button id="printBtnLearners" onclick="setPrintMode('learners')" style="background:#e2e8f0">👩‍🎓 LEARNERS</button>
-</div>
-<div class="row" id="bookFilters">
-<div><label>📚 Grade</label><select id="printGrade" onchange="renderPrint()"><option value="">📚 ALL GRADES</option><option value="8">GRADE 8</option><option value="9">GRADE 9</option><option value="10">GRADE 10</option><option value="11">GRADE 11</option><option value="12">GRADE 12</option></select></div>
-<div><label>📚 Category — ALL CAPS</label><select id="printCategory" onchange="renderPrint()"><option value="">📚 ALL CATEGORIES</option><option value="MATHS">MATHS</option><option value="ENGLISH">ENGLISH</option><option value="LIFE SCIENCES">LIFE SCIENCES</option><option value="PHYSICAL SCIENCES">PHYSICAL SCIENCES</option><option value="GEOGRAPHY">GEOGRAPHY</option><option value="HISTORY">HISTORY</option><option value="ACCOUNTING">ACCOUNTING</option><option value="BUSINESS STUDIES">BUSINESS STUDIES</option><option value="LIFE ORIENTATION">LIFE ORIENTATION</option><option value="AFRIKAANS">AFRIKAANS</option><option value="SEPEDI">SEPEDI</option><option value="ISIZULU">ISIZULU</option><option value="SESOTHO">SESOTHO</option><option value="XITSONGA">XITSONGA</option><option value="TECHNOLOGY">TECHNOLOGY</option><option value="COMPUTER APPLICATIONS TECHNOLOGY">COMPUTER APPLICATIONS TECHNOLOGY</option><option value="ENGINEERING GRAPHICS AND DESIGN">ENGINEERING GRAPHICS AND DESIGN</option><option value="TOURISM">TOURISM</option><option value="CONSUMER STUDIES">CONSUMER STUDIES</option><option value="AGRICULTURAL SCIENCES">AGRICULTURAL SCIENCES</option><option value="ECONOMICS">ECONOMICS</option><option value="MATHEMATICAL LITERACY">MATHEMATICAL LITERACY</option></select></div>
-<div><label>📕 Status</label><select id="printStatus" onchange="renderPrint()"><option value="">📚 ALL STATUS</option><option value="Free">📗 FREE</option><option value="Issued">📕 ISSUED</option><option value="Lost">❌ LOST</option></select></div>
-</div>
-<div class="row" id="learnerFilters" style="display:none">
-<div><label>📚 Grade</label><select id="printLGrade" onchange="renderPrint()"><option value="">📚 ALL GRADES</option><option value="8">GRADE 8</option><option value="9">GRADE 9</option><option value="10">GRADE 10</option><option value="11">GRADE 11</option><option value="12">GRADE 12</option></select></div>
-<div><label>🏫 Class</label><select id="printLClass" onchange="renderPrint()"><option value="">🏫 ALL CLASSES</option><option value="A">CLASS A</option><option value="B">CLASS B</option><option value="C">CLASS C</option><option value="D">CLASS D</option><option value="E">CLASS E</option></select></div>
-</div>
-<div class="row"><button class="btn btn-gold" style="flex:1" onclick="window.print()">🖨️ PRINT A4 NOW</button><button class="btn btn-grey" style="flex:1" onclick="renderPrint()">🔄 REFRESH</button></div>
-<div id="printInfo" class="info">Loading...</div>
-<div class="info">Print Settings: <b>A4 • Portrait • Margins: None • Scale: 100% • Background Graphics: ON</b> • Laser printer — Inkjet smudges.</div>
-</div><div id="printArea"></div></div>
+<div class="card"><h2>👀 Preview — 3 x 5 — Tap Label To Select / Deselect</h2><div class="info no-print">Tap label = gold border = selected. Print Selected Only = only gold labels.</div><div class="preview" id="previewGrid"></div><div class="info no-print" id="previewInfo"></div></div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
 function toCaps(s){return String(s||'').trim().toUpperCase();}
-let user=null,schoolId='WHS',prefix='WHS',schoolName='WORDSWORTH HIGH SCHOOL (WHS)';
-try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null'); if(user){schoolId=user.schoolId||'WHS';prefix=user.prefix||'WHS';schoolName=user.schoolName||schoolName;}}catch(e){}
-document.getElementById('schoolLine').textContent=schoolName+' • MAKHANANI LTSM • EMIS 700310854 • PREFIX '+prefix;
-let books=[],learners=[],scanner=null,scanning=false,printMode='books';
-function showTab(t){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active'); if(t!=='scan') stopScan(); if(t==='print') renderPrint();}
-function setPrintMode(m){printMode=m;document.getElementById('printBtnBooks').style.background=m==='books'?'#0a1f4d':'#e2e8f0';document.getElementById('printBtnBooks').style.color=m==='books'?'#fff':'#0a1f4d';document.getElementById('printBtnLearners').style.background=m==='learners'?'#0a1f4d':'#e2e8f0';document.getElementById('printBtnLearners').style.color=m==='learners'?'#fff':'#0a1f4d';document.getElementById('bookFilters').style.display=m==='books'?'flex':'none';document.getElementById('learnerFilters').style.display=m==='learners'?'flex':'none';renderPrint();}
-function canTeacherSeeBook(b){if(!user||user.role!=='Teacher') return true; if(user.teachingGrades&&user.teachingGrades.length) return user.teachingGrades.includes(String(b.grade)); return true;}
-function canTeacherSeeLearner(l){if(!user||user.role!=='Teacher') return true; if(user.teachingClasses&&user.teachingClasses.length) return user.teachingClasses.includes(String(l.grade)+String(l.className)); return true;}
-async function loadData(){
-  try{let bs=await rtdb.ref('textbooks/'+schoolId).once('value');books=Object.entries(bs.val()||{}).map(([id,v])=>({id,...v,category:toCaps(v.category),title:toCaps(v.title)}));let ls=await rtdb.ref('learners/'+schoolId).once('value');learners=Object.entries(ls.val()||{}).map(([id,v])=>({id,...v,name:toCaps(v.name)}));}catch(e){}
-  if(books.length===0){books=[{id:'1',number:prefix+'000001',title:'MATHS GRADE 10 TEXTBOOK',category:'MATHS',grade:'10',status:'Free',learnerName:''},{id:'2',number:prefix+'000002',title:'ENGLISH GRADE 10 TEXTBOOK',category:'ENGLISH',grade:'10',status:'Issued',learnerName:'10A001 - THABO M'}];learners=[{id:'1',learnerId:'10A001',name:'THABO M',grade:'10',className:'A'},{id:'2',learnerId:'10B001',name:'LERATO K',grade:'10',className:'B'}];}
-  if(user&&user.role==='Teacher'&&!user.teachingClasses){user.teachingClasses=['10A','10B','11A'];user.teachingGrades=['10','11'];}
-  document.getElementById('roleInfo').innerHTML=user?.role==='Teacher'?`👩‍🏫 <b>${toCaps(user.name)}</b> — You teach: <b>${(user.teachingClasses||[]).join(' • ')}</b> — Only your grades.`:`✅ <b>${toCaps(user?.role||'USER')}</b> — <b>${toCaps(user?.name||'')}</b> — <b>ALL CLASSES — Whole School</b>`;
-  document.getElementById('kpiTotal').textContent=books.filter(b=>canTeacherSeeBook(b)).length;
-  document.getElementById('kpiFree').textContent=books.filter(b=>canTeacherSeeBook(b)&&b.status!=='Issued').length;
-  document.getElementById('kpiIssued').textContent=books.filter(b=>canTeacherSeeBook(b)&&b.status==='Issued').length;
-  let myLearners=learners.filter(l=>canTeacherSeeLearner(l));
-  let opts='<option value="">-- PICK LEARNER * --</option>'+myLearners.map(l=>`<option value="${l.learnerId}">${l.learnerId} - ${toCaps(l.name)} - Grade ${l.grade}${l.className}</option>`).join('');
-  document.getElementById('scanLearner').innerHTML=opts;document.getElementById('manualLearner').innerHTML=opts;
-  renderPrint();
+function cleanCode(s){ return toCaps(s).replace(/[^A-Z0-9\-]/g,'').slice(0,20) || 'WHS000001'; }
+function pad(n,l){return String(n).padStart(l,'0');}
+let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
+let mySchoolId=user?.schoolId||'WHS';
+const SUBJECT_GROUPS=[
+  {label:'INTERMEDIATE — GRADES 4-6', items:['ENGLISH HOME LANGUAGE','ENGLISH FIRST ADDITIONAL LANGUAGE','AFRIKAANS HOME LANGUAGE','AFRIKAANS FIRST ADDITIONAL LANGUAGE','ISIZULU HOME LANGUAGE','ISIXHOSA HOME LANGUAGE','SESOTHO HOME LANGUAGE','SETSWANA HOME LANGUAGE','MATHEMATICS','NATURAL SCIENCES AND TECHNOLOGY','SOCIAL SCIENCES','LIFE SKILLS']},
+  {label:'SENIOR — GRADES 7-9', items:['NATURAL SCIENCES','ECONOMIC AND MANAGEMENT SCIENCES','TECHNOLOGY','CREATIVE ARTS','LIFE ORIENTATION']},
+  {label:'FET — GRADES 10-12', items:['MATHEMATICAL LITERACY','TECHNICAL MATHEMATICS','PHYSICAL SCIENCES','TECHNICAL SCIENCES','LIFE SCIENCES','AGRICULTURAL SCIENCES','ACCOUNTING','BUSINESS STUDIES','ECONOMICS','HISTORY','GEOGRAPHY','TOURISM','CONSUMER STUDIES','COMPUTER APPLICATIONS TECHNOLOGY','INFORMATION TECHNOLOGY','ENGINEERING GRAPHICS AND DESIGN','VISUAL ARTS','DRAMATIC ARTS','MUSIC','PHYSICAL EDUCATION','RELIGION STUDIES']}
+];
+const ALL_CLASSES=['4A','4B','4C','4D','4E','4F','4G','4H','4I','4J','5A','5B','5C','5D','5E','5F','5G','5H','5I','5J','6A','6B','6C','6D','6E','6F','6G','6H','6I','6J','7A','7B','7C','7D','7E','7F','7G','7H','7I','7J','8A','8B','8C','8D','8E','8F','8G','8H','8I','8J','9A','9B','9C','9D','9E','9F','9G','9H','9I','9J','10A','10B','10C','10D','10E','10F','10G','10H','10I','10J','11A','11B','11C','11D','11E','11F','11G','11H','11I','11J','12A','12B','12C','12D','12E','12F','12G','12H','12I','12J'];
+let books=[], learners=[], selected=new Set(), testStream=null;
+function demoData(){
+  books=[]; let n=1;
+  [['ENGLISH HOME LANGUAGE','4'],['MATHEMATICS','10'],['PHYSICAL SCIENCES','11'],['HISTORY','12']].forEach(([sub,gr])=>{ for(let i=1;i<=5;i++) books.push({barcode:'WHS'+pad(n++,6),title:toCaps(sub)+' GRADE '+gr,subject:toCaps(sub),grade:String(gr)}); });
+  learners=[]; ['4A','4J','10A','10J','12A','12J'].forEach(cl=>{ let g=cl.replace(/[^0-9]/g,''); for(let i=1;i<=5;i++) learners.push({learnerId:cl+pad(i,3),name:'LEARNER '+cl+'-'+i,className:cl,grade:g}); });
 }
-function findBook(code){return books.find(b=>toCaps(b.number)===toCaps(code));}
-function bookCard(b){if(!b) return '<div class="warn">⚠️ NOT FOUND — Check number — e.g. WHS000001</div>';return `<div class="info">✅ <b>${b.number} - ${toCaps(b.title)}</b><br>${toCaps(b.category)} • Grade ${b.grade} • Status: <b>${toCaps(b.status||'Free')}</b><br>Learner: <b>${b.learnerName||'— FREE —'}</b></div>`;}
-function onScanInput(){let c=document.getElementById('scanResult').value;document.getElementById('scanBookInfo').innerHTML=c?bookCard(findBook(c)):'';}
-function onManualInput(){let c=document.getElementById('manualCode').value;document.getElementById('manualBookInfo').innerHTML=c?bookCard(findBook(c)):'';let box=document.getElementById('manualBarcode');let b=findBook(c);if(b){box.innerHTML=`<svg id="manualSvg"></svg><div><b>${b.number}</b></div>`;try{JsBarcode('#manualSvg',b.number,{format:'CODE128',width:2.2,height:55,displayValue:true});}catch(e){}}else box.innerHTML='';}
-async function startScan(){if(scanning) return;scanning=true;try{scanner=new Html5Qrcode('reader');await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:100}},(d)=>{document.getElementById('scanResult').value=toCaps(d);onScanInput();stopScan();document.getElementById('scanMsg').innerHTML='<div class="ok">✅ Scanned: <b>'+toCaps(d)+'</b> — Pick Learner + ISSUE / RETURN.</div>';},()=>{});}catch(e){document.getElementById('scanMsg').innerHTML='<div class="warn">⚠️ Camera failed — Use Type tab.</div>';scanning=false;}}
-async function stopScan(){if(scanner&&scanning){try{await scanner.stop();await scanner.clear();}catch(e){}}scanning=false;}
-async function issueScanned(){let code=document.getElementById('scanResult').value,lid=document.getElementById('scanLearner').value,msg=document.getElementById('scanMsg');if(!code||!lid){msg.innerHTML='<div class="warn">⚠️ Scan + Pick Learner.</div>';return;}let book=findBook(code),learner=learners.find(l=>l.learnerId===lid);if(!book){msg.innerHTML='<div class="warn">⚠️ NOT FOUND.</div>';return;}if(book.status==='Issued'){msg.innerHTML=`<div class="warn">⚠️ Already Issued to <b>${book.learnerName}</b></div>`;return;}book.status='Issued';book.learnerName=lid+' - '+(learner?learner.name:'');try{await rtdb.ref('textbooks/'+schoolId+'/'+book.id).update({status:'Issued',learnerName:book.learnerName});}catch(e){}msg.innerHTML=`<div class="ok">✅ Issued <b>${book.number}</b> to <b>${book.learnerName}</b></div>`;onScanInput();renderPrint();}
-async function returnScanned(){let code=document.getElementById('scanResult').value,msg=document.getElementById('scanMsg');let book=findBook(code);if(!book){msg.innerHTML='<div class="warn">⚠️ Scan first.</div>';return;}book.status='Free';book.learnerName='';try{await rtdb.ref('textbooks/'+schoolId+'/'+book.id).update({status:'Free',learnerName:''});}catch(e){}msg.innerHTML=`<div class="ok">✅ Returned <b>${book.number}</b> — FREE.</div>`;onScanInput();renderPrint();}
-async function issueManual(){let code=document.getElementById('manualCode').value,lid=document.getElementById('manualLearner').value,msg=document.getElementById('manualMsg');if(!code||!lid){msg.innerHTML='<div class="warn">⚠️ Type + Pick Learner.</div>';return;}let book=findBook(code),learner=learners.find(l=>l.learnerId===lid);if(!book){msg.innerHTML='<div class="warn">⚠️ NOT FOUND.</div>';return;}if(book.status==='Issued'){msg.innerHTML=`<div class="warn">⚠️ Already Issued to <b>${book.learnerName}</b></div>`;return;}book.status='Issued';book.learnerName=lid+' - '+(learner?learner.name:'');try{await rtdb.ref('textbooks/'+schoolId+'/'+book.id).update({status:'Issued',learnerName:book.learnerName});}catch(e){}msg.innerHTML=`<div class="ok">✅ Issued <b>${book.number}</b> to <b>${book.learnerName}</b></div>`;onManualInput();}
-async function returnManual(){let code=document.getElementById('manualCode').value,msg=document.getElementById('manualMsg');let book=findBook(code);if(!book){msg.innerHTML='<div class="warn">⚠️ Type first.</div>';return;}book.status='Free';book.learnerName='';try{await rtdb.ref('textbooks/'+schoolId+'/'+book.id).update({status:'Free',learnerName:''});}catch(e){}msg.innerHTML=`<div class="ok">✅ Returned <b>${book.number}</b> — FREE.</div>`;onManualInput();}
-// ===== A4 3x5 PRINT =====
-function renderPrint(){
+// --- REAL BARCODE — CODE128 — DO NOT STRETCH — KEEP QUIET ZONE ---
+function drawBarcode(svg, code){
+  code=cleanCode(code);
+  try{
+    JsBarcode(svg, code, {format:'CODE128', lineColor:'#000000', background:'#ffffff', width:2, height:70, displayValue:false, margin:10, flat:false});
+    return true;
+  }catch(e){ return false; }
+}
+function generateTest(){
+  let code=cleanCode(document.getElementById('testCode').value);
+  document.getElementById('testCode').value=code;
+  document.getElementById('testCodeText').textContent=code;
+  let ok=drawBarcode(document.getElementById('testSvg'), code);
+  document.getElementById('testScanMsg').innerHTML=ok?`✅ Real CODE128 generated for <b>${code}</b> — Point phone camera at barcode above — Phone should show <b>${code}</b>.`:`<span style="color:#991b1b">⛔ Invalid code — Use letters + numbers only, e.g. WHS000001.</span>`;
+}
+async function startTestScan(){
+  document.getElementById('testScanBox').style.display='block';
+  try{
+    let s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); testStream=s;
+    let v=document.getElementById('testVideo'); v.srcObject=s; v.play();
+    if('BarcodeDetector' in window){
+      let d=new BarcodeDetector({formats:['code_128','code_39','ean_13','qr_code']});
+      let loop=async()=>{ if(!testStream) return; try{ let c=await d.detect(v); if(c.length){ let val=cleanCode(c[0].rawValue); let expected=cleanCode(document.getElementById('testCode').value); document.getElementById('testScanMsg').innerHTML=val===expected?`<div class="ok">✅ SCAN SUCCESS — Scanner read <b>${val}</b> — Matches printed <b>${expected}</b> — Barcode is REAL.</div>`:`<div class="warn">⚠️ Scanner read <b>${val}</b> — Expected <b>${expected}</b> — Check print.</div>`; stopTestScan(); return; } }catch(e){} if(testStream) requestAnimationFrame(loop); };
+      loop();
+    } else { document.getElementById('testScanMsg').innerHTML='⚠️ This browser has no BarcodeDetector — Use phone camera app to scan instead — Phone camera reads CODE128.'; }
+  }catch(e){ document.getElementById('testScanMsg').innerHTML='⚠️ Camera blocked — Use phone camera app to scan the barcode above.'; }
+}
+function stopTestScan(){ if(testStream){ testStream.getTracks().forEach(t=>t.stop()); testStream=null; } document.getElementById('testScanBox').style.display='none'; }
+function loadAll(){
+  let fHtml='<option value="">📚 ALL SUBJECTS — ALL CAPS</option>';
+  SUBJECT_GROUPS.forEach(g=>{ fHtml+=`<optgroup label="${g.label}">${g.items.map(s=>`<option>${s}</option>`).join('')}</optgroup>`; });
+  document.getElementById('filterSubject').innerHTML=fHtml;
+  document.getElementById('filterClass').innerHTML='<option value="">🏫 ALL CLASSES — 4A TO 12J</option>'+ALL_CLASSES.map(c=>`<option>${c}</option>`).join('');
+  demoData();
+  try{
+    rtdb.ref('stock/'+mySchoolId).once('value').then(s=>{ if(s.val()) books=Object.values(s.val()).map(b=>({...b,subject:toCaps(b.subject),title:toCaps(b.title),grade:String(b.grade)})); buildPreview(); }).catch(()=>{});
+    rtdb.ref('learners/'+mySchoolId).once('value').then(s=>{ if(s.val()) learners=Object.values(s.val()).map(l=>({...l,learnerId:l.learnerId||l.id,name:toCaps(l.name),className:toCaps(l.className),grade:String(l.grade)})); buildPreview(); }).catch(()=>{});
+  }catch(e){}
+  generateTest(); buildPreview();
+}
+function buildPreview(){
+  let type=document.getElementById('printType').value;
+  let fSub=document.getElementById('filterSubject').value; let fGrade=document.getElementById('filterGrade').value; let fClass=document.getElementById('filterClass').value; let q=toCaps(document.getElementById('searchPrint').value||''); let count=parseInt(document.getElementById('labelCount').value||'15',10); let start=toCaps(document.getElementById('startFrom').value||'');
+  if(isNaN(count)||count<1) count=15; if(count>60) count=60;
   let items=[];
-  if(printMode==='books'){
-    let grade=document.getElementById('printGrade').value,cat=document.getElementById('printCategory').value,status=document.getElementById('printStatus').value;
-    items=books.filter(b=>canTeacherSeeBook(b));
-    if(grade) items=items.filter(b=>String(b.grade)===String(grade));
-    if(cat) items=items.filter(b=>toCaps(b.category)===cat);
-    if(status) items=items.filter(b=>b.status===status);
+  if(type==='BOOK'){
+    items=books.filter(b=>{ if(fSub && toCaps(b.subject)!==fSub) return false; if(fGrade && String(b.grade)!==fGrade) return false; if(fClass && !ALL_CLASSES.filter(c=>c.replace(/[^0-9]/g,'')===String(b.grade)).includes(fClass)) return false; if(q && !(toCaps(b.title)+' '+toCaps(b.barcode)).includes(q)) return false; return true; }).map(b=>({code:cleanCode(b.barcode),topType:'📖 BOOK',sub:toCaps(b.title),grade:'GRADE '+b.grade+' — '+toCaps(b.subject)}));
+    if(start){ let idx=items.findIndex(x=>toCaps(x.code)===start); if(idx>=0) items=items.slice(idx); }
   } else {
-    let grade=document.getElementById('printLGrade').value,cls=document.getElementById('printLClass').value;
-    items=learners.filter(l=>canTeacherSeeLearner(l));
-    if(grade) items=items.filter(l=>String(l.grade)===String(grade));
-    if(cls) items=items.filter(l=>String(l.className)===String(cls));
+    items=learners.filter(l=>{ if(fGrade && String(l.grade)!==fGrade) return false; if(fClass && toCaps(l.className)!==fClass) return false; if(q && !(toCaps(l.name)+' '+toCaps(l.learnerId)).includes(q)) return false; return true; }).map(l=>({code:cleanCode(l.learnerId),topType:'👤 LEARNER',sub:toCaps(l.name),grade:'GRADE '+l.grade+' — CLASS '+toCaps(l.className)}));
+    if(start){ let idx=items.findIndex(x=>toCaps(x.code)===start); if(idx>=0) items=items.slice(idx); }
   }
-  let pages=Math.max(1,Math.ceil(items.length/15));
-  document.getElementById('printInfo').innerHTML=`${printMode==='books'?'📚 Textbooks':'👩‍🎓 Learners'}: <b>${items.length}</b> labels • <b>${pages}</b> A4 page(s) • <b>15 per page — 3 x 5</b> • Top: School + Brand + Book/Learner • Bottom: Number / Learner ID`;
-  if(!items.length){document.getElementById('printArea').innerHTML='<div class="info">No items for this filter.</div>';return;}
-  let html='';
-  for(let p=0;p<pages;p++){
-    let chunk=items.slice(p*15,(p+1)*15);
-    html+=`<div class="a4-page">`+chunk.map((it,i)=>{
-      let gi=p*15+i;
-      if(printMode==='books'){
-        return `<div class="label"><div class="label-top"><div class="label-school">WORDSWORTH HIGH SCHOOL</div><div class="label-brand">MAKHANANI LTSM</div><div class="label-book">${toCaps(it.title)}</div><div class="label-meta">${toCaps(it.category)} • GRADE ${it.grade}</div></div><div class="label-barcode"><svg id="bc-${gi}"></svg></div><div class="label-bottom"><div class="label-number">${toCaps(it.number)}</div><div class="label-learner">${it.learnerName?'ISSUED TO: '+toCaps(it.learnerName).split(' - ')[0]:'— FREE —'}</div></div></div>`;
-      } else {
-        return `<div class="label"><div class="label-top"><div class="label-school">WORDSWORTH HIGH SCHOOL</div><div class="label-brand">MAKHANANI LTSM</div><div class="label-book">${toCaps(it.name)}</div><div class="label-meta">LEARNER • GRADE ${it.grade}${it.className}</div></div><div class="label-barcode"><svg id="bc-${gi}"></svg></div><div class="label-bottom"><div class="label-number">LEARNER ID</div><div class="label-learner-id">${toCaps(it.learnerId)}</div></div></div>`;
-      }
-    }).join('')+`</div>`;
-  }
-  document.getElementById('printArea').innerHTML=html;
-  setTimeout(()=>{ items.forEach((it,i)=>{ let code=printMode==='books'?toCaps(it.number):toCaps(it.learnerId); try{ JsBarcode('#bc-'+i,code,{format:'CODE128',width:2.2,height:52,displayValue:false,margin:0,background:'#ffffff',lineColor:'#000000'}); }catch(e){} }); },80);
+  let show=items.slice(0,count);
+  let school=toCaps(document.getElementById('schoolName').value||'WORDSWORTH HIGH SCHOOL');
+  let brand=toCaps(document.getElementById('brandName').value||'MAKHANANI LTSM 2.0');
+  document.getElementById('printInfo').innerHTML=`Type: <b>${type}</b> — Showing <b>${show.length}</b> of ${items.length} — A4: <b>${Math.ceil(show.length/15)} page(s)</b> — Real CODE128 — Quiet zone 10px — Bar width 2 — Height 70 — Do NOT scale below 100%.`;
+  document.getElementById('previewInfo').innerHTML=`<b>${show.length}</b> labels — <b>${selected.size}</b> selected.`;
+  let grid=document.getElementById('previewGrid');
+  grid.innerHTML=show.map(it=>`
+    <div class="label" data-code="${it.code}" onclick="toggleSelect('${it.code}',this)" style="${selected.has(it.code)?'border-color:#d4af37;box-shadow:0 0 0 3px #d4af37':''}">
+      <div class="school">${school}</div>
+      <div class="brand">${brand}</div>
+      <div class="type">${it.topType}</div>
+      <div class="bc-wrap"><svg class="bc" data-code="${it.code}"></svg></div>
+      <div class="code">${it.code}</div>
+      <div class="sub">${it.sub}</div>
+      <div class="grade">${it.grade}</div>
+    </div>`).join('') || `<div class="info" style="grid-column:1/-1">No items for this filter.</div>`;
+  document.querySelectorAll('.bc').forEach(svg=>{ if(!drawBarcode(svg, svg.dataset.code)) svg.outerHTML='<div>BARCODE ERROR</div>'; });
 }
-loadData();
+function toggleSelect(code, el){ if(selected.has(code)){ selected.delete(code); el.style.borderColor='#0a1f4d'; el.style.boxShadow='none'; } else { selected.add(code); el.style.borderColor='#d4af37'; el.style.boxShadow='0 0 0 3px #d4af37'; } document.getElementById('previewInfo').innerHTML=`Selected: <b>${selected.size}</b>.`; }
+function selectAll(on){ if(on){ document.querySelectorAll('.label').forEach(l=>{ selected.add(l.dataset.code); l.style.borderColor='#d4af37'; l.style.boxShadow='0 0 0 3px #d4af37'; }); } else { selected.clear(); document.querySelectorAll('.label').forEach(l=>{ l.style.borderColor='#0a1f4d'; l.style.boxShadow='none'; }); } document.getElementById('previewInfo').innerHTML=`Selected: <b>${selected.size}</b>.`; }
+function printSelected(){ if(!selected.size){ alert('No labels selected — Tap labels to select, then Print Selected Only.'); return; } document.querySelectorAll('.label').forEach(l=>{ if(!selected.has(l.dataset.code)) l.style.display='none'; }); window.print(); setTimeout(()=>{ document.querySelectorAll('.label').forEach(l=>{ l.style.display=''; }); }, 500); }
+loadAll();
 </script></body></html>
