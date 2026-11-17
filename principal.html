@@ -17,15 +17,15 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 @media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>🏫 PRINCIPAL — MAKHANANI LTSM 2.0</h1><p>OVERVIEW — ALL SUBJECTS — ALL CAPS — INTERMEDIATE (4-6) TO FET (10-12) — GRADES 4-12</p>
+<header><h1>🏫 PRINCIPAL — MAKHANANI LTSM 2.0</h1><p>OVERVIEW — ALL SUBJECTS — ALL CAPS — INTERMEDIATE (4-6) TO FET (10-12) — CLASSES A TO J — 4A TO 12J — GRADES 4-12</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 <script>guardPage(4,'Principal');</script>
 </header>
 <div class="wrap">
 <div class="info" id="roleInfo">Loading...</div>
 <div class="kpi"><div><b id="kpiLearners">0</b><span>🎓 LEARNERS — 4 TO 12</span></div><div><b id="kpiBooks">0</b><span>📚 BOOKS</span></div><div><b id="kpiIssued">0</b><span>📕 ISSUED</span></div><div><b id="kpiPending">0</b><span>⏳ PENDING HOD</span></div></div>
-<div class="card"><h2>📊 Overview — Filter By Subject (ALL CAPS) + Grade (4-12) + Phase</h2>
-<div class="row"><div><label>📚 Filter Subject — ALL CAPS — All 37</label><select id="filterSubject" onchange="renderOverview()"><option value="">📚 ALL SUBJECTS — ALL CAPS</option></select></div><div><label>🎓 Filter Grade — 4 To 12</label><select id="filterGrade" onchange="renderOverview()"><option value="">🎓 ALL GRADES — 4 TO 12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>🏫 Filter Phase</label><select id="filterPhase" onchange="renderOverview()"><option value="">🏫 ALL PHASES</option><option value="INTERMEDIATE">INTERMEDIATE — 4-6</option><option value="SENIOR">SENIOR — 7-9</option><option value="FET">FET — 10-12</option></select></div><div><label>🔍 Search</label><input id="searchOverview" placeholder="🔍 Learner / Book / Teacher" oninput="renderOverview()"></div></div>
+<div class="card"><h2>📊 Overview — Filter By Subject (ALL CAPS) + Grade (4-12) + Class (A-J) + Phase</h2>
+<div class="row"><div><label>📚 Filter Subject — ALL CAPS — All 37</label><select id="filterSubject" onchange="renderOverview()"><option value="">📚 ALL SUBJECTS — ALL CAPS</option></select></div><div><label>🎓 Filter Grade — 4 To 12</label><select id="filterGrade" onchange="renderOverview()"><option value="">🎓 ALL GRADES — 4 TO 12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>🏫 Filter Class — A To J</label><select id="filterClass" onchange="renderOverview()"><option value="">🏫 ALL CLASSES — 4A TO 12J — 90 CLASSES</option></select></div><div><label>🏫 Filter Phase</label><select id="filterPhase" onchange="renderOverview()"><option value="">🏫 ALL PHASES</option><option value="INTERMEDIATE">INTERMEDIATE — 4-6</option><option value="SENIOR">SENIOR — 7-9</option><option value="FET">FET — 10-12</option></select></div><div><label>🔍 Search</label><input id="searchOverview" placeholder="🔍 Learner / Book / Teacher" oninput="renderOverview()"></div></div>
 <div id="overviewInfo" class="info">Loading...</div>
 <div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Learner / Class / Grade / Phase</th><th>Book — ALL CAPS</th><th>Subject — ALL CAPS</th><th>Teacher / HOD</th><th>Status</th></tr></thead><tbody id="overviewTable"></tbody></table></div>
 <div class="row"><button class="btn btn-green" onclick="window.print()">🖨️ PRINT OVERVIEW</button><button class="btn btn-gold" onclick="exportCSV()">📥 EXPORT CSV</button></div></div>
@@ -38,37 +38,40 @@ function toCaps(s){return String(s||'').trim().toUpperCase();}
 function phaseOf(grade){ let g=parseInt(grade,10); if(g<=6) return 'INTERMEDIATE'; if(g<=9) return 'SENIOR'; return 'FET'; }
 let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
 let mySchoolId=user?.schoolId||'WHS';
-// --- SAME 37 SUBJECTS ---
 const SUBJECT_GROUPS=[
   {label:'INTERMEDIATE — GRADES 4-6', items:['ENGLISH HOME LANGUAGE','ENGLISH FIRST ADDITIONAL LANGUAGE','AFRIKAANS HOME LANGUAGE','AFRIKAANS FIRST ADDITIONAL LANGUAGE','ISIZULU HOME LANGUAGE','ISIXHOSA HOME LANGUAGE','SESOTHO HOME LANGUAGE','SETSWANA HOME LANGUAGE','MATHEMATICS','NATURAL SCIENCES AND TECHNOLOGY','SOCIAL SCIENCES','LIFE SKILLS']},
   {label:'SENIOR — GRADES 7-9', items:['NATURAL SCIENCES','ECONOMIC AND MANAGEMENT SCIENCES','TECHNOLOGY','CREATIVE ARTS','LIFE ORIENTATION']},
   {label:'FET — GRADES 10-12', items:['MATHEMATICAL LITERACY','TECHNICAL MATHEMATICS','PHYSICAL SCIENCES','TECHNICAL SCIENCES','LIFE SCIENCES','AGRICULTURAL SCIENCES','ACCOUNTING','BUSINESS STUDIES','ECONOMICS','HISTORY','GEOGRAPHY','TOURISM','CONSUMER STUDIES','COMPUTER APPLICATIONS TECHNOLOGY','INFORMATION TECHNOLOGY','ENGINEERING GRAPHICS AND DESIGN','VISUAL ARTS','DRAMATIC ARTS','MUSIC','PHYSICAL EDUCATION','RELIGION STUDIES']}
 ];
 const ALL_SUBJECTS=[...new Set(SUBJECT_GROUPS.flatMap(g=>g.items))];
+// --- CLASSES A TO J — 90 CLASSES — SAME AS users V2.11 + teacher V2.13 + librarian V2.11 + hod V2.12 ---
+const ALL_CLASSES=['4A','4B','4C','4D','4E','4F','4G','4H','4I','4J','5A','5B','5C','5D','5E','5F','5G','5H','5I','5J','6A','6B','6C','6D','6E','6F','6G','6H','6I','6J','7A','7B','7C','7D','7E','7F','7G','7H','7I','7J','8A','8B','8C','8D','8E','8F','8G','8H','8I','8J','9A','9B','9C','9D','9E','9F','9G','9H','9I','9J','10A','10B','10C','10D','10E','10F','10G','10H','10I','10J','11A','11B','11C','11D','11E','11F','11G','11H','11I','11J','12A','12B','12C','12D','12E','12F','12G','12H','12I','12J'];
 let issues=[];
 function demoIssues(){
   return [
-    {learnerName:'LEARNER 4A-1',learnerId:'4A001',className:'4A',grade:'4',title:'ENGLISH HOME LANGUAGE GRADE 4',subject:'ENGLISH HOME LANGUAGE',teacher:'MRS MOKOENA',barcode:'WHS000001',status:'APPROVED'},
-    {learnerName:'LEARNER 6A-1',learnerId:'6A001',className:'6A',grade:'6',title:'NATURAL SCIENCES AND TECHNOLOGY GRADE 6',subject:'NATURAL SCIENCES AND TECHNOLOGY',teacher:'MR DLAMINI',barcode:'WHS000011',status:'APPROVED'},
-    {learnerName:'LEARNER 7A-1',learnerId:'7A001',className:'7A',grade:'7',title:'SOCIAL SCIENCES GRADE 7',subject:'SOCIAL SCIENCES',teacher:'MS JONES',barcode:'WHS000021',status:'PENDING HOD'},
-    {learnerName:'LEARNER 10A-1',learnerId:'10A001',className:'10A',grade:'10',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',teacher:'MRS DUBE',barcode:'WHS000031',status:'APPROVED'},
-    {learnerName:'LEARNER 12A-1',learnerId:'12A001',className:'12A',grade:'12',title:'HISTORY GRADE 12',subject:'HISTORY',teacher:'MS JONES',barcode:'WHS000041',status:'PENDING HOD'},
+    {learnerName:'LEARNER 4J-1',learnerId:'4J001',className:'4J',grade:'4',title:'ENGLISH HOME LANGUAGE GRADE 4',subject:'ENGLISH HOME LANGUAGE',teacher:'MRS MOKOENA',barcode:'WHS000001',status:'APPROVED'},
+    {learnerName:'LEARNER 6J-1',learnerId:'6J001',className:'6J',grade:'6',title:'NATURAL SCIENCES AND TECHNOLOGY GRADE 6',subject:'NATURAL SCIENCES AND TECHNOLOGY',teacher:'MR DLAMINI',barcode:'WHS000011',status:'APPROVED'},
+    {learnerName:'LEARNER 7J-1',learnerId:'7J001',className:'7J',grade:'7',title:'SOCIAL SCIENCES GRADE 7',subject:'SOCIAL SCIENCES',teacher:'MS JONES',barcode:'WHS000021',status:'PENDING HOD'},
+    {learnerName:'LEARNER 10J-1',learnerId:'10J001',className:'10J',grade:'10',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',teacher:'MRS DUBE',barcode:'WHS000031',status:'APPROVED'},
+    {learnerName:'LEARNER 12J-1',learnerId:'12J001',className:'12J',grade:'12',title:'HISTORY GRADE 12',subject:'HISTORY',teacher:'MS JONES',barcode:'WHS000041',status:'PENDING HOD'},
   ];
 }
 function loadAll(){
-  document.getElementById('roleInfo').innerHTML=`🏫 <b>${toCaps(user?.name||'PRINCIPAL')}</b> — PRINCIPAL — RANK 4 — School: <b>${mySchoolId}</b><br>Sees ALL subjects — <b>${ALL_SUBJECTS.length} ALL CAPS</b> — Intermediate 4-6, Senior 7-9, FET 10-12 — Grades 4-12 — No subject limit.`;
+  document.getElementById('roleInfo').innerHTML=`🏫 <b>${toCaps(user?.name||'PRINCIPAL')}</b> — PRINCIPAL — RANK 4 — School: <b>${mySchoolId}</b><br>Sees ALL subjects — <b>${ALL_SUBJECTS.length} ALL CAPS</b> — Intermediate 4-6, Senior 7-9, FET 10-12 — Grades 4-12 — Classes <b>4A to 12J — A to J — 90 classes</b> — No subject / class limit.`;
   let fHtml='<option value="">📚 ALL SUBJECTS — ALL CAPS</option>';
   SUBJECT_GROUPS.forEach(g=>{ fHtml+=`<optgroup label="${g.label}">${g.items.map(s=>`<option>${s}</option>`).join('')}</optgroup>`; });
   document.getElementById('filterSubject').innerHTML=fHtml;
+  document.getElementById('filterClass').innerHTML='<option value="">🏫 ALL CLASSES — 4A TO 12J — 90 CLASSES</option>'+ALL_CLASSES.map(c=>`<option>${c}</option>`).join('');
   issues=demoIssues();
   try{ rtdb.ref('issues/'+mySchoolId).once('value').then(s=>{ if(s.val()) issues=Object.values(s.val()); renderOverview(); }).catch(()=>{}); }catch(e){}
   renderOverview();
 }
 function renderOverview(){
-  let q=toCaps(document.getElementById('searchOverview').value||''); let fSub=document.getElementById('filterSubject').value; let fGrade=document.getElementById('filterGrade').value; let fPhase=document.getElementById('filterPhase').value;
+  let q=toCaps(document.getElementById('searchOverview').value||''); let fSub=document.getElementById('filterSubject').value; let fGrade=document.getElementById('filterGrade').value; let fClass=document.getElementById('filterClass').value; let fPhase=document.getElementById('filterPhase').value;
   let list=issues.filter(i=>{
     if(fSub && toCaps(i.subject)!==fSub) return false;
     if(fGrade && String(i.grade)!==fGrade) return false;
+    if(fClass && toCaps(i.className)!==fClass) return false;
     if(fPhase && phaseOf(i.grade)!==fPhase) return false;
     if(q && !(toCaps(i.learnerName)+' '+toCaps(i.title)+' '+toCaps(i.teacher)).includes(q)) return false;
     return true;
@@ -77,8 +80,8 @@ function renderOverview(){
   document.getElementById('kpiBooks').textContent=issues.length;
   document.getElementById('kpiIssued').textContent=issues.filter(i=>['APPROVED','ISSUED'].includes(toCaps(i.status))).length;
   document.getElementById('kpiPending').textContent=issues.filter(i=>toCaps(i.status)==='PENDING HOD').length;
-  document.getElementById('overviewInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${issues.length}</b> issues. Principal sees ALL — No subject filter by default.`;
-  document.getElementById('overviewTable').innerHTML=list.length?list.map(i=>`<tr><td><b>${toCaps(i.learnerName)}</b><br>${i.learnerId} — ${i.className} — Grade ${i.grade} — ${phaseOf(i.grade)}</td><td><b>${toCaps(i.title)}</b><br>${i.barcode}</td><td>${toCaps(i.subject)}<br>Grade ${i.grade}</td><td>${toCaps(i.teacher)}</td><td>${toCaps(i.status)}</td></tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px">No issues for this filter.</td></tr>`;
+  document.getElementById('overviewInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${issues.length}</b> issues. Principal sees ALL — No subject / class limit — Classes 4A-12J.`;
+  document.getElementById('overviewTable').innerHTML=list.length?list.map(i=>`<tr><td><b>${toCaps(i.learnerName)}</b><br>${i.learnerId} — ${i.className} — Grade ${i.grade} — ${phaseOf(i.grade)} ${ALL_CLASSES.includes(toCaps(i.className))?'':'<span style="color:#991b1b">⚠️ Invalid</span>'}</td><td><b>${toCaps(i.title)}</b><br>${i.barcode}</td><td>${toCaps(i.subject)}<br>Grade ${i.grade}</td><td>${toCaps(i.teacher)}</td><td>${toCaps(i.status)}</td></tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px">No issues for this filter.</td></tr>`;
 }
 function exportCSV(){
   let rows=[['LEARNER','CLASS','GRADE','PHASE','BOOK','SUBJECT','TEACHER','STATUS']];
