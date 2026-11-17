@@ -24,10 +24,12 @@ select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:middle}th{background:#0a1f4d;color:#fff}
 .badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-teacher{background:#dbeafe;color:#1e40af}.badge-librarian{background:#e9d5ff;color:#6b21a8}.badge-hod{background:#fef3c7;color:#92400e}.badge-principal{background:#dcfce7;color:#166534}.badge-admin{background:#fee2e2;color:#991b1b}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}table{font-size:12px}}
+.hod-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.hod-grid div{background:#f5f3ff;border:2px solid #7c3aed;border-radius:8px;padding:10px;font-size:12px;line-height:1.5}
+@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}table{font-size:12px}.hod-grid{grid-template-columns:1fr}}
 </style></head>
 <body>
-<header><h1>👥 USERS — MAKHANANI LTSM 2.0</h1><p>ADMIN ONLY • ADD / EDIT USERS • HOD + PRINCIPAL INCLUDED • PASSWORD 1234 FOR DEMO</p>
+<header><h1>👥 USERS — MAKHANANI LTSM 2.0</h1><p>ADMIN ONLY • ADD / EDIT USERS • 4 HODs INCLUDED • PASSWORD 1234 FOR DEMO</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 <script>guardPage(5,'Admin');</script>
 </header>
@@ -35,14 +37,16 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 <div class="info" id="roleInfo">Loading...</div>
 <div class="kpi"><div><b id="kpiTotal">0</b><span>👥 TOTAL USERS</span></div><div><b id="kpiTeacher">0</b><span>👩‍🏫 TEACHERS</span></div><div><b id="kpiLib">0</b><span>📚 LIBRARIANS</span></div><div><b id="kpiHod">0</b><span>👔 HODs</span></div><div><b id="kpiPrin">0</b><span>🏫 PRINCIPALS</span></div></div>
 
-<div class="card"><h2>🌱 Seed Demo Users — 1 Tap</h2><div class="info">Adds / Resets all 8 demo users below, including <b>HOD MATHS, HOD ENGLISH, PRINCIPAL</b>.<br>Use this if login says User Not Found.</div><button class="btn btn-gold btn-full" onclick="seedDemoUsers()">🌱 SEED / RESET 8 DEMO USERS →</button><div id="seedMsg"></div></div>
+<div class="card"><h2>👔 HODs — 4 HODs — Each Approves ONLY Their Subject</h2><div class="hod-grid" id="hodList"></div></div>
+
+<div class="card"><h2>🌱 Seed Demo Users — 1 Tap</h2><div class="info">Adds / Resets all <b>10</b> demo users below, including <b>HOD MATHS, HOD ENGLISH, HOD SCIENCE, HOD HISTORY, PRINCIPAL</b>.<br>Use this if login says User Not Found.</div><button class="btn btn-gold btn-full" onclick="seedDemoUsers()">🌱 SEED / RESET 10 DEMO USERS →</button><div id="seedMsg"></div></div>
 
 <div class="card"><h2>➕ Add / Edit User</h2>
-<div class="row"><div><label>👤 Full Name *</label><input id="uName" placeholder="e.g. HOD MATHS"></div><div><label>📧 Email *</label><input id="uEmail" placeholder="e.g. hod.maths@wordsworth.co.za"></div></div>
+<div class="row"><div><label>👤 Full Name *</label><input id="uName" placeholder="e.g. HOD SCIENCE"></div><div><label>📧 Email *</label><input id="uEmail" placeholder="e.g. hod.science@wordsworth.co.za"></div></div>
 <div class="row"><div><label>🔑 Password *</label><input id="uPass" value="1234"></div><div><label>🎭 Role *</label><select id="uRole" onchange="onRoleChange()"><option value="Teacher">👩‍🏫 Teacher — Rank 1</option><option value="Librarian">📚 Librarian — Rank 2</option><option value="HOD">👔 HOD — Rank 3</option><option value="Principal">🏫 Principal — Rank 4</option><option value="Admin">⚙️ Admin — Rank 5</option></select></div></div>
 <div class="row"><div><label>📚 Subject * — For Teacher / HOD</label><select id="uSubject"><option value="">-- PICK SUBJECT --</option><option>MATHEMATICS</option><option>ENGLISH</option><option>PHYSICAL SCIENCES</option><option>LIFE SCIENCES</option><option>ACCOUNTING</option><option>BUSINESS STUDIES</option><option>HISTORY</option><option>GEOGRAPHY</option><option>ALL SUBJECTS</option></select></div><div><label>🏫 School *</label><select id="uSchool"><option value="WHS">WORDSWORTH HIGH SCHOOL (WHS)</option><option value="EHS">ELDORADO PARK HIGH SCHOOL (EHS)</option><option value="MHS">MAKHANANI HIGH SCHOOL (MHS)</option></select></div></div>
 <div id="teacherFields"><label>🏫 Teaching Classes — For Teacher Only (comma separated)</label><input id="uClasses" placeholder="e.g. 10A, 10B, 11A"></div>
-<div id="hodInfo" class="info" style="display:none">👔 HOD: Subject is required — HOD approves ONLY that subject. Classes not needed for HOD.</div>
+<div id="hodInfo" class="info" style="display:none">👔 HOD: Subject is required — HOD approves ONLY that subject. Classes not needed for HOD.<br>Examples: HOD SCIENCE → PHYSICAL SCIENCES, HOD HISTORY → HISTORY, HOD MATHS → MATHEMATICS, HOD ENGLISH → ENGLISH.</div>
 <div id="prinInfo" class="info" style="display:none">🏫 Principal: Subject = ALL SUBJECTS — Principal approves ANY subject. Classes not needed.</div>
 <button class="btn btn-green btn-full" onclick="saveUser()">💾 SAVE USER →</button><div id="saveMsg"></div>
 </div>
@@ -64,6 +68,8 @@ let demoUsers=[
   {email:'librarian@wordsworth.co.za',pass:'1234',name:'LIBRARIAN WHS',role:'Librarian',rank:2,subject:'',teachingClasses:[],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL'},
   {email:'hod.maths@wordsworth.co.za',pass:'1234',name:'HOD MATHS',role:'HOD',rank:3,subject:'MATHEMATICS',teachingClasses:[],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL'},
   {email:'hod.english@wordsworth.co.za',pass:'1234',name:'HOD ENGLISH',role:'HOD',rank:3,subject:'ENGLISH',teachingClasses:[],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL'},
+  {email:'hod.science@wordsworth.co.za',pass:'1234',name:'HOD SCIENCE',role:'HOD',rank:3,subject:'PHYSICAL SCIENCES',teachingClasses:[],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL'},
+  {email:'hod.history@wordsworth.co.za',pass:'1234',name:'HOD HISTORY',role:'HOD',rank:3,subject:'HISTORY',teachingClasses:[],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL'},
   {email:'principal@wordsworth.co.za',pass:'1234',name:'PRINCIPAL WHS',role:'Principal',rank:4,subject:'ALL SUBJECTS',teachingClasses:[],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL'},
   {email:'admin@wordsworth.co.za',pass:'1234',name:'ADMIN WHS',role:'Admin',rank:5,subject:'ALL SUBJECTS',teachingClasses:[],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL'},
 ];
@@ -84,6 +90,8 @@ function renderAll(note){
   document.getElementById('kpiLib').textContent=usersList.filter(u=>u.role==='Librarian').length;
   document.getElementById('kpiHod').textContent=usersList.filter(u=>u.role==='HOD').length;
   document.getElementById('kpiPrin').textContent=usersList.filter(u=>u.role==='Principal').length;
+  let hods=usersList.filter(u=>u.role==='HOD');
+  document.getElementById('hodList').innerHTML=hods.length?hods.map(h=>`<div><b>👔 ${toCaps(h.name)}</b><br>${h.email}<br>Subject: <b>${toCaps(h.subject)}</b><br><small>Approves ONLY ${toCaps(h.subject)}</small></div>`).join(''):'No HODs — Tap SEED below.';
   renderUsers();
 }
 function renderUsers(){
@@ -144,7 +152,7 @@ async function deleteUser(id){
 }
 async function seedDemoUsers(){
   let el=document.getElementById('seedMsg');
-  el.innerHTML='<div class="info">Seeding 8 demo users...</div>';
+  el.innerHTML='<div class="info">Seeding 10 demo users...</div>';
   try{
     for(let u of demoUsers){
       let key=u.email.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();
@@ -152,7 +160,7 @@ async function seedDemoUsers(){
       await rtdb.ref('users/WHS/'+key).set(rec);
       await rtdb.ref('usersByEmail/'+key).set(rec);
     }
-    el.innerHTML=`<div class="ok">✅ Seeded <b>8</b> demo users — HOD MATHS, HOD ENGLISH, PRINCIPAL now exist.</div>`;
+    el.innerHTML=`<div class="ok">✅ Seeded <b>10</b> demo users — HOD MATHS, HOD ENGLISH, HOD SCIENCE, HOD HISTORY now exist.</div>`;
     usersList=demoUsers.map(u=>({...u,id:u.email.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase(),password:u.pass}));
     renderAll();
   }catch(e){ el.innerHTML=`<div class="warn">⛔ Seed failed: ${e.message} — Showing demo list locally.</div>`; demoData(); }
