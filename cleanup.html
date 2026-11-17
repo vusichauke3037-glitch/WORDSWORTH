@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cleanup - Makhanani LTSM 2.0</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
+header{background:#dc2626;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
+header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#fff}
+.wrap{max-width:900px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
+.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px;width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#dc2626;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-blue{background:#2563eb;color:#fff}.btn-orange{background:#ea580c;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.warn{background:#fee2e2;border:2px solid #dc2626;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
+.checkbox{display:flex;gap:10px;align-items:center;background:#f8fafc;border:2px solid #e2e8f0;border-radius:8px;padding:10px;margin-top:8px;font-size:13px;font-weight:700}.checkbox input{width:22px;height:22px;cursor:pointer}
+@media(max-width:700px){.row{flex-direction:column}}
+</style></head>
+<body>
+<header><h1>🧹 CLEANUP — MAKHANANI LTSM 2.0 — DELETE DEMO DATA</h1><p>ADMIN ONLY — RANK 5 — THIS CANNOT BE UNDONE — BACKUP FIRST — DEMO ONLY, REAL DATA KEPT IF YOU TICK CORRECTLY</p>
+</header>
+<div class="wrap">
+<div class="card"><h2>👤 Who Am I — Admin Only</h2><div class="info" id="roleInfo">Loading...</div><div class="row"><button class="btn btn-grey" onclick="go('login.html')">🔐 GO TO LOGIN</button><button class="btn btn-blue" onclick="go('index.html')">🏠 GO TO HOME</button><button class="btn btn-green" onclick="go('users.html')">👥 GO TO USERS</button></div></div>
+
+<div class="card"><h2>⚠️ Step 0 — Backup Before Cleanup — Do This First</h2>
+<div class="warn"><b>Cleanup cannot be undone.</b> Before you tap DELETE, export your data:<br>1. Go to Principal → EXPORT CSV → Save file.<br>2. Go to Firebase Console → Realtime DB → Data → ⋮ → Export JSON → Save file.<br>3. Then come back here and cleanup.<br><br>If you have REAL learners / books already, <b>do NOT tick DELETE ALL</b> — Use DEMO ONLY mode below — It keeps real data.</div>
+<div class="row"><button class="btn btn-teal" onclick="exportAllCsv()">📥 EXPORT ALL AS CSV — BACKUP NOW</button><button class="btn btn-gold" onclick="window.open('https://console.firebase.google.com/project/makhanani-ltsm/database/makhanani-ltsm-default-rtdb/data','_blank')">☁️ OPEN FIREBASE CONSOLE → EXPORT JSON</button></div></div>
+
+<div class="card"><h2>🔍 Step 1 — Scan — See What Will Be Deleted — No Delete Yet</h2>
+<div class="row"><div><label>🏫 School ID — e.g. WHS</label><input id="schoolId" value="WHS"></div><div><label>🧪 Mode</label><select id="mode"><option value="DEMO_ONLY">🧪 DEMO ONLY — Delete demo / TEST / SAMPLE only — Keep real</option><option value="ALL">💥 DELETE ALL — Delete EVERYTHING in this school — Use only if school is empty / fresh start</option></select></div></div>
+<div class="row"><button class="btn btn-blue" onclick="scanDemo()">🔍 SCAN NOW — SHOW WHAT WILL BE DELETED</button><button class="btn btn-grey" onclick="clearScan()">🧹 CLEAR SCAN</button></div>
+<div class="info" id="scanInfo">Tap SCAN NOW to see demo learners / books / issues / users that will be deleted. Nothing is deleted until you tap DELETE in Step 2.</div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Type</th><th>Will Delete</th><th>Will Keep</th><th>Examples To Delete</th></tr></thead><tbody id="scanTable"></tbody></table></div></div>
+
+<div class="card"><h2>🗑️ Step 2 — Delete — Type DELETE To Confirm — Then Tap Delete</h2>
+<div class="warn"><b>Type DELETE in the box below to enable Delete buttons.</b> This is to stop accidental tap. After you type DELETE, buttons turn red and work. After delete, type box clears.</div>
+<label>✏️ Type DELETE To Confirm — All Caps</label><input id="confirmBox" placeholder="Type DELETE" oninput="checkConfirm()">
+<label class="checkbox"><input type="checkbox" id="confirmBackup"> ✅ I have backed up — I exported CSV / JSON — I understand this cannot be undone</label>
+<label class="checkbox"><input type="checkbox" id="confirmDemoOnly"> ✅ I understand: DEMO ONLY keeps real data — DELETE ALL deletes everything in WHS</label>
+<div class="row"><button class="btn btn-red" id="btnDeleteDemo" onclick="deleteDemo()" disabled>🧹 DELETE DEMO ONLY →</button><button class="btn btn-red" id="btnDeleteAll" onclick="deleteAll()" disabled>💥 DELETE ALL IN WHS →</button></div>
+<div class="info" id="deleteInfo"></div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Deleted</th><th>Count</th><th>Detail</th></tr></thead><tbody id="deleteTable"></tbody></table></div></div>
+
+<div class="card"><h2>🔐 Step 3 — Firebase Auth — Delete Demo Users — Must Do In Console (Browser Cannot)</h2>
+<div class="info">Browser cannot delete Firebase Auth users for security. Do this in 30 seconds:<br>1. Tap COPY DEMO EMAILS below → Paste in Firebase Console → Auth → Users → Tick all 12 → Delete.<br>2. Or open Firebase Console → Auth → Users → Tick 12 demo emails → Delete.<br><br><b>Demo emails to delete:</b> mokoena@, dlamini@, dube@, smith@, jones@, librarian@, hod.maths@, hod.english@, hod.science@, hod.commerce@, principal@, admin@wordsworth.co.za</div>
+<div class="row"><button class="btn btn-orange" onclick="copyDemoEmails()">📋 COPY 12 DEMO EMAILS →</button><button class="btn btn-teal" onclick="window.open('https://console.firebase.google.com/project/makhanani-ltsm/authentication/users','_blank')">☁️ OPEN FIREBASE AUTH → DELETE 12 DEMO USERS</button></div>
+<div class="info" id="copyInfo"></div>
+<textarea id="demoEmailsBox" style="width:100%;padding:12px;border:2px solid #0a1f4d;border-radius:8px;font-size:12px;font-family:monospace;min-height:80px;margin-top:10px" readonly>mokoena@wordsworth.co.za
+dlamini@wordsworth.co.za
+dube@wordsworth.co.za
+smith@wordsworth.co.za
+jones@wordsworth.co.za
+librarian@wordsworth.co.za
+hod.maths@wordsworth.co.za
+hod.english@wordsworth.co.za
+hod.science@wordsworth.co.za
+hod.commerce@wordsworth.co.za
+principal@wordsworth.co.za
+admin@wordsworth.co.za</textarea></div>
+
+<div class="card"><h2>✅ Step 4 — Verify — After Cleanup</h2>
+<div class="row"><button class="btn btn-green" onclick="verifyClean()">✅ VERIFY NOW — CHECK COUNTS ARE 0 / REAL ONLY</button><button class="btn btn-blue" onclick="go('index.html')">🏠 GO TO HOME → CHECK KPI = 0 / REAL ONLY</button></div>
+<div class="info" id="verifyInfo"></div></div>
+</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const rtdb=firebase.database(); const auth=firebase.auth();
+function toCaps(s){return String(s||'').trim().toUpperCase();}
+function go(page){ window.location.href=page; }
+let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
+let scanned={learners:[],books:[],issues:[],users:[],allLearners:[],allBooks:[],allIssues:[],allUsers:[]};
+// ===== DEMO DETECTION — What counts as demo? =====
+const DEMO_NAMES=['TEST','MOKOENA','DLAMINI','DUBE','SMITH','JONES','SAMPLE','DEMO','EXAMPLE','THABO','LERATO','NALEDI','SIPHO','AYANDA','EMMA'];
+const DEMO_EMAILS=['mokoena@wordsworth.co.za','dlamini@wordsworth.co.za','dube@wordsworth.co.za','smith@wordsworth.co.za','jones@wordsworth.co.za','librarian@wordsworth.co.za','hod.maths@wordsworth.co.za','hod.english@wordsworth.co.za','hod.science@wordsworth.co.za','hod.commerce@wordsworth.co.za','principal@wordsworth.co.za','admin@wordsworth.co.za'];
+const DEMO_USER_IDS=['U1','U2','U3','U4','U5','U6','U7','U8','U9','U10','U11','U12'];
+const DEMO_USER_NAMES=['MRS MOKOENA','MR DLAMINI','MRS DUBE','MR SMITH','MRS JONES','LIBRARIAN WHS','HOD MATHS','HOD ENGLISH','HOD SCIENCE','HOD COMMERCE','PRINCIPAL WHS','ADMIN WHS'];
+function isDemoLearner(l){
+  let n=toCaps(l.name||''); let id=toCaps(l.learnerId||'');
+  // TEST in name = demo, OR demo sample names
+  if(n.includes('TEST')) return true;
+  if(DEMO_NAMES.some(d=>n===d || n.startsWith(d+' ') || n.endsWith(' '+d))) return true;
+  // Sample bulk names: THABO MOKOENA, LERATO DUBE, NALEDI SMITH, SIPHO JONES, AYANDA KHUMALO, EMMA BROWN
+  if(['THABO MOKOENA','LERATO DUBE','NALEDI SMITH','SIPHO JONES','AYANDA KHUMALO','EMMA BROWN','THABO TEST','LERATO TEST','SIPHO TEST'].includes(n)) return true;
+  return false;
+}
+function isDemoBook(b){
+  let t=toCaps(b.title||''); let s=toCaps(b.subject||'');
+  // If book was created by bulk sample (MATHS G4 30 etc) we cannot tell from title alone — So demo book = barcode in scanned demo range OR title contains SAMPLE / TEST
+  if(t.includes('TEST') || t.includes('SAMPLE') || t.includes('DEMO')) return true;
+  return false;
+}
+function isDemoUser(u){
+  let n=toCaps(u.name||''); let e=String(u.email||'').toLowerCase();
+  if(DEMO_EMAILS.includes(e)) return true;
+  if(DEMO_USER_NAMES.includes(n)) return true;
+  if(DEMO_USER_IDS.includes(String(u.id||''))) return true;
+  return false;
+}
+function isDemoIssue(i){
+  // Issue is demo if learner is demo OR book is demo OR teacher is demo
+  if(isDemoLearner({name:i.learnerName, learnerId:i.learnerId})) return true;
+  if(DEMO_USER_NAMES.includes(toCaps(i.teacher||''))) return true;
+  return false;
+}
+function loadRole(){
+  if(!user){ document.getElementById('roleInfo').innerHTML='<div class="warn">⛔ Not logged in — Go to Login first.</div>'; return; }
+  let isAdmin=toCaps(user.role)==='ADMIN' && (user.rank||0)>=5;
+  document.getElementById('roleInfo').innerHTML=`👤 <b>${toCaps(user.name)}</b> — ${toCaps(user.role)} — RANK ${user.rank||0} — School: <b>${toCaps(user.schoolName||'WORDSWORTH HIGH SCHOOL')}</b> (${user.schoolId||'WHS'})<br>${isAdmin?`✅ <b>ADMIN — You can cleanup.</b>`: `<span style="color:#991b1b"><b>⛔ NOT ADMIN — Only Admin Rank 5 can cleanup. Ask Admin to login.</b></span>`}`;
+  if(!isAdmin){
+    document.getElementById('btnDeleteDemo').disabled=true;
+    document.getElementById('btnDeleteAll').disabled=true;
+  }
+}
+function checkConfirm(){
+  let v=document.getElementById('confirmBox').value.trim();
+  let backup=document.getElementById('confirmBackup').checked;
+  let demoOnly=document.getElementById('confirmDemoOnly').checked;
+  let isAdmin=user && toCaps(user.role)==='ADMIN' && (user.rank||0)>=5;
+  let ok=v==='DELETE' && backup && demoOnly && isAdmin;
+  document.getElementById('btnDeleteDemo').disabled=!ok;
+  document.getElementById('btnDeleteAll').disabled=!ok;
+  if(v && v!=='DELETE') document.getElementById('deleteInfo').innerHTML='<div class="warn">⛔ Type DELETE in all caps — Not "'+v+'"</div>';
+}
+document.getElementById('confirmBackup').addEventListener('change',checkConfirm);
+document.getElementById('confirmDemoOnly').addEventListener('change',checkConfirm);
+async function scanDemo(){
+  let schoolId=toCaps(document.getElementById('schoolId').value||'WHS')||'WHS';
+  let mode=document.getElementById('mode').value;
+  document.getElementById('scanInfo').innerHTML='<div class="info">⏳ Scanning Firebase — Learners + Books + Issues + Users for '+schoolId+'...</div>';
+  try{
+    let [ls, bs, is, us]=await Promise.all([
+      rtdb.ref('learners/'+schoolId).once('value'),
+      rtdb.ref('stock/'+schoolId).once('value'),
+      rtdb.ref('issues/'+schoolId).once('value'),
+      rtdb.ref('users').once('value'),
+    ]);
+    let allLearners=ls.val()?Object.entries(ls.val()).map(([k,v])=>({key:k,...v})): [];
+    let allBooks=bs.val()?Object.entries(bs.val()).map(([k,v])=>({key:k,...v})): [];
+    let allIssues=is.val()?Object.entries(is.val()).map(([k,v])=>({key:k,...v})): [];
+    let allUsers=us.val()?Object.entries(us.val()).map(([k,v])=>({key:k,...v})): [];
+    scanned.allLearners=allLearners; scanned.allBooks=allBooks; scanned.allIssues=allIssues; scanned.allUsers=allUsers;
+    // Demo detection
+    let demoLearners=allLearners.filter(isDemoLearner);
+    let demoBooks=allBooks.filter(isDemoBook);
+    // Also: If mode is DEMO_ONLY, books from bulk sample are hard to detect by title — So also show books with barcode <= WHS000123 as "possible demo" if they were created in test — User can choose DELETE ALL if they want to clear all books
+    // For safety, demo books = only TEST/SAMPLE titles — Bulk sample books (MATHS G4 etc) are NOT auto-deleted in DEMO_ONLY — User must use DELETE ALL or delete manually in Librarian if they want to clear bulk sample books
+    let demoIssues=allIssues.filter(isDemoIssue);
+    let demoUsers=allUsers.filter(isDemoUser);
+    scanned.learners=demoLearners; scanned.books=demoBooks; scanned.issues=demoIssues; scanned.users=demoUsers;
+    document.getElementById('scanTable').innerHTML=`
+      <tr><td><b>👩‍🎓 Learners</b></td><td><b>${mode==='ALL'?allLearners.length:demoLearners.length}</b></td><td><b>${mode==='ALL'?0:allLearners.length-demoLearners.length}</b></td><td>${(mode==='ALL'?allLearners:demoLearners).slice(0,5).map(l=>toCaps(l.name)+' — '+l.learnerId).join('<br>')||'None'}${(mode==='ALL'?allLearners:demoLearners).length>5?'<br>... +'+((mode==='ALL'?allLearners:demoLearners).length-5)+' more':''}</td></tr>
+      <tr><td><b>📚 Books</b></td><td><b>${mode==='ALL'?allBooks.length:demoBooks.length}</b></td><td><b>${mode==='ALL'?0:allBooks.length-demoBooks.length}</b></td><td>${(mode==='ALL'?allBooks:demoBooks).slice(0,5).map(b=>b.barcode+' — '+toCaps(b.title)).join('<br>')||'None — Bulk sample books (MATHS G4 etc) are NOT auto-deleted in DEMO ONLY — Use DELETE ALL to clear all books, or delete in Librarian'}${(mode==='ALL'?allBooks:demoBooks).length>5?'<br>... +'+((mode==='ALL'?allBooks:demoBooks).length-5)+' more':''}</td></tr>
+      <tr><td><b>📕 Issues</b></td><td><b>${mode==='ALL'?allIssues.length:demoIssues.length}</b></td><td><b>${mode==='ALL'?0:allIssues.length-demoIssues.length}</b></td><td>${(mode==='ALL'?allIssues:demoIssues).slice(0,5).map(i=>toCaps(i.learnerName)+' → '+i.bookBarcode).join('<br>')||'None'}</td></tr>
+      <tr><td><b>👥 Users</b></td><td><b>${mode==='ALL'?allUsers.length:demoUsers.length}</b></td><td><b>${mode==='ALL'?0:allUsers.length-demoUsers.length}</b></td><td>${(mode==='ALL'?allUsers:demoUsers).slice(0,5).map(u=>toCaps(u.name)+' — '+u.email).join('<br>')||'None'}${(mode==='ALL'?allUsers:demoUsers).length>5?'<br>... +'+((mode==='ALL'?allUsers:demoUsers).length-5)+' more':''}</td></tr>
+    `;
+    document.getElementById('scanInfo').innerHTML=`<div class="ok">✅ Scanned <b>${schoolId}</b> — Mode: <b>${mode}</b> — Learners: ${allLearners.length} total / ${mode==='ALL'?allLearners.length:demoLearners.length} to delete — Books: ${allBooks.length} total / ${mode==='ALL'?allBooks.length:demoBooks.length} to delete (DEMO ONLY does NOT delete bulk sample books — See note) — Issues: ${allIssues.length} / ${mode==='ALL'?allIssues.length:demoIssues.length} — Users: ${allUsers.length} / ${mode==='ALL'?allUsers.length:demoUsers.length}<br><b>Next:</b> Type DELETE + Tick 2 boxes → Tap DELETE button.</div>`;
+  }catch(e){
+    document.getElementById('scanInfo').innerHTML='<div class="warn">⛔ Scan failed: '+e.message+' — Check Firebase rules — Auth must be logged in as Admin.</div>';
+  }
+}
+function clearScan(){ scanned={learners:[],books:[],issues:[],users:[],allLearners:[],allBooks:[],allIssues:[],allUsers:[]}; document.getElementById('scanTable').innerHTML=''; document.getElementById('scanInfo').innerHTML='Cleared. Tap SCAN NOW again.'; }
+async function deleteDemo(){
+  let schoolId=toCaps(document.getElementById('schoolId').value||'WHS')||'WHS';
+  if(!scanned.learners.length && !scanned.books.length && !scanned.issues.length && !scanned.users.length){
+    if(!confirm('No scan yet — Or scan shows 0 demo items. Tap SCAN NOW first? Tap OK to scan now, Cancel to delete anyway (will delete 0).')) return;
+    await scanDemo();
+  }
+  if(!confirm(`DELETE DEMO ONLY in ${schoolId}?\n\nLearners: ${scanned.learners.length}\nBooks: ${scanned.books.length} (TEST/SAMPLE titles only)\nIssues: ${scanned.issues.length}\nUsers: ${scanned.users.length} (demo users in Realtime DB only)\n\nReal learners / books / issues / users will be KEPT.\n\nTap OK to delete.`)) return;
+  await doDelete(scanned.learners, scanned.books, scanned.issues, scanned.users, schoolId, 'DEMO ONLY');
+}
+async function deleteAll(){
+  let schoolId=toCaps(document.getElementById('schoolId').value||'WHS')||'WHS';
+  if(!confirm(`💥 DELETE ALL in ${schoolId}?\n\nThis deletes EVERY learner, EVERY book, EVERY issue in ${schoolId}, and EVERY user in users node.\n\nThis cannot be undone.\n\nAre you SURE? Tap OK only if school is fresh / empty / you have backup.`)) return;
+  if(!confirm('Second confirm — DELETE ALL — Type OK in your head — Tap OK again to delete everything.')) return;
+  await doDelete(scanned.allLearners, scanned.allBooks, scanned.allIssues, scanned.allUsers, schoolId, 'DELETE ALL');
+}
+async function doDelete(learnersToDelete, booksToDelete, issuesToDelete, usersToDelete, schoolId, modeLabel){
+  let deleted={learners:0,books:0,issues:0,users:0,errors:[]};
+  document.getElementById('deleteInfo').innerHTML='<div class="info">⏳ Deleting...</div>';
+  for(let l of learnersToDelete){
+    try{ await rtdb.ref('learners/'+schoolId+'/'+l.key).remove(); deleted.learners++; }catch(e){ deleted.errors.push('Learner '+l.key+': '+e.message); }
+  }
+  for(let b of booksToDelete){
+    try{ await rtdb.ref('stock/'+schoolId+'/'+b.key).remove(); deleted.books++; }catch(e){ deleted.errors.push('Book '+b.key+': '+e.message); }
+  }
+  for(let i of issuesToDelete){
+    try{ await rtdb.ref('issues/'+schoolId+'/'+i.key).remove(); deleted.issues++; }catch(e){ deleted.errors.push('Issue '+i.key+': '+e.message); }
+  }
+  for(let u of usersToDelete){
+    try{ await rtdb.ref('users/'+u.key).remove(); deleted.users++; }catch(e){ deleted.errors.push('User '+u.key+': '+e.message); }
+  }
+  document.getElementById('deleteTable').innerHTML=`
+    <tr><td><b>👩‍🎓 Learners Deleted</b></td><td><b>${deleted.learners}</b></td><td>${learnersToDelete.slice(0,5).map(l=>toCaps(l.name)+' — '+l.learnerId).join('<br>')||'None'}</td></tr>
+    <tr><td><b>📚 Books Deleted</b></td><td><b>${deleted.books}</b></td><td>${booksToDelete.slice(0,5).map(b=>b.barcode+' — '+toCaps(b.title)).join('<br>')||'None'}</td></tr>
+    <tr><td><b>📕 Issues Deleted</b></td><td><b>${deleted.issues}</b></td><td>${issuesToDelete.slice(0,5).map(i=>toCaps(i.learnerName)+' → '+i.bookBarcode).join('<br>')||'None'}</td></tr>
+    <tr><td><b>👥 Users Deleted (Realtime DB only)</b></td><td><b>${deleted.users}</b></td><td>${usersToDelete.slice(0,5).map(u=>toCaps(u.name)+' — '+u.email).join('<br>')||'None'}<br><span style="font-size:11px;color:#991b1b">Auth users NOT deleted — Do Step 3 in Firebase Console.</span></td></tr>
+    <tr><td><b>❌ Errors</b></td><td><b>${deleted.errors.length}</b></td><td>${deleted.errors.slice(0,5).join('<br>')||'None'}</td></tr>
+  `;
+  document.getElementById('deleteInfo').innerHTML=`<div class="ok">✅ <b>${modeLabel} DONE</b> — Deleted: Learners <b>${deleted.learners}</b> — Books <b>${deleted.books}</b> — Issues <b>${deleted.issues}</b> — Users (DB) <b>${deleted.users}</b> — Errors <b>${deleted.errors.length}</b><br><b>Next:</b> Do Step 3 (Firebase Auth) + Step 4 (Verify). If you are deleting your own Admin account, you will be logged out — Login again with real Admin account.</div>`;
+  document.getElementById('confirmBox').value=''; checkConfirm();
+  // If current user was deleted, logout
+  let meDeleted=usersToDelete.some(u=>String(u.email||'').toLowerCase()===String(user?.email||'').toLowerCase());
+  if(meDeleted){
+    setTimeout(async()=>{ try{ await auth.signOut(); }catch(e){} localStorage.removeItem('makhanani_user'); localStorage.removeItem('makhanani_uid'); localStorage.removeItem('makhanani_email'); alert('Your Admin account was deleted in Realtime DB. You are logged out. Login again with real Admin account.'); go('login.html'); }, 1500);
+  }
+}
+async function exportAllCsv(){
+  let schoolId=toCaps(document.getElementById('schoolId').value||'WHS')||'WHS';
+  try{
+    let [ls, bs, is]=await Promise.all([
+      rtdb.ref('learners/'+schoolId).once('value'),
+      rtdb.ref('stock/'+schoolId).once('value'),
+      rtdb.ref('issues/'+schoolId).once('value'),
+    ]);
+    let learners=ls.val()?Object.values(ls.val()):[];
+    let books=bs.val()?Object.values(bs.val()):[];
+    let issues=is.val()?Object.values(is.val()):[];
+    let csv='TYPE,ID,NAME,TITLE,SUBJECT,GRADE,CLASS,STATUS\n'
+      + learners.map(l=>`LEARNER,${l.learnerId||''},${toCaps(l.name)},,,${l.grade||''},${toCaps(l.className)},`).join('\n')
+      + '\n' + books.map(b=>`BOOK,${b.barcode||''},,${toCaps(b.title)},${toCaps(b.subject)},${b.grade||''},,${toCaps(b.status)}`).join('\n')
+      + '\n' + issues.map(i=>`ISSUE,${i.bookBarcode||''},${toCaps(i.learnerName)},${toCaps(i.title)},${toCaps(i.subject)},${i.grade||''},${toCaps(i.learnerClass)},${toCaps(i.status)}`).join('\n');
+    let blob=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='MAKHANANI-BACKUP-'+schoolId+'-'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+    document.getElementById('deleteInfo').innerHTML=`<div class="ok">✅ Backup exported — Learners ${learners.length} — Books ${books.length} — Issues ${issues.length} — Saved as CSV.</div>`;
+  }catch(e){ document.getElementById('deleteInfo').innerHTML='<div class="warn">⛔ Export failed: '+e.message+'</div>'; }
+}
+async function copyDemoEmails(){
+  let txt=document.getElementById('demoEmailsBox').value;
+  try{ await navigator.clipboard.writeText(txt); document.getElementById('copyInfo').innerHTML='<div class="ok">✅ Copied 12 demo emails — Paste in Firebase Console → Auth → Users → Search / Tick → Delete.</div>'; }
+  catch(e){ document.getElementById('copyInfo').innerHTML='<div class="warn">⛔ Could not copy — Select text in box below and copy manually (Ctrl+C).</div>'; document.getElementById('demoEmailsBox').select(); }
+}
+async function verifyClean(){
+  let schoolId=toCaps(document.getElementById('schoolId').value||'WHS')||'WHS';
+  try{
+    let [ls, bs, is, us]=await Promise.all([
+      rtdb.ref('learners/'+schoolId).once('value'),
+      rtdb.ref('stock/'+schoolId).once('value'),
+      rtdb.ref('issues/'+schoolId).once('value'),
+      rtdb.ref('users').once('value'),
+    ]);
+    let lc=ls.val()?Object.keys(ls.val()).length:0;
+    let bc=bs.val()?Object.keys(bs.val()).length:0;
+    let ic=is.val()?Object.keys(is.val()).length:0;
+    let uc=us.val()?Object.keys(us.val()).length:0;
+    let demoUsers=us.val()?Object.values(us.val()).filter(isDemoUser).length:0;
+    document.getElementById('verifyInfo').innerHTML=`<div class="ok">✅ Verify <b>${schoolId}</b> — Learners: <b>${lc}</b> — Books: <b>${bc}</b> — Issues: <b>${ic}</b> — Users (DB): <b>${uc}</b> — Demo users still in DB: <b>${demoUsers}</b><br>${demoUsers>0?'⚠️ Demo users still in DB — Tap SCAN + DELETE DEMO ONLY again.':''}${lc===0&&bc===0&&ic===0?'🎉 School is clean — Ready for real learners.':''}<br>Check Firebase Console → Auth → Users — Demo Auth users should be 0 after Step 3.</div>`;
+  }catch(e){ document.getElementById('verifyInfo').innerHTML='<div class="warn">⛔ Verify failed: '+e.message+'</div>'; }
+}
+loadRole();
+</script></body></html>
