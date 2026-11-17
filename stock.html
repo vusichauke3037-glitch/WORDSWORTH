@@ -7,10 +7,10 @@
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
 header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:1100px;margin:0 auto;padding:12px}
+.wrap{max-width:1000px;margin:0 auto;padding:12px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer}
 input{cursor:text}input:focus,select:focus{border-color:#d4af37;outline:none;background:#fef3c7}
 .btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}
 .btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
@@ -18,40 +18,39 @@ input{cursor:text}input:focus,select:focus{border-color:#d4af37;outline:none;bac
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
 .kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .kpi b{font-size:20px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:middle}th{background:#0a1f4d;color:#fff}
-.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.pill-avail{background:#dcfce7;color:#166534}.pill-issued{background:#fee2e2;color:#991b1b}.pill-lost{background:#e2e8f0;color:#475569}.pill-damaged{background:#fef3c7;color:#92400e}
+.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.pill-avail{background:#dcfce7;color:#166534}.pill-issued{background:#fee2e2;color:#991b1b}.pill-lost{background:#e9d5ff;color:#6b21a8}.pill-damaged{background:#fef3c7;color:#92400e}
 .scan-row{display:flex;gap:8px;align-items:flex-end}.scan-row input{flex:1}.scan-row .btn{flex:0 0 auto;white-space:nowrap}
 video{width:100%;border-radius:8px;background:#000}
 @media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}.scan-row{flex-direction:column;align-items:stretch}}
 </style></head>
 <body>
-<header><h1>📦 STOCK — MAKHANANI LTSM 2.0</h1><p>AVAILABLE = TOTAL - ISSUED - LOST - DAMAGED • DUPLICATE BOOK NUMBER BLOCKED</p>
+<header><h1>📚 STOCK — MAKHANANI LTSM 2.0</h1><p>ADD BOOKS — ALL CAPS SUBJECTS — INTERMEDIATE (4-6) TO FET (10-12) — GRADES 4-12 — TITLE AUTO-GENERATED</p>
 <div id="taskbar"></div><script src="nav.js"></script>
-<script>guardPage(1,'Teacher');</script>
+<script>guardPage(2,'Librarian');</script>
 </header>
 <div class="wrap">
 <div class="info" id="roleInfo">Loading...</div>
-<div class="kpi"><div><b id="kpiTotal">0</b><span>📦 TOTAL COPIES<br>All Books</span></div><div><b id="kpiAvail">0</b><span>📗 AVAILABLE<br>Total - Issued - Lost - Damaged</span></div><div><b id="kpiIssued">0</b><span>📕 ISSUED<br>OUT To Teacher / Learner</span></div><div><b id="kpiLost">0</b><span>❌ LOST</span></div><div><b id="kpiDamaged">0</b><span>⚠️ DAMAGED</span></div></div>
+<div class="kpi"><div><b id="kpiTotal">0</b><span>📚 TOTAL BOOKS</span></div><div><b id="kpiAvail">0</b><span>📗 AVAILABLE</span></div><div><b id="kpiIssued">0</b><span>📕 ISSUED</span></div><div><b id="kpiLostDamaged">0</b><span>❌ LOST + DAMAGED</span></div></div>
 
-<!-- SUMMARY BY TITLE -->
-<div class="card"><h2>📊 Summary By Title — Available Auto-Calculated</h2><div class="info">Available = Total - Issued - Lost - Damaged. You do NOT type Available — It calculates.</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Title</th><th>Subject / Grade</th><th>Total</th><th>Issued</th><th>Lost</th><th>Damaged</th><th>Available</th></tr></thead><tbody id="summaryTable"></tbody></table></div></div>
-
-<!-- ADD BOOK -->
-<div class="card"><h2>➕ Add Book — Book Number Auto Or Manual — Duplicate Blocked</h2>
-<div class="info">Leave Book Number <b>BLANK</b> → Auto: WHS000001, WHS000002... (School Initials + 6 digits)<br>Type Book Number manually for old books with printed barcode — e.g. WHS000050 — Allowed IF not duplicate.<br>Duplicate WHS000001 → ⛔ Blocked.</div>
-<label>📖 Title *</label><input id="bookTitle" placeholder="e.g. MATHS GRADE 10">
-<div class="row"><div><label>📚 Subject *</label><select id="bookSubject"><option value="">-- SUBJECT --</option><option>MATHEMATICS</option><option>ENGLISH</option><option>PHYSICAL SCIENCES</option><option>LIFE SCIENCES</option><option>ACCOUNTING</option><option>HISTORY</option><option>GEOGRAPHY</option></select></div><div><label>🎓 Grade *</label><select id="bookGrade"><option value="">-- GRADE --</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>🔢 Qty (Copies) *</label><input id="bookQty" type="number" value="1" min="1"></div></div>
-<label>🔢 Book Number — Leave BLANK For Auto, Or Type Manual (One Book Only If Manual)</label>
-<div class="scan-row"><input id="bookNumber" placeholder="e.g. WHS000001 — Leave BLANK for Auto"><button class="btn btn-purple" onclick="startScan()">📷 SCAN BOOK</button></div>
+<div class="card"><h2>➕ Add Book — Pick Subject + Grade — Title Auto-Generated</h2>
+<div class="info">Pick Subject (ALL CAPS) + Grade (4-12) → Title auto-generates: <b>MATHEMATICS GRADE 10</b>.<br>Do NOT type title manually — Picking prevents "MATHS" vs "MATHEMATICS" mismatch.<br>Barcode: Leave blank to auto-generate WHS000001, or type / scan your barcode.</div>
+<div class="row"><div><label>📚 Subject — ALL CAPS — Intermediate To FET *</label><select id="bookSubject" onchange="onSubjectGrade()"><option value="">-- SUBJECT — ALL CAPS --</option></select></div><div><label>🎓 Grade — 4 To 12 *</label><select id="bookGrade" onchange="onSubjectGrade()"><option value="">-- GRADE — 4 TO 12 --</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div></div>
+<label>📖 Title — Auto-Generated — Do Not Type</label><input id="bookTitle" readonly placeholder="Pick Subject + Grade above → Title appears here" style="background:#f1f5f9">
+<div class="row"><div><label>🔢 Qty To Add — Same Title + Grade</label><input id="bookQty" type="number" value="1" min="1" max="100"></div><div><label>📦 Condition</label><select id="bookCondition"><option>GOOD</option><option>NEW</option><option>FAIR</option></select></div></div>
+<label>📷 Barcode — Leave Blank = Auto WHS000001 — Or Type / Scan</label>
+<div class="scan-row"><input id="bookBarcode" placeholder="e.g. WHS000001 — Leave blank = auto"><button class="btn btn-purple" onclick="startScan()">📷 SCAN BARCODE</button></div>
 <div id="scanBox" style="display:none;margin-top:12px"><video id="scanVideo" playsinline></video><div class="row"><button class="btn btn-red" onclick="stopScan()">✖️ STOP CAMERA</button><button class="btn btn-grey" onclick="simulateScan()">🧪 SIMULATE SCAN</button></div><div class="info" id="scanMsg">Point camera at barcode.</div></div>
-<button class="btn btn-gold btn-full" onclick="addBook()">📖 ADD BOOK →</button><div id="bookMsg"></div>
+<button class="btn btn-green btn-full" onclick="addBook()">📚 ADD BOOK(S) →</button><div id="addMsg"></div>
 </div>
 
-<!-- ALL BOOKS -->
-<div class="card"><h2>📦 All Books — Every Copy, Every Status</h2><div class="row"><div><label>🔍 Search</label><input id="search" placeholder="🔍 Title / Book Number / Subject" oninput="renderBooks()"></div><div><label>📊 Filter Status</label><select id="filterStatus" onchange="renderBooks()"><option value="">📊 ALL STATUS</option><option value="AVAILABLE">📗 AVAILABLE</option><option value="ISSUED">📕 ISSUED</option><option value="LOST">❌ LOST</option><option value="DAMAGED">⚠️ DAMAGED</option></select></div><div><label>📚 Filter Subject</label><select id="filterSubject" onchange="renderBooks()"><option value="">📚 ALL SUBJECTS</option><option>MATHEMATICS</option><option>ENGLISH</option><option>PHYSICAL SCIENCES</option><option>HISTORY</option></select></div></div><div id="booksInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Book Number</th><th>Title</th><th>Subject / Grade</th><th>Status</th><th>Issued To</th><th>Action</th></tr></thead><tbody id="booksTable"></tbody></table></div></div>
+<div class="card"><h2>📚 All Stock — Filter By Subject + Grade + Status</h2>
+<div class="row"><div><label>🔍 Search</label><input id="searchStock" placeholder="🔍 Title / Barcode" oninput="renderStock()"></div><div><label>📚 Filter Subject — ALL CAPS</label><select id="filterSubject" onchange="renderStock()"><option value="">📚 ALL SUBJECTS</option></select></div><div><label>🎓 Filter Grade</label><select id="filterGrade" onchange="renderStock()"><option value="">🎓 ALL GRADES — 4 TO 12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>📊 Filter Status</label><select id="filterStatus" onchange="renderStock()"><option value="">📊 ALL STATUS</option><option>AVAILABLE</option><option>ISSUED</option><option>LOST</option><option>DAMAGED</option></select></div></div>
+<div id="stockInfo" class="info">Loading...</div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Barcode</th><th>Title — ALL CAPS</th><th>Subject — ALL CAPS</th><th>Grade</th><th>Status</th><th>Issued To</th><th>Action</th></tr></thead><tbody id="stockTable"></tbody></table></div></div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
@@ -59,141 +58,123 @@ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
 function toCaps(s){return String(s||'').trim().toUpperCase();}
 function norm(s){return String(s||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');}
-function schoolInitials(schoolName){ return toCaps(schoolName||'').split(/\s+/).filter(function(w){ return w && !['AND','OF','THE','&'].includes(w); }).map(function(w){ return w[0]; }).join(''); }
-function pad(num,len){ return String(num).padStart(len,'0'); }
+function pad(n,l){return String(n).padStart(l,'0');}
 let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
 let mySchoolId=user?.schoolId||'WHS';
-let mySchoolName=user?.schoolName||'WORDSWORTH HIGH SCHOOL';
+// --- SAME 37 SUBJECTS AS users.html V2.10 — ALL CAPS — INTERMEDIATE TO FET ---
+const SUBJECT_GROUPS=[
+  {label:'INTERMEDIATE — GRADES 4-6', items:['ENGLISH HOME LANGUAGE','ENGLISH FIRST ADDITIONAL LANGUAGE','AFRIKAANS HOME LANGUAGE','AFRIKAANS FIRST ADDITIONAL LANGUAGE','ISIZULU HOME LANGUAGE','ISIXHOSA HOME LANGUAGE','SESOTHO HOME LANGUAGE','SETSWANA HOME LANGUAGE','MATHEMATICS','NATURAL SCIENCES AND TECHNOLOGY','SOCIAL SCIENCES','LIFE SKILLS']},
+  {label:'SENIOR — GRADES 7-9', items:['NATURAL SCIENCES','ECONOMIC AND MANAGEMENT SCIENCES','TECHNOLOGY','CREATIVE ARTS','LIFE ORIENTATION']},
+  {label:'FET — GRADES 10-12', items:['MATHEMATICAL LITERACY','TECHNICAL MATHEMATICS','PHYSICAL SCIENCES','TECHNICAL SCIENCES','LIFE SCIENCES','AGRICULTURAL SCIENCES','ACCOUNTING','BUSINESS STUDIES','ECONOMICS','HISTORY','GEOGRAPHY','TOURISM','CONSUMER STUDIES','COMPUTER APPLICATIONS TECHNOLOGY','INFORMATION TECHNOLOGY','ENGINEERING GRAPHICS AND DESIGN','VISUAL ARTS','DRAMATIC ARTS','MUSIC','PHYSICAL EDUCATION','RELIGION STUDIES']}
+];
+const ALL_SUBJECTS=[...new Set(SUBJECT_GROUPS.flatMap(g=>g.items))];
 let books=[];
 let scanStream=null;
-
+function buildSubjectDropdowns(){
+  let html='<option value="">-- SUBJECT — ALL CAPS — INTERMEDIATE TO FET --</option>';
+  SUBJECT_GROUPS.forEach(g=>{ html+=`<optgroup label="${g.label}">${g.items.map(s=>`<option>${s}</option>`).join('')}</optgroup>`; });
+  document.getElementById('bookSubject').innerHTML=html;
+  let fHtml='<option value="">📚 ALL SUBJECTS — ALL CAPS</option>';
+  SUBJECT_GROUPS.forEach(g=>{ fHtml+=`<optgroup label="${g.label}">${g.items.map(s=>`<option>${s}</option>`).join('')}</optgroup>`; });
+  document.getElementById('filterSubject').innerHTML=fHtml;
+}
+function onSubjectGrade(){
+  let sub=document.getElementById('bookSubject').value;
+  let grade=document.getElementById('bookGrade').value;
+  document.getElementById('bookTitle').value=(sub&&grade)?`${toCaps(sub)} GRADE ${grade}`:'';
+}
 function demoBooks(){
-  books=[];
-  for(let i=1;i<=10;i++){ books.push({barcode:'WHS'+pad(i,6),bookNumber:'WHS'+pad(i,6),title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',grade:'10',status:i<=5?'ISSUED':(i===8?'LOST':'AVAILABLE'),issuedTo:i<=5?'MRS DUBE':(i===8?'10A001':'')}); }
-  for(let i=11;i<=15;i++){ books.push({barcode:'WHS'+pad(i,6),bookNumber:'WHS'+pad(i,6),title:'ENGLISH GRADE 10',subject:'ENGLISH',grade:'10',status:i<=12?'ISSUED':'AVAILABLE',issuedTo:i<=12?'MR SMITH':''}); }
-  for(let i=16;i<=18;i++){ books.push({barcode:'WHS'+pad(i,6),bookNumber:'WHS'+pad(i,6),title:'HISTORY GRADE 12',subject:'HISTORY',grade:'12',status:'AVAILABLE',issuedTo:''}); }
-}
-function nextBookSeq(){
-  let max=0;
-  books.forEach(function(b){ let m=String(b.barcode||b.bookNumber||'').match(/(\d{6})$/); if(m) max=Math.max(max, parseInt(m[1],10)); });
-  return max+1;
-}
-function calcSummary(){
-  // Available = Total - Issued - Lost - Damaged — Per Title + Overall
-  let total=books.length;
-  let issued=books.filter(b=>toCaps(b.status)==='ISSUED').length;
-  let lost=books.filter(b=>toCaps(b.status)==='LOST').length;
-  let damaged=books.filter(b=>toCaps(b.status)==='DAMAGED').length;
-  let avail=total - issued - lost - damaged; // Should equal count AVAILABLE — Check
-  // Cross-check: Count AVAILABLE directly — If mismatch, trust count
-  let availCount=books.filter(b=>toCaps(b.status)==='AVAILABLE').length;
-  if(avail!==availCount){ avail=availCount; } // Safety: Use actual AVAILABLE count
-  document.getElementById('kpiTotal').textContent=total;
-  document.getElementById('kpiAvail').textContent=avail;
-  document.getElementById('kpiIssued').textContent=issued;
-  document.getElementById('kpiLost').textContent=lost;
-  document.getElementById('kpiDamaged').textContent=damaged;
-  // By Title
-  let byTitle={};
-  books.forEach(function(b){
-    let k=toCaps(b.title);
-    if(!byTitle[k]) byTitle[k]={title:b.title,subject:b.subject,grade:b.grade,total:0,issued:0,lost:0,damaged:0,avail:0};
-    byTitle[k].total++;
-    if(toCaps(b.status)==='ISSUED') byTitle[k].issued++;
-    else if(toCaps(b.status)==='LOST') byTitle[k].lost++;
-    else if(toCaps(b.status)==='DAMAGED') byTitle[k].damaged++;
-    else byTitle[k].avail++;
+  let list=[]; let n=1;
+  let samples=[
+    ['ENGLISH HOME LANGUAGE','4'],['MATHEMATICS','5'],['NATURAL SCIENCES AND TECHNOLOGY','6'],
+    ['SOCIAL SCIENCES','7'],['NATURAL SCIENCES','8'],['ECONOMIC AND MANAGEMENT SCIENCES','9'],
+    ['MATHEMATICS','10'],['PHYSICAL SCIENCES','11'],['HISTORY','12'],['ACCOUNTING','11'],['LIFE ORIENTATION','10']
+  ];
+  samples.forEach(([sub,gr])=>{
+    for(let i=1;i<=3;i++){
+      let code='WHS'+pad(n,6); n++;
+      list.push({barcode:code,title:toCaps(sub)+' GRADE '+gr,subject:toCaps(sub),grade:String(gr),status:'AVAILABLE',condition:'GOOD',copyNo:i,issuedTo:''});
+    }
   });
-  document.getElementById('summaryTable').innerHTML=Object.values(byTitle).length?Object.values(byTitle).map(s=>`<tr><td><b>${toCaps(s.title)}</b></td><td>${toCaps(s.subject)} — Grade ${s.grade}</td><td><b>${s.total}</b></td><td>${s.issued}</td><td>${s.lost}</td><td>${s.damaged}</td><td><b style="color:#166534">${s.avail}</b><br><small>${s.total} - ${s.issued} - ${s.lost} - ${s.damaged} = ${s.avail}</small></td></tr>`).join(''):`<tr><td colspan="7" style="text-align:center;padding:20px">No books yet.</td></tr>`;
+  return list;
 }
 function loadAll(){
-  document.getElementById('roleInfo').innerHTML=`📦 <b>${toCaps(user?.name||'USER')}</b> — Role: <b>${toCaps(user?.role||'')} — RANK ${user?.rank||''}</b> — School: <b>${mySchoolId} — ${mySchoolName}</b><br><small>Available = Total - Issued - Lost - Damaged. Duplicate Book Number blocked.</small>`;
-  demoBooks();
-  try{ rtdb.ref('stock/'+mySchoolId).once('value').then(s=>{ if(s.val()){ books=Object.values(s.val()).map(b=>({barcode:b.barcode||b.bookNumber||'',bookNumber:b.barcode||b.bookNumber||'',title:b.title||'',subject:b.subject||'',grade:String(b.grade||''),status:b.status||'AVAILABLE',issuedTo:b.issuedTo||''})); renderAll(); } }).catch(()=>{}); }catch(e){}
-  renderAll();
+  document.getElementById('roleInfo').innerHTML=`📚 <b>${toCaps(user?.name||'LIBRARIAN')}</b> — LIBRARIAN — RANK 2 — School: <b>${mySchoolId}</b><br><small>ALL CAPS Subjects — ${ALL_SUBJECTS.length} subjects — Intermediate 4-6 to FET 10-12 — Grades 4-12 — Title auto-generated from Subject + Grade.</small>`;
+  buildSubjectDropdowns();
+  books=demoBooks();
+  try{ rtdb.ref('stock/'+mySchoolId).once('value').then(s=>{ if(s.val()){ books=Object.values(s.val()).map(b=>({barcode:b.barcode||'',title:toCaps(b.title||''),subject:toCaps(b.subject||''),grade:String(b.grade||''),status:toCaps(b.status||'AVAILABLE'),condition:toCaps(b.condition||'GOOD'),copyNo:b.copyNo||1,issuedTo:b.issuedTo||''})); renderStock(); } }).catch(()=>{}); }catch(e){}
+  renderStock();
 }
-function renderAll(){ calcSummary(); renderBooks(); }
-function renderBooks(){
-  let q=toCaps(document.getElementById('search').value||'');
-  let f=document.getElementById('filterStatus').value;
-  let fSub=document.getElementById('filterSubject').value;
-  let list=books.filter(b=>{ if(f && toCaps(b.status)!==f) return false; if(fSub && toCaps(b.subject)!==fSub) return false; if(q && !(toCaps(b.title)+' '+toCaps(b.barcode)+' '+toCaps(b.subject)).includes(q)) return false; return true; });
-  document.getElementById('booksInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${books.length}</b> copies. Next Auto Book Number: <b>${schoolInitials(mySchoolName)+pad(nextBookSeq(),6)}</b>`;
-  document.getElementById('booksTable').innerHTML=list.length?list.map(b=>{
-    let pill=toCaps(b.status)==='AVAILABLE'?'pill-avail':toCaps(b.status)==='ISSUED'?'pill-issued':toCaps(b.status)==='LOST'?'pill-lost':'pill-damaged';
-    return `<tr><td><b>${b.barcode}</b></td><td>${toCaps(b.title)}</td><td>${toCaps(b.subject)} — Grade ${b.grade}</td><td><span class="pill ${pill}">${toCaps(b.status)}</span></td><td>${toCaps(b.issuedTo||'—')}</td><td><button class="btn btn-grey" onclick="markStatus('${b.barcode}','LOST')">❌ LOST</button> <button class="btn btn-gold" onclick="markStatus('${b.barcode}','DAMAGED')">⚠️ DAMAGED</button> <button class="btn btn-teal" onclick="markStatus('${b.barcode}','AVAILABLE')">↩️ AVAILABLE</button> <button class="btn btn-red" onclick="deleteBook('${b.barcode}')">🗑️ DELETE</button></td></tr>`;
-  }).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No books for this filter.</td></tr>`;
+function nextBarcode(){
+  let max=0; books.forEach(b=>{ let m=String(b.barcode||'').match(/(\d+)$/); if(m) max=Math.max(max,parseInt(m[1],10)); });
+  return 'WHS'+pad(max+1,6);
 }
 async function addBook(){
-  let title=document.getElementById('bookTitle').value.trim();
-  let subject=document.getElementById('bookSubject').value;
+  let sub=document.getElementById('bookSubject').value;
   let grade=document.getElementById('bookGrade').value;
+  let title=document.getElementById('bookTitle').value;
   let qty=parseInt(document.getElementById('bookQty').value||'1',10);
-  let manual=document.getElementById('bookNumber').value.trim().toUpperCase();
-  let msg=document.getElementById('bookMsg');
-  if(!title){ msg.innerHTML='<div class="warn">⚠️ Type Title.</div>'; return; }
-  if(!subject){ msg.innerHTML='<div class="warn">⚠️ Pick Subject.</div>'; return; }
-  if(!grade){ msg.innerHTML='<div class="warn">⚠️ Pick Grade.</div>'; return; }
-  if(isNaN(qty)||qty<1) qty=1;
-  // MANUAL + QTY > 1 → Block — Manual is for ONE book only, else duplicate
-  if(manual && qty>1){ msg.innerHTML='<div class="warn">⛔ Manual Book Number + Qty > 1 = Duplicate.<br>Manual is for ONE book only. Set Qty = 1 for manual, or leave Book Number BLANK for auto Qty '+qty+'.</div>'; return; }
-  // MANUAL DUPLICATE CHECK
-  if(manual){
-    let dup=books.find(b=>norm(b.barcode)===norm(manual));
-    if(dup){ msg.innerHTML='<div class="warn">⛔ DUPLICATE — <b>'+toCaps(manual)+'</b> already exists — <b>'+toCaps(dup.title)+'</b> — '+toCaps(dup.status)+'<br>Cannot add duplicate. Leave Book Number BLANK for auto: Next is <b>'+schoolInitials(mySchoolName)+pad(nextBookSeq(),6)+'</b></div>'; return; }
-    let rec={barcode:toCaps(manual),bookNumber:toCaps(manual),title:toCaps(title),subject:toCaps(subject),grade:String(grade),schoolId:mySchoolId,schoolName:mySchoolName,status:'AVAILABLE',issuedTo:'',date:new Date().toISOString().slice(0,10)};
-    try{ await rtdb.ref('stock/'+mySchoolId+'/'+norm(manual)).set(rec); }catch(e){}
-    books.push(rec);
-    msg.innerHTML=`<div class="ok">✅ ADDED (Manual) — <b>${toCaps(manual)}</b> — ${toCaps(title)} — Grade ${grade} — ${toCaps(subject)} — AVAILABLE</div>`;
-    document.getElementById('bookNumber').value='';
-    renderAll(); return;
-  }
-  // AUTO — Qty copies, each with next seq
-  let seq=nextBookSeq();
-  let created=[];
+  let cond=document.getElementById('bookCondition').value;
+  let barcode=document.getElementById('bookBarcode').value.trim();
+  let msg=document.getElementById('addMsg');
+  if(!sub){ msg.innerHTML='<div class="warn">⚠️ Pick Subject (ALL CAPS).</div>'; return; }
+  if(!grade){ msg.innerHTML='<div class="warn">⚠️ Pick Grade (4-12).</div>'; return; }
+  if(!title){ msg.innerHTML='<div class="warn">⚠️ Title missing — Pick Subject + Grade.</div>'; return; }
+  if(isNaN(qty)||qty<1) qty=1; if(qty>100) qty=100;
+  // Check if NATURAL SCIENCES AND TECHNOLOGY vs NATURAL SCIENCES confusion
+  if(toCaps(sub)==='NATURAL SCIENCES' && ['4','5','6'].includes(grade)){ if(!confirm('⚠️ You picked NATURAL SCIENCES for Grade '+grade+' — Grade 4-6 subject is NATURAL SCIENCES AND TECHNOLOGY.\n\nTap OK to keep NATURAL SCIENCES, or Cancel to change.')) return; }
+  if(toCaps(sub)==='NATURAL SCIENCES AND TECHNOLOGY' && ['7','8','9','10','11','12'].includes(grade)){ if(!confirm('⚠️ You picked NATURAL SCIENCES AND TECHNOLOGY for Grade '+grade+' — Grade 7-9+ subject is NATURAL SCIENCES (7-9) / PHYSICAL SCIENCES / LIFE SCIENCES (FET).\n\nTap OK to keep NATURAL SCIENCES AND TECHNOLOGY, or Cancel to change.')) return; }
+  let added=[];
   for(let i=0;i<qty;i++){
-    let bn=schoolInitials(mySchoolName)+pad(seq+i,6);
-    // Safety: If auto collides (should not), skip to next
-    if(books.some(b=>norm(b.barcode)===norm(bn))){ msg.innerHTML='<div class="warn">⛔ Auto collision '+bn+' — Try again.</div>'; return; }
-    let rec={barcode:bn,bookNumber:bn,title:toCaps(title),subject:toCaps(subject),grade:String(grade),schoolId:mySchoolId,schoolName:mySchoolName,status:'AVAILABLE',issuedTo:'',date:new Date().toISOString().slice(0,10)};
-    try{ await rtdb.ref('stock/'+mySchoolId+'/'+norm(bn)).set(rec); }catch(e){}
-    books.push(rec);
-    created.push(bn);
+    let code=barcode && qty===1 ? toCaps(barcode) : nextBarcode();
+    if(books.some(b=>norm(b.barcode)===norm(code))){ msg.innerHTML='<div class="warn">⛔ Barcode '+code+' already exists.</div>'; return; }
+    let rec={barcode:code,title:toCaps(title),subject:toCaps(sub),grade:String(grade),status:'AVAILABLE',condition:toCaps(cond),copyNo:books.filter(b=>toCaps(b.title)===toCaps(title)).length+1,issuedTo:'',schoolId:mySchoolId,date:new Date().toISOString().slice(0,10)};
+    try{ await rtdb.ref('stock/'+mySchoolId+'/'+norm(code)).set(rec); }catch(e){}
+    books.push(rec); added.push(code);
   }
-  msg.innerHTML=`<div class="ok">✅ ADDED (Auto) — <b>${qty}x ${toCaps(title)}</b> — Grade ${grade} — ${toCaps(subject)}<br>Book Numbers: <b>${created.join(', ')}</b><br>Available now: <b>${books.filter(b=>toCaps(b.status)==='AVAILABLE').length}</b></div>`;
-  renderAll();
+  msg.innerHTML=`<div class="ok">✅ ADDED ${added.length}x — <b>${toCaps(title)}</b> — Subject: <b>${toCaps(sub)}</b> — Grade ${grade} — Barcodes: <b>${added.join(', ')}</b></div>`;
+  document.getElementById('bookBarcode').value='';
+  renderStock();
 }
-async function markStatus(barcode, status){
-  let b=books.find(x=>norm(x.barcode)===norm(barcode)); if(!b) return;
-  if(!confirm(`Change ${barcode} — ${b.title} — to ${status}?\n\nAvailable will recalculate.`)) return;
-  b.status=status;
-  if(status==='AVAILABLE') b.issuedTo='';
-  try{ await rtdb.ref('stock/'+mySchoolId+'/'+norm(barcode)).update({status:status,issuedTo:b.issuedTo||''}); }catch(e){}
-  renderAll();
+function renderStock(){
+  let q=toCaps(document.getElementById('searchStock').value||'');
+  let fSub=document.getElementById('filterSubject').value;
+  let fGrade=document.getElementById('filterGrade').value;
+  let fStatus=document.getElementById('filterStatus').value;
+  let list=books.filter(b=>{
+    if(fSub && toCaps(b.subject)!==fSub) return false;
+    if(fGrade && String(b.grade)!==fGrade) return false;
+    if(fStatus && toCaps(b.status)!==fStatus) return false;
+    if(q && !(toCaps(b.title)+' '+toCaps(b.barcode)).includes(q)) return false;
+    return true;
+  });
+  document.getElementById('kpiTotal').textContent=books.length;
+  document.getElementById('kpiAvail').textContent=books.filter(b=>toCaps(b.status)==='AVAILABLE').length;
+  document.getElementById('kpiIssued').textContent=books.filter(b=>toCaps(b.status)==='ISSUED').length;
+  document.getElementById('kpiLostDamaged').textContent=books.filter(b=>['LOST','DAMAGED'].includes(toCaps(b.status))).length;
+  document.getElementById('stockInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${books.length}</b> books. Subjects: <b>${ALL_SUBJECTS.length} ALL CAPS</b> — Grades 4-12.`;
+  document.getElementById('stockTable').innerHTML=list.length?list.map(b=>{
+    let pill=toCaps(b.status)==='AVAILABLE'?'pill-avail':toCaps(b.status)==='ISSUED'?'pill-issued':toCaps(b.status)==='LOST'?'pill-lost':'pill-damaged';
+    return `<tr><td><b>${b.barcode}</b></td><td><b>${toCaps(b.title)}</b></td><td>${toCaps(b.subject)}</td><td>${b.grade}</td><td><span class="pill ${pill}">${toCaps(b.status)}</span></td><td>${b.issuedTo||'—'}</td><td><button class="btn btn-red" onclick="deleteBook('${b.barcode}')">🗑️ DELETE</button></td></tr>`;
+  }).join(''):`<tr><td colspan="7" style="text-align:center;padding:20px">No books for this filter.</td></tr>`;
 }
 async function deleteBook(barcode){
   let b=books.find(x=>norm(x.barcode)===norm(barcode)); if(!b) return;
-  if(toCaps(b.status)==='ISSUED'){ alert('⛔ Cannot delete '+barcode+' — It is ISSUED to '+b.issuedTo+'. Return it first, then delete.'); return; }
-  if(!confirm(`Delete ${barcode} — ${b.title}?\n\nThis removes it from Total.`)) return;
+  if(toCaps(b.status)==='ISSUED'){ alert('⛔ Cannot delete — Book ISSUED to '+b.issuedTo+' — Return first.'); return; }
+  if(!confirm(`Delete ${b.title} — ${barcode}?`)) return;
   try{ await rtdb.ref('stock/'+mySchoolId+'/'+norm(barcode)).remove(); }catch(e){}
   books=books.filter(x=>norm(x.barcode)!==norm(barcode));
-  renderAll();
+  renderStock();
 }
 async function startScan(){
   document.getElementById('scanBox').style.display='block';
   try{
-    let stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-    scanStream=stream;
-    let v=document.getElementById('scanVideo'); v.srcObject=stream; v.play();
-    if('BarcodeDetector' in window){
-      let det=new BarcodeDetector({formats:['code_128','code_39','ean_13','qr_code']});
-      let loop=async()=>{ if(!scanStream) return; try{ let codes=await det.detect(v); if(codes.length){ onScanResult(codes[0].rawValue); return; } }catch(e){} if(scanStream) requestAnimationFrame(loop); };
-      loop();
-    }
-  }catch(e){ document.getElementById('scanMsg').textContent='Camera blocked — Type Book Number or tap SIMULATE. '+e.message; }
+    let s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); scanStream=s;
+    let v=document.getElementById('scanVideo'); v.srcObject=s; v.play();
+    if('BarcodeDetector' in window){ let d=new BarcodeDetector({formats:['code_128','code_39','ean_13','qr_code']}); let loop=async()=>{ if(!scanStream) return; try{ let c=await d.detect(v); if(c.length){ document.getElementById('bookBarcode').value=c[0].rawValue; stopScan(); return; } }catch(e){} if(scanStream) requestAnimationFrame(loop); }; loop(); }
+  }catch(e){ document.getElementById('scanMsg').textContent='Camera blocked — Type or SIMULATE. '+e.message; }
 }
 function stopScan(){ if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; } document.getElementById('scanBox').style.display='none'; }
-function onScanResult(code){ stopScan(); document.getElementById('bookNumber').value=code; document.getElementById('bookMsg').innerHTML='<div class="ok">📷 SCANNED — Book Number: <b>'+code+'</b> — Check duplicate below when you tap ADD.</div>'; }
-function simulateScan(){ onScanResult(schoolInitials(mySchoolName)+pad(nextBookSeq(),6)); }
+function simulateScan(){ document.getElementById('bookBarcode').value='WHS000001'; stopScan(); }
 loadAll();
 </script></body></html>
