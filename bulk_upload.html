@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bulk Learner Upload - Makhanani LTSM 2.0</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
+header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
+header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
+.wrap{max-width:1100px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
+input,select,textarea{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:15px;font-weight:700;background:#fff;color:#0a1f4d}
+textarea{font-family:'Courier New',monospace;font-size:13px;line-height:1.6;min-height:140px}
+.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-pink{background:#db2777;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-blue{background:#2563eb;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
+.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.pill-ok{background:#dcfce7;color:#166534}.pill-bad{background:#fee2e2;color:#991b1b}.pill-dup{background:#fef3c7;color:#92400e}
+.drop{border:3px dashed #0a1f4d;border-radius:12px;padding:22px;text-align:center;background:#f8fafc;cursor:pointer;margin-top:10px}.drop.drag{background:#fef3c7;border-color:#d4af37}
+@media(max-width:700px){.row{flex-direction:column}}
+</style></head>
+<body>
+<header><h1>📥 BULK LEARNER UPLOAD — MAKHANANI LTSM 2.0</h1><p>UPLOAD CSV — AUTO LEARNER ID: GRADE + CLASS LETTER + 001 — e.g. 4J001 — GRADES 4-12 — CLASSES 4A TO 12J</p>
+<div id="taskbar"></div><script src="nav.js"></script>
+<script>guardPage(1,'Bulk Upload');</script>
+</header>
+<div class="wrap">
+<div class="card"><h2>👤 Who Am I</h2><div class="info" id="roleInfo">Loading...</div></div>
+
+<div class="card"><h2>📥 Step 1 — Download Template — Fill In Excel / Sheets — Upload</h2>
+<div class="info"><b>Template has 3 columns only:</b> NAME, GRADE, CLASS<br><b>Example:</b> THABO MOKOENA, 4, 4J → Auto ID <b>4J001</b> — LERATO DUBE, 4, 4J → <b>4J002</b> — SIPHO JONES, 10, 10J → <b>10J001</b><br><b>Rules:</b> 1. NAME in ALL CAPS (auto-fixed). 2. GRADE 4-12. 3. CLASS must match GRADE — 4J for Grade 4, 10J for Grade 10 — NOT 4J for Grade 10. 4. Max 500 learners per upload. 5. No header duplicates. 6. Do NOT type Learner ID — System auto-generates it.</div>
+<div class="row"><button class="btn btn-green" onclick="downloadTemplate()">📥 DOWNLOAD TEMPLATE CSV →</button><button class="btn btn-gold" onclick="downloadExample()">📥 DOWNLOAD EXAMPLE CSV — 10 LEARNERS →</button><button class="btn btn-teal" onclick="go('teacher.html')">👩‍🏫 GO TO TEACHER → SEE LEARNERS</button><button class="btn btn-purple" onclick="go('librarian.html')">📚 GO TO LIBRARIAN →</button></div>
+<div class="row"><div><label>🏫 Default Class — If CSV Has No Class — Optional</label><select id="defaultClass"><option value="">-- Use Class From CSV --</option></select></div><div><label>🎓 Default Grade — If CSV Has No Grade — Optional</label><select id="defaultGrade"><option value="">-- Use Grade From CSV --</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>⚙️ If Learner Already Exists (Same Name + Class)</label><select id="dupMode"><option value="SKIP">⏭️ SKIP — Keep old, do not duplicate</option><option value="KEEP_BOTH">➕ KEEP BOTH — Create new ID anyway</option></select></div></div>
+</div>
+
+<div class="card"><h2>📥 Step 2 — Upload CSV File — Or Paste CSV Below</h2>
+<div class="drop" id="dropZone" onclick="document.getElementById('fileInput').click()">📂 <b>Tap Here To Choose CSV File</b><br><span style="font-size:12px">Or drag + drop .csv file here — Max 500 rows — File must be .csv (Excel: Save As → CSV)</span><input type="file" id="fileInput" accept=".csv,text/csv" style="display:none" onchange="handleFile(event)"></div>
+<label>✏️ Or Paste CSV Here — Copy From Excel / Google Sheets — NAME,GRADE,CLASS</label>
+<textarea id="pasteBox" placeholder="NAME,GRADE,CLASS&#10;THABO MOKOENA,4,4J&#10;LERATO DUBE,4,4J&#10;SIPHO JONES,10,10J"></textarea>
+<div class="row"><button class="btn btn-blue" onclick="parsePasted()">🔍 PREVIEW PASTED CSV →</button><button class="btn btn-grey" onclick="clearAll()">🧹 CLEAR ALL</button><button class="btn btn-orange" onclick="loadSample()">🧪 LOAD SAMPLE — 10 LEARNERS — TEST WITHOUT FILE</button></div>
+<div class="info" id="uploadInfo">No file yet. Download template, fill it, upload it.</div></div>
+
+<div class="card"><h2>👀 Step 3 — Preview — Check Errors Before Import — Tap Row To Fix</h2>
+<div class="info" id="previewInfo">Upload or paste CSV to see preview.</div>
+<div style="overflow-x:auto;margin-top:12px;max-height:420px;overflow-y:auto"><table><thead><tr><th>#</th><th>Name — ALL CAPS</th><th>Grade</th><th>Class</th><th>Auto Learner ID</th><th>Status</th><th>Action</th></tr></thead><tbody id="previewTable"></tbody></table></div>
+<div class="row"><button class="btn btn-green" onclick="importAll()">✅ IMPORT ALL VALID → SAVE TO FIREBASE</button><button class="btn btn-gold" onclick="importValidOnly()">✅ IMPORT VALID ONLY — SKIP ERRORS</button><button class="btn btn-red" onclick="clearPreview()">❌ CLEAR PREVIEW</button><button class="btn btn-teal" onclick="exportPreviewCsv()">📥 EXPORT PREVIEW AS CSV →</button></div>
+<div class="info" id="importInfo"></div></div>
+
+<div class="card"><h2>📚 Already In System — To Avoid Duplicates</h2><div class="info" id="existingInfo">Loading...</div><div style="overflow-x:auto;margin-top:12px;max-height:280px;overflow-y:auto"><table><thead><tr><th>Learner ID</th><th>Name</th><th>Class</th><th>Grade</th></tr></thead><tbody id="existingTable"></tbody></table></div></div>
+</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const rtdb=firebase.database();
+function toCaps(s){return String(s||'').trim().toUpperCase();}
+function pad(n,l){return String(n).padStart(l,'0');}
+const ALL_CLASSES=['4A','4B','4C','4D','4E','4F','4G','4H','4I','4J','5A','5B','5C','5D','5E','5F','5G','5H','5I','5J','6A','6B','6C','6D','6E','6F','6G','6H','6I','6J','7A','7B','7C','7D','7E','7F','7G','7H','7I','7J','8A','8B','8C','8D','8E','8F','8G','8H','8I','8J','9A','9B','9C','9D','9E','9F','9G','9H','9I','9J','10A','10B','10C','10D','10E','10F','10G','10H','10I','10J','11A','11B','11C','11D','11E','11F','11G','11H','11I','11J','12A','12B','12C','12D','12E','12F','12G','12H','12I','12J'];
+let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
+let mySchoolId=user?.schoolId||'WHS';
+let mySchoolName=user?.schoolName||'WORDSWORTH HIGH SCHOOL';
+let learners=[]; let preview=[]; let previewSeq={};
+function go(page){ window.location.href=page; }
+// ===== LEARNER ID — Grade + Class Letter + 001 — Same As All Files =====
+function makeLearnerId(grade, className, seq){
+  let g=String(grade||'').replace(/[^0-9]/g,'');
+  let letter=toCaps(className||'').replace(/[^A-Z]/g,'').slice(-1)||'A';
+  let classGrade=toCaps(className||'').replace(/[^0-9]/g,'');
+  if(classGrade && classGrade!==g) return null;
+  return g+letter+pad(seq,3);
+}
+function nextLearnerIdForPreview(grade, className){
+  let cls=toCaps(className);
+  // Count existing + already in preview for this class
+  let used=new Set(learners.filter(l=>toCaps(l.className)===cls).map(l=>toCaps(l.learnerId)));
+  preview.forEach(p=>{ if(toCaps(p.className)===cls && p.learnerId) used.add(p.learnerId); });
+  let seq=1;
+  while(true){ let id=makeLearnerId(grade, cls, seq); if(!id) return null; if(!used.has(id)) return id; seq++; if(seq>999) return null; }
+}
+function demoData(){
+  learners=[]; ['4A','4J','10A','10J','12A','12J'].forEach(cl=>{ let g=cl.replace(/[^0-9]/g,''); for(let i=1;i<=3;i++) learners.push({learnerId:cl+pad(i,3),name:'LEARNER '+cl+'-'+i,className:cl,grade:g}); });
+}
+function loadAll(){
+  document.getElementById('roleInfo').innerHTML=`👤 <b>${toCaps(user?.name||'GUEST')}</b> — ${toCaps(user?.role||'GUEST')} — RANK ${user?.rank||0} — School: <b>${toCaps(mySchoolName)}</b> (${mySchoolId}) — Bulk upload allowed for Teacher (own classes), Librarian, HOD, Principal, Admin.`;
+  document.getElementById('defaultClass').innerHTML='<option value="">-- Use Class From CSV --</option>'+ALL_CLASSES.map(c=>`<option>${c}</option>`).join('');
+  demoData();
+  try{ rtdb.ref('learners/'+mySchoolId).once('value').then(s=>{ if(s.val()) learners=Object.values(s.val()); renderExisting(); }).catch(()=>{}); }catch(e){}
+  renderExisting();
+  // Drag + Drop
+  let dz=document.getElementById('dropZone');
+  dz.addEventListener('dragover',e=>{ e.preventDefault(); dz.classList.add('drag'); });
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{ e.preventDefault(); dz.classList.remove('drag'); let f=e.dataTransfer.files[0]; if(f) readFile(f); });
+}
+function renderExisting(){
+  document.getElementById('existingInfo').innerHTML=`Already in system: <b>${learners.length}</b> learners — If you upload same NAME + CLASS again, it will be marked DUPLICATE and skipped (if SKIP mode).`;
+  document.getElementById('existingTable').innerHTML=learners.slice(0,50).map(l=>`<tr><td><b>${l.learnerId}</b></td><td>${toCaps(l.name)}</td><td>${toCaps(l.className)}</td><td>${l.grade}</td></tr>`).join('')||`<tr><td colspan="4">No learners yet.</td></tr>`;
+}
+function downloadTemplate(){
+  let csv='NAME,GRADE,CLASS\nTHABO MOKOENA,4,4J\nLERATO DUBE,4,4J\nSIPHO JONES,10,10J\n';
+  downloadCsv(csv,'MAKHANANI-LEARNER-TEMPLATE.csv');
+}
+function downloadExample(){
+  let csv='NAME,GRADE,CLASS\nTHABO MOKOENA,4,4J\nLERATO DUBE,4,4J\nNALEDI SMITH,4,4J\nSIPHO JONES,10,10J\nZANE VAN WYK,10,10J\nAYANDA KHUMALO,12,12A\nKAGISO MOLEFE,12,12A\nEMMA BROWN,6,6J\nLIAM NAIDOO,6,6J\nSARA PETERS,8,8J\n';
+  downloadCsv(csv,'MAKHANANI-LEARNER-EXAMPLE-10.csv');
+}
+function downloadCsv(csv, filename){
+  let blob=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click(); URL.revokeObjectURL(a.href);
+}
+function exportPreviewCsv(){
+  if(!preview.length){ alert('No preview to export.'); return; }
+  let csv='NAME,GRADE,CLASS,LEARNER_ID,STATUS\n'+preview.map(p=>`${p.name},${p.grade},${p.className},${p.learnerId||''},${p.status}`).join('\n');
+  downloadCsv(csv,'MAKHANANI-PREVIEW.csv');
+}
+function handleFile(e){ let f=e.target.files[0]; if(f) readFile(f); }
+function readFile(file){
+  if(!file.name.toLowerCase().endsWith('.csv')){ document.getElementById('uploadInfo').innerHTML='<div class="warn">⛔ File must be .csv — In Excel: Save As → CSV (Comma delimited).</div>'; return; }
+  let r=new FileReader();
+  r.onload=()=>{ document.getElementById('pasteBox').value=r.result; parseCsvText(r.result, file.name); };
+  r.readAsText(file);
+}
+function parsePasted(){ let t=document.getElementById('pasteBox').value; if(!t.trim()){ alert('Paste CSV first — Or upload file.'); return; } parseCsvText(t,'pasted'); }
+function loadSample(){
+  let sample='NAME,GRADE,CLASS\nTHABO MOKOENA,4,4J\nLERATO DUBE,4,4J\nNALEDI SMITH,4,4J\nSIPHO JONES,10,10J\nZANE VAN WYK,10,10J\nAYANDA KHUMALO,12,12A\nKAGISO MOLEFE,12,12A\nEMMA BROWN,6,6J\nLIAM NAIDOO,6,6J\nSARA PETERS,8,8J\n';
+  document.getElementById('pasteBox').value=sample; parseCsvText(sample,'sample');
+}
+// --- CSV PARSER — Handles quotes, commas in names, Excel quirks ---
+function parseCsvLine(line){
+  let out=[]; let cur=''; let inQ=false;
+  for(let i=0;i<line.length;i++){ let ch=line[i];
+    if(ch==='"'){ if(inQ && line[i+1]==='"'){ cur+='"'; i++; } else inQ=!inQ; }
+    else if(ch===',' && !inQ){ out.push(cur); cur=''; }
+    else cur+=ch;
+  }
+  out.push(cur); return out.map(s=>s.trim());
+}
+function parseCsvText(text, source){
+  let lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(l=>l.trim().length>0);
+  if(!lines.length){ document.getElementById('uploadInfo').innerHTML='<div class="warn">⛔ File is empty.</div>'; return; }
+  let header=parseCsvLine(lines[0]).map(toCaps);
+  // Find columns: NAME, GRADE, CLASS — Also accept LEARNER, LEARNER_NAME, CLASSNAME, GRADE_LEVEL
+  let nameIdx=header.findIndex(h=>['NAME','LEARNER','LEARNER_NAME','LEARNER NAME','FULL NAME','FULLNAME'].includes(h));
+  let gradeIdx=header.findIndex(h=>['GRADE','GRADE_LEVEL','GRADE LEVEL'].includes(h));
+  let classIdx=header.findIndex(h=>['CLASS','CLASSNAME','CLASS NAME','CLASSROOM'].includes(h));
+  // If no header, assume order NAME,GRADE,CLASS
+  let hasHeader=nameIdx>=0 || gradeIdx>=0 || classIdx>=0;
+  if(!hasHeader){ nameIdx=0; gradeIdx=1; classIdx=2; }
+  else {
+    if(nameIdx<0) nameIdx=0; if(gradeIdx<0) gradeIdx=1; if(classIdx<0) classIdx=2;
+  }
+  let start=hasHeader?1:0;
+  let defClass=document.getElementById('defaultClass').value; let defGrade=document.getElementById('defaultGrade').value; let dupMode=document.getElementById('dupMode').value;
+  preview=[]; let seenInFile=new Set();
+  for(let i=start;i<lines.length;i++){
+    let cols=parseCsvLine(lines[i]);
+    let rawName=cols[nameIdx]||''; let rawGrade=cols[gradeIdx]||defGrade; let rawClass=cols[classIdx]||defClass;
+    let name=toCaps(rawName).replace(/\s+/g,' ').trim();
+    let grade=String(rawGrade||'').replace(/[^0-9]/g,'');
+    let cls=toCaps(rawClass).replace(/\s+/g,'').trim();
+    // Auto-fix class: If class is just letter J and grade exists, make 4J
+    if(/^[A-J]$/.test(cls) && grade) cls=grade+cls;
+    // Auto-fix class: If class is 4-J or 4 J, make 4J
+    cls=cls.replace(/[^A-Z0-9]/g,'');
+    let row={rowNum:i+1,name:name,grade:grade,className:cls,learnerId:'',status:'',error:''};
+    // Validation
+    if(!name) row.error='⛔ NAME missing';
+    else if(!grade || !['4','5','6','7','8','9','10','11','12'].includes(grade)) row.error='⛔ GRADE must be 4-12 — Got: '+(rawGrade||'blank');
+    else if(!cls || !ALL_CLASSES.includes(cls)) row.error='⛔ CLASS must be 4A-12J — Got: '+(rawClass||'blank');
+    else if(cls.replace(/[^0-9]/g,'')!==grade) row.error=`⛔ GRADE + CLASS mismatch — Grade ${grade} + Class ${cls} — Class grade must = Grade`;
+    else {
+      // Duplicate check: Same NAME + CLASS in system
+      let dupSystem=learners.some(l=>toCaps(l.name)===name && toCaps(l.className)===cls);
+      let dupFile=seenInFile.has(name+'|'+cls);
+      if(dupFile) row.error='⛔ DUPLICATE in file — Same NAME + CLASS twice';
+      else if(dupSystem && dupMode==='SKIP') row.error='⚠️ DUPLICATE in system — Same NAME + CLASS already exists — Will SKIP';
+      else if(dupSystem && dupMode==='KEEP_BOTH') row.error=''; // Allow, will get new ID
+    }
+    if(!row.error){
+      let id=nextLearnerIdForPreview(grade, cls);
+      // For preview, need to assign sequentially — nextLearnerIdForPreview uses preview array, so push temp then assign
+      // We assign here, but preview not yet pushed — So we simulate by counting preview + learners for this class
+      // Simpler: Assign after loop — Set placeholder, fix in second pass below
+      row.learnerId=id||'';
+      if(!id) row.error='⛔ Class full (999) or ID error';
+      else row.status='✅ READY';
+    } else {
+      row.status=row.error.startsWith('⚠️')?'⚠️ SKIP':'⛔ ERROR';
+    }
+    // For READY rows, re-assign IDs sequentially to avoid duplicates in preview when multiple same class
+    // Do it by re-calculating after push: We'll fix IDs in renderPreview()
+    seenInFile.add(name+'|'+cls);
+    preview.push(row);
+    if(preview.length>=500){ document.getElementById('uploadInfo').innerHTML='<div class="warn">⚠️ File has &gt;500 rows — Only first 500 imported. Split file into 2.</div>'; break; }
+  }
+  // Fix IDs: Re-assign sequentially per class, in file order, skipping errors
+  let counters={};
+  preview.forEach(p=>{
+    if(p.status==='✅ READY'){
+      let cls=p.className;
+      if(!counters[cls]){
+        // Start from next free in system
+        let used=new Set(learners.filter(l=>toCaps(l.className)===cls).map(l=>toCaps(l.learnerId)));
+        let seq=1; while(used.has(makeLearnerId(p.grade, cls, seq))) seq++;
+        counters[cls]=seq;
+      }
+      // Skip IDs already used in this preview for same class
+      let usedPreview=new Set(preview.filter(x=>x.className===cls && x.learnerId && x!==p).map(x=>x.learnerId));
+      while(usedPreview.has(makeLearnerId(p.grade, cls, counters[cls]))) counters[cls]++;
+      p.learnerId=makeLearnerId(p.grade, cls, counters[cls]); counters[cls]++;
+    }
+  });
+  renderPreview(source);
+  document.getElementById('uploadInfo').innerHTML=`<div class="ok">✅ Parsed <b>${preview.length}</b> rows from <b>${source}</b> — Ready: <b>${preview.filter(p=>p.status==='✅ READY').length}</b> — Errors: <b>${preview.filter(p=>p.status==='⛔ ERROR').length}</b> — Skip: <b>${preview.filter(p=>p.status==='⚠️ SKIP').length}</b> — Check preview below, fix errors, then IMPORT.</div>`;
+}
+function renderPreview(source){
+  let ready=preview.filter(p=>p.status==='✅ READY').length; let errs=preview.filter(p=>p.status==='⛔ ERROR').length; let skips=preview.filter(p=>p.status==='⚠️ SKIP').length;
+  document.getElementById('previewInfo').innerHTML=`Preview: <b>${preview.length}</b> rows — <span style="color:#166534"><b>${ready} READY</b></span> — <span style="color:#991b1b"><b>${errs} ERROR</b></span> — <span style="color:#92400e"><b>${skips} SKIP</b></span> — Learner IDs auto: Grade + Class Letter + 001. Tap ❌ to remove a row. Tap ✏️ to fix name/grade/class.`;
+  document.getElementById('previewTable').innerHTML=preview.map((p,i)=>{
+    let pill=p.status==='✅ READY'?'pill-ok':p.status==='⚠️ SKIP'?'pill-dup':'pill-bad';
+    return `<tr><td>${i+1}</td><td><input value="${p.name}" onchange="editRow(${i},'name',this.value)" style="padding:8px;font-size:12px"></td><td><input value="${p.grade}" onchange="editRow(${i},'grade',this.value)" style="padding:8px;font-size:12px;width:70px"></td><td><input value="${p.className}" onchange="editRow(${i},'className',this.value)" style="padding:8px;font-size:12px;width:80px"></td><td><b>${p.learnerId||'—'}</b></td><td><span class="pill ${pill}">${p.status}</span><br><span style="font-size:11px;color:#991b1b">${p.error||''}</span></td><td><button class="btn btn-red" onclick="removeRow(${i})">❌</button></td></tr>`;
+  }).join('')||`<tr><td colspan="7" style="text-align:center;padding:20px">No preview yet.</td></tr>`;
+}
+function editRow(i, field, val){
+  let p=preview[i]; p[field]=field==='name'?toCaps(val):field==='className'?toCaps(val).replace(/[^A-Z0-9]/g,''):String(val).replace(/[^0-9]/g,'');
+  // Re-validate this row
+  p.error=''; p.status=''; p.learnerId='';
+  if(!p.name) p.error='⛔ NAME missing';
+  else if(!['4','5','6','7','8','9','10','11','12'].includes(p.grade)) p.error='⛔ GRADE must be 4-12';
+  else if(!ALL_CLASSES.includes(p.className)) p.error='⛔ CLASS must be 4A-12J';
+  else if(p.className.replace(/[^0-9]/g,'')!==p.grade) p.error=`⛔ GRADE + CLASS mismatch — ${p.grade} + ${p.className}`;
+  else {
+    let dupSystem=learners.some(l=>toCaps(l.name)===p.name && toCaps(l.className)===p.className);
+    if(dupSystem && document.getElementById('dupMode').value==='SKIP') p.error='⚠️ DUPLICATE in system — Will SKIP';
+  }
+  if(!p.error){ p.status='✅ READY'; p.learnerId=nextLearnerIdForPreview(p.grade, p.className) || ''; if(!p.learnerId) { p.error='⛔ ID error'; p.status='⛔ ERROR'; } }
+  else p.status=p.error.startsWith('⚠️')?'⚠️ SKIP':'⛔ ERROR';
+  renderPreview('edited');
+}
+function removeRow(i){ preview.splice(i,1); renderPreview('edited'); }
+function clearPreview(){ preview=[]; renderPreview('cleared'); document.getElementById('importInfo').innerHTML=''; }
+function clearAll(){ document.getElementById('pasteBox').value=''; document.getElementById('fileInput').value=''; clearPreview(); document.getElementById('uploadInfo').innerHTML='Cleared.'; }
+async function importAll(){
+  let valid=preview.filter(p=>p.status==='✅ READY');
+  if(!valid.length){ alert('No READY rows to import — Fix errors first, or use IMPORT VALID ONLY.'); return; }
+  if(!confirm(`Import ${valid.length} learners?\n\nLearner IDs auto: ${valid[0].learnerId} ...\n\nTap OK to save to Firebase.`)) return;
+  await doImport(valid, false);
+}
+async function importValidOnly(){
+  let valid=preview.filter(p=>p.status==='✅ READY');
+  if(!valid.length){ alert('No READY rows.'); return; }
+  await doImport(valid, true);
+}
+async function doImport(valid, validOnly){
+  let added=[]; let failed=[];
+  for(let p of valid){
+    // Final check: ID not already in system
+    if(learners.some(l=>toCaps(l.learnerId)===toCaps(p.learnerId))){ failed.push(p.name+' — ID '+p.learnerId+' already exists'); continue; }
+    let obj={learnerId:p.learnerId,name:p.name,className:p.className,grade:String(p.grade),schoolId:mySchoolId};
+    learners.push(obj); added.push(p);
+    try{ await rtdb.ref('learners/'+mySchoolId+'/'+p.learnerId).set(obj); }catch(e){ failed.push(p.name+' — Firebase error'); }
+  }
+  document.getElementById('importInfo').innerHTML=`<div class="ok">✅ IMPORTED <b>${added.length}</b> learners — IDs: <b>${added.slice(0,5).map(a=>a.learnerId).join(', ')}${added.length>5?' ...':''}</b><br>Failed: <b>${failed.length}</b> — ${failed.slice(0,3).join(' | ')||'None'}<br>Go to Teacher → Learners Table to see them.</div>`;
+  // Remove imported from preview, keep errors
+  preview=preview.filter(p=>p.status!=='✅ READY');
+  renderPreview('imported'); renderExisting();
+}
+loadAll();
+</script></body></html>
