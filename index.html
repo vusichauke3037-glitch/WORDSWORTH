@@ -12,13 +12,16 @@ header h1{margin:0;font-size:22px}header p{margin:4px 0 0;font-size:12px;color:#
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer}
 input{cursor:text}.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px;width:100%;margin-top:8px;text-align:left}
-.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-pink{background:#db2777;color:#fff}.btn-orange{background:#ea580c;color:#fff}
+.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-pink{background:#db2777;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-blue{background:#2563eb;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
 .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}.kpi b{font-size:22px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid .btn{margin-top:0;min-height:72px}
 .phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.phase-card{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer;border:3px solid transparent}.phase-card.active{border-color:#d4af37;background:#fef3c7}.phase-card b{font-size:16px;display:block}.phase-card span{font-size:12px;color:#64748b;font-weight:700}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
+.format-box{background:#f0fdfa;border:2px solid #0d9488;border-radius:8px;padding:12px;margin-top:10px;font-size:13px;line-height:1.7}
 @media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.phase-grid{grid-template-columns:1fr}.row{flex-direction:column}}
 </style></head>
 <body>
@@ -29,12 +32,22 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 <div class="wrap">
 <div class="card"><h2>👤 Who Am I</h2><div class="info" id="roleInfo">Loading...</div><div class="row"><button class="btn btn-red" onclick="logout()">🚪 LOGOUT</button><button class="btn btn-grey" onclick="switchUser()">🔄 SWITCH USER</button></div></div>
 <div class="kpi"><div><b id="kpiLearners">0</b><span>🎓 LEARNERS — GRADES 4-12</span></div><div><b id="kpiBooks">0</b><span>📚 BOOKS IN STOCK</span></div><div><b id="kpiIssued">0</b><span>📕 BOOKS ISSUED</span></div><div><b id="kpiPending">0</b><span>⏳ PENDING HOD</span></div></div>
+
 <div class="card"><h2>⚡ Quick Actions — For Your Role</h2><div id="quickActions" class="grid"></div><div class="info" id="quickInfo">Loading actions...</div></div>
+
+<div class="card"><h2>🔢 Number Formats — Locked — Book + Learner</h2>
+<div class="format-box" id="formatBox">Loading formats...</div>
+<div class="row"><div><label>🏫 Test School Name → Book Prefix</label><input id="testSchool" value="WORDSWORTH HIGH SCHOOL" oninput="checkFormats()"></div><div><label>🎓 Test Grade → Learner ID</label><select id="testGrade" onchange="checkFormats()"><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option></select></div><div><label>🏫 Test Class → Learner ID</label><select id="testClass" onchange="checkFormats()"><option>10A</option><option>10B</option><option>10C</option><option>10D</option><option>10E</option><option>10F</option><option>10G</option><option>10H</option><option>10I</option><option selected>10J</option></select></div></div>
+<div class="info" id="formatCheck">Type school / grade / class above.</div>
+<div class="row"><button class="btn btn-purple" onclick="go('barcode.html')" style="text-align:center">🖨️ GO TO BARCODE PRINT → A4 3x5</button><button class="btn btn-teal" onclick="go('librarian.html')" style="text-align:center">📚 GO TO LIBRARIAN → ADD BOOKS</button><button class="btn btn-green" onclick="go('teacher.html')" style="text-align:center">👩‍🏫 GO TO TEACHER → ADD LEARNER</button></div>
+</div>
+
 <div class="card"><h2>🏫 Phases — Tap A Phase To See Its Subjects + Books + Learners — A To J</h2><div class="phase-grid">
 <div class="phase-card" id="phase-INTERMEDIATE" onclick="selectPhase('INTERMEDIATE')"><b>📗 INTERMEDIATE</b><span>GRADES 4-6<br>12 Subjects<br>Classes 4A-4J, 5A-5J, 6A-6J<br>30 Classes</span></div>
 <div class="phase-card" id="phase-SENIOR" onclick="selectPhase('SENIOR')"><b>📘 SENIOR</b><span>GRADES 7-9<br>5 New Subjects<br>Classes 7A-7J, 8A-8J, 9A-9J<br>30 Classes</span></div>
 <div class="phase-card" id="phase-FET" onclick="selectPhase('FET')"><b>📕 FET</b><span>GRADES 10-12<br>21 Subjects<br>Classes 10A-10J, 11A-11J, 12A-12J<br>30 Classes</span></div>
 </div><div id="phaseInfo" class="info">Tap a phase above.</div></div>
+
 <div class="card"><h2>📂 All Pages — One Tap</h2><div class="grid">
 <button class="btn btn-green" onclick="go('teacher.html')">👩‍🏫 TEACHER<br><small>Issue Books — Rank 1</small></button>
 <button class="btn btn-purple" onclick="go('librarian.html')">📚 LIBRARIAN<br><small>Stock + Issue — Rank 2</small></button>
@@ -42,11 +55,15 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 <button class="btn btn-teal" onclick="go('principal.html')">🏫 PRINCIPAL<br><small>Overview All — Rank 4</small></button>
 <button class="btn btn-red" onclick="go('users.html')">👥 USERS<br><small>Admin Only — Rank 5</small></button>
 <button class="btn btn-pink" onclick="go('stock.html')">📦 STOCK<br><small>Add Books — Librarian+</small></button>
+<button class="btn btn-blue" onclick="go('barcode.html')">🖨️ BARCODE PRINT<br><small>A4 3x5 — Real CODE128</small></button>
 <button class="btn btn-orange" onclick="go('reports.html')">📊 REPORTS<br><small>Print / Export — All</small></button>
 <button class="btn btn-grey" onclick="go('login.html')">🔑 LOGIN<br><small>Switch / Demo Users</small></button>
 </div></div>
+
 <div class="card"><h2>🔍 Find A Subject — ALL CAPS — Intermediate To FET</h2><div class="row"><div><label>📚 Pick Subject — ALL CAPS</label><select id="searchSubject" onchange="searchSubject()"><option value="">-- PICK SUBJECT — ALL CAPS --</option></select></div><div><label>🎓 Pick Grade — 4 To 12</label><select id="searchGrade" onchange="searchSubject()"><option value="">-- ALL GRADES — 4 TO 12 --</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>🏫 Pick Class — A To J</label><select id="searchClass" onchange="searchSubject()"><option value="">-- ALL CLASSES — 4A TO 12J --</option></select></div></div><div id="subjectResult" class="info">Pick a subject to see who teaches it, who approves it, and what books exist.</div></div>
-<div class="card"><h2>📚 My Subjects + Classes — Detail — A To J</h2><div id="myDetail" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Subject — ALL CAPS</th><th>Phase</th><th>Grades</th><th>Classes I Teach — A To J</th><th>Action</th></tr></thead><tbody id="myDetailTable"></tbody></table></div></div>
+
+<div class="card"><h2>📚 My Subjects + Classes — Detail — A To J — Next IDs</h2><div id="myDetail" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Subject — ALL CAPS</th><th>Phase</th><th>Grades</th><th>Classes I Teach — A To J</th><th>Next Learner ID</th><th>Action</th></tr></thead><tbody id="myDetailTable"></tbody></table></div></div>
+
 <div class="card"><h2>🕒 Recent Issues — My School</h2><div id="recentInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Learner</th><th>Book — ALL CAPS</th><th>Subject / Grade</th><th>Teacher</th><th>Status / Date</th></tr></thead><tbody id="recentTable"></tbody></table></div></div>
 </div>
 <script>
@@ -54,6 +71,7 @@ const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomai
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
 function toCaps(s){return String(s||'').trim().toUpperCase();}
+function pad(n,l){return String(n).padStart(l,'0');}
 function arr(v){if(Array.isArray(v)) return v.map(toCaps).filter(Boolean); if(v) return [toCaps(v)]; return [];}
 function phaseOfGrade(grade){ let g=parseInt(grade,10); if(g<=6) return 'INTERMEDIATE'; if(g<=9) return 'SENIOR'; return 'FET'; }
 function phaseOfSubject(sub){ if(['NATURAL SCIENCES AND TECHNOLOGY','LIFE SKILLS'].includes(sub)) return 'INTERMEDIATE'; if(['NATURAL SCIENCES','ECONOMIC AND MANAGEMENT SCIENCES','TECHNOLOGY','CREATIVE ARTS'].includes(sub)) return 'SENIOR'; return 'FET'; }
@@ -63,24 +81,60 @@ const SUBJECT_GROUPS=[
   {label:'FET — GRADES 10-12', phase:'FET', items:['MATHEMATICAL LITERACY','TECHNICAL MATHEMATICS','PHYSICAL SCIENCES','TECHNICAL SCIENCES','LIFE SCIENCES','AGRICULTURAL SCIENCES','ACCOUNTING','BUSINESS STUDIES','ECONOMICS','HISTORY','GEOGRAPHY','TOURISM','CONSUMER STUDIES','COMPUTER APPLICATIONS TECHNOLOGY','INFORMATION TECHNOLOGY','ENGINEERING GRAPHICS AND DESIGN','VISUAL ARTS','DRAMATIC ARTS','MUSIC','PHYSICAL EDUCATION','RELIGION STUDIES']}
 ];
 const ALL_SUBJECTS=[...new Set(SUBJECT_GROUPS.flatMap(g=>g.items))];
-// --- CLASSES A TO J — 90 CLASSES — SAME AS ALL OTHER FILES ---
 const ALL_CLASSES=['4A','4B','4C','4D','4E','4F','4G','4H','4I','4J','5A','5B','5C','5D','5E','5F','5G','5H','5I','5J','6A','6B','6C','6D','6E','6F','6G','6H','6I','6J','7A','7B','7C','7D','7E','7F','7G','7H','7I','7J','8A','8B','8C','8D','8E','8F','8G','8H','8I','8J','9A','9B','9C','9D','9E','9F','9G','9H','9I','9J','10A','10B','10C','10D','10E','10F','10G','10H','10I','10J','11A','11B','11C','11D','11E','11F','11G','11H','11I','11J','12A','12B','12C','12D','12E','12F','12G','12H','12I','12J'];
 let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
 let mySchoolId=user?.schoolId||'WHS';
+let mySchoolName=user?.schoolName||'WORDSWORTH HIGH SCHOOL';
 let mySubjects=arr(user?.subjects).length?arr(user?.subjects):arr(user?.subject);
 let myHodSubjects=arr(user?.hodSubjects);
 let myClasses=arr(user?.teachingClasses||user?.classes);
 let learners=[], books=[], issues=[];
 let selectedPhase='';
+// ===== BOOK NUMBER + LEARNER ID — V2.13 — SAME AS ALL FILES =====
+function schoolPrefix(schoolName){
+  let words=toCaps(schoolName||mySchoolName||'WORDSWORTH HIGH SCHOOL').split(/\s+/).filter(w=>/[A-Z]/.test(w));
+  if(words.length===1) return words[0].replace(/[^A-Z]/g,'').slice(0,3).padEnd(3,'X');
+  return words.map(w=>w.replace(/[^A-Z]/g,'')[0]).join('').slice(0,4);
+}
+function nextBookNumber(){
+  let prefix=schoolPrefix(mySchoolName);
+  let max=0;
+  books.forEach(b=>{ let code=toCaps(b.barcode||''); if(code.startsWith(prefix)){ let m=code.match(/(\d+)$/); if(m) max=Math.max(max,parseInt(m[1],10)); } });
+  return prefix+pad(max+1,6);
+}
+function makeLearnerId(grade, className, seq){
+  let g=String(grade||'').replace(/[^0-9]/g,'');
+  let letter=toCaps(className||'').replace(/[^A-Z]/g,'').slice(-1)||'A';
+  let classGrade=toCaps(className||'').replace(/[^0-9]/g,'');
+  if(classGrade && classGrade!==g) return null;
+  return g+letter+pad(seq,3);
+}
+function nextLearnerId(grade, className){
+  let used=new Set(learners.filter(l=>toCaps(l.className)===toCaps(className)).map(l=>toCaps(l.learnerId)));
+  let seq=1;
+  while(true){ let id=makeLearnerId(grade, className, seq); if(!id) return null; if(!used.has(id)) return id; seq++; if(seq>999) return null; }
+}
+function checkFormats(){
+  let school=document.getElementById('testSchool').value;
+  let prefix=schoolPrefix(school);
+  let grade=document.getElementById('testGrade').value;
+  let cls=document.getElementById('testClass').value;
+  // Keep class dropdown in sync with grade — If grade 4, show 4A-4J, not 10J
+  let clsSelect=document.getElementById('testClass');
+  let wanted=ALL_CLASSES.filter(c=>c.replace(/[^0-9]/g,'')===String(grade));
+  if(!wanted.includes(cls)){ clsSelect.innerHTML=wanted.map(c=>`<option>${c}</option>`).join(''); cls=clsSelect.value; }
+  let learnerId=makeLearnerId(grade, cls, 1);
+  document.getElementById('formatCheck').innerHTML=`School: <b>${toCaps(school)}</b> → Prefix: <b>${prefix}</b> → Next Book: <b>${prefix}000001</b> (example, 1st book)<br>Grade: <b>${grade}</b> + Class: <b>${cls}</b> → Learner ID (1st): <b>${learnerId||'⛔ MISMATCH — Class grade must = Grade'}</b> — 2nd: <b>${makeLearnerId(grade, cls, 2)||'—'}</b> — 3rd: <b>${makeLearnerId(grade, cls, 3)||'—'}</b><br>${learnerId?`<span style="color:#166534">✅ Correct — Grade + Class Letter + 001 — Not ${grade}${cls}001.</span>`:`<span style="color:#991b1b">⛔ Grade + Class mismatch — Pick Class ${grade}A-${grade}J for Grade ${grade}.</span>`}`;
+}
 function demoData(){
-  learners=[]; ['4A','4J','5A','5J','6A','6J','7A','7J','8A','8J','9A','9J','10A','10J','11A','11J','12A','12J'].forEach(cl=>{ let g=cl.replace(/[^0-9]/g,''); for(let i=1;i<=5;i++) learners.push({id:cl+String(i).padStart(3,'0'),learnerId:cl+String(i).padStart(3,'0'),name:'LEARNER '+cl+'-'+i,className:cl,grade:g}); });
+  learners=[]; ['4A','4J','5A','5J','6A','6J','7A','7J','8A','8J','9A','9J','10A','10J','11A','11J','12A','12J'].forEach(cl=>{ let g=cl.replace(/[^0-9]/g,''); for(let i=1;i<=5;i++) learners.push({id:cl+pad(i,3),learnerId:cl+pad(i,3),name:'LEARNER '+cl+'-'+i,className:cl,grade:g}); });
   books=[]; let n=1;
-  [['ENGLISH HOME LANGUAGE','4'],['MATHEMATICS','5'],['NATURAL SCIENCES AND TECHNOLOGY','6'],['SOCIAL SCIENCES','7'],['NATURAL SCIENCES','8'],['ECONOMIC AND MANAGEMENT SCIENCES','9'],['MATHEMATICS','10'],['PHYSICAL SCIENCES','11'],['HISTORY','12']].forEach(([sub,gr])=>{ for(let i=1;i<=3;i++) books.push({barcode:'WHS'+String(n++).padStart(6,'0'),title:toCaps(sub)+' GRADE '+gr,subject:toCaps(sub),grade:String(gr),status:'AVAILABLE'}); });
+  [['ENGLISH HOME LANGUAGE','4'],['MATHEMATICS','5'],['NATURAL SCIENCES AND TECHNOLOGY','6'],['SOCIAL SCIENCES','7'],['NATURAL SCIENCES','8'],['ECONOMIC AND MANAGEMENT SCIENCES','9'],['MATHEMATICS','10'],['PHYSICAL SCIENCES','11'],['HISTORY','12']].forEach(([sub,gr])=>{ for(let i=1;i<=3;i++) books.push({barcode:schoolPrefix(mySchoolName)+pad(n++,6),title:toCaps(sub)+' GRADE '+gr,subject:toCaps(sub),grade:String(gr),status:'AVAILABLE'}); });
   issues=[
-    {learnerName:'LEARNER 4J-1',learnerId:'4J001',className:'4J',grade:'4',title:'ENGLISH HOME LANGUAGE GRADE 4',subject:'ENGLISH HOME LANGUAGE',teacher:'MRS MOKOENA',barcode:'WHS000001',status:'APPROVED',date:'2026-11-17'},
-    {learnerName:'LEARNER 6J-1',learnerId:'6J001',className:'6J',grade:'6',title:'NATURAL SCIENCES AND TECHNOLOGY GRADE 6',subject:'NATURAL SCIENCES AND TECHNOLOGY',teacher:'MR DLAMINI',barcode:'WHS000011',status:'APPROVED',date:'2026-11-17'},
-    {learnerName:'LEARNER 10J-1',learnerId:'10J001',className:'10J',grade:'10',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',teacher:'MRS DUBE',barcode:'WHS000021',status:'PENDING HOD',date:'2026-11-17'},
-    {learnerName:'LEARNER 12J-1',learnerId:'12J001',className:'12J',grade:'12',title:'HISTORY GRADE 12',subject:'HISTORY',teacher:'MS JONES',barcode:'WHS000031',status:'PENDING HOD',date:'2026-11-17'},
+    {learnerName:'LEARNER 4J-1',learnerId:'4J001',className:'4J',grade:'4',title:'ENGLISH HOME LANGUAGE GRADE 4',subject:'ENGLISH HOME LANGUAGE',teacher:'MRS MOKOENA',barcode:schoolPrefix(mySchoolName)+'000001',status:'APPROVED',date:'2026-11-17'},
+    {learnerName:'LEARNER 6J-1',learnerId:'6J001',className:'6J',grade:'6',title:'NATURAL SCIENCES AND TECHNOLOGY GRADE 6',subject:'NATURAL SCIENCES AND TECHNOLOGY',teacher:'MR DLAMINI',barcode:schoolPrefix(mySchoolName)+'000011',status:'APPROVED',date:'2026-11-17'},
+    {learnerName:'LEARNER 10J-1',learnerId:'10J001',className:'10J',grade:'10',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',teacher:'MRS DUBE',barcode:schoolPrefix(mySchoolName)+'000021',status:'PENDING HOD',date:'2026-11-17'},
+    {learnerName:'LEARNER 12J-1',learnerId:'12J001',className:'12J',grade:'12',title:'HISTORY GRADE 12',subject:'HISTORY',teacher:'MS JONES',barcode:schoolPrefix(mySchoolName)+'000031',status:'PENDING HOD',date:'2026-11-17'},
   ];
 }
 function go(page){ window.location.href=page; }
@@ -106,25 +160,30 @@ function searchSubject(){
 }
 function loadAll(){
   let role=toCaps(user?.role||'GUEST'); let rank=user?.rank||0;
-  document.getElementById('roleInfo').innerHTML=`👤 <b>${toCaps(user?.name||'GUEST — PLEASE LOGIN')}</b> — ${role} — RANK ${rank} — School: <b>${mySchoolId}</b><br>${role==='TEACHER'?`Subjects (ALL CAPS): <b>${mySubjects.join(', ')||'—'}</b><br>Classes (4A-12J, A-J): <b>${myClasses.join(', ')||'—'}</b>`:role==='HOD'?`Teaches: <b>${mySubjects.join(', ')||'—'}</b><br>HOD Approves: <b>${myHodSubjects.join(', ')||mySubjects.join(', ')}</b>`:role==='PRINCIPAL'||role==='ADMIN'||role==='LIBRARIAN'?`Sees ALL subjects — <b>${ALL_SUBJECTS.length} ALL CAPS</b> — Intermediate to FET — Grades 4-12 — Classes <b>4A to 12J — A to J — 90 classes</b>`:`Subjects: <b>${mySubjects.join(', ')||'—'}</b>`}<br>Email: <b>${toCaps(user?.email||'—')}</b>`;
+  // Format box — Show locked formats on Home
+  document.getElementById('formatBox').innerHTML=`<b>📖 BOOK NUMBER:</b> First Letter Of Each Word In School Name + 6-Digit Sequence<br>Your school: <b>${toCaps(mySchoolName)}</b> → Prefix: <b>${schoolPrefix(mySchoolName)}</b> → Example: <b>${schoolPrefix(mySchoolName)}000001</b>, <b>${schoolPrefix(mySchoolName)}000002</b>...<br><b>👤 LEARNER ID:</b> Grade + Class Letter + 3-Digit Sequence<br>Examples: Grade 4 + Class 4J → <b>4J001</b> — Grade 10 + Class 10J → <b>10J001</b> — Grade 12 + Class 12A → <b>12A001</b><br>Next Book Number (auto): <b>${nextBookNumber()}</b> — Based on books already in stock.`;
+  document.getElementById('roleInfo').innerHTML=`👤 <b>${toCaps(user?.name||'GUEST — PLEASE LOGIN')}</b> — ${role} — RANK ${rank} — School: <b>${toCaps(mySchoolName)}</b> (${mySchoolId}) — Prefix: <b>${schoolPrefix(mySchoolName)}</b><br>${role==='TEACHER'?`Subjects (ALL CAPS): <b>${mySubjects.join(', ')||'—'}</b><br>Classes (4A-12J, A-J): <b>${myClasses.join(', ')||'—'}</b>`:role==='HOD'?`Teaches: <b>${mySubjects.join(', ')||'—'}</b><br>HOD Approves: <b>${myHodSubjects.join(', ')||mySubjects.join(', ')}</b>`:role==='PRINCIPAL'||role==='ADMIN'||role==='LIBRARIAN'?`Sees ALL subjects — <b>${ALL_SUBJECTS.length} ALL CAPS</b> — Intermediate to FET — Grades 4-12 — Classes <b>4A to 12J — A to J — 90 classes</b>`:`Subjects: <b>${mySubjects.join(', ')||'—'}</b>`}<br>Email: <b>${toCaps(user?.email||'—')}</b>`;
   let qa=document.getElementById('quickActions'); let qi=document.getElementById('quickInfo');
-  if(role==='TEACHER'){ qa.innerHTML=`<button class="btn btn-green" onclick="go('teacher.html')">📕 ISSUE BOOK →<br><small>To My Learners</small></button><button class="btn btn-gold" onclick="go('teacher.html')">📦 REQUEST BOOKS →<br><small>To HOD</small></button><button class="btn btn-teal" onclick="go('teacher.html')">🖨️ PRINT CLASS LIST →<br><small>My Classes A-J</small></button>`; qi.innerHTML=`Teacher: Issue to YOUR classes (A-J) + YOUR subjects + SAME grade only. 1 learner = 1 title.`; }
-  else if(role==='LIBRARIAN'){ qa.innerHTML=`<button class="btn btn-purple" onclick="go('stock.html')">📦 ADD BOOK →<br><small>Stock + Barcode</small></button><button class="btn btn-teal" onclick="go('librarian.html')">📕 ISSUE / RETURN →<br><small>All Learners 4A-12J</small></button><button class="btn btn-grey" onclick="go('stock.html')">📊 STOCK COUNT →<br><small>All Subjects</small></button>`; qi.innerHTML=`Librarian: Add books (ALL CAPS subjects, Grades 4-12), issue/return to any class 4A-12J, stock count.`; }
+  if(role==='TEACHER'){ qa.innerHTML=`<button class="btn btn-green" onclick="go('teacher.html')">📕 ISSUE BOOK →<br><small>To My Learners</small></button><button class="btn btn-gold" onclick="go('teacher.html')">👤 ADD LEARNER →<br><small>Auto ID: Grade+Letter+001</small></button><button class="btn btn-teal" onclick="go('barcode.html')">🖨️ PRINT BARCODE →<br><small>A4 3x5</small></button>`; qi.innerHTML=`Teacher: Issue to YOUR classes (A-J) + YOUR subjects + SAME grade only. Learner ID = Grade + Letter + 001.`; }
+  else if(role==='LIBRARIAN'){ qa.innerHTML=`<button class="btn btn-purple" onclick="go('stock.html')">📦 ADD BOOK →<br><small>Auto: ${schoolPrefix(mySchoolName)}000001</small></button><button class="btn btn-teal" onclick="go('librarian.html')">📕 ISSUE / RETURN →<br><small>All Learners 4A-12J</small></button><button class="btn btn-blue" onclick="go('barcode.html')">🖨️ PRINT BARCODE →<br><small>A4 3x5</small></button>`; qi.innerHTML=`Librarian: Add books (Auto Book Number = Prefix + 6-digit), issue/return to any class 4A-12J.`; }
   else if(role==='HOD'){ qa.innerHTML=`<button class="btn btn-gold" onclick="go('hod.html')">✅ APPROVE ORDERS →<br><small>My HOD Subjects</small></button><button class="btn btn-red" onclick="go('hod.html')">❌ REJECT ORDERS →<br><small>My HOD Subjects</small></button><button class="btn btn-teal" onclick="go('hod.html')">📊 MY DECISIONS →<br><small>Approved / Rejected</small></button>`; qi.innerHTML=`HOD: Approve ONLY ${myHodSubjects.length?myHodSubjects.join(', '):mySubjects.join(', ')} — Other subjects hidden.`; }
-  else if(role==='PRINCIPAL'){ qa.innerHTML=`<button class="btn btn-teal" onclick="go('principal.html')">📊 OVERVIEW ALL →<br><small>All Subjects / Grades / Classes A-J</small></button><button class="btn btn-gold" onclick="go('principal.html')">✅ APPROVE ANY →<br><small>Override HOD</small></button><button class="btn btn-green" onclick="go('reports.html')">📥 EXPORT CSV →<br><small>All Data</small></button>`; qi.innerHTML=`Principal: Sees ALL — ${ALL_SUBJECTS.length} subjects, Grades 4-12, all classes 4A-12J. Can approve any, override HOD.`; }
+  else if(role==='PRINCIPAL'){ qa.innerHTML=`<button class="btn btn-teal" onclick="go('principal.html')">📊 OVERVIEW ALL →<br><small>All Subjects / Grades / Classes A-J</small></button><button class="btn btn-gold" onclick="go('principal.html')">✅ APPROVE ANY →<br><small>Override HOD</small></button><button class="btn btn-green" onclick="go('reports.html')">📥 EXPORT CSV →<br><small>All Data</small></button>`; qi.innerHTML=`Principal: Sees ALL — ${ALL_SUBJECTS.length} subjects, Grades 4-12, all classes 4A-12J.`; }
   else if(role==='ADMIN'){ qa.innerHTML=`<button class="btn btn-red" onclick="go('users.html')">👥 MANAGE USERS →<br><small>Add / Edit / Delete</small></button><button class="btn btn-teal" onclick="go('principal.html')">📊 OVERVIEW →<br><small>All Subjects</small></button><button class="btn btn-purple" onclick="go('stock.html')">📦 STOCK →<br><small>All Books</small></button>`; qi.innerHTML=`Admin: Manage users (ALL CAPS subjects, Grades 4-12, Classes 4A-12J), see all, fix data.`; }
   else { qa.innerHTML=`<button class="btn btn-green" onclick="go('login.html')">🔑 LOGIN →<br><small>Pick Demo User</small></button>`; qi.innerHTML=`Not logged in — Tap LOGIN, pick a demo user (MOKOENA, DUBE, HOD, PRINCIPAL, ADMIN...).`; }
   let sHtml='<option value="">-- PICK SUBJECT — ALL CAPS --</option>';
   SUBJECT_GROUPS.forEach(g=>{ sHtml+=`<optgroup label="${g.label}">${g.items.map(s=>`<option>${s}</option>`).join('')}</optgroup>`; });
   document.getElementById('searchSubject').innerHTML=sHtml;
   document.getElementById('searchClass').innerHTML='<option value="">-- ALL CLASSES — 4A TO 12J --</option>'+ALL_CLASSES.map(c=>`<option>${c}</option>`).join('');
+  document.getElementById('testSchool').value=mySchoolName;
   demoData();
+  // Re-render format box after demo data loads (so nextBookNumber is correct)
+  document.getElementById('formatBox').innerHTML=`<b>📖 BOOK NUMBER:</b> First Letter Of Each Word In School Name + 6-Digit Sequence<br>Your school: <b>${toCaps(mySchoolName)}</b> → Prefix: <b>${schoolPrefix(mySchoolName)}</b> → Example: <b>${schoolPrefix(mySchoolName)}000001</b><br><b>👤 LEARNER ID:</b> Grade + Class Letter + 3-Digit Sequence<br>Examples: Grade 4 + Class 4J → <b>4J001</b> — Grade 10 + Class 10J → <b>10J001</b> — Grade 12 + Class 12A → <b>12A001</b><br>Next Book Number (auto): <b>${nextBookNumber()}</b>`;
   try{
-    rtdb.ref('learners/'+mySchoolId).once('value').then(s=>{ if(s.val()) learners=Object.values(s.val()); renderAll(); }).catch(()=>{});
+    rtdb.ref('learners/'+mySchoolId).once('value').then(s=>{ if(s.val()) learners=Object.values(s.val()); renderAll(); checkFormats(); }).catch(()=>{});
     rtdb.ref('stock/'+mySchoolId).once('value').then(s=>{ if(s.val()) books=Object.values(s.val()).map(b=>({...b,subject:toCaps(b.subject),title:toCaps(b.title),grade:String(b.grade)})); renderAll(); }).catch(()=>{});
     rtdb.ref('issues/'+mySchoolId).once('value').then(s=>{ if(s.val()) issues=Object.values(s.val()); renderAll(); }).catch(()=>{});
   }catch(e){}
-  renderAll();
+  checkFormats(); renderAll();
 }
 function renderAll(){
   document.getElementById('kpiLearners').textContent=learners.length;
@@ -133,18 +192,19 @@ function renderAll(){
   document.getElementById('kpiPending').textContent=issues.filter(i=>toCaps(i.status)==='PENDING HOD').length;
   let subs=mySubjects.length?mySubjects:ALL_SUBJECTS;
   if(toCaps(user?.role)==='TEACHER'||toCaps(user?.role)==='HOD'){
-    document.getElementById('myDetail').innerHTML=`Your subjects: <b>${mySubjects.join(', ')}</b> — Classes: <b>${myClasses.join(', ')||'— (HOD: No classes)'}</b>`;
+    document.getElementById('myDetail').innerHTML=`Your subjects: <b>${mySubjects.join(', ')}</b> — Classes: <b>${myClasses.join(', ')||'— (HOD: No classes)'}</b> — Next Book: <b>${nextBookNumber()}</b>`;
     document.getElementById('myDetailTable').innerHTML=subs.map(s=>{
       let grades=s==='MATHEMATICS'||s.includes('ENGLISH')||s.includes('AFRIKAANS')||s.includes('ISIZULU')||s.includes('ISIXHOSA')||s.includes('SESOTHO')||s.includes('SETSWANA')?'4-12':phaseOfSubject(s)==='INTERMEDIATE'?'4-6':phaseOfSubject(s)==='SENIOR'?'7-9':'10-12';
       let classes=myClasses.filter(c=>{ let g=parseInt(c.replace(/[^0-9]/g,''),10); if(grades==='4-6') return g<=6; if(grades==='7-9') return g>=7&&g<=9; if(grades==='10-12') return g>=10; return true; });
-      return `<tr><td><b>${s}</b></td><td>${phaseOfSubject(s)}</td><td>${grades}</td><td>${classes.join(', ')||'—'}</td><td><button class="btn btn-teal" onclick="go('teacher.html')">ISSUE →</button></td></tr>`;
+      let nextId=classes.length?nextLearnerId(classes[0].replace(/[^0-9]/g,''), classes[0])||'—':'—';
+      return `<tr><td><b>${s}</b></td><td>${phaseOfSubject(s)}</td><td>${grades}</td><td>${classes.join(', ')||'—'}</td><td><b>${nextId}</b></td><td><button class="btn btn-teal" onclick="go('teacher.html')">ISSUE →</button></td></tr>`;
     }).join('');
   } else {
-    document.getElementById('myDetail').innerHTML=`You see ALL subjects — <b>${ALL_SUBJECTS.length} ALL CAPS</b> — Intermediate to FET. Below is the full list (first 10). Classes: <b>4A to 12J — 90 classes</b>.`;
-    document.getElementById('myDetailTable').innerHTML=ALL_SUBJECTS.slice(0,10).map(s=>`<tr><td><b>${s}</b></td><td>${phaseOfSubject(s)}</td><td>${phaseOfSubject(s)==='INTERMEDIATE'?'4-6':phaseOfSubject(s)==='SENIOR'?'7-9':'10-12'}</td><td>ALL — 4A-12J</td><td><button class="btn btn-teal" onclick="go('stock.html')">STOCK →</button></td></tr>`).join('');
+    document.getElementById('myDetail').innerHTML=`You see ALL subjects — <b>${ALL_SUBJECTS.length} ALL CAPS</b> — Intermediate to FET. Classes: <b>4A to 12J — 90 classes</b>. Next Book: <b>${nextBookNumber()}</b>`;
+    document.getElementById('myDetailTable').innerHTML=ALL_SUBJECTS.slice(0,10).map(s=>`<tr><td><b>${s}</b></td><td>${phaseOfSubject(s)}</td><td>${phaseOfSubject(s)==='INTERMEDIATE'?'4-6':phaseOfSubject(s)==='SENIOR'?'7-9':'10-12'}</td><td>ALL — 4A-12J</td><td><b>${nextLearnerId(4,'4A')||'4A001'}</b></td><td><button class="btn btn-teal" onclick="go('stock.html')">STOCK →</button></td></tr>`).join('');
   }
   let recent=issues.slice(-5).reverse();
-  document.getElementById('recentInfo').innerHTML=`Showing <b>${recent.length}</b> recent issues — School: <b>${mySchoolId}</b> — Classes 4A-12J.`;
+  document.getElementById('recentInfo').innerHTML=`Showing <b>${recent.length}</b> recent issues — School: <b>${toCaps(mySchoolName)}</b> (${mySchoolId}) — Prefix: <b>${schoolPrefix(mySchoolName)}</b> — Classes 4A-12J.`;
   document.getElementById('recentTable').innerHTML=recent.length?recent.map(i=>`<tr><td><b>${toCaps(i.learnerName)}</b><br>${i.learnerId} — ${i.className} — Grade ${i.grade}</td><td><b>${toCaps(i.title)}</b><br>${i.barcode}</td><td>${toCaps(i.subject)}<br>Grade ${i.grade} — ${phaseOfGrade(i.grade)}</td><td>${toCaps(i.teacher)}</td><td>${toCaps(i.status)}<br>${i.date||''}</td></tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px">No issues yet.</td></tr>`;
 }
 loadAll();
