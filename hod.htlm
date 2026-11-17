@@ -27,7 +27,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 @media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>👔 HOD — MAKHANANI LTSM 2.0</h1><p>APPROVE MY SUBJECTS ONLY (MULTI) — SET APPROVED QTY — REQUEST 10, APPROVE 5 = LIBRARIAN ISSUES ONLY 5</p>
+<header><h1>👔 HOD — MAKHANANI LTSM 2.0</h1><p>APPROVE MY SUBJECTS ONLY (ALL CAPS — INTERMEDIATE TO FET) — GRADES 4-12 — SET APPROVED QTY</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 <script>guardPage(3,'HOD');</script>
 </header>
@@ -35,11 +35,11 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 <div class="info" id="roleInfo">Loading...</div>
 <div class="kpi"><div><b id="kpiPending">0</b><span>⏳ PENDING — My Subjects</span></div><div><b id="kpiApproved">0</b><span>✅ APPROVED BY ME</span></div><div><b id="kpiRejected">0</b><span>❌ REJECTED BY ME</span></div><div><b id="kpiTotalApprovedQty">0</b><span>📦 TOTAL APPROVED QTY</span></div></div>
 <div class="card"><h2>⏳ Pending Requests — My Subjects Only — Set Approved Qty</h2>
-<div class="info">You approve <b>ONLY <span id="mySubjectLabel">—</span></b>. Other subjects are hidden.<br><b>ApprovedQty ≤ RequestedQty</b> — Approve less (partial) or full, never more.<br>Example: Teacher requests 10 MATHS → You approve 5 → Librarian issues only 5.</div>
-<div class="row"><div><label>📚 Filter Subject — My Subjects Only</label><select id="filterPendingSubject" onchange="renderAll()"><option value="">📚 ALL MY SUBJECTS</option></select></div></div>
+<div class="info">You approve <b>ONLY <span id="mySubjectLabel">—</span></b> — ALL CAPS — Intermediate to FET. Other subjects hidden.<br><b>ApprovedQty ≤ RequestedQty</b> — Approve less or full, never more.</div>
+<div class="row"><div><label>📚 Filter Subject — My Subjects Only — ALL CAPS</label><select id="filterPendingSubject" onchange="renderAll()"><option value="">📚 ALL MY SUBJECTS</option></select></div><div><label>🎓 Filter Grade — 4 To 12</label><select id="filterPendingGrade" onchange="renderAll()"><option value="">🎓 ALL GRADES — 4 TO 12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div></div>
 <div id="pendingInfo" class="info">Loading...</div>
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Teacher / Subject</th><th>Title / Class</th><th>Requested</th><th>Approved Qty<br>You Set</th><th>Action</th></tr></thead><tbody id="pendingTable"></tbody></table></div><div id="pendingMsg"></div></div>
-<div class="card"><h2>📦 My Decisions — Approved / Rejected</h2><div class="row"><div><label>🔍 Search</label><input id="searchDecided" placeholder="🔍 Teacher / Title" oninput="renderDecided()"></div><div><label>📚 Filter Subject</label><select id="filterDecidedSubject" onchange="renderDecided()"><option value="">📚 ALL MY SUBJECTS</option></select></div><div><label>📊 Filter Status</label><select id="filterDecided" onchange="renderDecided()"><option value="">📊 ALL</option><option value="APPROVED">✅ APPROVED</option><option value="PARTIALLY ISSUED">📦 PARTIALLY ISSUED</option><option value="FULLY ISSUED">✅ FULLY ISSUED</option><option value="REJECTED">❌ REJECTED</option></select></div></div><div id="decidedInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Teacher / Subject</th><th>Title / Class</th><th>Requested</th><th>Approved</th><th>Issued</th><th>Remaining</th><th>Status</th><th>Action</th></tr></thead><tbody id="decidedTable"></tbody></table></div></div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Teacher / Subject</th><th>Title / Class / Grade</th><th>Requested</th><th>Approved Qty<br>You Set</th><th>Action</th></tr></thead><tbody id="pendingTable"></tbody></table></div><div id="pendingMsg"></div></div>
+<div class="card"><h2>📦 My Decisions — Approved / Rejected</h2><div class="row"><div><label>🔍 Search</label><input id="searchDecided" placeholder="🔍 Teacher / Title" oninput="renderDecided()"></div><div><label>📚 Filter Subject</label><select id="filterDecidedSubject" onchange="renderDecided()"><option value="">📚 ALL MY SUBJECTS</option></select></div><div><label>🎓 Filter Grade</label><select id="filterDecidedGrade" onchange="renderDecided()"><option value="">🎓 ALL GRADES</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>📊 Filter Status</label><select id="filterDecided" onchange="renderDecided()"><option value="">📊 ALL</option><option value="APPROVED">✅ APPROVED</option><option value="PARTIALLY ISSUED">📦 PARTIALLY ISSUED</option><option value="FULLY ISSUED">✅ FULLY ISSUED</option><option value="REJECTED">❌ REJECTED</option></select></div></div><div id="decidedInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Teacher / Subject</th><th>Title / Class</th><th>Requested</th><th>Approved</th><th>Issued</th><th>Remaining</th><th>Status</th><th>Action</th></tr></thead><tbody id="decidedTable"></tbody></table></div></div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
@@ -48,24 +48,34 @@ const rtdb=firebase.database();
 function toCaps(s){return String(s||'').trim().toUpperCase();}
 function arr(v){ if(Array.isArray(v)) return v.map(toCaps).filter(Boolean); if(v) return [toCaps(v)]; return []; }
 function getMySubjects(u){ let h=arr(u?.hodSubjects); if(h.length) return [...new Set(h)]; let s=arr(u?.subjects); if(s.length) return [...new Set(s)]; if(u?.subject) return [toCaps(u.subject)]; return []; }
+// SAME 37 SUBJECTS AS users.html V2.10 + stock.html V2.10 + teacher.html V2.12
+const SUBJECT_GROUPS=[
+  {label:'INTERMEDIATE — GRADES 4-6', items:['ENGLISH HOME LANGUAGE','ENGLISH FIRST ADDITIONAL LANGUAGE','AFRIKAANS HOME LANGUAGE','AFRIKAANS FIRST ADDITIONAL LANGUAGE','ISIZULU HOME LANGUAGE','ISIXHOSA HOME LANGUAGE','SESOTHO HOME LANGUAGE','SETSWANA HOME LANGUAGE','MATHEMATICS','NATURAL SCIENCES AND TECHNOLOGY','SOCIAL SCIENCES','LIFE SKILLS']},
+  {label:'SENIOR — GRADES 7-9', items:['NATURAL SCIENCES','ECONOMIC AND MANAGEMENT SCIENCES','TECHNOLOGY','CREATIVE ARTS','LIFE ORIENTATION']},
+  {label:'FET — GRADES 10-12', items:['MATHEMATICAL LITERACY','TECHNICAL MATHEMATICS','PHYSICAL SCIENCES','TECHNICAL SCIENCES','LIFE SCIENCES','AGRICULTURAL SCIENCES','ACCOUNTING','BUSINESS STUDIES','ECONOMICS','HISTORY','GEOGRAPHY','TOURISM','CONSUMER STUDIES','COMPUTER APPLICATIONS TECHNOLOGY','INFORMATION TECHNOLOGY','ENGINEERING GRAPHICS AND DESIGN','VISUAL ARTS','DRAMATIC ARTS','MUSIC','PHYSICAL EDUCATION','RELIGION STUDIES']}
+];
+const ALL_SUBJECTS=[...new Set(SUBJECT_GROUPS.flatMap(g=>g.items))];
 let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-let mySubjects=getMySubjects(user); // e.g. [MATHEMATICS, PHYSICAL SCIENCES]
+let mySubjects=getMySubjects(user);
 let mySchoolId=user?.schoolId||'WHS';
 let orders=[];
 function demoData(){ orders=[
- {id:'ORD1',teacher:'MRS DUBE',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',grade:'10',className:'10A',qty:10,approvedQty:0,issuedQty:0,status:'PENDING',approvedBy:'',date:'2026-11-17'},
- {id:'ORD2',teacher:'MRS DUBE',title:'PHYSICAL SCIENCES GRADE 11',subject:'PHYSICAL SCIENCES',grade:'11',className:'11A',qty:5,approvedQty:0,issuedQty:0,status:'PENDING',approvedBy:'',date:'2026-11-17'},
- {id:'ORD3',teacher:'MR SMITH',title:'ENGLISH GRADE 10',subject:'ENGLISH',grade:'10',className:'10A',qty:3,approvedQty:3,issuedQty:1,status:'PARTIALLY ISSUED',approvedBy:'HOD ENGLISH',date:'2026-11-17'},
- {id:'ORD4',teacher:'MS JONES',title:'HISTORY GRADE 12',subject:'HISTORY',grade:'12',className:'12A',qty:4,approvedQty:0,issuedQty:0,status:'PENDING',approvedBy:'',date:'2026-11-17'},
- {id:'ORD5',teacher:'MRS DUBE',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',grade:'10',className:'10B',qty:6,approvedQty:5,issuedQty:5,status:'FULLY ISSUED',approvedBy:'HOD MATHS',date:'2026-11-15'},
+ {id:'ORD1',teacher:'MRS MOKOENA',title:'ENGLISH HOME LANGUAGE GRADE 4',subject:'ENGLISH HOME LANGUAGE',grade:'4',className:'4A',qty:10,approvedQty:0,issuedQty:0,status:'PENDING',approvedBy:'',date:'2026-11-17'},
+ {id:'ORD2',teacher:'MRS DUBE',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',grade:'10',className:'10A',qty:10,approvedQty:0,issuedQty:0,status:'PENDING',approvedBy:'',date:'2026-11-17'},
+ {id:'ORD3',teacher:'MRS DUBE',title:'PHYSICAL SCIENCES GRADE 11',subject:'PHYSICAL SCIENCES',grade:'11',className:'11A',qty:5,approvedQty:0,issuedQty:0,status:'PENDING',approvedBy:'',date:'2026-11-17'},
+ {id:'ORD4',teacher:'MR SMITH',title:'ENGLISH HOME LANGUAGE GRADE 10',subject:'ENGLISH HOME LANGUAGE',grade:'10',className:'10A',qty:3,approvedQty:3,issuedQty:1,status:'PARTIALLY ISSUED',approvedBy:'HOD ENGLISH',date:'2026-11-17'},
+ {id:'ORD5',teacher:'MS JONES',title:'HISTORY GRADE 12',subject:'HISTORY',grade:'12',className:'12A',qty:4,approvedQty:0,issuedQty:0,status:'PENDING',approvedBy:'',date:'2026-11-17'},
+ {id:'ORD6',teacher:'MRS DUBE',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',grade:'10',className:'10B',qty:6,approvedQty:5,issuedQty:5,status:'FULLY ISSUED',approvedBy:'HOD MATHS',date:'2026-11-15'},
 ]; }
 function myOrders(){ return orders.filter(o=>mySubjects.includes(toCaps(o.subject))); }
 function remaining(o){ return Math.max(0,(o.approvedQty||0)-(o.issuedQty||0)); }
 function loadAll(){
-  document.getElementById('roleInfo').innerHTML=`👔 <b>${toCaps(user?.name||'HOD')}</b> — HOD — RANK 3 — Subjects: <b>${mySubjects.join(', ')||'—'}</b> — School: <b>${mySchoolId}</b><br><small>You approve ONLY ${mySubjects.join(', ')}. You set Approved Qty. Librarian issues ONLY up to Approved Qty.</small>`;
+  document.getElementById('roleInfo').innerHTML=`👔 <b>${toCaps(user?.name||'HOD')}</b> — HOD — RANK 3 — Subjects: <b>${mySubjects.join(', ')||'—'}</b> — School: <b>${mySchoolId}</b><br><small>ALL CAPS — Intermediate 4-6 to FET 10-12 — Grades 4-12 — You approve ONLY ${mySubjects.join(', ')}. You set Approved Qty. Librarian issues ONLY up to Approved Qty.</small>`;
   document.getElementById('mySubjectLabel').textContent=mySubjects.join(', ');
-  document.getElementById('filterPendingSubject').innerHTML='<option value="">📚 ALL MY SUBJECTS</option>'+mySubjects.map(s=>`<option>${s}</option>`).join('');
-  document.getElementById('filterDecidedSubject').innerHTML='<option value="">📚 ALL MY SUBJECTS</option>'+mySubjects.map(s=>`<option>${s}</option>`).join('');
+  let subHtml='<option value="">📚 ALL MY SUBJECTS</option>';
+  SUBJECT_GROUPS.forEach(g=>{ let mine=g.items.filter(s=>mySubjects.includes(s)); if(mine.length) subHtml+=`<optgroup label="${g.label}">${mine.map(s=>`<option>${s}</option>`).join('')}</optgroup>`; });
+  document.getElementById('filterPendingSubject').innerHTML=subHtml;
+  document.getElementById('filterDecidedSubject').innerHTML=subHtml;
   demoData();
   try{ rtdb.ref('orders/'+mySchoolId).once('value').then(s=>{ if(s.val()){ orders=Object.values(s.val()); renderAll(); } }).catch(()=>{}); }catch(e){}
   renderAll();
@@ -73,21 +83,22 @@ function loadAll(){
 function renderAll(){
   let mine=myOrders(); let pending=mine.filter(o=>o.status==='PENDING');
   let fSub=document.getElementById('filterPendingSubject').value; if(fSub) pending=pending.filter(o=>toCaps(o.subject)===fSub);
+  let fGrade=document.getElementById('filterPendingGrade').value; if(fGrade) pending=pending.filter(o=>String(o.grade)===fGrade);
   document.getElementById('kpiPending').textContent=mine.filter(o=>o.status==='PENDING').length;
   document.getElementById('kpiApproved').textContent=mine.filter(o=>['APPROVED','PARTIALLY ISSUED','FULLY ISSUED'].includes(o.status)).length;
   document.getElementById('kpiRejected').textContent=mine.filter(o=>o.status==='REJECTED').length;
   document.getElementById('kpiTotalApprovedQty').textContent=mine.reduce((s,o)=>s+(o.approvedQty||0),0);
-  document.getElementById('pendingInfo').innerHTML=`Showing <b>${pending.length}</b> PENDING for <b>${fSub||mySubjects.join(', ')}</b>. Other subjects hidden.`;
+  document.getElementById('pendingInfo').innerHTML=`Showing <b>${pending.length}</b> PENDING for <b>${fSub||mySubjects.join(', ')}</b> ${fGrade?'— Grade '+fGrade:''}. Other subjects hidden.`;
   document.getElementById('pendingTable').innerHTML=pending.length?pending.map(o=>`<tr><td><b>${toCaps(o.teacher)}</b><br><small>${toCaps(o.subject)}</small></td><td><b>${toCaps(o.title)}</b><br>${toCaps(o.className)} — Grade ${o.grade}</td><td><b>${o.qty}</b></td><td><input class="qty-input" id="qty_${o.id}" type="number" value="${o.qty}" min="1" max="${o.qty}" oninput="clampQty('${o.id}',${o.qty})"><br><small>Max ${o.qty}</small></td><td><button class="btn btn-green" onclick="approveOrder('${o.id}')">✅ APPROVE<br><span id="approveLabel_${o.id}">Approve ${o.qty}</span></button> <button class="btn btn-red" onclick="rejectOrder('${o.id}')">❌ REJECT</button></td></tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px">No PENDING for ${mySubjects.join(', ')}. All done ✅</td></tr>`;
   renderDecided();
 }
 function clampQty(id,max){ let el=document.getElementById('qty_'+id); let v=parseInt(el.value||'0',10); if(isNaN(v)||v<1) v=1; if(v>max) v=max; el.value=v; let lbl=document.getElementById('approveLabel_'+id); if(lbl) lbl.textContent='Approve '+v; }
 async function approveOrder(id){
   let o=orders.find(x=>String(x.id)===String(id)); if(!o) return;
-  if(!mySubjects.includes(toCaps(o.subject))){ alert('⛔ You can only approve '+mySubjects.join(', ')+' — This is '+o.subject); return; }
+  if(!mySubjects.includes(toCaps(o.subject))){ alert('⛔ You can only approve '+mySubjects.join(', ')+' — This is '+toCaps(o.subject)); return; }
   let approvedQty=parseInt(document.getElementById('qty_'+id)?.value||o.qty,10);
   if(isNaN(approvedQty)||approvedQty<1||approvedQty>o.qty){ document.getElementById('pendingMsg').innerHTML='<div class="warn">⚠️ Approved Qty must be 1 to '+o.qty+'.</div>'; return; }
-  if(!confirm(`✅ APPROVE ${approvedQty} of ${o.qty}?\n\nTeacher: ${o.teacher}\nTitle: ${o.title} — ${o.subject}\nLibrarian can issue ONLY ${approvedQty}.`)) return;
+  if(!confirm(`✅ APPROVE ${approvedQty} of ${o.qty}?\n\nTeacher: ${o.teacher}\nTitle: ${o.title} — ${toCaps(o.subject)} — Grade ${o.grade}\nLibrarian can issue ONLY ${approvedQty}.`)) return;
   o.approvedQty=approvedQty; o.issuedQty=0; o.status='APPROVED'; o.approvedBy=toCaps(user?.name||'HOD');
   try{ await rtdb.ref('orders/'+mySchoolId+'/'+id).update({approvedQty:approvedQty,issuedQty:0,status:'APPROVED',approvedBy:o.approvedBy}); }catch(e){}
   document.getElementById('pendingMsg').innerHTML=`<div class="ok">✅ APPROVED — <b>${approvedQty} of ${o.qty}</b> — ${toCaps(o.teacher)} — ${toCaps(o.title)} — Librarian can issue up to <b>${approvedQty}</b>.</div>`;
@@ -113,10 +124,10 @@ async function changeApprovedQty(id){
   renderAll();
 }
 function renderDecided(){
-  let q=toCaps(document.getElementById('searchDecided').value||''); let f=document.getElementById('filterDecided').value; let fSub=document.getElementById('filterDecidedSubject').value;
-  let list=myOrders().filter(o=>o.status!=='PENDING').filter(o=>{ if(f&&o.status!==f) return false; if(fSub&&toCaps(o.subject)!==fSub) return false; if(q&&!(toCaps(o.teacher)+' '+toCaps(o.title)).includes(q)) return false; return true; });
+  let q=toCaps(document.getElementById('searchDecided').value||''); let f=document.getElementById('filterDecided').value; let fSub=document.getElementById('filterDecidedSubject').value; let fGrade=document.getElementById('filterDecidedGrade').value;
+  let list=myOrders().filter(o=>o.status!=='PENDING').filter(o=>{ if(f&&o.status!==f) return false; if(fSub&&toCaps(o.subject)!==fSub) return false; if(fGrade&&String(o.grade)!==fGrade) return false; if(q&&!(toCaps(o.teacher)+' '+toCaps(o.title)).includes(q)) return false; return true; });
   document.getElementById('decidedInfo').innerHTML=`Showing <b>${list.length}</b> decided for <b>${mySubjects.join(', ')}</b>.`;
-  document.getElementById('decidedTable').innerHTML=list.length?list.map(o=>{ let pill=o.status==='APPROVED'?'pill-approved':o.status==='PARTIALLY ISSUED'?'pill-partial':o.status==='FULLY ISSUED'?'pill-full':'pill-rejected'; return `<tr><td><b>${toCaps(o.teacher)}</b><br>${toCaps(o.subject)}</td><td><b>${toCaps(o.title)}</b><br>${toCaps(o.className)}</td><td>${o.qty}</td><td><b>${o.approvedQty}</b><br><small>by ${toCaps(o.approvedBy||'')}</small></td><td>${o.issuedQty}</td><td>${remaining(o)}</td><td><span class="pill ${pill}">${toCaps(o.status)}</span></td><td><input class="qty-input" id="changeQty_${o.id}" type="number" value="${o.approvedQty}" min="0" max="${o.qty}"> <button class="btn btn-teal" onclick="changeApprovedQty('${o.id}')">✏️ UPDATE</button></td></tr>`; }).join(''):`<tr><td colspan="8" style="text-align:center;padding:20px">No decided orders yet.</td></tr>`;
+  document.getElementById('decidedTable').innerHTML=list.length?list.map(o=>{ let pill=o.status==='APPROVED'?'pill-approved':o.status==='PARTIALLY ISSUED'?'pill-partial':o.status==='FULLY ISSUED'?'pill-full':'pill-rejected'; return `<tr><td><b>${toCaps(o.teacher)}</b><br>${toCaps(o.subject)}</td><td><b>${toCaps(o.title)}</b><br>${toCaps(o.className)} — Grade ${o.grade}</td><td>${o.qty}</td><td><b>${o.approvedQty}</b><br><small>by ${toCaps(o.approvedBy||'')}</small></td><td>${o.issuedQty}</td><td>${remaining(o)}</td><td><span class="pill ${pill}">${toCaps(o.status)}</span></td><td><input class="qty-input" id="changeQty_${o.id}" type="number" value="${o.approvedQty}" min="0" max="${o.qty}"> <button class="btn btn-teal" onclick="changeApprovedQty('${o.id}')">✏️ UPDATE</button></td></tr>`; }).join(''):`<tr><td colspan="8" style="text-align:center;padding:20px">No decided orders yet.</td></tr>`;
 }
 loadAll();
 </script></body></html>
