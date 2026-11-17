@@ -31,7 +31,7 @@ video{width:100%;border-radius:8px;background:#000}
 @media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}.scan-row{flex-direction:column;align-items:stretch}}
 </style></head>
 <body>
-<header><h1>📚 LIBRARIAN — MAKHANANI LTSM 2.0</h1><p>ADD BOOKS TO STOCK + ISSUE / RETURN — ALL CAPS SUBJECTS — INTERMEDIATE (4-6) TO FET (10-12) — GRADES 4-12</p>
+<header><h1>📚 LIBRARIAN — MAKHANANI LTSM 2.0</h1><p>ADD BOOKS TO STOCK + ISSUE / RETURN — ALL CAPS SUBJECTS — INTERMEDIATE (4-6) TO FET (10-12) — CLASSES A TO J — 4A TO 12J — GRADES 4-12</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 <script>guardPage(2,'Librarian');</script>
 </header>
@@ -60,11 +60,11 @@ video{width:100%;border-radius:8px;background:#000}
 
 <!-- TAB 2: ISSUE / RETURN -->
 <div class="tab" id="tab-issue">
-<div class="card"><h2>📕 Issue Book — Librarian Can Issue Any Subject / Any Class</h2>
-<div class="info">Librarian has NO subject limit — Can issue any book to any learner.<br>Still checks: <b>Grade Match + 1 Learner 1 Title + Book Available</b>.</div>
-<label>👤 Learner ID — e.g. 4A001 / 10A001</label>
+<div class="card"><h2>📕 Issue Book — Librarian Can Issue Any Subject / Any Class — A To J</h2>
+<div class="info">Librarian has NO subject limit, NO class limit — Can issue any book to any learner in <b>4A to 12J</b>.<br>Still checks: <b>Grade Match + 1 Learner 1 Title + Book Available</b>.</div>
+<label>👤 Learner ID — e.g. 4J001 / 10J001 / 12A001</label>
 <div class="scan-row"><input id="issueLearnerId" placeholder="Type or Scan Learner ID" oninput="onIssueLearner()"><button class="btn btn-purple" onclick="startScan('learner')">📷 SCAN LEARNER</button></div>
-<select id="issueLearnerPick" onchange="onIssueLearnerPick()"><option value="">-- OR PICK LEARNER — ALL CLASSES 4A-12C --</option></select><div id="issueLearnerInfo" class="info">Type Learner ID or pick.</div>
+<select id="issueLearnerPick" onchange="onIssueLearnerPick()"><option value="">-- OR PICK LEARNER — ALL CLASSES 4A-12J — 90 CLASSES --</option></select><div id="issueLearnerInfo" class="info">Type Learner ID or pick.</div>
 <label>📖 Book Barcode — e.g. WHS000001</label>
 <div class="scan-row"><input id="issueBookBarcode" placeholder="Type or Scan Book Barcode" oninput="onIssueBook()"><button class="btn btn-purple" onclick="startScan('book')">📷 SCAN BOOK</button></div>
 <select id="issueBookPick" onchange="onIssueBookPick()"><option value="">-- OR PICK BOOK — AVAILABLE ONLY — ALL SUBJECTS --</option></select><div id="issueBookInfo" class="info">Type Barcode or pick.</div>
@@ -73,7 +73,7 @@ video{width:100%;border-radius:8px;background:#000}
 <button class="btn btn-green btn-full" id="issueBtn" onclick="issueBook()" disabled>📕 ISSUE BOOK →</button><div id="issueMsg"></div>
 </div>
 
-<div class="card"><h2>↩️ Issued Books — Return From Here</h2><div class="row"><div><label>🔍 Search Issued</label><input id="searchIssued" placeholder="🔍 Learner / Title / Barcode" oninput="renderIssued()"></div><div><label>🏫 Filter Class</label><select id="filterIssuedClass" onchange="renderIssued()"><option value="">🏫 ALL CLASSES — 4A TO 12C</option></select></div></div><div id="issuedInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Learner</th><th>Book — ALL CAPS</th><th>Subject / Grade</th><th>Date</th><th>Action</th></tr></thead><tbody id="issuedTable"></tbody></table></div></div>
+<div class="card"><h2>↩️ Issued Books — Return From Here — Filter By Class A To J</h2><div class="row"><div><label>🔍 Search Issued</label><input id="searchIssued" placeholder="🔍 Learner / Title / Barcode" oninput="renderIssued()"></div><div><label>🏫 Filter Class — A To J</label><select id="filterIssuedClass" onchange="renderIssued()"><option value="">🏫 ALL CLASSES — 4A TO 12J — 90 CLASSES</option></select></div><div><label>🎓 Filter Grade — 4 To 12</label><select id="filterIssuedGrade" onchange="renderIssued()"><option value="">🎓 ALL GRADES — 4 TO 12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div></div><div id="issuedInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Learner</th><th>Book — ALL CAPS</th><th>Subject / Grade</th><th>Date</th><th>Action</th></tr></thead><tbody id="issuedTable"></tbody></table></div></div>
 </div>
 
 <!-- TAB 3: STOCK LIST -->
@@ -96,14 +96,25 @@ function pad(n,l){return String(n).padStart(l,'0');}
 function arr(v){if(Array.isArray(v)) return v.map(toCaps).filter(Boolean); if(v) return [toCaps(v)]; return [];}
 let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
 let mySchoolId=user?.schoolId||'WHS';
-// --- SAME 37 SUBJECTS AS users.html V2.10 + stock.html V2.10 + teacher.html V2.12 ---
+// --- SAME 37 SUBJECTS AS users.html V2.11 + teacher.html V2.13 ---
 const SUBJECT_GROUPS=[
   {label:'INTERMEDIATE — GRADES 4-6', items:['ENGLISH HOME LANGUAGE','ENGLISH FIRST ADDITIONAL LANGUAGE','AFRIKAANS HOME LANGUAGE','AFRIKAANS FIRST ADDITIONAL LANGUAGE','ISIZULU HOME LANGUAGE','ISIXHOSA HOME LANGUAGE','SESOTHO HOME LANGUAGE','SETSWANA HOME LANGUAGE','MATHEMATICS','NATURAL SCIENCES AND TECHNOLOGY','SOCIAL SCIENCES','LIFE SKILLS']},
   {label:'SENIOR — GRADES 7-9', items:['NATURAL SCIENCES','ECONOMIC AND MANAGEMENT SCIENCES','TECHNOLOGY','CREATIVE ARTS','LIFE ORIENTATION']},
   {label:'FET — GRADES 10-12', items:['MATHEMATICAL LITERACY','TECHNICAL MATHEMATICS','PHYSICAL SCIENCES','TECHNICAL SCIENCES','LIFE SCIENCES','AGRICULTURAL SCIENCES','ACCOUNTING','BUSINESS STUDIES','ECONOMICS','HISTORY','GEOGRAPHY','TOURISM','CONSUMER STUDIES','COMPUTER APPLICATIONS TECHNOLOGY','INFORMATION TECHNOLOGY','ENGINEERING GRAPHICS AND DESIGN','VISUAL ARTS','DRAMATIC ARTS','MUSIC','PHYSICAL EDUCATION','RELIGION STUDIES']}
 ];
 const ALL_SUBJECTS=[...new Set(SUBJECT_GROUPS.flatMap(g=>g.items))];
-const ALL_CLASSES=['4A','4B','4C','5A','5B','5C','6A','6B','6C','7A','7B','7C','8A','8B','8C','9A','9B','9C','10A','10B','10C','11A','11B','11C','12A','12B','12C'];
+// --- CLASSES A TO J — GRADES 4-12 — 90 CLASSES — SAME AS users.html V2.11 + teacher.html V2.13 ---
+const ALL_CLASSES=[
+  '4A','4B','4C','4D','4E','4F','4G','4H','4I','4J',
+  '5A','5B','5C','5D','5E','5F','5G','5H','5I','5J',
+  '6A','6B','6C','6D','6E','6F','6G','6H','6I','6J',
+  '7A','7B','7C','7D','7E','7F','7G','7H','7I','7J',
+  '8A','8B','8C','8D','8E','8F','8G','8H','8I','8J',
+  '9A','9B','9C','9D','9E','9F','9G','9H','9I','9J',
+  '10A','10B','10C','10D','10E','10F','10G','10H','10I','10J',
+  '11A','11B','11C','11D','11E','11F','11G','11H','11I','11J',
+  '12A','12B','12C','12D','12E','12F','12G','12H','12I','12J'
+];
 const QUICK_TITLES=[
   ['ENGLISH HOME LANGUAGE','4'],['MATHEMATICS','4'],['LIFE SKILLS','4'],
   ['MATHEMATICS','5'],['NATURAL SCIENCES AND TECHNOLOGY','6'],
@@ -127,7 +138,7 @@ function buildDropdowns(){
   let fHtml='<option value="">📚 ALL SUBJECTS — ALL CAPS</option>';
   SUBJECT_GROUPS.forEach(g=>{ fHtml+=`<optgroup label="${g.label}">${g.items.map(s=>`<option>${s}</option>`).join('')}</optgroup>`; });
   document.getElementById('filterSubject').innerHTML=fHtml;
-  document.getElementById('filterIssuedClass').innerHTML='<option value="">🏫 ALL CLASSES — 4A TO 12C</option>'+ALL_CLASSES.map(c=>`<option>${c}</option>`).join('');
+  document.getElementById('filterIssuedClass').innerHTML='<option value="">🏫 ALL CLASSES — 4A TO 12J — 90 CLASSES</option>'+ALL_CLASSES.map(c=>`<option>${c}</option>`).join('');
   document.getElementById('quickAddGrid').innerHTML=QUICK_TITLES.map(([s,g])=>`<button class="btn btn-grey" onclick="quickFill('${s}','${g}')">📖 ${s} GRADE ${g}<br><small>Tap → Fill Form</small></button>`).join('');
 }
 function quickFill(sub, grade){
@@ -143,27 +154,29 @@ function onSubjectGrade(){
   let grade=document.getElementById('bookGrade').value;
   document.getElementById('bookTitle').value=(sub&&grade)?`${toCaps(sub)} GRADE ${grade}`:'';
 }
+function makeLearnerId(g,c,seq){ let letter=String(c||'').replace(/[^A-Z]/g,'').slice(-1)||'A'; return String(g)+letter+pad(seq,3); }
 function demoData(){
   books=[]; let n=1;
   [['ENGLISH HOME LANGUAGE','4'],['MATHEMATICS','5'],['NATURAL SCIENCES AND TECHNOLOGY','6'],['SOCIAL SCIENCES','7'],['NATURAL SCIENCES','8'],['ECONOMIC AND MANAGEMENT SCIENCES','9'],['MATHEMATICS','10'],['PHYSICAL SCIENCES','11'],['HISTORY','12']].forEach(([sub,gr])=>{
     for(let i=1;i<=3;i++) books.push({barcode:'WHS'+pad(n++,6),title:toCaps(sub)+' GRADE '+gr,subject:toCaps(sub),grade:String(gr),status:'AVAILABLE',condition:'GOOD',issuedTo:''});
   });
-  learners=[]; ALL_CLASSES.forEach(cl=>{ let g=cl.replace(/[^0-9]/g,''); for(let i=1;i<=5;i++) learners.push({id:cl+pad(i,3),learnerId:cl+pad(i,3),name:'LEARNER '+cl+'-'+i,className:cl,grade:g}); });
+  // Demo learners — ALL 90 classes would be 450 — Demo shows A + J per grade (18 classes x 5 = 90 learners)
+  learners=[]; ['4A','4J','5A','5J','6A','6J','7A','7J','8A','8J','9A','9J','10A','10J','11A','11J','12A','12J'].forEach(cl=>{ let g=cl.replace(/[^0-9]/g,''); for(let i=1;i<=5;i++) learners.push({id:makeLearnerId(g,cl,i),learnerId:makeLearnerId(g,cl,i),name:'LEARNER '+cl+'-'+i,className:cl,grade:g}); });
   issued=[];
 }
 function loadAll(){
-  document.getElementById('roleInfo').innerHTML=`📚 <b>${toCaps(user?.name||'LIBRARIAN')}</b> — LIBRARIAN — RANK 2 — School: <b>${mySchoolId}</b><br>Sees ALL subjects — <b>${ALL_SUBJECTS.length} ALL CAPS</b> — Intermediate 4-6 to FET 10-12 — Grades 4-12 — Classes 4A-12C — No subject limit.`;
+  document.getElementById('roleInfo').innerHTML=`📚 <b>${toCaps(user?.name||'LIBRARIAN')}</b> — LIBRARIAN — RANK 2 — School: <b>${mySchoolId}</b><br>Sees ALL subjects — <b>${ALL_SUBJECTS.length} ALL CAPS</b> — Intermediate 4-6 to FET 10-12 — Grades 4-12 — Classes <b>4A to 12J — A to J — 90 classes</b> — No subject / class limit.`;
   buildDropdowns();
   demoData();
   try{
     rtdb.ref('stock/'+mySchoolId).once('value').then(s=>{ if(s.val()) books=Object.values(s.val()).map(b=>({...b,subject:toCaps(b.subject),title:toCaps(b.title),grade:String(b.grade),status:toCaps(b.status||'AVAILABLE')})); renderAll(); }).catch(()=>{});
-    rtdb.ref('learners/'+mySchoolId).once('value').then(s=>{ if(s.val()) learners=Object.values(s.val()); fillIssuePickers(); }).catch(()=>{});
+    rtdb.ref('learners/'+mySchoolId).once('value').then(s=>{ if(s.val()) learners=Object.values(s.val()).map(l=>({...l,learnerId:l.learnerId||l.id,className:toCaps(l.className),grade:String(l.grade)})); fillIssuePickers(); }).catch(()=>{});
     rtdb.ref('issues/'+mySchoolId).once('value').then(s=>{ if(s.val()) issued=Object.values(s.val()); renderIssued(); }).catch(()=>{});
   }catch(e){}
   fillIssuePickers(); renderAll();
 }
 function fillIssuePickers(){
-  document.getElementById('issueLearnerPick').innerHTML='<option value="">-- OR PICK LEARNER — ALL CLASSES 4A-12C --</option>'+learners.map(l=>`<option value="${l.learnerId||l.id}">${toCaps(l.name)} — ${l.learnerId||l.id} — Grade ${l.grade} — ${toCaps(l.className)}</option>`).join('');
+  document.getElementById('issueLearnerPick').innerHTML='<option value="">-- OR PICK LEARNER — ALL CLASSES 4A-12J — 90 CLASSES --</option>'+learners.map(l=>`<option value="${l.learnerId||l.id}">${toCaps(l.name)} — ${l.learnerId||l.id} — Grade ${l.grade} — ${toCaps(l.className)}</option>`).join('');
   let avail=books.filter(b=>toCaps(b.status)==='AVAILABLE');
   document.getElementById('issueBookPick').innerHTML='<option value="">-- OR PICK BOOK — AVAILABLE ONLY — '+avail.length+' BOOKS --</option>'+avail.map(b=>`<option value="${b.barcode}">${toCaps(b.title)} — ${b.barcode} — Grade ${b.grade} — ${toCaps(b.subject)}</option>`).join('');
 }
@@ -184,7 +197,6 @@ async function addBook(){
   if(!grade){ msg.innerHTML='<div class="warn">⚠️ Pick Grade (4-12).</div>'; return; }
   if(!title){ msg.innerHTML='<div class="warn">⚠️ Title missing — Pick Subject + Grade.</div>'; return; }
   if(isNaN(qty)||qty<1) qty=1; if(qty>100) qty=100;
-  // Phase warnings — Do NOT block, warn
   if(toCaps(sub)==='NATURAL SCIENCES' && ['4','5','6'].includes(grade)){ if(!confirm('⚠️ You picked NATURAL SCIENCES for Grade '+grade+' — Grade 4-6 subject is NATURAL SCIENCES AND TECHNOLOGY.\n\nTap OK to keep NATURAL SCIENCES, or Cancel to change.')) return; }
   if(toCaps(sub)==='NATURAL SCIENCES AND TECHNOLOGY' && ['7','8','9','10','11','12'].includes(grade)){ if(!confirm('⚠️ You picked NATURAL SCIENCES AND TECHNOLOGY for Grade '+grade+' — Grade 7-9+ subject is NATURAL SCIENCES / PHYSICAL SCIENCES / LIFE SCIENCES.\n\nTap OK to keep, or Cancel to change.')) return; }
   if(toCaps(sub)==='LIFE SKILLS' && ['7','8','9','10','11','12'].includes(grade)){ if(!confirm('⚠️ LIFE SKILLS is Grade 4-6 only — Grade 7+ is LIFE ORIENTATION.\n\nTap OK to keep LIFE SKILLS, or Cancel to change to LIFE ORIENTATION.')) return; }
@@ -243,7 +255,6 @@ function exportStockCSV(){
   books.forEach(b=>rows.push([b.barcode,b.title,b.subject,b.grade,b.status,b.issuedTo||'']));
   let csv=rows.map(r=>r.join(',')).join('\n'); let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='STOCK.csv'; a.click();
 }
-// --- ISSUE / RETURN ---
 let selLearner=null, selBook=null;
 function findLearner(q){ if(!q) return null; let n=norm(q); return learners.find(l=>norm(l.learnerId||l.id)===n||norm(l.name)===n); }
 function findBook(q){ if(!q) return null; let n=norm(q); return books.find(b=>norm(b.barcode)===n); }
@@ -251,17 +262,18 @@ function onIssueLearner(){ selLearner=findLearner(document.getElementById('issue
 function onIssueLearnerPick(){ let v=document.getElementById('issueLearnerPick').value; if(!v) return; document.getElementById('issueLearnerId').value=v; selLearner=findLearner(v); renderIssueLearner(); runIssueChecks(); }
 function onIssueBook(){ selBook=findBook(document.getElementById('issueBookBarcode').value); renderIssueBook(); runIssueChecks(); }
 function onIssueBookPick(){ let v=document.getElementById('issueBookPick').value; if(!v) return; document.getElementById('issueBookBarcode').value=v; selBook=findBook(v); renderIssueBook(); runIssueChecks(); }
-function renderIssueLearner(){ let el=document.getElementById('issueLearnerInfo'); if(!selLearner){ el.className='warn'; el.innerHTML='⚠️ Learner not found.'; return; } el.className='ok'; el.innerHTML=`👤 <b>${toCaps(selLearner.name)}</b> — ${selLearner.learnerId||selLearner.id} — Grade ${selLearner.grade} — ${toCaps(selLearner.className)}`; }
+function renderIssueLearner(){ let el=document.getElementById('issueLearnerInfo'); if(!selLearner){ el.className='warn'; el.innerHTML='⚠️ Learner not found.'; return; } if(!ALL_CLASSES.includes(toCaps(selLearner.className))){ el.className='warn'; el.innerHTML=`⚠️ Invalid class ${toCaps(selLearner.className)} — Must be 4A to 12J (A-J).`; return; } el.className='ok'; el.innerHTML=`👤 <b>${toCaps(selLearner.name)}</b> — ${selLearner.learnerId||selLearner.id} — Grade ${selLearner.grade} — ${toCaps(selLearner.className)} ✅ Class valid (A-J)`; }
 function renderIssueBook(){ let el=document.getElementById('issueBookInfo'); if(!selBook){ el.className='warn'; el.innerHTML='⚠️ Book not found.'; return; } let av=toCaps(selBook.status)==='AVAILABLE'; el.className=av?'ok':'warn'; el.innerHTML=`📖 <b>${toCaps(selBook.title)}</b> — ${selBook.barcode} — Grade ${selBook.grade} — ${toCaps(selBook.subject)} — ${av?'✅ AVAILABLE':'⛔ '+toCaps(selBook.status)}`; }
 function runIssueChecks(){
   let box=document.getElementById('issueChecks'); let btn=document.getElementById('issueBtn');
   if(!selLearner||!selBook){ box.innerHTML='Pick Learner + Book.'; btn.disabled=true; return; }
   let checks=[];
-  checks.push({ok:String(selLearner.grade)===String(selBook.grade),label:`1. Grade Match — Learner ${selLearner.grade} = Book ${selBook.grade} — ${String(selLearner.grade)===String(selBook.grade)?'✅ PASS':'⛔ FAIL'}`});
-  checks.push({ok:toCaps(selBook.status)==='AVAILABLE',label:`2. Book Available — ${toCaps(selBook.status)} — ${toCaps(selBook.status)==='AVAILABLE'?'✅ PASS':'⛔ FAIL'}`});
+  checks.push({ok:ALL_CLASSES.includes(toCaps(selLearner.className)),label:`1. Class Valid (A-J) — ${toCaps(selLearner.className)} in 4A-12J — ${ALL_CLASSES.includes(toCaps(selLearner.className))?'✅ PASS':'⛔ FAIL'}`});
+  checks.push({ok:String(selLearner.grade)===String(selBook.grade),label:`2. Grade Match — Learner ${selLearner.grade} = Book ${selBook.grade} — ${String(selLearner.grade)===String(selBook.grade)?'✅ PASS':'⛔ FAIL'}`});
+  checks.push({ok:toCaps(selBook.status)==='AVAILABLE',label:`3. Book Available — ${toCaps(selBook.status)} — ${toCaps(selBook.status)==='AVAILABLE'?'✅ PASS':'⛔ FAIL'}`});
   let dup=issued.find(x=>norm(x.learnerId)===norm(selLearner.learnerId||selLearner.id)&&toCaps(x.title)===toCaps(selBook.title));
-  checks.push({ok:!dup,label:`3. 1 Learner, 1 Title — ${dup?'⛔ FAIL — Already has '+toCaps(selBook.title):'✅ PASS'}`});
-  let all=checks.every(c=>c.ok); box.style.borderColor=all?'#22c55e':'#ef4444'; box.innerHTML='<b>CHECKS (Librarian: No Subject Limit):</b><br>'+checks.map(c=>`<span style="color:${c.ok?'#166534':'#991b1b'}">${c.label}</span>`).join('<br>'); btn.disabled=!all;
+  checks.push({ok:!dup,label:`4. 1 Learner, 1 Title — ${dup?'⛔ FAIL — Already has '+toCaps(selBook.title):'✅ PASS'}`});
+  let all=checks.every(c=>c.ok); box.style.borderColor=all?'#22c55e':'#ef4444'; box.innerHTML='<b>CHECKS (Librarian: No Subject / Class Limit):</b><br>'+checks.map(c=>`<span style="color:${c.ok?'#166534':'#991b1b'}">${c.label}</span>`).join('<br>'); btn.disabled=!all;
 }
 async function issueBook(){
   runIssueChecks(); if(document.getElementById('issueBtn').disabled) return;
@@ -273,9 +285,9 @@ async function issueBook(){
   document.getElementById('issueLearnerId').value='';document.getElementById('issueBookBarcode').value='';selLearner=null;selBook=null;fillIssuePickers();renderAll();runIssueChecks();renderIssueLearner();renderIssueBook();
 }
 function renderIssued(){
-  let q=toCaps(document.getElementById('searchIssued').value||''); let f=document.getElementById('filterIssuedClass').value;
-  let list=issued.filter(x=>{ if(f&&toCaps(x.learnerClass)!==f) return false; if(q&&!(toCaps(x.learnerName)+' '+toCaps(x.title)+' '+toCaps(x.bookBarcode)).includes(q)) return false; return true; });
-  document.getElementById('issuedInfo').innerHTML=`Showing <b>${list.length}</b> issued.`;
+  let q=toCaps(document.getElementById('searchIssued').value||''); let f=document.getElementById('filterIssuedClass').value; let fg=document.getElementById('filterIssuedGrade').value;
+  let list=issued.filter(x=>{ if(f&&toCaps(x.learnerClass)!==f) return false; if(fg&&String(x.learnerGrade)!==fg) return false; if(q&&!(toCaps(x.learnerName)+' '+toCaps(x.title)+' '+toCaps(x.bookBarcode)).includes(q)) return false; return true; });
+  document.getElementById('issuedInfo').innerHTML=`Showing <b>${list.length}</b> issued — Classes 4A-12J.`;
   document.getElementById('issuedTable').innerHTML=list.length?list.map(x=>`<tr><td><b>${toCaps(x.learnerName)}</b><br>${x.learnerId} — ${toCaps(x.learnerClass)} — Grade ${x.learnerGrade}</td><td><b>${toCaps(x.title)}</b><br>${x.bookBarcode}</td><td>${toCaps(x.subject)} — Grade ${x.grade}</td><td>${x.date||''}</td><td><button class="btn btn-teal" onclick="returnById('${x.id}')">↩️ RETURN</button></td></tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px">No books issued yet.</td></tr>`;
 }
 async function returnById(id){
@@ -285,16 +297,14 @@ async function returnById(id){
 }
 async function returnByBarcode(code){
   let rec=issued.find(x=>norm(x.bookBarcode)===norm(code)); if(rec) return returnById(rec.id);
-  // No issue record, just restore stock
   let b=books.find(x=>norm(x.barcode)===norm(code)); if(b){ try{ await rtdb.ref('stock/'+mySchoolId+'/'+norm(code)).update({status:'AVAILABLE',issuedTo:''}); }catch(e){} b.status='AVAILABLE'; b.issuedTo=''; renderAll(); }
 }
 async function doReturn(rec){
   try{ await rtdb.ref('issues/'+mySchoolId+'/'+rec.id).remove(); await rtdb.ref('stock/'+mySchoolId+'/'+norm(rec.bookBarcode)).update({status:'AVAILABLE',issuedTo:''}); }catch(e){}
-  let b=books.find(x=>norm(x.bookBarcode)===norm(rec.bookBarcode)); if(b){ b.status='AVAILABLE'; b.issuedTo=''; }
+  let b=books.find(x=>norm(x.barcode)===norm(rec.bookBarcode)); if(b){ b.status='AVAILABLE'; b.issuedTo=''; }
   issued=issued.filter(x=>String(x.id)!==String(rec.id));
   fillIssuePickers(); renderAll();
 }
-// --- SCAN ---
 async function startScan(target){
   scanTarget=target;
   let boxId=target==='add'?'scanBoxAdd':'scanBoxIssue'; let vidId=target==='add'?'scanVideoAdd':'scanVideoIssue';
@@ -312,6 +322,6 @@ function onScanResult(code){
   else if(scanTarget==='learner'){ document.getElementById('issueLearnerId').value=code; onIssueLearner(); }
   else if(scanTarget==='book'){ document.getElementById('issueBookBarcode').value=code; onIssueBook(); }
 }
-function simulateScan(target){ if(target==='add') onScanResult('WHS000001'); else onScanResult(target==='learner'?'4A001':'WHS000001'); if(target==='add') scanTarget='add'; }
+function simulateScan(target){ if(target==='add') onScanResult('WHS000001'); else onScanResult(target==='learner'?'4J001':'WHS000001'); if(target==='add') scanTarget='add'; }
 loadAll();
 </script></body></html>
