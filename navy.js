@@ -1,174 +1,195 @@
-// ===== nav.js V2.8 — MAKHANANI LTSM 2.0 — Top Bar + Switch User ONLY in Demo Mode — 10 Users =====
-// Include on EVERY page: <div id="taskbar"></div><script src="nav.js"></script>
-// Then: <script>guardPage(1,'Teacher');</script>
-//
-// DEMO MODE:
-//   Live (default):  teacher.html                → NO Switch button — Secure — Logout → Login to change user
-//   Demo ON:         teacher.html?demo=1         → Switch button SHOWS — 10 users — Tap to switch in 1 tap
-//   Demo OFF:        teacher.html?demo=0         → Switch button HIDES — Back to Live
-//   Demo stays ON across pages once enabled (saved in localStorage makhanani_demo=1)
+// ============================================
+// MAKHANANI LTSM 2.0 — NAV.JS V2.13 — FINAL
+// Guard + Taskbar + Logout — All 13 Files
+// No Demo — Real Users Only — Firebase Login V2.13
+// ============================================
 
-(function(){
-  // ---------- 10 Demo Users — Same as login.html / users.html / index.html ----------
-  var DEMO_USERS = [
-    // Teachers — Rank 1
-    {email:'dube@wordsworth.co.za',pass:'1234',name:'MRS DUBE',role:'Teacher',rank:1,subject:'MATHEMATICS',teachingClasses:['10A','10B','11A'],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'teacher.html',icon:'👩‍🏫',group:'TEACHERS'},
-    {email:'smith@wordsworth.co.za',pass:'1234',name:'MR SMITH',role:'Teacher',rank:1,subject:'ENGLISH',teachingClasses:['10A','10B'],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'teacher.html',icon:'👩‍🏫',group:'TEACHERS'},
-    {email:'jones@wordsworth.co.za',pass:'1234',name:'MS JONES',role:'Teacher',rank:1,subject:'HISTORY',teachingClasses:['12A'],schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'teacher.html',icon:'👩‍🏫',group:'TEACHERS'},
-    // Librarian — Rank 2
-    {email:'librarian@wordsworth.co.za',pass:'1234',name:'LIBRARIAN WHS',role:'Librarian',rank:2,subject:'',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'librarian.html',icon:'📚',group:'LIBRARIAN'},
-    // HODs — Rank 3 — 4 HODs
-    {email:'hod.maths@wordsworth.co.za',pass:'1234',name:'HOD MATHS',role:'HOD',rank:3,subject:'MATHEMATICS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'hod.html',icon:'👔',group:'HODs'},
-    {email:'hod.english@wordsworth.co.za',pass:'1234',name:'HOD ENGLISH',role:'HOD',rank:3,subject:'ENGLISH',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'hod.html',icon:'👔',group:'HODs'},
-    {email:'hod.science@wordsworth.co.za',pass:'1234',name:'HOD SCIENCE',role:'HOD',rank:3,subject:'PHYSICAL SCIENCES',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'hod.html',icon:'👔',group:'HODs'},
-    {email:'hod.history@wordsworth.co.za',pass:'1234',name:'HOD HISTORY',role:'HOD',rank:3,subject:'HISTORY',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'hod.html',icon:'👔',group:'HODs'},
-    // Principal — Rank 4
-    {email:'principal@wordsworth.co.za',pass:'1234',name:'PRINCIPAL WHS',role:'Principal',rank:4,subject:'ALL SUBJECTS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'principal.html',icon:'🏫',group:'PRINCIPAL'},
-    // Admin — Rank 5
-    {email:'admin@wordsworth.co.za',pass:'1234',name:'ADMIN WHS',role:'Admin',rank:5,subject:'ALL SUBJECTS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',page:'admin.html',icon:'⚙️',group:'ADMIN'},
-  ];
-  var ROLE_PAGES = {Teacher:'teacher.html',Librarian:'librarian.html',HOD:'hod.html',Principal:'principal.html',Admin:'admin.html'};
-  var GROUP_LABELS = {TEACHERS:'👩‍🏫 TEACHERS — Rank 1',LIBRARIAN:'📚 LIBRARIAN — Rank 2',HODs:'👔 HODs — Rank 3 — Each Approves ONLY Their Subject',PRINCIPAL:'🏫 PRINCIPAL — Rank 4',ADMIN:'⚙️ ADMIN — Rank 5'};
+// ===== ALL PAGES — 13 FILES =====
+const NAV_PAGES = [
+  { page: 'index.html', label: '🏠 HOME', rank: 0, show: 'all' },
+  { page: 'teacher.html', label: '👩‍🏫 TEACHER', rank: 1, show: 'all' },
+  { page: 'librarian.html', label: '📚 LIBRARIAN', rank: 1, show: 'all' },
+  { page: 'hod.html', label: '✅ HOD', rank: 1, show: 'all' },
+  { page: 'principal.html', label: '👑 PRINCIPAL', rank: 1, show: 'all' },
+  { page: 'users.html', label: '👥 USERS', rank: 5, show: 'admin' },
+  { page: 'stock.html', label: '📦 STOCK', rank: 1, show: 'all' },
+  { page: 'barcode.html', label: '🖨️ BARCODE', rank: 0, show: 'all' },
+  { page: 'manuals.html', label: '📖 MANUALS', rank: 0, show: 'all' },
+  { page: 'bulk_upload.html', label: '📥 BULK LEARNERS', rank: 1, show: 'all' },
+  { page: 'bulk_book_upload.html', label: '📥 BULK BOOKS', rank: 1, show: 'all' },
+  { page: 'cleanup.html', label: '🧹 CLEANUP', rank: 5, show: 'admin' },
+  { page: 'login.html', label: '🔐 LOGIN', rank: 0, show: 'all' },
+];
 
-  // ---------- Demo Mode — ?demo=1 / ?demo=0 / localStorage ----------
-  function getDemoParam(){
-    try{ var p=new URLSearchParams(window.location.search).get('demo'); return p; }catch(e){ return null; }
-  }
-  function isDemoMode(){
-    var param=getDemoParam();
-    if(param==='1'){ try{ localStorage.setItem('makhanani_demo','1'); }catch(e){} return true; }
-    if(param==='0'){ try{ localStorage.setItem('makhanani_demo','0'); }catch(e){} return false; }
-    try{ return localStorage.getItem('makhanani_demo')==='1'; }catch(e){ return false; }
-  }
-  function isLoginPage(){
-    var cur=(location.pathname.split('/').pop()||'').toLowerCase();
-    return cur==='' || cur==='login.html' || cur==='index.html';
-  }
-  var DEMO_ON = isDemoMode() && !isLoginPage();
+// Pages that can be opened WITHOUT login
+const PUBLIC_PAGES = ['login.html', 'manuals.html'];
 
-  function getUser(){ try{ return JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){ return null; } }
-  function setUser(u){ localStorage.setItem('makhanani_user', JSON.stringify(u)); }
-  function toCaps(s){ return String(s||'').trim().toUpperCase(); }
+// ===== HELPERS =====
+function navToCaps(s){ return String(s||'').trim().toUpperCase(); }
 
-  window.enableDemo = function(){
-    try{ localStorage.setItem('makhanani_demo','1'); }catch(e){}
-    var u=new URL(window.location.href);
-    u.searchParams.set('demo','1');
-    location.href=u.toString();
-  };
-  window.disableDemo = function(){
-    if(!confirm('🧪 Turn OFF Demo Mode?\n\n🔄 SWITCH USER button will disappear.\n\nTo change user, you will need to Logout → Login with email + password.\n\nTurn OFF demo?')) return;
-    try{ localStorage.setItem('makhanani_demo','0'); }catch(e){}
-    var u=new URL(window.location.href);
-    u.searchParams.set('demo','0');
-    location.href=u.toString();
-  };
-  window.toggleDemo = function(){ if(isDemoMode()){ window.disableDemo(); } else { window.enableDemo(); } };
+function navGetUser(){
+  try{ return JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){ return null; }
+}
 
-  // ---------- Switch User — ONLY in Demo Mode ----------
-  window.switchToUser = function(email){
-    if(!isDemoMode()){
-      alert('⛔ Switch User is OFF in Live mode.\n\nTo switch user, Logout → Login with email + password.\n\nFor testing, add ?demo=1 to the URL — e.g. teacher.html?demo=1');
+function navGetCurrentPage(){
+  let p = window.location.pathname || '';
+  let parts = p.split('/');
+  return parts[parts.length-1] || 'index.html';
+}
+
+function navIsPublicPage(){
+  let cur = navGetCurrentPage();
+  return PUBLIC_PAGES.indexOf(cur) !== -1;
+}
+
+function navSchoolPrefix(schoolName){
+  let words = navToCaps(schoolName||'WORDSWORTH HIGH SCHOOL').split(/\s+/).filter(w=>/[A-Z]/.test(w));
+  if(words.length===1) return words[0].replace(/[^A-Z]/g,'').slice(0,3).padEnd(3,'X');
+  return words.map(w=>w.replace(/[^A-Z]/g,'')[0]).join('').slice(0,4);
+}
+
+// ===== LOGOUT — Clears session + Firebase Auth =====
+async function navLogout(){
+  try{
+    if(typeof firebase !== 'undefined' && firebase.auth){
+      await firebase.auth().signOut();
+    }
+  }catch(e){}
+  localStorage.removeItem('makhanani_user');
+  localStorage.removeItem('makhanani_uid');
+  localStorage.removeItem('makhanani_email');
+  window.location.href = 'login.html';
+}
+
+// For pages that call logout() directly
+function logout(){ navLogout(); }
+
+// ===== GUARD — Call at top of every page: guardPage(minRank, pageName) =====
+// minRank: 0 = any logged in user, 1 = Teacher+, 2 = Librarian+, 3 = HOD+, 4 = Principal+, 5 = Admin only
+// pageName: for alert message, e.g. 'Users', 'Cleanup', 'Teacher'
+function guardPage(minRank, pageName){
+  let user = navGetUser();
+  let cur = navGetCurrentPage();
+
+  // 1. Not logged in?
+  if(!user){
+    // Public pages can be opened without login
+    if(navIsPublicPage()){
+      renderTaskbar(null);
       return;
     }
-    var demo=DEMO_USERS.find(function(u){ return u.email.toLowerCase()===String(email).toLowerCase(); });
-    if(!demo){ location.href='login.html'; return; }
-    var clean={name:demo.name,email:demo.email,role:demo.role,rank:demo.rank,subject:demo.subject||'',teachingClasses:demo.teachingClasses||[],schoolId:demo.schoolId,schoolName:demo.schoolName};
-    setUser(clean);
-    var target=demo.page;
-    var current=location.pathname.split('/').pop()||'index.html';
-    var sep=target.indexOf('?')>=0?'&':'?';
-    if(current===target){ location.reload(); }
-    else { location.href=target+sep+'demo=1'; }
-  };
-
-  window.doLogout = function(){
-    if(!confirm('🚪 Logout?\n\nYou will go back to Login page.')) return;
-    localStorage.removeItem('makhanani_user');
-    location.href='login.html';
-  };
-  window.goLogin = function(){ location.href='login.html'; };
-
-  window.toggleSwitchMenu = function(e){
-    if(e) e.stopPropagation();
-    var m=document.getElementById('switchMenu');
-    if(!m) return;
-    m.style.display=(m.style.display==='block'?'none':'block');
-  };
-  document.addEventListener('click', function(){
-    var m=document.getElementById('switchMenu');
-    if(m) m.style.display='none';
-  });
-
-  window.guardPage = function(minRank, roleName){
-    var u=getUser();
-    if(!u){ location.href='login.html'; return false; }
-    if(u.rank < minRank){
-      alert('⛔ Access Denied\n\nThis page is for '+roleName+' (Rank '+minRank+') and above.\n\nYou are: '+u.name+' — '+u.role+' — Rank '+u.rank+'\n\nYou will be sent to your home page.');
-      var key=Object.keys(ROLE_PAGES).find(function(k){ return k.toLowerCase()===(u.role||'').toLowerCase(); });
-      var target=key?ROLE_PAGES[key]:'login.html';
-      if(isDemoMode()){ target += (target.indexOf('?')>=0?'&':'?')+'demo=1'; }
-      location.href=target;
-      return false;
+    // Not public + not logged in -> Go to login
+    if(cur !== 'login.html'){
+      window.location.href = 'login.html';
     }
+    return;
+  }
+
+  // 2. Logged in but rank too low?
+  let rank = user.rank || 0;
+  if(minRank && rank < minRank){
+    // If already on Home, don't loop
+    if(cur !== 'index.html'){
+      alert('⛔ Access denied for ' + navToCaps(user.role||'GUEST') + ' — Rank ' + rank + ' < Required Rank ' + minRank + ' — For ' + (pageName||cur) + ' — Going to Home.');
+      window.location.href = 'index.html';
+    }
+    return;
+  }
+
+  // 3. OK — Show taskbar
+  renderTaskbar(user);
+}
+
+// ===== TASKBAR — Shows on every page in <div id="taskbar"> =====
+function renderTaskbar(user){
+  let tb = document.getElementById('taskbar');
+  if(!tb) return;
+
+  if(!user){
+    tb.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px;font-size:12px">
+      <a href="login.html" style="color:#fff;font-weight:900">🔐 LOGIN</a>
+      <a href="manuals.html" style="color:#d4af37;font-weight:900">📖 MANUALS</a>
+      <a href="index.html" style="color:#fff;font-weight:900">🏠 HOME</a>
+    </div>`;
+    return;
+  }
+
+  let role = navToCaps(user.role||'GUEST');
+  let rank = user.rank || 0;
+  let schoolName = user.schoolName || 'WORDSWORTH HIGH SCHOOL';
+  let schoolId = user.schoolId || 'WHS';
+  let prefix = navSchoolPrefix(schoolName);
+  let myClasses = (user.teachingClasses||user.classes||user.myClasses||[]).map(c=>navToCaps(c)).filter(Boolean);
+  let mySubjects = (user.subjects||user.teachingSubjects||[]).map(s=>navToCaps(s)).filter(Boolean);
+
+  // Build links — Admin sees Users + Cleanup, others do not
+  let links = NAV_PAGES.filter(p=>{
+    if(p.show==='admin' && !(role==='ADMIN' && rank>=5)) return false;
+    if(p.page==='login.html') return false; // Logout handled separately
     return true;
-  };
+  }).map(p=>{
+    let isCur = (navGetCurrentPage() === p.page);
+    let style = isCur
+      ? 'background:#d4af37;color:#0a1f4d;padding:6px 10px;border-radius:20px;font-weight:900;text-decoration:none'
+      : 'color:#fff;font-weight:900;text-decoration:none;padding:6px 10px';
+    return `<a href="${p.page}" style="${style}">${p.label}</a>`;
+  }).join('');
 
-  function renderTaskbar(){
-    var bar=document.getElementById('taskbar');
-    if(!bar) return;
-    var u=getUser();
-    if(!u){
-      bar.innerHTML='<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px"><button onclick="goLogin()" style="background:#d4af37;color:#0a1f4d;border:none;border-radius:8px;padding:10px 14px;font-weight:900;cursor:pointer;font-size:13px">🔐 LOGIN →</button></div>';
-      return;
+  let classInfo = '';
+  if(role==='TEACHER'){
+    if(myClasses.length){
+      classInfo = `<span style="background:#0d9488;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">🏫 ${myClasses.join(', ')}</span>`;
+    } else {
+      classInfo = `<span style="background:#ef4444;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">⛔ NO CLASSES — ASK ADMIN</span>`;
     }
-    var found=DEMO_USERS.find(function(d){ return d.email.toLowerCase()===(u.email||'').toLowerCase(); });
-    var icon=(found||{}).icon||'👤';
-    var subjectLabel=u.subject?' — '+toCaps(u.subject):'';
-    var classesLabel=(u.teachingClasses||[]).length?' — '+u.teachingClasses.join(', '):'';
-    var schoolLabel=u.schoolId?' — '+u.schoolId:'';
-
-    if(!DEMO_ON){
-      bar.innerHTML=
-        '<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-top:10px">'
-        + '<span style="background:#fff;color:#0a1f4d;border-radius:20px;padding:8px 12px;font-weight:900;font-size:12px;line-height:1.4;display:inline-block">'+icon+' '+toCaps(u.name)+' — '+toCaps(u.role)+' — RANK '+u.rank+subjectLabel+classesLabel+schoolLabel+'</span>'
-        + '<button onclick="doLogout()" style="background:#ef4444;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-weight:900;cursor:pointer;font-size:13px">🚪 LOGOUT</button>'
-        + '</div>';
-      return;
+    if(mySubjects.length){
+      classInfo += `<span style="background:#7c3aed;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">📖 ${mySubjects.join(', ')}</span>`;
+    } else {
+      classInfo += `<span style="background:#ef4444;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">⛔ NO SUBJECTS — ASK ADMIN</span>`;
     }
-
-    // DEMO MODE: Grouped Switch menu — 10 users
-    var groups=['TEACHERS','LIBRARIAN','HODs','PRINCIPAL','ADMIN'];
-    var menuHtml='';
-    groups.forEach(function(g){
-      menuHtml += '<div style="background:#0a1f4d;color:#fff;padding:8px 12px;font-weight:900;font-size:11px">'+(GROUP_LABELS[g]||g)+'</div>';
-      DEMO_USERS.filter(function(d){ return d.group===g; }).forEach(function(d){
-        var isCurrent=(d.email.toLowerCase()===(u.email||'').toLowerCase());
-        menuHtml += '<button onclick="switchToUser(\''+d.email+'\')" style="display:block;width:100%;text-align:left;background:'+(isCurrent?'#fef3c7':'#fff')+';border:none;border-bottom:1px solid #eee;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px;color:#0a1f4d">'
-          + d.icon+' '+toCaps(d.name)+' — '+d.role.toUpperCase()+(d.subject?' — '+toCaps(d.subject):'')+(d.teachingClasses&&d.teachingClasses.length?' — '+d.teachingClasses.join(', '):'')
-          + (isCurrent?' &nbsp;✅ CURRENT':' &nbsp;→ SWITCH')
-          + '</button>';
-      });
-    });
-
-    bar.innerHTML=
-      '<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-top:10px;position:relative">'
-      + '<span style="background:#fff;color:#0a1f4d;border-radius:20px;padding:8px 12px;font-weight:900;font-size:12px;line-height:1.4;display:inline-block">'+icon+' '+toCaps(u.name)+' — '+toCaps(u.role)+' — RANK '+u.rank+subjectLabel+classesLabel+schoolLabel+'</span>'
-      + '<div style="position:relative;display:inline-block">'
-      +   '<button onclick="toggleSwitchMenu(event)" style="background:#d4af37;color:#0a1f4d;border:none;border-radius:8px;padding:10px 14px;font-weight:900;cursor:pointer;font-size:13px">🔄 SWITCH USER (10) ▾</button>'
-      +   '<div id="switchMenu" style="display:none;position:absolute;right:0;top:44px;width:360px;max-width:92vw;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:9999;overflow:hidden;text-align:left;max-height:80vh;overflow-y:auto">'
-      +     '<div style="background:#0a1f4d;color:#fff;padding:10px 12px;font-weight:900;font-size:12px">🔄 SWITCH USER — DEMO ONLY — 10 Users — Tap To Switch Instantly</div>'
-      +     menuHtml
-      +     '<button onclick="goLogin()" style="display:block;width:100%;text-align:left;background:#e2e8f0;border:none;border-top:2px solid #d4af37;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px;color:#0a1f4d">🔐 GO TO LOGIN PAGE (Type Email)</button>'
-      +     '<button onclick="doLogout()" style="display:block;width:100%;text-align:left;background:#fee2e2;border:none;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px;color:#991b1b">🚪 LOGOUT</button>'
-      +   '</div>'
-      + '</div>'
-      + '<button onclick="disableDemo()" title="Turn OFF Demo Mode — Hide Switch User" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-weight:900;cursor:pointer;font-size:13px">🧪 DEMO ON — TAP TO TURN OFF</button>'
-      + '<button onclick="doLogout()" style="background:#ef4444;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-weight:900;cursor:pointer;font-size:13px">🚪 LOGOUT</button>'
-      + '</div>'
-      + '<div style="text-align:center;margin-top:6px"><small style="color:#d4af37;font-weight:900">🧪 DEMO MODE ON — Switch User (10) is visible only in Demo. Live users will NOT see it.</small></div>';
+  } else if(role==='HOD'){
+    if(mySubjects.length){
+      classInfo = `<span style="background:#7c3aed;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">📖 HOD: ${mySubjects.join(', ')}</span>`;
+    }
+  } else if(role==='LIBRARIAN'){
+    classInfo = `<span style="background:#0d9488;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">📚 ALL CLASSES 4A-12J — ALL SUBJECTS</span>`;
+  } else if(role==='PRINCIPAL'){
+    classInfo = `<span style="background:#d4af37;color:#0a1f4d;padding:6px 10px;border-radius:20px;font-weight:900">👑 ALL — GRADES 4-12 — CLASSES 4A-12J</span>`;
+  } else if(role==='ADMIN'){
+    classInfo = `<span style="background:#dc2626;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">⚙️ ADMIN — ALL — CAN DO EVERYTHING</span>`;
   }
 
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', renderTaskbar); }
-  else { renderTaskbar(); }
-})();
+  tb.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px;font-size:12px;align-items:center">
+    <span style="background:#d4af37;color:#0a1f4d;padding:6px 10px;border-radius:20px;font-weight:900">👤 ${navToCaps(user.name||'GUEST')} — ${role} — RANK ${rank}</span>
+    <span style="background:#fff;color:#0a1f4d;padding:6px 10px;border-radius:20px;font-weight:900">🏫 ${navToCaps(schoolName)} (${navToCaps(schoolId)}) — Prefix ${prefix}</span>
+    ${classInfo}
+    ${links}
+    <a href="#" onclick="navLogout();return false;" style="color:#fca5a5;font-weight:900;text-decoration:none;padding:6px 10px">🚪 LOGOUT</a>
+  </div>`;
+}
+
+// ===== GO — Helper for buttons: go('teacher.html') =====
+function go(page){ window.location.href = page; }
+
+// ===== CHECK — Is user Admin? — Use in any page =====
+function isAdminUser(){
+  let u = navGetUser();
+  return u && navToCaps(u.role)==='ADMIN' && (u.rank||0)>=5;
+}
+
+// ===== CHECK — Is user Teacher with class? — Use in teacher.html / bulk_upload.html =====
+function teacherHasClass(className){
+  let u = navGetUser();
+  if(!u) return false;
+  if(navToCaps(u.role)==='ADMIN' || navToCaps(u.role)==='LIBRARIAN' || navToCaps(u.role)==='PRINCIPAL') return true;
+  let classes = (u.teachingClasses||u.classes||u.myClasses||[]).map(c=>navToCaps(c));
+  return classes.indexOf(navToCaps(className)) !== -1;
+}
+
+function teacherHasSubject(subject){
+  let u = navGetUser();
+  if(!u) return false;
+  if(navToCaps(u.role)==='ADMIN' || navToCaps(u.role)==='LIBRARIAN' || navToCaps(u.role)==='PRINCIPAL') return true;
+  let subs = (u.subjects||u.teachingSubjects||[]).map(s=>navToCaps(s));
+  return subs.indexOf(navToCaps(subject)) !== -1;
+}
