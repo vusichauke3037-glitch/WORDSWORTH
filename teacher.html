@@ -26,62 +26,34 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;
 .scan-row{display:flex;gap:8px;align-items:flex-end}.scan-row input{flex:1}.scan-row .btn{flex:0 0 auto;white-space:nowrap}
 .check{border:2px solid #e2e8f0;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 video{width:100%;border-radius:8px;background:#000}
-@media print{ header,.no-print{display:none!important} body{background:#fff} .wrap{max-width:100%;padding:0} .card{box-shadow:none;border:1px solid #000;break-inside:avoid} }
 @media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}.scan-row{flex-direction:column;align-items:stretch}}
 </style></head>
 <body>
-<header><h1>👩‍🏫 TEACHER — MAKHANANI LTSM 2.0</h1><p>ISSUE TO LEARNER — 1 LEARNER, 1 TITLE — NO GRADE MISMATCH — TYPE OR SCAN — PRINT CLASS LIST</p>
+<header><h1>👩‍🏫 TEACHER — MAKHANANI LTSM 2.0</h1><p>ISSUE TO LEARNER — MULTI-SUBJECT + MULTI-CLASS — 1 LEARNER, 1 TITLE — NO GRADE MISMATCH</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 <script>guardPage(1,'Teacher');</script>
 </header>
 <div class="wrap">
 <div class="info" id="roleInfo">Loading...</div>
-<div class="kpi"><div><b id="kpiAvail">0</b><span>📗 MY BOOKS AVAILABLE<br>To Issue To Learner</span></div><div><b id="kpiIssued">0</b><span>📕 ISSUED TO LEARNERS<br>By Me</span></div><div><b id="kpiMyOrders">0</b><span>📦 MY ORDERS<br>From Librarian</span></div><div><b id="kpiLearners">0</b><span>👥 LEARNERS IN MY CLASSES<br>Only My Classes</span></div></div>
+<div class="kpi"><div><b id="kpiAvail">0</b><span>📗 MY BOOKS AVAILABLE<br>My Subjects</span></div><div><b id="kpiIssued">0</b><span>📕 ISSUED TO LEARNERS<br>By Me</span></div><div><b id="kpiMyOrders">0</b><span>📦 MY ORDERS</span></div><div><b id="kpiLearners">0</b><span>👥 LEARNERS IN MY CLASSES<br>Only My Classes</span></div></div>
 
-<!-- PRINT CLASS LIST — NEW V2.10 -->
-<div class="card no-print"><h2>🖨️ Print Class List — Learner IDs + Books They Have</h2>
-<div class="info">Pick ONE class → See list → Tap PRINT → Print / Save as PDF.<br>List shows Learner ID (10A001), Name, Grade, Class, Books Issued.<br><b>Only YOUR classes</b> — You cannot see other teachers' classes.</div>
-<div class="row"><div><label>🏫 Pick Class To Print</label><select id="printClass"></select></div><div><label>🔍 Search Learner</label><input id="searchLearners" placeholder="🔍 Name / Learner ID 10A001" oninput="renderLearners()"></div></div>
-<div class="row"><button class="btn btn-purple" onclick="renderLearners()">👥 SHOW CLASS LIST</button><button class="btn btn-teal" onclick="printClassList()">🖨️ PRINT CLASS LIST →</button></div>
-<div id="learnersInfo" class="info">Loading learners...</div>
-<div id="printArea">
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>No.</th><th>Learner ID</th><th>Name</th><th>Grade / Class</th><th>Books Issued (1 Title Each)</th><th>Action</th></tr></thead><tbody id="learnersTable"></tbody></table></div>
-</div>
-</div>
+<div class="card"><h2>🖨️ Print Class List</h2><div class="row"><div><label>🏫 Pick Class To Print</label><select id="printClass"></select></div><div><label>🔍 Search Learner</label><input id="searchLearners" placeholder="🔍 Name / 10A001" oninput="renderLearners()"></div></div><div class="row"><button class="btn btn-purple" onclick="renderLearners()">👥 SHOW CLASS LIST</button><button class="btn btn-teal" onclick="printClassList()">🖨️ PRINT CLASS LIST →</button></div><div id="learnersInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>No.</th><th>Learner ID</th><th>Name</th><th>Grade / Class</th><th>Books Issued</th><th>Action</th></tr></thead><tbody id="learnersTable"></tbody></table></div></div>
 
-<!-- ADD LEARNER — AUTO ID -->
-<div class="card no-print"><h2>👤 Add Learner — Learner ID Auto-Generated</h2>
-<div class="info">Type Name + Pick Grade + Class → Tap ADD → Learner ID auto-generates.<br>Example: Grade 10, Class 10A, 1st learner → <b>10A001</b> — Sequence restarts per class.</div>
-<label>👤 Learner Full Name</label><input id="learnerName" placeholder="e.g. THABO MOKOENA">
-<div class="row"><div><label>🎓 Grade</label><select id="learnerGrade"><option value="">-- GRADE --</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>🏫 Class — Only My Classes</label><select id="learnerClass"></select></div></div>
-<button class="btn btn-green btn-full" onclick="addLearner()">👤 ADD LEARNER — AUTO ID →</button><div id="learnerMsg"></div>
-</div>
+<div class="card"><h2>👤 Add Learner — Auto ID</h2><label>👤 Learner Full Name</label><input id="learnerName" placeholder="e.g. THABO MOKOENA"><div class="row"><div><label>🎓 Grade</label><select id="learnerGrade"><option value="">-- GRADE --</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>🏫 Class — Only My Classes</label><select id="learnerClass"></select></div></div><button class="btn btn-green btn-full" onclick="addLearner()">👤 ADD LEARNER — AUTO ID →</button><div id="learnerMsg"></div></div>
 
-<!-- ISSUE TO LEARNER — SCAN -->
-<div class="card no-print"><h2>📖 ISSUE TO LEARNER — Scan Learner ID + Book Barcode</h2>
-<div class="info">Rules: <b>1 Learner = 1 Title</b> — Learner can have MATHS + ENGLISH, but NOT 2x MATHS.<br><b>No Grade Mismatch</b> — Learner Grade must = Book Grade.<br><b>My Class + My Subject Only</b> — Learner must be in your class, Book must be your subject.<br>Type OR Scan — Both work.</div>
-<label>👤 LEARNER ID — Type or Scan Learner Card</label>
-<div class="scan-row"><input id="learnerId" placeholder="e.g. 10A001 — Type or Scan" oninput="onLearnerInput()"><button class="btn btn-purple" onclick="startScan('learner')">📷 SCAN LEARNER ID</button></div>
-<select id="learnerPick" onchange="onLearnerPick()"><option value="">-- OR PICK LEARNER FROM MY CLASSES --</option></select>
-<div id="learnerInfo" class="info">Type Learner ID above, or pick from list.</div>
-<label>📖 BOOK BARCODE — Type or Scan Book</label>
-<div class="scan-row"><input id="bookBarcode" placeholder="e.g. WHS000001 — Type or Scan" oninput="onBookInput()"><button class="btn btn-purple" onclick="startScan('book')">📷 SCAN BOOK BARCODE</button></div>
-<select id="bookPick" onchange="onBookPick()"><option value="">-- OR PICK BOOK FROM MY SUBJECT — AVAILABLE ONLY --</option></select>
-<div id="bookInfo" class="info">Type Book Barcode above, or pick from list.</div>
-<div id="scanBox" style="display:none;margin-top:12px"><video id="scanVideo" playsinline></video><div class="row"><button class="btn btn-red" onclick="stopScan()">✖️ STOP CAMERA</button><button class="btn btn-grey" onclick="simulateScan()">🧪 SIMULATE SCAN (No Camera)</button></div><div class="info" id="scanMsg">Point camera at barcode / QR.</div></div>
-<div class="check" id="checksBox">Checks will appear here after you pick Learner + Book.</div>
-<button class="btn btn-green btn-full" id="issueBtn" onclick="issueToLearner()" disabled>✅ ISSUE TO LEARNER →</button>
-<div id="issueMsg"></div>
-</div>
+<div class="card"><h2>📖 ISSUE TO LEARNER — Scan Learner ID + Book Barcode</h2>
+<div class="info">Rules: <b>1 Learner = 1 Title</b> — <b>No Grade Mismatch</b> — <b>My Classes + My Subjects Only</b> — You can teach / issue <b>MULTIPLE subjects</b> — e.g. MATHS + SCIENCE.</div>
+<label>👤 LEARNER ID</label><div class="scan-row"><input id="learnerId" placeholder="e.g. 10A001" oninput="onLearnerInput()"><button class="btn btn-purple" onclick="startScan('learner')">📷 SCAN LEARNER ID</button></div>
+<select id="learnerPick" onchange="onLearnerPick()"><option value="">-- OR PICK LEARNER FROM MY CLASSES --</option></select><div id="learnerInfo" class="info">Type Learner ID or pick.</div>
+<label>📖 BOOK BARCODE</label><div class="scan-row"><input id="bookBarcode" placeholder="e.g. WHS000001" oninput="onBookInput()"><button class="btn btn-purple" onclick="startScan('book')">📷 SCAN BOOK</button></div>
+<select id="bookPick" onchange="onBookPick()"><option value="">-- OR PICK BOOK — MY SUBJECTS — AVAILABLE ONLY --</option></select><div id="bookInfo" class="info">Type Barcode or pick.</div>
+<div id="scanBox" style="display:none;margin-top:12px"><video id="scanVideo" playsinline></video><div class="row"><button class="btn btn-red" onclick="stopScan()">✖️ STOP CAMERA</button><button class="btn btn-grey" onclick="simulateScan()">🧪 SIMULATE SCAN</button></div><div class="info" id="scanMsg">Point camera.</div></div>
+<div class="check" id="checksBox">Pick Learner + Book to see checks.</div>
+<button class="btn btn-green btn-full" id="issueBtn" onclick="issueToLearner()" disabled>✅ ISSUE TO LEARNER →</button><div id="issueMsg"></div></div>
 
-<!-- MY ISSUED -->
-<div class="card no-print"><h2>📕 My Issued Books — To Learners — Return From Here</h2><div class="row"><div><label>🔍 Search</label><input id="searchIssued" placeholder="🔍 Learner / Title / Barcode" oninput="renderIssued()"></div><div><label>🏫 Filter Class</label><select id="filterClassIssued" onchange="renderIssued()"><option value="">🏫 ALL MY CLASSES</option></select></div></div><div id="issuedInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Learner</th><th>Class / Grade</th><th>Book / Title</th><th>Barcode</th><th>Date Issued</th><th>Action</th></tr></thead><tbody id="issuedTable"></tbody></table></div></div>
+<div class="card"><h2>📕 My Issued — Return From Here</h2><div class="row"><div><label>🔍 Search</label><input id="searchIssued" placeholder="🔍 Learner / Title / Barcode" oninput="renderIssued()"></div><div><label>🏫 Filter Class</label><select id="filterClassIssued" onchange="renderIssued()"><option value="">🏫 ALL MY CLASSES</option></select></div><div><label>📚 Filter Subject</label><select id="filterSubjectIssued" onchange="renderIssued()"><option value="">📚 ALL MY SUBJECTS</option></select></div></div><div id="issuedInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Learner</th><th>Class / Grade</th><th>Book / Title</th><th>Barcode</th><th>Date</th><th>Action</th></tr></thead><tbody id="issuedTable"></tbody></table></div></div>
 
-<!-- MY ORDERS -->
-<div class="card no-print"><h2>📦 My Orders — Request Books From Librarian</h2><div class="info">Request books → HOD / Principal Approves Qty → Librarian Issues to YOU → Then YOU issue to learners above.</div>
-<div class="row"><div><label>📚 Title To Request</label><select id="orderTitle"><option value="">-- PICK TITLE --</option></select></div><div><label>🔢 Qty</label><input id="orderQty" type="number" value="5" min="1"></div><div><label>🏫 Class</label><select id="orderClass"></select></div></div>
-<button class="btn btn-gold btn-full" onclick="requestBooks()">📦 REQUEST BOOKS → HOD APPROVAL</button><div id="orderMsg"></div>
-<div id="ordersInfo" class="info" style="margin-top:12px">Loading orders...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Title</th><th>Qty</th><th>Class</th><th>Requested / Approved / Issued</th><th>Status</th><th>Date</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
+<div class="card"><h2>📦 My Orders — Request Books</h2><div class="info">Request any of YOUR subjects → HOD for that subject approves.</div><div class="row"><div><label>📚 Subject — My Subjects Only</label><select id="orderSubject" onchange="onOrderSubject()"><option value="">-- MY SUBJECT --</option></select></div><div><label>📚 Title</label><select id="orderTitle"><option value="">-- PICK TITLE --</option></select></div><div><label>🔢 Qty</label><input id="orderQty" type="number" value="5" min="1"></div><div><label>🏫 Class</label><select id="orderClass"></select></div></div><button class="btn btn-gold btn-full" onclick="requestBooks()">📦 REQUEST BOOKS →</button><div id="orderMsg"></div><div id="ordersInfo" class="info" style="margin-top:12px">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Title</th><th>Qty</th><th>Class</th><th>Req / Appr / Iss</th><th>Status</th><th>Date</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
@@ -89,189 +61,125 @@ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
 function toCaps(s){return String(s||'').trim().toUpperCase();}
 function norm(s){return String(s||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');}
-function pad(num,len){return String(num).padStart(len,'0');}
+function pad(n,l){return String(n).padStart(l,'0');}
+function arr(v){ if(Array.isArray(v)) return v.map(toCaps).filter(Boolean); if(v) return [toCaps(v)]; return []; }
+// MULTI-SUBJECT: subjects[] first, fallback to subject, fallback to hodSubjects
+function getMySubjects(u){ let s=arr(u?.subjects); if(s.length) return [...new Set(s)]; let h=arr(u?.hodSubjects); if(h.length) return [...new Set(h)]; if(u?.subject) return [toCaps(u.subject)]; return []; }
 let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-let mySubject=toCaps(user?.subject||'');
-let myClasses=(user?.teachingClasses||[]).map(c=>toCaps(c));
+let mySubjects=getMySubjects(user); // e.g. [MATHEMATICS, PHYSICAL SCIENCES]
+let myClasses=(user?.teachingClasses||user?.classes||[]).map(c=>toCaps(c));
 let mySchoolId=user?.schoolId||'WHS';
 let learners=[], books=[], issued=[], orders=[];
 let scanTarget=null, scanStream=null;
-function makeLearnerId(grade, className, seq){ let g=String(grade||'').replace(/[^0-9]/g,''); let c=String(className||'').toUpperCase(); let letter=c.replace(/[^A-Z]/g,'').slice(-1)||'A'; return g+letter+pad(seq,3); }
-function nextLearnerSeq(grade, className){ let g=String(grade||''); let c=toCaps(className||''); let inClass=learners.filter(l=>String(l.grade)===g && toCaps(l.className)===c); let max=0; inClass.forEach(l=>{ let m=String(l.learnerId||'').match(/(\d{3})$/); if(m) max=Math.max(max, parseInt(m[1],10)); }); return max+1; }
-function demoLearners(){
-  let list=[]; let cls=myClasses.length?myClasses:['10A','10B','11A'];
-  let names=[['THABO MOKOENA','1'],['SIPHO DUBE','2'],['LERATO KHOZA','3'],['NOKO SELEPE','4'],['AYANDA ZULU','5'],['KAGISO MOLEFE','6'],['ZANELE NKOSI','7'],['PALESA MOKOENA','8'],['TSHEPO RAMA','9'],['MPHO LEKO','10']];
-  cls.forEach(function(c){ let g=c.replace(/[^0-9]/g,''); names.forEach(function(n,i){ let id=makeLearnerId(g,c,i+1); list.push({id:id,learnerId:id,name:toCaps(n[0]),grade:g,className:c}); }); });
-  return list;
-}
-function demoBooks(){ let list=[]; ['10','11','12'].forEach(function(g){ for(let i=1;i<=6;i++){ list.push({barcode:'WHS'+pad(parseInt(g)*100+i,6),title:'MATHEMATICS GRADE '+g,subject:'MATHEMATICS',grade:g,status:'AVAILABLE',copyNo:i}); list.push({barcode:'WHS'+pad(parseInt(g)*100+50+i,6),title:'ENGLISH GRADE '+g,subject:'ENGLISH',grade:g,status:'AVAILABLE',copyNo:i}); list.push({barcode:'WHS'+pad(parseInt(g)*100+100+i,6),title:'HISTORY GRADE '+g,subject:'HISTORY',grade:g,status:'AVAILABLE',copyNo:i}); } }); return list; }
+function makeLearnerId(g,c,seq){ let letter=String(c||'').replace(/[^A-Z]/g,'').slice(-1)||'A'; return String(g)+letter+pad(seq,3); }
+function nextLearnerSeq(g,c){ let max=0; learners.filter(l=>String(l.grade)===String(g)&&toCaps(l.className)===toCaps(c)).forEach(l=>{ let m=String(l.learnerId||'').match(/(\d{3})$/); if(m) max=Math.max(max,parseInt(m[1],10)); }); return max+1; }
+function demoLearners(){ let list=[]; let cls=myClasses.length?myClasses:['10A','10B','11A']; let names=['THABO MOKOENA','SIPHO DUBE','LERATO KHOZA','NOKO SELEPE','AYANDA ZULU','KAGISO MOLEFE','ZANELE NKOSI','PALESA MOKOENA','TSHEPO RAMA','MPHO LEKO']; cls.forEach(c=>{ let g=c.replace(/[^0-9]/g,''); names.forEach((n,i)=>{ let id=makeLearnerId(g,c,i+1); list.push({id:id,learnerId:id,name:toCaps(n),grade:g,className:c}); }); }); return list; }
+function demoBooks(){ let list=[]; ['10','11','12'].forEach(g=>{ for(let i=1;i<=6;i++){ list.push({barcode:'WHS'+pad(parseInt(g)*100+i,6),title:'MATHEMATICS GRADE '+g,subject:'MATHEMATICS',grade:g,status:'AVAILABLE'}); list.push({barcode:'WHS'+pad(parseInt(g)*100+50+i,6),title:'PHYSICAL SCIENCES GRADE '+g,subject:'PHYSICAL SCIENCES',grade:g,status:'AVAILABLE'}); list.push({barcode:'WHS'+pad(parseInt(g)*100+100+i,6),title:'ENGLISH GRADE '+g,subject:'ENGLISH',grade:g,status:'AVAILABLE'}); } }); return list; }
 function loadAll(){
-  document.getElementById('roleInfo').innerHTML=`👩‍🏫 <b>${toCaps(user?.name||'TEACHER')}</b> — Role: <b>TEACHER — RANK 1</b> — Subject: <b>${mySubject||'—'}</b> — Classes: <b>${myClasses.join(', ')||'—'}</b> — School: <b>${mySchoolId}</b><br><small>You issue to learners in YOUR classes ONLY, YOUR subject, SAME grade only. 1 learner = 1 title.</small>`;
-  learners=demoLearners(); books=demoBooks(); issued=[]; orders=[{id:'1',title:'MATHEMATICS GRADE 10',qty:10,approvedQty:5,issuedQty:3,className:'10A',status:'PARTIALLY ISSUED',date:new Date().toISOString().slice(0,10)}];
+  document.getElementById('roleInfo').innerHTML=`👩‍🏫 <b>${toCaps(user?.name||'TEACHER')}</b> — TEACHER — RANK 1 — Subjects: <b>${mySubjects.join(', ')||'—'}</b> — Classes: <b>${myClasses.join(', ')||'—'}</b> — School: <b>${mySchoolId}</b><br><small>You issue to learners in YOUR classes, YOUR subjects (multiple), SAME grade only. 1 learner = 1 title.</small>`;
+  learners=demoLearners(); books=demoBooks(); issued=[]; orders=[{id:'1',title:'MATHEMATICS GRADE 10',qty:10,approvedQty:5,issuedQty:3,className:'10A',status:'PARTIALLY ISSUED',date:'2026-11-17'}];
   try{
     rtdb.ref('learners/'+mySchoolId).once('value').then(s=>{ if(s.val()){ learners=Object.values(s.val()).filter(l=>myClasses.includes(toCaps(l.className))); fillLearners(); renderLearners(); } }).catch(()=>{});
-    rtdb.ref('stock/'+mySchoolId).once('value').then(s=>{ if(s.val()){ books=Object.values(s.val()).map(b=>({barcode:b.barcode||'',title:b.title||'',subject:toCaps(b.subject||''),grade:String(b.grade||''),status:b.status||'AVAILABLE',copyNo:b.copyNo||1})); fillBooks(); } }).catch(()=>{});
-    rtdb.ref('issued/'+mySchoolId).once('value').then(s=>{ if(s.val()){ issued=Object.values(s.val()).filter(x=>toCaps(x.teacher||'')===toCaps(user?.name||'')||toCaps(x.teacherEmail||'')===toCaps(user?.email||'')); renderIssued(); renderLearners(); } }).catch(()=>{});
+    rtdb.ref('stock/'+mySchoolId).once('value').then(s=>{ if(s.val()){ books=Object.values(s.val()).map(b=>({barcode:b.barcode||'',title:b.title||'',subject:toCaps(b.subject||''),grade:String(b.grade||''),status:b.status||'AVAILABLE'})); fillBooks(); } }).catch(()=>{});
+    rtdb.ref('issued/'+mySchoolId).once('value').then(s=>{ if(s.val()){ issued=Object.values(s.val()).filter(x=>toCaps(x.teacher||'')===toCaps(user?.name||'')); renderIssued(); renderLearners(); } }).catch(()=>{});
     rtdb.ref('orders/'+mySchoolId).once('value').then(s=>{ if(s.val()){ orders=Object.values(s.val()).filter(x=>toCaps(x.teacher||'')===toCaps(user?.name||'')); renderOrders(); } }).catch(()=>{});
   }catch(e){}
   fillLearners(); fillBooks(); renderLearners(); renderIssued(); renderOrders(); updateKPIs();
 }
 function fillLearners(){
-  let myLearners=learners.filter(l=>myClasses.includes(toCaps(l.className)));
-  document.getElementById('learnerPick').innerHTML='<option value="">-- OR PICK LEARNER FROM MY CLASSES --</option>'+myLearners.map(l=>`<option value="${l.learnerId}">${toCaps(l.name)} — ${l.learnerId} — Grade ${l.grade} — ${toCaps(l.className)}</option>`).join('');
+  let ml=learners.filter(l=>myClasses.includes(toCaps(l.className)));
+  document.getElementById('learnerPick').innerHTML='<option value="">-- OR PICK LEARNER FROM MY CLASSES --</option>'+ml.map(l=>`<option value="${l.learnerId}">${toCaps(l.name)} — ${l.learnerId} — Grade ${l.grade} — ${toCaps(l.className)}</option>`).join('');
   document.getElementById('filterClassIssued').innerHTML='<option value="">🏫 ALL MY CLASSES</option>'+myClasses.map(c=>`<option>${c}</option>`).join('');
+  document.getElementById('filterSubjectIssued').innerHTML='<option value="">📚 ALL MY SUBJECTS</option>'+mySubjects.map(s=>`<option>${s}</option>`).join('');
   document.getElementById('orderClass').innerHTML=myClasses.map(c=>`<option>${c}</option>`).join('');
   document.getElementById('learnerClass').innerHTML=myClasses.map(c=>`<option>${c}</option>`).join('');
   document.getElementById('printClass').innerHTML=myClasses.map(c=>`<option>${c}</option>`).join('');
-  document.getElementById('kpiLearners').textContent=myLearners.length;
+  document.getElementById('orderSubject').innerHTML='<option value="">-- MY SUBJECT --</option>'+mySubjects.map(s=>`<option>${s}</option>`).join('');
+  document.getElementById('kpiLearners').textContent=ml.length;
+  onOrderSubject();
 }
 function fillBooks(){
-  let myBooks=books.filter(b=>toCaps(b.subject)===mySubject && toCaps(b.status)==='AVAILABLE');
-  document.getElementById('bookPick').innerHTML='<option value="">-- OR PICK BOOK FROM MY SUBJECT — AVAILABLE ONLY --</option>'+myBooks.map(b=>`<option value="${b.barcode}">${toCaps(b.title)} — ${b.barcode} — Grade ${b.grade}</option>`).join('');
-  let titles=[...new Set(books.filter(b=>toCaps(b.subject)===mySubject).map(b=>b.title))];
+  let mb=books.filter(b=>mySubjects.includes(toCaps(b.subject)) && toCaps(b.status)==='AVAILABLE');
+  document.getElementById('bookPick').innerHTML='<option value="">-- OR PICK BOOK — MY SUBJECTS — AVAILABLE ONLY --</option>'+mb.map(b=>`<option value="${b.barcode}">${toCaps(b.title)} — ${b.barcode} — Grade ${b.grade} — ${toCaps(b.subject)}</option>`).join('');
+}
+function onOrderSubject(){
+  let sub=document.getElementById('orderSubject').value;
+  let titles=[...new Set(books.filter(b=>!sub||toCaps(b.subject)===sub).map(b=>b.title))];
   document.getElementById('orderTitle').innerHTML='<option value="">-- PICK TITLE --</option>'+titles.map(t=>`<option>${toCaps(t)}</option>`).join('');
 }
-function updateKPIs(){
-  document.getElementById('kpiAvail').textContent=books.filter(b=>toCaps(b.subject)===mySubject && toCaps(b.status)==='AVAILABLE').length;
-  document.getElementById('kpiIssued').textContent=issued.length;
-  document.getElementById('kpiMyOrders').textContent=orders.length;
-}
-// ---------- PRINT CLASS LIST ----------
-function booksForLearner(learnerId){
-  return issued.filter(x=>norm(x.learnerId)===norm(learnerId));
-}
+function updateKPIs(){ document.getElementById('kpiAvail').textContent=books.filter(b=>mySubjects.includes(toCaps(b.subject)) && toCaps(b.status)==='AVAILABLE').length; document.getElementById('kpiIssued').textContent=issued.length; document.getElementById('kpiMyOrders').textContent=orders.length; }
+function booksForLearner(id){ return issued.filter(x=>norm(x.learnerId)===norm(id)); }
 function renderLearners(){
-  let cls=document.getElementById('printClass').value || myClasses[0];
-  let q=toCaps(document.getElementById('searchLearners').value||'');
-  let list=learners.filter(l=>toCaps(l.className)===toCaps(cls));
-  if(q) list=list.filter(l=>(toCaps(l.name)+' '+toCaps(l.learnerId)).includes(q));
-  let withBooks=list.filter(l=>booksForLearner(l.learnerId).length>0).length;
-  document.getElementById('learnersInfo').innerHTML=`Class <b>${toCaps(cls)}</b> — Showing <b>${list.length}</b> learners — With Books: <b>${withBooks}</b> — Without Books: <b>${list.length-withBooks}</b> — Only YOUR classes.`;
-  document.getElementById('learnersTable').innerHTML=list.length?list.map((l,i)=>{
-    let bl=booksForLearner(l.learnerId);
-    return `<tr><td>${i+1}</td><td><b>${toCaps(l.learnerId)}</b></td><td>${toCaps(l.name)}</td><td>Grade ${l.grade}<br>${toCaps(l.className)}</td><td>${bl.length?bl.map(b=>`${toCaps(b.title)} (${b.bookBarcode})`).join('<br>'):'<span style="color:#991b1b">— None Yet —</span>'}</td><td><button class="btn btn-teal" onclick="quickIssue('${l.learnerId}')">📖 ISSUE →</button></td></tr>`;
-  }).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No learners in ${toCaps(cls)} yet. Add learner above.</td></tr>`;
+  let cls=document.getElementById('printClass').value||myClasses[0]; let q=toCaps(document.getElementById('searchLearners').value||'');
+  let list=learners.filter(l=>toCaps(l.className)===toCaps(cls)); if(q) list=list.filter(l=>(toCaps(l.name)+' '+toCaps(l.learnerId)).includes(q));
+  let wb=list.filter(l=>booksForLearner(l.learnerId).length>0).length;
+  document.getElementById('learnersInfo').innerHTML=`Class <b>${toCaps(cls)}</b> — <b>${list.length}</b> learners — With Books: <b>${wb}</b> — Without: <b>${list.length-wb}</b>`;
+  document.getElementById('learnersTable').innerHTML=list.length?list.map((l,i)=>{ let bl=booksForLearner(l.learnerId); return `<tr><td>${i+1}</td><td><b>${toCaps(l.learnerId)}</b></td><td>${toCaps(l.name)}</td><td>Grade ${l.grade}<br>${toCaps(l.className)}</td><td>${bl.length?bl.map(b=>`${toCaps(b.title)} (${b.bookBarcode})`).join('<br>'):'<span style="color:#991b1b">— None Yet —</span>'}</td><td><button class="btn btn-teal" onclick="quickIssue('${l.learnerId}')">📖 ISSUE →</button></td></tr>`; }).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No learners in ${toCaps(cls)}.</td></tr>`;
 }
-function quickIssue(learnerId){
-  document.getElementById('learnerId').value=learnerId;
-  onLearnerInput();
-  document.querySelector('h2').scrollIntoView({behavior:'smooth'});
-  // Scroll to Issue card
-  let cards=document.querySelectorAll('.card');
-  cards[2].scrollIntoView({behavior:'smooth'});
-  document.getElementById('issueMsg').innerHTML='<div class="ok">👤 Learner <b>'+learnerId+'</b> selected — Now scan / pick Book below.</div>';
-}
+function quickIssue(id){ document.getElementById('learnerId').value=id; onLearnerInput(); document.querySelectorAll('.card')[2].scrollIntoView({behavior:'smooth'}); }
 function printClassList(){
-  let cls=document.getElementById('printClass').value || myClasses[0];
-  let list=learners.filter(l=>toCaps(l.className)===toCaps(cls));
-  let withBooks=list.filter(l=>booksForLearner(l.learnerId).length>0).length;
-  let w=window.open('','','width=800,height=900');
-  let rows=list.map((l,i)=>{
-    let bl=booksForLearner(l.learnerId);
-    return `<tr><td>${i+1}</td><td><b>${toCaps(l.learnerId)}</b></td><td>${toCaps(l.name)}</td><td>${l.grade}</td><td>${toCaps(l.className)}</td><td>${bl.length?bl.map(b=>`${toCaps(b.title)} (${b.bookBarcode})`).join('<br>'):'— None Yet —'}</td><td style="width:80px"></td></tr>`;
-  }).join('');
-  w.document.write(`<html><head><title>Class List ${cls}</title><style>body{font-family:Arial}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #000;padding:6px;text-align:left}th{background:#0a1f4d;color:#fff}h2,h3{margin:4px 0}</style></head><body><h2>WORDSWORTH HIGH SCHOOL — CLASS LIST — ${toCaps(cls)}</h2><h3>Teacher: ${toCaps(user?.name||'')} — ${mySubject} — Date: ${new Date().toISOString().slice(0,10)}</h3><p>Total Learners: ${list.length} — With Books: ${withBooks} — Without Books: ${list.length-withBooks} — 1 Learner = 1 Title — No Grade Mismatch</p><table><thead><tr><th>No.</th><th>Learner ID</th><th>Name</th><th>Grade</th><th>Class</th><th>Books Issued</th><th>Signature / Tick</th></tr></thead><tbody>${rows}</tbody></table><p style="margin-top:20px">Teacher Signature: ______________________ &nbsp;&nbsp; Date: ______________</p></body></html>`);
-  w.document.close(); w.focus(); setTimeout(()=>w.print(), 300);
+  let cls=document.getElementById('printClass').value||myClasses[0]; let list=learners.filter(l=>toCaps(l.className)===toCaps(cls)); let wb=list.filter(l=>booksForLearner(l.learnerId).length>0).length;
+  let w=window.open('','','width=800,height=900'); let rows=list.map((l,i)=>{ let bl=booksForLearner(l.learnerId); return `<tr><td>${i+1}</td><td><b>${toCaps(l.learnerId)}</b></td><td>${toCaps(l.name)}</td><td>${l.grade}</td><td>${toCaps(l.className)}</td><td>${bl.length?bl.map(b=>`${toCaps(b.title)} (${b.bookBarcode})`).join('<br>'):'— None Yet —'}</td><td style="width:80px"></td></tr>`; }).join('');
+  w.document.write(`<html><head><title>Class List ${cls}</title><style>body{font-family:Arial}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #000;padding:6px;text-align:left}th{background:#0a1f4d;color:#fff}</style></head><body><h2>WORDSWORTH HIGH SCHOOL — CLASS LIST — ${toCaps(cls)}</h2><h3>Teacher: ${toCaps(user?.name||'')} — ${mySubjects.join(', ')} — Date: ${new Date().toISOString().slice(0,10)}</h3><p>Total: ${list.length} — With Books: ${wb} — Without: ${list.length-wb}</p><table><thead><tr><th>No.</th><th>Learner ID</th><th>Name</th><th>Grade</th><th>Class</th><th>Books Issued</th><th>Tick</th></tr></thead><tbody>${rows}</tbody></table><p>Teacher Signature: ______________________ Date: ______________</p></body></html>`); w.document.close(); w.focus(); setTimeout(()=>w.print(),300);
 }
-// ---------- ADD LEARNER ----------
 async function addLearner(){
-  let name=document.getElementById('learnerName').value.trim();
-  let grade=document.getElementById('learnerGrade').value;
-  let className=document.getElementById('learnerClass').value;
-  let msg=document.getElementById('learnerMsg');
-  if(!name){ msg.innerHTML='<div class="warn">⚠️ Type Learner Name.</div>'; return; }
-  if(!grade){ msg.innerHTML='<div class="warn">⚠️ Pick Grade.</div>'; return; }
-  if(!className){ msg.innerHTML='<div class="warn">⚠️ Pick Class.</div>'; return; }
-  if(!myClasses.includes(toCaps(className))){ msg.innerHTML='<div class="warn">⛔ You can only add learners to YOUR classes: '+myClasses.join(', ')+'</div>'; return; }
-  let seq=nextLearnerSeq(grade, className);
-  let learnerId=makeLearnerId(grade, className, seq);
-  if(learners.some(l=>toCaps(l.learnerId)===learnerId)){ msg.innerHTML='<div class="warn">⛔ Duplicate ID '+learnerId+'</div>'; return; }
-  let rec={learnerId:learnerId,id:learnerId,name:toCaps(name),grade:String(grade),className:toCaps(className),schoolId:mySchoolId,schoolName:user?.schoolName||mySchoolId,date:new Date().toISOString().slice(0,10),active:true};
+  let name=document.getElementById('learnerName').value.trim(); let grade=document.getElementById('learnerGrade').value; let className=document.getElementById('learnerClass').value; let msg=document.getElementById('learnerMsg');
+  if(!name||!grade||!className){ msg.innerHTML='<div class="warn">⚠️ Fill Name + Grade + Class.</div>'; return; }
+  if(!myClasses.includes(toCaps(className))){ msg.innerHTML='<div class="warn">⛔ Only YOUR classes: '+myClasses.join(', ')+'</div>'; return; }
+  let seq=nextLearnerSeq(grade,className); let learnerId=makeLearnerId(grade,className,seq);
+  let rec={learnerId:learnerId,id:learnerId,name:toCaps(name),grade:String(grade),className:toCaps(className),schoolId:mySchoolId,date:new Date().toISOString().slice(0,10),active:true};
   try{ await rtdb.ref('learners/'+mySchoolId+'/'+learnerId).set(rec); }catch(e){}
-  learners.push(rec);
-  document.getElementById('learnerName').value='';
-  msg.innerHTML='<div class="ok">✅ LEARNER ADDED — <b>'+toCaps(name)+'</b><br>Learner ID: <b>'+learnerId+'</b> — Grade '+grade+' — Class '+toCaps(className)+'<br>Write this ID on learner card. Scan it to issue books.</div>';
+  learners.push(rec); document.getElementById('learnerName').value='';
+  msg.innerHTML='<div class="ok">✅ ADDED — <b>'+toCaps(name)+'</b> — ID: <b>'+learnerId+'</b> — Grade '+grade+' — '+toCaps(className)+'</div>';
   fillLearners(); renderLearners(); updateKPIs();
 }
-// ---------- ISSUE ----------
-function findLearner(q){ if(!q) return null; let n=norm(q); return learners.find(l=>norm(l.learnerId)===n || norm(l.name)===n || norm(l.id)===n || toCaps(l.name).includes(toCaps(q))); }
-function findBook(q){ if(!q) return null; let n=norm(q); return books.find(b=>norm(b.barcode)===n || toCaps(b.title).includes(toCaps(q))); }
+function findLearner(q){ if(!q) return null; let n=norm(q); return learners.find(l=>norm(l.learnerId)===n||norm(l.name)===n); }
+function findBook(q){ if(!q) return null; let n=norm(q); return books.find(b=>norm(b.barcode)===n); }
 let selLearner=null, selBook=null;
 function onLearnerInput(){ selLearner=findLearner(document.getElementById('learnerId').value); renderLearnerInfo(); runChecks(); }
 function onLearnerPick(){ let v=document.getElementById('learnerPick').value; if(!v) return; document.getElementById('learnerId').value=v; selLearner=findLearner(v); renderLearnerInfo(); runChecks(); }
 function onBookInput(){ selBook=findBook(document.getElementById('bookBarcode').value); renderBookInfo(); runChecks(); }
 function onBookPick(){ let v=document.getElementById('bookPick').value; if(!v) return; document.getElementById('bookBarcode').value=v; selBook=findBook(v); renderBookInfo(); runChecks(); }
-function renderLearnerInfo(){ let el=document.getElementById('learnerInfo'); if(!selLearner){ el.className='warn'; el.innerHTML='⚠️ Learner not found — Check ID. Pick from list.'; return; } let inMyClass=myClasses.includes(toCaps(selLearner.className)); el.className=inMyClass?'ok':'warn'; el.innerHTML=`👤 <b>${toCaps(selLearner.name)}</b> — ID: <b>${toCaps(selLearner.learnerId)}</b> — Grade: <b>${selLearner.grade}</b> — Class: <b>${toCaps(selLearner.className)}</b> — ${inMyClass?'✅ In My Class':'⛔ NOT In My Class — You teach '+myClasses.join(', ')}`; }
-function renderBookInfo(){ let el=document.getElementById('bookInfo'); if(!selBook){ el.className='warn'; el.innerHTML='⚠️ Book not found — Check Barcode.'; return; } let mySub=toCaps(selBook.subject)===mySubject; let avail=toCaps(selBook.status)==='AVAILABLE'; el.className=(mySub&&avail)?'ok':'warn'; el.innerHTML=`📖 <b>${toCaps(selBook.title)}</b> — Barcode: <b>${selBook.barcode}</b> — Grade: <b>${selBook.grade}</b> — Subject: <b>${toCaps(selBook.subject)}</b> — ${avail?'✅ AVAILABLE':'⛔ '+toCaps(selBook.status)} — ${mySub?'✅ My Subject':'⛔ NOT My Subject — You teach '+mySubject}`; }
+function renderLearnerInfo(){ let el=document.getElementById('learnerInfo'); if(!selLearner){ el.className='warn'; el.innerHTML='⚠️ Learner not found.'; return; } let ok=myClasses.includes(toCaps(selLearner.className)); el.className=ok?'ok':'warn'; el.innerHTML=`👤 <b>${toCaps(selLearner.name)}</b> — ${toCaps(selLearner.learnerId)} — Grade ${selLearner.grade} — ${toCaps(selLearner.className)} — ${ok?'✅ In My Class':'⛔ NOT In My Class'}`; }
+function renderBookInfo(){ let el=document.getElementById('bookInfo'); if(!selBook){ el.className='warn'; el.innerHTML='⚠️ Book not found.'; return; } let ok=mySubjects.includes(toCaps(selBook.subject)); let av=toCaps(selBook.status)==='AVAILABLE'; el.className=(ok&&av)?'ok':'warn'; el.innerHTML=`📖 <b>${toCaps(selBook.title)}</b> — ${selBook.barcode} — Grade ${selBook.grade} — ${toCaps(selBook.subject)} — ${av?'✅ AVAILABLE':'⛔ '+toCaps(selBook.status)} — ${ok?'✅ My Subject':'⛔ NOT My Subject — You teach '+mySubjects.join(', ')}`; }
 function runChecks(){
   let box=document.getElementById('checksBox'); let btn=document.getElementById('issueBtn');
-  if(!selLearner||!selBook){ box.innerHTML='Pick Learner + Book above to see checks.'; btn.disabled=true; return; }
+  if(!selLearner||!selBook){ box.innerHTML='Pick Learner + Book.'; btn.disabled=true; return; }
   let checks=[];
-  let inMyClass=myClasses.includes(toCaps(selLearner.className));
-  checks.push({ok:inMyClass,label:`1. Learner In My Class — ${toCaps(selLearner.className)} — You teach ${myClasses.join(', ')} — ${inMyClass?'✅ PASS':'⛔ FAIL'}`});
-  let mySub=toCaps(selBook.subject)===mySubject;
-  checks.push({ok:mySub,label:`2. Book Is My Subject — ${toCaps(selBook.subject)} — You teach ${mySubject} — ${mySub?'✅ PASS':'⛔ FAIL'}`});
-  let gradeMatch=String(selLearner.grade)===String(selBook.grade);
-  checks.push({ok:gradeMatch,label:`3. Grade Match — Learner ${selLearner.grade} = Book ${selBook.grade} — ${gradeMatch?'✅ PASS':'⛔ FAIL — Grade Mismatch'}`});
-  let avail=toCaps(selBook.status)==='AVAILABLE';
-  checks.push({ok:avail,label:`4. Book Available — ${toCaps(selBook.status)} — ${avail?'✅ PASS':'⛔ FAIL — Already OUT'}`});
-  let dup=issued.find(x=>norm(x.learnerId)===norm(selLearner.learnerId) && toCaps(x.title)===toCaps(selBook.title));
-  checks.push({ok:!dup,label:`5. 1 Learner, 1 Title — ${dup?'⛔ FAIL — Already has '+toCaps(selBook.title)+' — Return first':'✅ PASS — Does NOT have '+toCaps(selBook.title)+' yet'}`});
-  let all=checks.every(c=>c.ok);
-  box.style.borderColor=all?'#22c55e':'#ef4444';
-  box.innerHTML='<b>✅ CHECKS — All Must Pass:</b><br>'+checks.map(c=>`<span style="color:${c.ok?'#166534':'#991b1b'}">${c.label}</span>`).join('<br>');
-  btn.disabled=!all;
-  btn.textContent=all?'✅ ISSUE TO LEARNER → '+toCaps(selLearner.name)+' — '+toCaps(selBook.title):'⛔ BLOCKED — Fix Checks Above';
+  checks.push({ok:myClasses.includes(toCaps(selLearner.className)),label:`1. Learner In My Class — ${toCaps(selLearner.className)} — You teach ${myClasses.join(', ')} — ${myClasses.includes(toCaps(selLearner.className))?'✅ PASS':'⛔ FAIL'}`});
+  checks.push({ok:mySubjects.includes(toCaps(selBook.subject)),label:`2. Book Is My Subject — ${toCaps(selBook.subject)} — You teach ${mySubjects.join(', ')} — ${mySubjects.includes(toCaps(selBook.subject))?'✅ PASS':'⛔ FAIL'}`});
+  checks.push({ok:String(selLearner.grade)===String(selBook.grade),label:`3. Grade Match — Learner ${selLearner.grade} = Book ${selBook.grade} — ${String(selLearner.grade)===String(selBook.grade)?'✅ PASS':'⛔ FAIL — Grade Mismatch'}`});
+  checks.push({ok:toCaps(selBook.status)==='AVAILABLE',label:`4. Book Available — ${toCaps(selBook.status)} — ${toCaps(selBook.status)==='AVAILABLE'?'✅ PASS':'⛔ FAIL'}`});
+  let dup=issued.find(x=>norm(x.learnerId)===norm(selLearner.learnerId)&&toCaps(x.title)===toCaps(selBook.title));
+  checks.push({ok:!dup,label:`5. 1 Learner, 1 Title — ${dup?'⛔ FAIL — Already has '+toCaps(selBook.title):'✅ PASS'}`});
+  let all=checks.every(c=>c.ok); box.style.borderColor=all?'#22c55e':'#ef4444'; box.innerHTML='<b>✅ CHECKS:</b><br>'+checks.map(c=>`<span style="color:${c.ok?'#166534':'#991b1b'}">${c.label}</span>`).join('<br>'); btn.disabled=!all; btn.textContent=all?'✅ ISSUE TO LEARNER → '+toCaps(selLearner.name)+' — '+toCaps(selBook.title):'⛔ BLOCKED';
 }
 async function issueToLearner(){
-  runChecks(); if(document.getElementById('issueBtn').disabled){ document.getElementById('issueMsg').innerHTML='<div class="warn">⛔ Blocked — Fix checks.</div>'; return; }
-  let rec={learnerId:toCaps(selLearner.learnerId),learnerName:toCaps(selLearner.name),learnerGrade:String(selLearner.grade),learnerClass:toCaps(selLearner.className),bookBarcode:selBook.barcode,title:toCaps(selBook.title),subject:toCaps(selBook.subject),grade:String(selBook.grade),date:new Date().toISOString().slice(0,10)+' '+new Date().toTimeString().slice(0,5),teacher:toCaps(user?.name||''),teacherEmail:toCaps(user?.email||''),schoolId:mySchoolId,status:'ISSUED'};
-  let id='ISS_'+Date.now();
-  try{ await rtdb.ref('issued/'+mySchoolId+'/'+id).set(rec); await rtdb.ref('stock/'+mySchoolId+'/'+norm(selBook.barcode)).update({status:'ISSUED',issuedTo:rec.learnerId}); }catch(e){}
+  runChecks(); if(document.getElementById('issueBtn').disabled) return;
+  let rec={learnerId:toCaps(selLearner.learnerId),learnerName:toCaps(selLearner.name),learnerGrade:String(selLearner.grade),learnerClass:toCaps(selLearner.className),bookBarcode:selBook.barcode,title:toCaps(selBook.title),subject:toCaps(selBook.subject),grade:String(selBook.grade),date:new Date().toISOString().slice(0,10),teacher:toCaps(user?.name||''),teacherEmail:toCaps(user?.email||''),schoolId:mySchoolId,status:'ISSUED'};
+  let id='ISS_'+Date.now(); try{ await rtdb.ref('issued/'+mySchoolId+'/'+id).set(rec); await rtdb.ref('stock/'+mySchoolId+'/'+norm(selBook.barcode)).update({status:'ISSUED',issuedTo:rec.learnerId}); }catch(e){}
   selBook.status='ISSUED'; issued.push({id,...rec});
-  document.getElementById('issueMsg').innerHTML=`<div class="ok">✅ ISSUED — <b>${toCaps(selLearner.name)}</b> (${toCaps(selLearner.learnerId)} — Grade ${selLearner.grade} — ${toCaps(selLearner.className)}) now has <b>${toCaps(selBook.title)}</b> — ${selBook.barcode}</div>`;
-  document.getElementById('learnerId').value='';document.getElementById('bookBarcode').value='';document.getElementById('learnerPick').value='';document.getElementById('bookPick').value='';
-  selLearner=null; selBook=null; fillBooks(); renderIssued(); renderLearners(); updateKPIs(); runChecks(); renderLearnerInfo(); renderBookInfo();
+  document.getElementById('issueMsg').innerHTML=`<div class="ok">✅ ISSUED — <b>${toCaps(selLearner.name)}</b> (${toCaps(selLearner.learnerId)}) now has <b>${toCaps(selBook.title)}</b> — ${selBook.barcode}</div>`;
+  document.getElementById('learnerId').value='';document.getElementById('bookBarcode').value='';selLearner=null;selBook=null;fillBooks();renderIssued();renderLearners();updateKPIs();runChecks();renderLearnerInfo();renderBookInfo();
 }
-async function returnBook(id){
-  let rec=issued.find(x=>String(x.id)===String(id)); if(!rec) return;
-  if(!confirm(`Return ${rec.title} from ${rec.learnerName}?`)) return;
-  try{ await rtdb.ref('issued/'+mySchoolId+'/'+id).remove(); await rtdb.ref('stock/'+mySchoolId+'/'+norm(rec.bookBarcode)).update({status:'AVAILABLE',issuedTo:''}); }catch(e){}
-  let b=books.find(x=>x.barcode===rec.bookBarcode); if(b) b.status='AVAILABLE';
-  issued=issued.filter(x=>String(x.id)!==String(id));
-  document.getElementById('issueMsg').innerHTML=`<div class="ok">✅ RETURNED — ${toCaps(rec.title)} from ${toCaps(rec.learnerName)} — Book AVAILABLE again.</div>`;
-  fillBooks(); renderIssued(); renderLearners(); updateKPIs();
-}
+async function returnBook(id){ let rec=issued.find(x=>String(x.id)===String(id)); if(!rec) return; if(!confirm(`Return ${rec.title} from ${rec.learnerName}?`)) return; try{ await rtdb.ref('issued/'+mySchoolId+'/'+id).remove(); await rtdb.ref('stock/'+mySchoolId+'/'+norm(rec.bookBarcode)).update({status:'AVAILABLE',issuedTo:''}); }catch(e){} let b=books.find(x=>x.barcode===rec.bookBarcode); if(b) b.status='AVAILABLE'; issued=issued.filter(x=>String(x.id)!==String(id)); fillBooks();renderIssued();renderLearners();updateKPIs(); }
 function renderIssued(){
-  let q=toCaps(document.getElementById('searchIssued').value||''); let f=document.getElementById('filterClassIssued').value;
-  let list=issued.filter(x=>{ if(f && toCaps(x.learnerClass)!==f) return false; if(q && !(toCaps(x.learnerName)+' '+toCaps(x.title)+' '+toCaps(x.bookBarcode)).includes(q)) return false; return true; });
-  document.getElementById('issuedInfo').innerHTML=`Showing <b>${list.length}</b> issued to learners by you.`;
-  document.getElementById('issuedTable').innerHTML=list.length?list.map(x=>`<tr><td><b>${toCaps(x.learnerName)}</b><br><small>${toCaps(x.learnerId)}</small></td><td>Grade ${x.learnerGrade}<br>${toCaps(x.learnerClass)}</td><td><b>${toCaps(x.title)}</b></td><td>${x.bookBarcode}</td><td>${x.date||''}</td><td><button class="btn btn-red" onclick="returnBook('${x.id}')">↩️ RETURN</button></td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No books issued to learners yet.</td></tr>`;
+  let q=toCaps(document.getElementById('searchIssued').value||''); let f=document.getElementById('filterClassIssued').value; let fs=document.getElementById('filterSubjectIssued').value;
+  let list=issued.filter(x=>{ if(f&&toCaps(x.learnerClass)!==f) return false; if(fs&&toCaps(x.subject)!==fs) return false; if(q&&!(toCaps(x.learnerName)+' '+toCaps(x.title)+' '+toCaps(x.bookBarcode)).includes(q)) return false; return true; });
+  document.getElementById('issuedInfo').innerHTML=`Showing <b>${list.length}</b> issued by you.`;
+  document.getElementById('issuedTable').innerHTML=list.length?list.map(x=>`<tr><td><b>${toCaps(x.learnerName)}</b><br>${toCaps(x.learnerId)}</td><td>Grade ${x.learnerGrade}<br>${toCaps(x.learnerClass)}</td><td><b>${toCaps(x.title)}</b><br>${toCaps(x.subject)}</td><td>${x.bookBarcode}</td><td>${x.date||''}</td><td><button class="btn btn-red" onclick="returnBook('${x.id}')">↩️ RETURN</button></td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No books issued yet.</td></tr>`;
 }
-function renderOrders(){
-  document.getElementById('ordersInfo').innerHTML=`Showing <b>${orders.length}</b> orders by you.`;
-  document.getElementById('ordersTable').innerHTML=orders.length?orders.map(o=>`<tr><td>${toCaps(o.title)}</td><td>${o.qty}</td><td>${toCaps(o.className)}</td><td>Req ${o.qty} / Appr ${o.approvedQty||0} / Iss ${o.issuedQty||0}</td><td>${toCaps(o.status)}</td><td>${o.date||''}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No orders yet.</td></tr>`;
-}
+function renderOrders(){ document.getElementById('ordersInfo').innerHTML=`Showing <b>${orders.length}</b> orders by you.`; document.getElementById('ordersTable').innerHTML=orders.length?orders.map(o=>`<tr><td>${toCaps(o.title)}</td><td>${o.qty}</td><td>${toCaps(o.className)}</td><td>Req ${o.qty} / Appr ${o.approvedQty||0} / Iss ${o.issuedQty||0}</td><td>${toCaps(o.status)}</td><td>${o.date||''}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No orders yet.</td></tr>`; }
 async function requestBooks(){
-  let title=document.getElementById('orderTitle').value; let qty=document.getElementById('orderQty').value; let cls=document.getElementById('orderClass').value;
-  if(!title){ document.getElementById('orderMsg').innerHTML='<div class="warn">⚠️ Pick Title.</div>'; return; }
-  let rec={title:toCaps(title),qty:Number(qty)||1,approvedQty:0,issuedQty:0,className:cls,teacher:toCaps(user?.name||''),teacherEmail:toCaps(user?.email||''),subject:mySubject,schoolId:mySchoolId,status:'PENDING',date:new Date().toISOString().slice(0,10)};
-  let id='ORD_'+Date.now();
-  try{ await rtdb.ref('orders/'+mySchoolId+'/'+id).set(rec); }catch(e){}
-  orders.push({id,...rec});
-  document.getElementById('orderMsg').innerHTML=`<div class="ok">✅ REQUESTED — ${qty}x ${toCaps(title)} for ${cls} — PENDING — HOD / Principal must APPROVE.</div>`;
-  renderOrders(); updateKPIs();
+  let sub=document.getElementById('orderSubject').value; let title=document.getElementById('orderTitle').value; let qty=document.getElementById('orderQty').value; let cls=document.getElementById('orderClass').value;
+  if(!sub||!title){ document.getElementById('orderMsg').innerHTML='<div class="warn">⚠️ Pick Subject + Title.</div>'; return; }
+  let rec={title:toCaps(title),qty:Number(qty)||1,approvedQty:0,issuedQty:0,className:cls,teacher:toCaps(user?.name||''),teacherEmail:toCaps(user?.email||''),subject:toCaps(sub),schoolId:mySchoolId,status:'PENDING',date:new Date().toISOString().slice(0,10)};
+  let id='ORD_'+Date.now(); try{ await rtdb.ref('orders/'+mySchoolId+'/'+id).set(rec); }catch(e){}
+  orders.push({id,...rec}); document.getElementById('orderMsg').innerHTML=`<div class="ok">✅ REQUESTED — ${qty}x ${toCaps(title)} for ${cls} — ${toCaps(sub)} — PENDING — HOD for ${toCaps(sub)} must APPROVE.</div>`; renderOrders(); updateKPIs();
 }
-async function startScan(target){
-  scanTarget=target; document.getElementById('scanBox').style.display='block';
-  try{
-    let stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); scanStream=stream;
-    let v=document.getElementById('scanVideo'); v.srcObject=stream; v.play();
-    if('BarcodeDetector' in window){ let det=new BarcodeDetector({formats:['code_128','code_39','ean_13','qr_code']}); let loop=async()=>{ if(!scanStream) return; try{ let codes=await det.detect(v); if(codes.length){ onScanResult(codes[0].rawValue); return; } }catch(e){} if(scanStream) requestAnimationFrame(loop); }; loop(); }
-  }catch(e){ document.getElementById('scanMsg').textContent='Camera blocked — Type code or tap SIMULATE. '+e.message; }
-}
+async function startScan(t){ scanTarget=t; document.getElementById('scanBox').style.display='block'; try{ let s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); scanStream=s; let v=document.getElementById('scanVideo'); v.srcObject=s; v.play(); if('BarcodeDetector' in window){ let d=new BarcodeDetector({formats:['code_128','code_39','ean_13','qr_code']}); let loop=async()=>{ if(!scanStream) return; try{ let c=await d.detect(v); if(c.length){ onScanResult(c[0].rawValue); return; } }catch(e){} if(scanStream) requestAnimationFrame(loop); }; loop(); } }catch(e){ document.getElementById('scanMsg').textContent='Camera blocked — Type or SIMULATE. '+e.message; } }
 function stopScan(){ if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; } document.getElementById('scanBox').style.display='none'; }
-function onScanResult(code){ stopScan(); if(scanTarget==='learner'){ document.getElementById('learnerId').value=code; onLearnerInput(); } else { document.getElementById('bookBarcode').value=code; onBookInput(); } }
-function simulateScan(){ if(scanTarget==='learner'){ onScanResult('10A001'); } else { onScanResult('WHS000001'); } }
+function onScanResult(c){ stopScan(); if(scanTarget==='learner'){ document.getElementById('learnerId').value=c; onLearnerInput(); } else { document.getElementById('bookBarcode').value=c; onBookInput(); } }
+function simulateScan(){ onScanResult(scanTarget==='learner'?'10A001':'WHS000001'); }
 loadAll();
 </script></body></html>
