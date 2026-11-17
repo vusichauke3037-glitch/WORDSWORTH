@@ -7,119 +7,83 @@
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
 header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:900px;margin:0 auto;padding:12px}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.wrap{max-width:1000px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer}
-input{cursor:text}input:focus,select:focus{border-color:#d4af37;outline:none;background:#fef3c7}
-.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}
-.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
+input{cursor:text}.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
-.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
-.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.kpi b{font-size:20px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:middle}th{background:#0a1f4d;color:#fff}
-.pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.pill-pending{background:#fef3c7;color:#92400e}.pill-approved{background:#dcfce7;color:#166534}.pill-partial{background:#dbeafe;color:#1e40af}.pill-full{background:#e9d5ff;color:#6b21a8}.pill-rejected{background:#fee2e2;color:#991b1b}
-.qty-input{width:80px;padding:10px;text-align:center;font-size:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}.kpi b{font-size:20px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
 @media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>🏫 PRINCIPAL — MAKHANANI LTSM 2.0</h1><p>APPROVE ANY SUBJECT — OVERRIDE HOD — SET APPROVED QTY — FINAL APPROVAL</p>
+<header><h1>🏫 PRINCIPAL — MAKHANANI LTSM 2.0</h1><p>OVERVIEW — ALL SUBJECTS — ALL CAPS — INTERMEDIATE (4-6) TO FET (10-12) — GRADES 4-12</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 <script>guardPage(4,'Principal');</script>
 </header>
 <div class="wrap">
 <div class="info" id="roleInfo">Loading...</div>
-<div class="kpi"><div><b id="kpiPending">0</b><span>⏳ PENDING — All Subjects<br>Waiting Approval</span></div><div><b id="kpiApproved">0</b><span>✅ APPROVED<br>All Subjects</span></div><div><b id="kpiRejected">0</b><span>❌ REJECTED</span></div><div><b id="kpiTotalApprovedQty">0</b><span>📦 TOTAL APPROVED QTY</span></div></div>
-
-<div class="card"><h2>⏳ Pending Requests — All Subjects — Set Approved Qty — Override HOD</h2>
-<div class="info">You approve <b>ANY subject</b>. You can approve a PENDING order directly — HOD does not need to approve first.<br>You can also <b>OVERRIDE</b> a HOD decision below — Change Approved Qty or Reject an HOD-approved order.<br><b>ApprovedQty ≤ RequestedQty</b> — Never more than requested.</div>
-<div id="pendingInfo" class="info">Loading...</div>
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Teacher / Subject</th><th>Title / Class</th><th>Requested</th><th>Approved Qty<br>You Set</th><th>Action</th></tr></thead><tbody id="pendingTable"></tbody></table></div><div id="pendingMsg"></div></div>
-
-<div class="card"><h2>📦 All Decisions — Approved / Rejected — Override HOD Here</h2><div class="row"><div><label>🔍 Search</label><input id="searchDecided" placeholder="🔍 Teacher / Title / Subject" oninput="renderDecided()"></div><div><label>📊 Filter Subject</label><select id="filterSubject" onchange="renderDecided()"><option value="">📚 ALL SUBJECTS</option><option>MATHEMATICS</option><option>ENGLISH</option><option>PHYSICAL SCIENCES</option><option>HISTORY</option></select></div><div><label>📊 Filter Status</label><select id="filterDecided" onchange="renderDecided()"><option value="">📊 ALL STATUS</option><option value="APPROVED">✅ APPROVED</option><option value="PARTIALLY ISSUED">📦 PARTIALLY ISSUED</option><option value="FULLY ISSUED">✅ FULLY ISSUED</option><option value="REJECTED">❌ REJECTED</option></select></div></div><div id="decidedInfo" class="info">Loading...</div><div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Teacher / Subject</th><th>Title / Class</th><th>Requested</th><th>Approved</th><th>Issued</th><th>Remaining</th><th>Status / By</th><th>Override — Change Approved Qty</th></tr></thead><tbody id="decidedTable"></tbody></table></div></div>
+<div class="kpi"><div><b id="kpiLearners">0</b><span>🎓 LEARNERS — 4 TO 12</span></div><div><b id="kpiBooks">0</b><span>📚 BOOKS</span></div><div><b id="kpiIssued">0</b><span>📕 ISSUED</span></div><div><b id="kpiPending">0</b><span>⏳ PENDING HOD</span></div></div>
+<div class="card"><h2>📊 Overview — Filter By Subject (ALL CAPS) + Grade (4-12) + Phase</h2>
+<div class="row"><div><label>📚 Filter Subject — ALL CAPS — All 37</label><select id="filterSubject" onchange="renderOverview()"><option value="">📚 ALL SUBJECTS — ALL CAPS</option></select></div><div><label>🎓 Filter Grade — 4 To 12</label><select id="filterGrade" onchange="renderOverview()"><option value="">🎓 ALL GRADES — 4 TO 12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>🏫 Filter Phase</label><select id="filterPhase" onchange="renderOverview()"><option value="">🏫 ALL PHASES</option><option value="INTERMEDIATE">INTERMEDIATE — 4-6</option><option value="SENIOR">SENIOR — 7-9</option><option value="FET">FET — 10-12</option></select></div><div><label>🔍 Search</label><input id="searchOverview" placeholder="🔍 Learner / Book / Teacher" oninput="renderOverview()"></div></div>
+<div id="overviewInfo" class="info">Loading...</div>
+<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Learner / Class / Grade / Phase</th><th>Book — ALL CAPS</th><th>Subject — ALL CAPS</th><th>Teacher / HOD</th><th>Status</th></tr></thead><tbody id="overviewTable"></tbody></table></div>
+<div class="row"><button class="btn btn-green" onclick="window.print()">🖨️ PRINT OVERVIEW</button><button class="btn btn-gold" onclick="exportCSV()">📥 EXPORT CSV</button></div></div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
 function toCaps(s){return String(s||'').trim().toUpperCase();}
+function phaseOf(grade){ let g=parseInt(grade,10); if(g<=6) return 'INTERMEDIATE'; if(g<=9) return 'SENIOR'; return 'FET'; }
 let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
 let mySchoolId=user?.schoolId||'WHS';
-let orders=[];
-function demoData(){
-  orders=[
-    {id:'ORD1',teacher:'MRS DUBE',teacherEmail:'dube@wordsworth.co.za',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',grade:'10',className:'10A',qty:10,approvedQty:0,issuedQty:0,status:'PENDING',approvedBy:'',date:'2026-11-17'},
-    {id:'ORD2',teacher:'MR SMITH',teacherEmail:'smith@wordsworth.co.za',title:'ENGLISH GRADE 10',subject:'ENGLISH',grade:'10',className:'10A',qty:3,approvedQty:3,issuedQty:1,status:'PARTIALLY ISSUED',approvedBy:'HOD ENGLISH',date:'2026-11-17'},
-    {id:'ORD3',teacher:'MS JONES',teacherEmail:'jones@wordsworth.co.za',title:'HISTORY GRADE 12',subject:'HISTORY',grade:'12',className:'12A',qty:4,approvedQty:0,issuedQty:0,status:'PENDING',approvedBy:'',date:'2026-11-17'},
-    {id:'ORD4',teacher:'MRS DUBE',teacherEmail:'dube@wordsworth.co.za',title:'MATHEMATICS GRADE 11',subject:'MATHEMATICS',grade:'11',className:'11A',qty:5,approvedQty:0,issuedQty:0,status:'REJECTED',approvedBy:'HOD MATHS',date:'2026-11-16'},
-    {id:'ORD5',teacher:'MRS DUBE',teacherEmail:'dube@wordsworth.co.za',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',grade:'10',className:'10B',qty:6,approvedQty:5,issuedQty:5,status:'FULLY ISSUED',approvedBy:'HOD MATHS',date:'2026-11-15'},
+// --- SAME 37 SUBJECTS ---
+const SUBJECT_GROUPS=[
+  {label:'INTERMEDIATE — GRADES 4-6', items:['ENGLISH HOME LANGUAGE','ENGLISH FIRST ADDITIONAL LANGUAGE','AFRIKAANS HOME LANGUAGE','AFRIKAANS FIRST ADDITIONAL LANGUAGE','ISIZULU HOME LANGUAGE','ISIXHOSA HOME LANGUAGE','SESOTHO HOME LANGUAGE','SETSWANA HOME LANGUAGE','MATHEMATICS','NATURAL SCIENCES AND TECHNOLOGY','SOCIAL SCIENCES','LIFE SKILLS']},
+  {label:'SENIOR — GRADES 7-9', items:['NATURAL SCIENCES','ECONOMIC AND MANAGEMENT SCIENCES','TECHNOLOGY','CREATIVE ARTS','LIFE ORIENTATION']},
+  {label:'FET — GRADES 10-12', items:['MATHEMATICAL LITERACY','TECHNICAL MATHEMATICS','PHYSICAL SCIENCES','TECHNICAL SCIENCES','LIFE SCIENCES','AGRICULTURAL SCIENCES','ACCOUNTING','BUSINESS STUDIES','ECONOMICS','HISTORY','GEOGRAPHY','TOURISM','CONSUMER STUDIES','COMPUTER APPLICATIONS TECHNOLOGY','INFORMATION TECHNOLOGY','ENGINEERING GRAPHICS AND DESIGN','VISUAL ARTS','DRAMATIC ARTS','MUSIC','PHYSICAL EDUCATION','RELIGION STUDIES']}
+];
+const ALL_SUBJECTS=[...new Set(SUBJECT_GROUPS.flatMap(g=>g.items))];
+let issues=[];
+function demoIssues(){
+  return [
+    {learnerName:'LEARNER 4A-1',learnerId:'4A001',className:'4A',grade:'4',title:'ENGLISH HOME LANGUAGE GRADE 4',subject:'ENGLISH HOME LANGUAGE',teacher:'MRS MOKOENA',barcode:'WHS000001',status:'APPROVED'},
+    {learnerName:'LEARNER 6A-1',learnerId:'6A001',className:'6A',grade:'6',title:'NATURAL SCIENCES AND TECHNOLOGY GRADE 6',subject:'NATURAL SCIENCES AND TECHNOLOGY',teacher:'MR DLAMINI',barcode:'WHS000011',status:'APPROVED'},
+    {learnerName:'LEARNER 7A-1',learnerId:'7A001',className:'7A',grade:'7',title:'SOCIAL SCIENCES GRADE 7',subject:'SOCIAL SCIENCES',teacher:'MS JONES',barcode:'WHS000021',status:'PENDING HOD'},
+    {learnerName:'LEARNER 10A-1',learnerId:'10A001',className:'10A',grade:'10',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',teacher:'MRS DUBE',barcode:'WHS000031',status:'APPROVED'},
+    {learnerName:'LEARNER 12A-1',learnerId:'12A001',className:'12A',grade:'12',title:'HISTORY GRADE 12',subject:'HISTORY',teacher:'MS JONES',barcode:'WHS000041',status:'PENDING HOD'},
   ];
 }
-function remaining(o){ return Math.max(0,(o.approvedQty||0)-(o.issuedQty||0)); }
 function loadAll(){
-  document.getElementById('roleInfo').innerHTML=`🏫 <b>${toCaps(user?.name||'PRINCIPAL')}</b> — Role: <b>PRINCIPAL — RANK 4</b> — Subject: <b>ALL SUBJECTS</b> — School: <b>${mySchoolId}</b><br><small>You approve ANY subject. Your approval OVERRIDES HOD. You set Approved Qty.</small>`;
-  demoData();
-  try{ rtdb.ref('orders/'+mySchoolId).once('value').then(s=>{ if(s.val()){ orders=Object.values(s.val()); renderAll(); } }).catch(()=>{}); }catch(e){}
-  renderAll();
+  document.getElementById('roleInfo').innerHTML=`🏫 <b>${toCaps(user?.name||'PRINCIPAL')}</b> — PRINCIPAL — RANK 4 — School: <b>${mySchoolId}</b><br>Sees ALL subjects — <b>${ALL_SUBJECTS.length} ALL CAPS</b> — Intermediate 4-6, Senior 7-9, FET 10-12 — Grades 4-12 — No subject limit.`;
+  let fHtml='<option value="">📚 ALL SUBJECTS — ALL CAPS</option>';
+  SUBJECT_GROUPS.forEach(g=>{ fHtml+=`<optgroup label="${g.label}">${g.items.map(s=>`<option>${s}</option>`).join('')}</optgroup>`; });
+  document.getElementById('filterSubject').innerHTML=fHtml;
+  issues=demoIssues();
+  try{ rtdb.ref('issues/'+mySchoolId).once('value').then(s=>{ if(s.val()) issues=Object.values(s.val()); renderOverview(); }).catch(()=>{}); }catch(e){}
+  renderOverview();
 }
-function renderAll(){
-  let pending=orders.filter(o=>o.status==='PENDING');
-  document.getElementById('kpiPending').textContent=pending.length;
-  document.getElementById('kpiApproved').textContent=orders.filter(o=>['APPROVED','PARTIALLY ISSUED','FULLY ISSUED'].includes(o.status)).length;
-  document.getElementById('kpiRejected').textContent=orders.filter(o=>o.status==='REJECTED').length;
-  document.getElementById('kpiTotalApprovedQty').textContent=orders.reduce((s,o)=>s+(o.approvedQty||0),0);
-  document.getElementById('pendingInfo').innerHTML=`Showing <b>${pending.length}</b> PENDING requests — All subjects.`;
-  document.getElementById('pendingTable').innerHTML=pending.length?pending.map(o=>`<tr><td><b>${toCaps(o.teacher)}</b><br><small>${toCaps(o.subject)}</small></td><td><b>${toCaps(o.title)}</b><br>${toCaps(o.className)} — Grade ${o.grade}</td><td><b>${o.qty}</b></td><td><input class="qty-input" id="qty_${o.id}" type="number" value="${o.qty}" min="1" max="${o.qty}" oninput="clampQty('${o.id}',${o.qty})"><br><small>Max ${o.qty}</small></td><td><button class="btn btn-green" onclick="approveOrder('${o.id}')">✅ APPROVE<br><span id="approveLabel_${o.id}">Approve ${o.qty}</span></button> <button class="btn btn-red" onclick="rejectOrder('${o.id}')">❌ REJECT</button></td></tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px">No PENDING requests. All done ✅</td></tr>`;
-  renderDecided();
+function renderOverview(){
+  let q=toCaps(document.getElementById('searchOverview').value||''); let fSub=document.getElementById('filterSubject').value; let fGrade=document.getElementById('filterGrade').value; let fPhase=document.getElementById('filterPhase').value;
+  let list=issues.filter(i=>{
+    if(fSub && toCaps(i.subject)!==fSub) return false;
+    if(fGrade && String(i.grade)!==fGrade) return false;
+    if(fPhase && phaseOf(i.grade)!==fPhase) return false;
+    if(q && !(toCaps(i.learnerName)+' '+toCaps(i.title)+' '+toCaps(i.teacher)).includes(q)) return false;
+    return true;
+  });
+  document.getElementById('kpiLearners').textContent=new Set(issues.map(i=>i.learnerId)).size;
+  document.getElementById('kpiBooks').textContent=issues.length;
+  document.getElementById('kpiIssued').textContent=issues.filter(i=>['APPROVED','ISSUED'].includes(toCaps(i.status))).length;
+  document.getElementById('kpiPending').textContent=issues.filter(i=>toCaps(i.status)==='PENDING HOD').length;
+  document.getElementById('overviewInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${issues.length}</b> issues. Principal sees ALL — No subject filter by default.`;
+  document.getElementById('overviewTable').innerHTML=list.length?list.map(i=>`<tr><td><b>${toCaps(i.learnerName)}</b><br>${i.learnerId} — ${i.className} — Grade ${i.grade} — ${phaseOf(i.grade)}</td><td><b>${toCaps(i.title)}</b><br>${i.barcode}</td><td>${toCaps(i.subject)}<br>Grade ${i.grade}</td><td>${toCaps(i.teacher)}</td><td>${toCaps(i.status)}</td></tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px">No issues for this filter.</td></tr>`;
 }
-function clampQty(id, max){ let el=document.getElementById('qty_'+id); let v=parseInt(el.value||'0',10); if(isNaN(v)||v<1) v=1; if(v>max) v=max; el.value=v; let lbl=document.getElementById('approveLabel_'+id); if(lbl) lbl.textContent='Approve '+v; }
-async function approveOrder(id){
-  let o=orders.find(x=>String(x.id)===String(id)); if(!o) return;
-  let qtyEl=document.getElementById('qty_'+id);
-  let approvedQty=qtyEl?parseInt(qtyEl.value||o.qty,10):o.qty;
-  if(isNaN(approvedQty)||approvedQty<1||approvedQty>o.qty){ document.getElementById('pendingMsg').innerHTML='<div class="warn">⚠️ Approved Qty must be 1 to '+o.qty+'.</div>'; return; }
-  if(!confirm(`✅ PRINCIPAL APPROVE ${approvedQty} of ${o.qty}?\n\nTeacher: ${o.teacher}\nTitle: ${o.title} — ${o.subject}\n\nLibrarian can issue ONLY ${approvedQty}.`)) return;
-  o.approvedQty=approvedQty; o.issuedQty=0; o.status='APPROVED'; o.approvedBy=toCaps(user?.name||'PRINCIPAL WHS');
-  try{ await rtdb.ref('orders/'+mySchoolId+'/'+id).update({approvedQty:approvedQty,issuedQty:0,status:'APPROVED',approvedBy:o.approvedBy}); }catch(e){}
-  document.getElementById('pendingMsg').innerHTML=`<div class="ok">✅ PRINCIPAL APPROVED — <b>${approvedQty} of ${o.qty}</b> — ${toCaps(o.teacher)} — ${toCaps(o.title)}<br>Librarian can now issue up to <b>${approvedQty}</b>.</div>`;
-  renderAll();
-}
-async function rejectOrder(id){
-  let o=orders.find(x=>String(x.id)===String(id)); if(!o) return;
-  if(!confirm(`❌ PRINCIPAL REJECT?\n\nTeacher: ${o.teacher}\nTitle: ${o.title} — ${o.qty}x\n\nLibrarian CANNOT issue.`)) return;
-  o.approvedQty=0; o.issuedQty=0; o.status='REJECTED'; o.approvedBy=toCaps(user?.name||'PRINCIPAL WHS');
-  try{ await rtdb.ref('orders/'+mySchoolId+'/'+id).update({approvedQty:0,issuedQty:0,status:'REJECTED',approvedBy:o.approvedBy}); }catch(e){}
-  document.getElementById('pendingMsg').innerHTML=`<div class="warn">❌ PRINCIPAL REJECTED — ${toCaps(o.teacher)} — ${toCaps(o.title)}</div>`;
-  renderAll();
-}
-async function overrideQty(id){
-  let o=orders.find(x=>String(x.id)===String(id)); if(!o) return;
-  let input=document.getElementById('changeQty_'+id);
-  let newQty=input?parseInt(input.value||'0',10):0;
-  if(isNaN(newQty)||newQty<0||newQty>o.qty){ alert('Approved Qty must be 0 to '+o.qty); return; }
-  if(newQty < (o.issuedQty||0)){ alert('Cannot set Approved to '+newQty+' — Already issued '+o.issuedQty+'.\n\nApproved must be ≥ Issued.'); return; }
-  let action=newQty===0?'REJECT (Override HOD)':'OVERRIDE Approved Qty';
-  if(!confirm(`🏫 PRINCIPAL ${action}?\n\nOrder: ${o.teacher} — ${o.title}\nWas: Approved ${o.approvedQty} by ${o.approvedBy||'—'} — Issued ${o.issuedQty}\nNew: Approved ${newQty} — Remaining ${newQty - o.issuedQty}\n\nThis OVERRIDES HOD decision.`)) return;
-  o.approvedQty=newQty;
-  o.status=newQty===0?'REJECTED':(o.issuedQty===0?'APPROVED':(remaining(o)===0?'FULLY ISSUED':'PARTIALLY ISSUED'));
-  o.approvedBy=toCaps(user?.name||'PRINCIPAL WHS');
-  try{ await rtdb.ref('orders/'+mySchoolId+'/'+id).update({approvedQty:newQty,status:o.status,approvedBy:o.approvedBy}); }catch(e){}
-  renderAll();
-}
-function renderDecided(){
-  let q=toCaps(document.getElementById('searchDecided').value||'');
-  let fSub=document.getElementById('filterSubject').value;
-  let f=document.getElementById('filterDecided').value;
-  let list=orders.filter(o=>o.status!=='PENDING').filter(o=>{ if(fSub && toCaps(o.subject)!==fSub) return false; if(f && o.status!==f) return false; if(q && !(toCaps(o.teacher)+' '+toCaps(o.title)+' '+toCaps(o.subject)).includes(q)) return false; return true; });
-  document.getElementById('decidedInfo').innerHTML=`Showing <b>${list.length}</b> decided orders. Change Approved Qty to <b>OVERRIDE HOD</b> — Set to 0 to Reject an HOD-approved order. Cannot go below Issued Qty.`;
-  document.getElementById('decidedTable').innerHTML=list.length?list.map(o=>{
-    let pill=o.status==='APPROVED'?'pill-approved':o.status==='PARTIALLY ISSUED'?'pill-partial':o.status==='FULLY ISSUED'?'pill-full':'pill-rejected';
-    return `<tr><td><b>${toCaps(o.teacher)}</b><br>${toCaps(o.subject)}</td><td><b>${toCaps(o.title)}</b><br>${toCaps(o.className)}</td><td>${o.qty}</td><td><b>${o.approvedQty}</b></td><td>${o.issuedQty}</td><td>${remaining(o)}</td><td><span class="pill ${pill}">${toCaps(o.status)}</span><br><small>by ${toCaps(o.approvedBy||'')}</small></td><td><input class="qty-input" id="changeQty_${o.id}" type="number" value="${o.approvedQty}" min="0" max="${o.qty}"> <button class="btn btn-purple" onclick="overrideQty('${o.id}')">🏫 OVERRIDE</button></td></tr>`;
-  }).join(''):`<tr><td colspan="8" style="text-align:center;padding:20px">No decided orders yet.</td></tr>`;
+function exportCSV(){
+  let rows=[['LEARNER','CLASS','GRADE','PHASE','BOOK','SUBJECT','TEACHER','STATUS']];
+  issues.forEach(i=>rows.push([i.learnerName,i.className,i.grade,phaseOf(i.grade),i.title,i.subject,i.teacher,i.status]));
+  let csv=rows.map(r=>r.join(',')).join('\n'); let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='PRINCIPAL-OVERVIEW.csv'; a.click();
 }
 loadAll();
 </script></body></html>
