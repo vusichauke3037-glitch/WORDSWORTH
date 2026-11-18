@@ -1,79 +1,177 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Manuals 1-9 - Makhanani LTSM 2.0</title>
+<title>Manuals - Makhanani LTSM 2.0 - CAPS Grade 4-12</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+    authDomain: "makhanani-ltsm.firebaseapp.com",
+    databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+    projectId: "makhanani-ltsm",
+    storageBucket: "makhanani-ltsm.firebasestorage.app",
+    messagingSenderId: "247180363183",
+    appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+    measurementId: "G-PEST1XFCR8"
+  };
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+  function toArray(v){ if(!v) return []; if(Array.isArray(v)) return v; if(typeof v==='string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;}); return []; }
+  function getCurrentUser(){
+    return new Promise(function(res){
+      auth.onAuthStateChanged(function(u){
+        if(!u) return res(null);
+        db.ref('users/'+u.uid).once('value').then(function(s){
+          var d=s.val()||{}; d.uid=u.uid; d.email=u.email;
+          d.classes=toArray(d.classes||d.className||d.class); d.subjects=toArray(d.subjects||d.subject); d.grades=toArray(d.grades||d.grade);
+          res(d);
+        }).catch(function(){ res({uid:u.uid, email:u.email, classes:[], subjects:[], grades:[]}); });
+      });
+    });
+  }
+</script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
-header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
-header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:900px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-h2{margin:0 0 10px;font-size:16px}h3{margin:14px 0 6px;font-size:15px}
-label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
-.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
+header{background:#0a1f4d;color:#fff;padding:16px 12px;text-align:center;border-bottom:4px solid #d4af37}
+header h1{margin:0;font-size:22px}header p{margin:6px 0 0;font-size:12px;color:#d4af37}
+.wrap{max-width:980px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
+h2{margin:0 0 10px;font-size:17px}h3{margin:16px 0 6px;font-size:14px;background:#0a1f4d;color:#fff;padding:8px;border-radius:8px}
+.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.manual{border:2px solid #e2e8f0;border-radius:12px;padding:14px;margin-top:12px}.manual.locked{opacity:.6;background:#f8fafc}.manual h3{margin:0 0 8px}.manual p,.manual li{font-size:13px;line-height:1.7}.manual ul{margin:6px 0;padding-left:18px}
+.step{background:#f8fafc;border-left:5px solid #0a1f4d;padding:10px;margin:8px 0;font-size:13px;line-height:1.7;border-radius:0 8px 8px 0}
+.step b{color:#0a1f4d}.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
+.toc button{text-align:left;width:100%;margin-bottom:8px}
 @media(max-width:700px){.row{flex-direction:column}}
-@media print{header,.no-print{display:none!important}.wrap{max-width:100%}.manual{break-inside:avoid}}
+@media print{ header,.no-print{display:none!important} body{background:#fff} .card{box-shadow:none;border:1px solid #000} }
 </style></head>
 <body>
-<header><h1>📖 MANUALS 1-9 — MAKHANANI LTSM 2.0 — V2.22</h1><p>USER GUIDE + FOUNDER + TEACHER + MARKETING + FINANCIAL + EMPLOYMENT + LIBRARIAN + HOD + PRINCIPAL — RETRIEVAL % + SUBSCRIPTIONS</p>
-<div id="taskbar"></div><script src="nav.js"></script>
-</header>
+<header><h1>📖 MANUALS — MAKHANANI LTSM 2.0</h1><p>CAPS — GRADE 4 TO 12 — FIREBASE V2.29 — HOW TO USE EVERY PAGE — FOR EVERY ROLE</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I</h2>
-<div class="info" id="whoAmI">Loading...</div>
-<script>
-try{
-  var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-  if(_u && _u.email){
-    var _r=String(_u.role||'').toUpperCase();
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_r+' — RANK '+_u.rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
-    window._MANUAL_ROLE=_r; window._MANUAL_RANK=Number(_u.rank||0);
-  } else { document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; window._MANUAL_ROLE=''; window._MANUAL_RANK=0; }
-}catch(e){ document.getElementById('whoAmI').innerHTML='Error: '+e.message; }
-</script>
-<div class="row no-print"><button class="btn btn-green" onclick="window.print()">🖨️ PRINT ALL MANUALS 1-9</button></div>
-<div class="row no-print"><button class="btn btn-gold" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-teal" onclick="go('subscriptions.html')">💰 SUBSCRIPTIONS →</button></div>
-<div class="info" id="lockMsg">🔒 Restricted: Manuals 2, 4, 5, 6 are <b>Super Admin Only — Rank 6</b>. If you are not Super Admin you will see 🔒 LOCKED. This is correct.</div>
+<div class="card"><h2>👤 Who Am I</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
+
+<div class="card no-print"><h2>📑 Jump To Manual</h2><div class="row toc">
+<button class="btn btn-green" onclick="show('m-start')">🚀 1. START HERE — FIRST TIME</button>
+<button class="btn btn-gold" onclick="show('m-admin')">👑 2. SUPER ADMIN / PRINCIPAL</button>
+<button class="btn btn-gold" onclick="show('m-users')">👥 3. USERS — ADD / EDIT</button>
+<button class="btn btn-green" onclick="show('m-teacher')">👩‍🏫 4. TEACHER</button>
+<button class="btn btn-orange" onclick="show('m-hod')">📚 5. HOD — MULTI SUBJECT</button>
+<button class="btn btn-teal" onclick="show('m-lib')">📖 6. LIBRARIAN</button>
+<button class="btn btn-purple" onclick="show('m-principal')">🏫 7. PRINCIPAL</button>
+<button class="btn btn-grey" onclick="show('m-fix')">🛠️ 8. FIXES — ERRORS</button>
+</div><div class="row"><button class="btn btn-grey" onclick="window.print()">🖨️ PRINT ALL MANUALS</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
+
+<!-- START -->
+<div class="card manual" id="m-start"><h2>🚀 1. START HERE — FIRST TIME — 5 MINUTES</h2>
+<h3>What Is Makhanani LTSM 2.0?</h3><div class="info">System to request, approve, and track LTSM / Textbooks / Workbooks for <b>Grade 4 to 12</b>, <b>ALL CAPS Subjects</b>, Classes <b>A to J</b>. Teacher requests → HOD approves → Librarian issues → Principal / Super Admin sees all.</div>
+<h3>Flow — In Order</h3>
+<div class="step"><b>Step 1:</b> Super Admin creates Users in <b>USERS</b> page — Teacher, HOD, Librarian, Principal.</div>
+<div class="step"><b>Step 2:</b> Teacher logs in → <b>TEACHER</b> → Picks <b>1 CAPS Subject + 1 Class (Grade 4-12)</b> → Types Book → Submit.</div>
+<div class="step"><b>Step 3:</b> HOD logs in → <b>HOD</b> → Sees only <b>YOUR Subjects + YOUR Classes</b> → Approve / Reject.</div>
+<div class="step"><b>Step 4:</b> Librarian logs in → <b>LIBRARIAN</b> → Sees Approved → Issues books → Marks ISSUED.</div>
+<div class="step"><b>Step 5:</b> Principal / Super Admin → <b>HOME / PRINCIPAL</b> → Sees ALL Grades 4-12 + ALL Subjects + Counts.</div>
+<h3>Grades + Phases</h3><table><tr><th>Phase</th><th>Grades</th><th>Classes</th><th>Example Subjects</th></tr><tr><td>INTERMEDIATE</td><td>4,5,6</td><td>4A-4J, 5A-5J, 6A-6J</td><td>ENGLISH HOME LANGUAGE, MATHEMATICS GRADE 4-6, NATURAL SCIENCES AND TECHNOLOGY, SOCIAL SCIENCES, LIFE SKILLS</td></tr><tr><td>SENIOR</td><td>7,8,9</td><td>7A-7J, 8A-8J, 9A-9J</td><td>ENGLISH, AFRIKAANS, MATHEMATICS, NATURAL SCIENCES, SOCIAL SCIENCES, TECHNOLOGY, ECONOMIC AND MANAGEMENT SCIENCES</td></tr><tr><td>FET</td><td>10,11,12</td><td>10A-10J, 11A-11J, 12A-12J</td><td>MATHEMATICS, PHYSICAL SCIENCES, LIFE SCIENCES, ACCOUNTING, BUSINESS STUDIES, GEOGRAPHY, HISTORY</td></tr></table>
+<h3>Ranks — Who Can Do What?</h3><table><tr><th>Role</th><th>Rank</th><th>Subjects</th><th>Classes</th><th>Can Do</th></tr><tr><td>TEACHER</td><td>2</td><td>1 Only</td><td>Multi — Ticked for them</td><td>Request LTSM</td></tr><tr><td>LIBRARIAN</td><td>3</td><td>ALL</td><td>ALL 90</td><td>Issue Books</td></tr><tr><td>HOD</td><td>4</td><td><b>MULTI</b></td><td><b>MULTI</b></td><td>Approve own Subjects/Classes</td></tr><tr><td>PRINCIPAL</td><td>5</td><td>ALL</td><td>ALL 90</td><td>Approve All + Add Users</td></tr><tr><td>SUPER_ADMIN</td><td>6</td><td>ALL</td><td>ALL 90</td><td>Everything + Add Users</td></tr></table>
 </div>
 
-<div class="card"><h2>📖 All Manuals 1-9</h2>
-<label>Search Manuals *</label><input id="searchManual" placeholder="Type e.g. TEACHER, RETRIEVAL, LIBRARIAN..." oninput="filterManuals()">
-<div id="manualsList"></div>
+<!-- ADMIN -->
+<div class="card manual" id="m-admin" style="display:none"><h2>👑 2. SUPER ADMIN / PRINCIPAL MANUAL</h2>
+<div class="step"><b>1. Login:</b> Go to <b>login.html</b> → Enter your Email + Password → You go to <b>HOME</b>.</div>
+<div class="step"><b>2. HOME:</b> Check <b>Welcome VUSI CHAUKE — SUPER_ADMIN — RANK 6</b> + <b>DEBUG: ✅ Firebase Live</b>. If you see <b>classes.join is not a function</b>, go to USERS → EDIT yourself → Tick ALL SUBJECTS + ALL 90 CLASSES → UPDATE.</div>
+<div class="step"><b>3. Add Users:</b> Tap <b>USERS →</b> → Fill form → Save. After each save, Firebase logs you out of new user — Login again as YOU. This is normal.</div>
+<div class="step"><b>4. Check All:</b> HOME shows Total Users + Total Requests + Pending. PRINCIPAL page shows ALL Grades 4-12.</div>
+<div class="warn">⚠️ Never share your Super Admin password. If you forget it, reset in Firebase Console → Authentication.</div>
 </div>
-<div class="card no-print"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
+
+<!-- USERS -->
+<div class="card manual" id="m-users" style="display:none"><h2>👥 3. USERS — ADD / EDIT MANUAL — GRADE 4-12 + ALL CAPS</h2>
+<h3>Add New Teacher — Example</h3>
+<div class="step"><b>1.</b> Name: <b>MR DLAMINI</b> → Email: <b>dlamini@wordsworth.co.za</b> → Password: <b>123456</b> (min 6) → Role: <b>TEACHER</b> → Rank auto <b>2</b></div>
+<div class="step"><b>2.</b> Subjects: Tick <b>1 ONLY</b> — e.g. <b>MATHEMATICS</b>. Teacher = 1 Subject. If teacher teaches 2 subjects, make them HOD.</div>
+<div class="step"><b>3.</b> Classes: Tick <b>Grade 10 A-J ✅</b> + <b>Grade 11 A-J ✅</b> → Grades auto = 10,11 → Save.</div>
+<h3>Add New HOD — Example — MULTI SUBJECT</h3>
+<div class="step"><b>1.</b> Name: <b>MRS NKAMBULE</b> → Email → Password → Role: <b>HOD</b> → Rank auto <b>4</b></div>
+<div class="step"><b>2.</b> Subjects: Tick <b>MULTIPLE</b> — e.g. <b>MATHEMATICS + PHYSICAL SCIENCES</b> — HOD can tick many.</div>
+<div class="step"><b>3.</b> Classes: Tick <b>Grades 10-12 ✅</b> → Grades auto = 10,11,12 → Save.</div>
+<div class="step"><b>Saved As:</b> <code>subjects: ["MATHEMATICS","PHYSICAL SCIENCES"], grades: ["10","11","12"], classes: ["10A","10B",...]</code></div>
+<h3>Edit User</h3>
+<div class="step">In All Users table → Click <b>✏️ EDIT</b> → Form fills at top → Tick / Untick Subjects / Classes → <b>UPDATE USER</b> → Leave Password blank to keep old password. Email cannot change.</div>
+<h3>Search / Filter</h3>
+<div class="step">Type name in Search → Or Filter Role = <b>HOD</b> → Filter Grade = <b>10</b> → Table shows only matching users.</div>
+</div>
+
+<!-- TEACHER -->
+<div class="card manual" id="m-teacher" style="display:none"><h2>👩‍🏫 4. TEACHER MANUAL</h2>
+<div class="step"><b>1. Login</b> → HOME shows: <b>TEACHER — MATHEMATICS</b> + Your Classes.</div>
+<div class="step"><b>2. Tap TEACHER →</b> → Subject dropdown is <b>LOCKED</b> to YOUR CAPS Subject — e.g. MATHEMATICS. You cannot pick another subject.</div>
+<div class="step"><b>3. Class dropdown</b> shows <b>ONLY YOUR Classes</b> — e.g. GRADE 10 10A — FET, GRADE 10 10B — FET. If dropdown says <b>NO CLASSES ASSIGNED</b>, ask Admin to tick classes for you in USERS.</div>
+<div class="step"><b>4. Type Book:</b> e.g. <b>MATHEMATICS GRADE 10 LEARNER BOOK</b> → Qty: <b>30</b> → <b>SUBMIT REQUEST</b> → You see <b>✅ Request Saved</b>.</div>
+<div class="step"><b>5. Track:</b> Below form, <b>My Requests</b> table shows Status: PENDING → APPROVED → ISSUED.</div>
+<div class="warn">Teacher Rule: 1 Subject only. If you need 2 subjects, tell Admin to change you to HOD.</div>
+</div>
+
+<!-- HOD -->
+<div class="card manual" id="m-hod" style="display:none"><h2>📚 5. HOD MANUAL — MULTI SUBJECT + MULTI CLASS</h2>
+<div class="step"><b>1. Login</b> → HOME → Tap <b>HOD — MATHEMATICS + PHYSICAL SCIENCES →</b></div>
+<div class="step"><b>2. Heading:</b> Top shows <b>📚 HOD — MATHEMATICS + PHYSICAL SCIENCES — MAKHANANI LTSM 2.0</b> — All your CAPS subjects, not 1.</div>
+<div class="step"><b>3. Select Subjects:</b> Box 1 — Tick / Untick — e.g. Untick PHYSICAL SCIENCES → Heading becomes <b>HOD — MATHEMATICS</b> → Requests filter to MATHEMATICS only. Tick it back → Both show.</div>
+<div class="step"><b>4. Select Grades / Classes:</b> Box 2 — Tick <b>Grades 10-12 ✅</b> or single classes — e.g. 10A, 10B — Requests filter to those classes only.</div>
+<div class="step"><b>5. Approve:</b> In Requests table, approve only requests where Subject + Class match YOUR subjects + classes. You will NOT see other HOD's subjects.</div>
+<div class="info">Example: HOD for MATHEMATICS + PHYSICAL SCIENCES, Grades 10,11,12 will see: MATHEMATICS 10A, PHYSICAL SCIENCES 11B — But NOT ENGLISH 10A.</div>
+</div>
+
+<!-- LIBRARIAN -->
+<div class="card manual" id="m-lib" style="display:none"><h2>📖 6. LIBRARIAN MANUAL</h2>
+<div class="step"><b>1. Login</b> → Tap <b>LIBRARIAN →</b></div>
+<div class="step"><b>2. You see ALL</b> Grades 4-12 + ALL CAPS Subjects — Because Librarian = ALL.</div>
+<div class="step"><b>3. Filter</b> by Subject / Grade / Class to find Approved requests.</div>
+<div class="step"><b>4. Issue:</b> When you give books to teacher, mark request as <b>ISSUED</b> + Enter Qty Issued.</div>
+<div class="step"><b>5. Stock:</b> Check stock before issuing. If stock is 0, do NOT issue — Tell HOD / Admin to order.</div>
+</div>
+
+<!-- PRINCIPAL -->
+<div class="card manual" id="m-principal" style="display:none"><h2>🏫 7. PRINCIPAL MANUAL</h2>
+<div class="step"><b>1. Login</b> → HOME → Tap <b>PRINCIPAL →</b></div>
+<div class="step"><b>2. You see ALL</b> — ALL Grades 4-12, ALL CAPS Subjects, ALL Teachers, ALL Requests.</div>
+<div class="step"><b>3. Approve:</b> You can approve any request, any subject, any grade.</div>
+<div class="step"><b>4. Add Users:</b> Like Super Admin, you can add Users — Tap <b>USERS →</b></div>
+<div class="step"><b>5. Reports:</b> Check Counts: Total Users, Total Requests, Pending — Use for SMT meetings.</div>
+</div>
+
+<!-- FIX -->
+<div class="card manual" id="m-fix" style="display:none"><h2>🛠️ 8. FIXES — COMMON ERRORS</h2>
+<table><tr><th>Error You See</th><th>What It Means</th><th>Fix — 30 Sec</th></tr>
+<tr><td><b>classes.join is not a function</b></td><td>Your user was saved as String "ALL", not Array</td><td>Go to USERS → EDIT yourself → Tick ALL SUBJECTS + ALL 90 CLASSES → UPDATE</td></tr>
+<tr><td><b>getCurrentUser is not defined</b></td><td>Old file trying to load firebase.js</td><td>Re-upload V2.29 file — It has Firebase INSIDE, no firebase.js needed</td></tr>
+<tr><td><b>Not logged in — Go to login.html</b></td><td>Session expired</td><td>Go to login.html → Login again</td></tr>
+<tr><td><b>NO CLASSES ASSIGNED</b> in Teacher</td><td>Admin did not tick classes for teacher</td><td>Admin: USERS → EDIT teacher → Tick Classes → UPDATE</td></tr>
+<tr><td><b>Email already exists</b></td><td>Email already in Firebase Auth</td><td>Delete user in Firebase Console → Authentication → Try again, or EDIT existing user</td></tr>
+<tr><td><b>Page shows old version</b></td><td>Browser cache</td><td>Add <b>?v=999</b> to URL — e.g. index.html?v=999 — Or hard refresh</td></tr>
+<tr><td><b>After Save, I am logged in as new user</b></td><td>Normal Firebase behaviour</td><td>Logout → Login again as YOU (Super Admin)</td></tr>
+</table>
+<h3>After Every Upload — Always Do This</h3><div class="step"><b>1.</b> Wait 60 seconds → <b>2.</b> Open page with <b>?v=999</b> → <b>3.</b> Check top says <b>V2.29</b> → <b>4.</b> Check DEBUG says <b>✅ Firebase Live</b></div>
+</div>
+
+<div class="card"><div class="row"><button class="btn btn-grey" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-green" onclick="go('teacher.html')">👩‍🏫 TEACHER →</button><button class="btn btn-orange" onclick="go('hod.html')">📚 HOD →</button><button class="btn btn-teal" onclick="go('librarian.html')">📖 LIBRARIAN →</button></div></div>
 </div>
 <script>
 function go(p){ window.location.href=p; }
-function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
-var MANUALS=[
-{ n:1, title:'1 — USER GUIDE — Everyone', lock:false, body:'<p><b>Login:</b> login.html → Email + Password → You land on HOME.</p><ul><li><b>Teacher (Rank 2):</b> Issue books to MY class only.</li><li><b>Librarian (Rank 3):</b> Add books, Return books, see all issues.</li><li><b>HOD (Rank 4):</b> Approve / Reject HOD approvals for MY subject.</li><li><b>Principal (Rank 5):</b> Final Approve, see whole school.</li><li><b>Super Admin (Rank 6):</b> View-Only everywhere, manages Users + Cleanup.</li></ul><p><b>Retrieval % = (Returned / Issued) x 100 — Target 100%.</b></p>'},
-{ n:2, title:'2 — FOUNDER MANUAL — Super Admin Only', lock:true, body:'<p><b>Founder: MR VUSI CHAUKE.</b></p><ul><li>Create Users only in users.html — Role + Rank must match.</li><li>Never give Rank 6 to anyone else.</li><li>Use Cleanup only when data is test / wrong.</li><li>Check Firebase daily — Issues must not stay ISSUED forever.</li><li>Price: See Subscriptions — Demo / Starter / Standard / Premium.</li></ul>'},
-{ n:3, title:'3 — TEACHER MANUAL — Teacher', lock:false, body:'<p><b>Teacher does:</b> Issue book to learner in MY class.</p><ul><li>Open teacher.html → Pick Learner (MY class) → Pick Book → ISSUE.</li><li>Teacher CANNOT issue to another class.</li><li>Check Retrieval % daily — Chase learners with books STILL OUT.</li><li>If you are Super Admin you see VIEW-ONLY — Login as Teacher to Issue.</li></ul>'},
-{ n:4, title:'4 — MARKETING MANUAL — Super Admin Only', lock:true, body:'<p><b>Sell:</b> Demo first, then Starter / Standard / Premium.</p><ul><li>Show Retrieval % — Principals love 100% retrieval.</li><li>WhatsApp: 078 023 3263 — Send Subscriptions link.</li><li>Offer 14-day Demo — No setup fee.</li><li>Close: Setup + Monthly OR Once-Off / Year.</li></ul>'},
-{ n:5, title:'5 — FINANCIAL MANUAL — Super Admin Only', lock:true, body:'<p><b>Prices:</b> Demo R0, Starter Setup R499 + R299/mo, Standard Setup R999 + R599/mo, Premium Setup R1999 + R999/mo.</p><ul><li>Once-Off / Year = Save 2 months.</li><li>Record every payment — Name + School + Package + Date.</li><li>No payment = No activation.</li></ul>'},
-{ n:6, title:'6 — EMPLOYMENT MANUAL — Super Admin Only', lock:true, body:'<p><b>Staff rules:</b></p><ul><li>Role + Rank must match — Teacher=2, Librarian=3, HOD=4, Principal=5, Super Admin=6.</li><li>One login per person — Never share passwords.</li><li>Leaving staff: Change password + Remove in Users immediately.</li></ul>'},
-{ n:7, title:'7 — LIBRARIAN MANUAL — Librarian', lock:false, body:'<p><b>Librarian does:</b> Add books, Return books.</p><ul><li>Open librarian.html → Add Book → Title + Subject + Class.</li><li>Return: Find ISSUED issue → Tap RETURN.</li><li>Librarian sees ALL classes, ALL subjects in school.</li></ul>'},
-{ n:8, title:'8 — HOD MANUAL — HOD', lock:false, body:'<p><b>HOD does:</b> Approve / Reject for MY subject only.</p><ul><li>Open hod.html → See Pending for MY subject → APPROVE or REJECT.</li><li>HOD CANNOT approve another subject.</li><li>Check KPIs: Pending / Approved / Rejected / Retrieval %.</li></ul>'},
-{ n:9, title:'9 — PRINCIPAL MANUAL — Principal + Subscriptions', lock:false, body:'<p><b>Principal does:</b> Final Approve for whole school.</p><ul><li>Open principal.html → See HOD-Approved → FINAL APPROVE.</li><li>Principal sees whole school Retrieval %.</li><li>Subscriptions: See subscriptions.html for packages.</li></ul>'}
-];
-function isLocked(m){ if(!m.lock) return false; return !(window._MANUAL_ROLE==='SUPER_ADMIN' && window._MANUAL_RANK===6); }
-function renderManuals(filter){
-  var q=(filter||'').toUpperCase();
-  var html='';
-  MANUALS.forEach(function(m){
-    if(q && (m.title.toUpperCase().indexOf(q)===-1 && m.body.toUpperCase().indexOf(q)===-1)) return;
-    var locked=isLocked(m);
-    html+='<div class="manual '+(locked?'locked':'')+'"><h3>'+m.title+' '+(locked?'🔒 LOCKED — Super Admin Only':'✅ OPEN')+'</h3>'+(locked?'<p>🔒 This manual is locked. Login as Super Admin Rank 6 to read it.</p>':m.body)+'</div>';
-  });
-  document.getElementById('manualsList').innerHTML=html||'<div class="warn">No manual matches your search.</div>';
-  var lm=document.getElementById('lockMsg');
-  if(window._MANUAL_ROLE==='SUPER_ADMIN') lm.innerHTML='✅ You are SUPER ADMIN — All 9 manuals unlocked.';
-  else lm.innerHTML='🔒 Restricted: Manuals 2, 4, 5, 6 are <b>Super Admin Only — Rank 6</b>. You are '+window._MANUAL_ROLE+' — You will see 🔒 LOCKED. This is correct.';
+function show(id){ document.querySelectorAll('.manual').forEach(function(el){ el.style.display='none'; }); document.getElementById(id).style.display='block'; window.scrollTo({top:200,behavior:'smooth'}); }
+async function init(){
+  try{
+    var u = await getCurrentUser();
+    if(!u || !u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in — Manuals still readable below.'; document.getElementById('debug').innerHTML='DEBUG: Not logged in — Manuals work without login.'; return; }
+    var subs=toArray(u.subjects); var cls=toArray(u.classes); var gr=toArray(u.grades);
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(u.name||'').toUpperCase()+'</b> — '+u.role+' — RANK '+u.rank+' — Subjects: '+subs.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+' — Grades: '+gr.join(', ')+' — Classes: '+cls.join(', ');
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+u.email;
+    // Auto-open manual for their role
+    if(u.role==='TEACHER') show('m-teacher'); else if(u.role==='HOD') show('m-hod'); else if(u.role==='LIBRARIAN') show('m-lib'); else if(u.role==='PRINCIPAL') show('m-principal'); else if(u.role==='SUPER_ADMIN') show('m-admin'); else show('m-start');
+  }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
 }
-function filterManuals(){ renderManuals(document.getElementById('searchManual').value); }
-renderManuals('');
+init();
 </script></body></html>
