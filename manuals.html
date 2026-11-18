@@ -1,36 +1,16 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Manuals - Makhanani LTSM 2.0 - CAPS Grade 4-12</title>
+<title>Manuals - Makhanani LTSM 2.0 - V2.30 Phases Fixed</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
-    authDomain: "makhanani-ltsm.firebaseapp.com",
-    databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
-    projectId: "makhanani-ltsm",
-    storageBucket: "makhanani-ltsm.firebasestorage.app",
-    messagingSenderId: "247180363183",
-    appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
-    measurementId: "G-PEST1XFCR8"
-  };
+  const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
+  const auth = firebase.auth(); const db = firebase.database();
   function toArray(v){ if(!v) return []; if(Array.isArray(v)) return v; if(typeof v==='string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;}); return []; }
-  function getCurrentUser(){
-    return new Promise(function(res){
-      auth.onAuthStateChanged(function(u){
-        if(!u) return res(null);
-        db.ref('users/'+u.uid).once('value').then(function(s){
-          var d=s.val()||{}; d.uid=u.uid; d.email=u.email;
-          d.classes=toArray(d.classes||d.className||d.class); d.subjects=toArray(d.subjects||d.subject); d.grades=toArray(d.grades||d.grade);
-          res(d);
-        }).catch(function(){ res({uid:u.uid, email:u.email, classes:[], subjects:[], grades:[]}); });
-      });
-    });
-  }
+  function getPhase(g){ g=Number(String(g||'').replace(/[^0-9]/g,'')); if(g>=4&&g<=6) return 'INTERMEDIATE PHASE'; if(g>=7&&g<=9) return 'SENIOR PHASE'; if(g>=10&&g<=12) return 'FET PHASE'; return ''; }
+  function getCurrentUser(){ return new Promise(function(res){ auth.onAuthStateChanged(function(u){ if(!u) return res(null); db.ref('users/'+u.uid).once('value').then(function(s){ var d=s.val()||{}; d.uid=u.uid; d.email=u.email; d.classes=toArray(d.classes||d.className||d.class); d.subjects=toArray(d.subjects||d.subject); d.grades=toArray(d.grades||d.grade); d.phases=toArray(d.phases||d.phase); res(d); }).catch(function(){ res({uid:u.uid, email:u.email, classes:[], subjects:[], grades:[], phases:[]}); }); }); }); }
 </script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
@@ -44,17 +24,16 @@ h2{margin:0 0 10px;font-size:17px}h3{margin:16px 0 6px;font-size:14px;background
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
 .step{background:#f8fafc;border-left:5px solid #0a1f4d;padding:10px;margin:8px 0;font-size:13px;line-height:1.7;border-radius:0 8px 8px 0}
-.step b{color:#0a1f4d}.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
 .toc button{text-align:left;width:100%;margin-bottom:8px}
 @media(max-width:700px){.row{flex-direction:column}}
-@media print{ header,.no-print{display:none!important} body{background:#fff} .card{box-shadow:none;border:1px solid #000} }
+@media print{ header,.no-print{display:none!important} body{background:#fff} }
 </style></head>
 <body>
-<header><h1>📖 MANUALS — MAKHANANI LTSM 2.0</h1><p>CAPS — GRADE 4 TO 12 — FIREBASE V2.29 — HOW TO USE EVERY PAGE — FOR EVERY ROLE</p><div id="taskbar"></div><script src="nav.js"></script></header>
+<header><h1>📖 MANUALS — MAKHANANI LTSM 2.0 — V2.30</h1><p>4-6 INTERMEDIATE • 7-9 SENIOR PHASE • 10-12 FET • ALL CAPS SUBJECTS • GRADE 4-12</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
 <div class="card"><h2>👤 Who Am I</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
-
 <div class="card no-print"><h2>📑 Jump To Manual</h2><div class="row toc">
 <button class="btn btn-green" onclick="show('m-start')">🚀 1. START HERE — FIRST TIME</button>
 <button class="btn btn-gold" onclick="show('m-admin')">👑 2. SUPER ADMIN / PRINCIPAL</button>
@@ -66,96 +45,70 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 <button class="btn btn-grey" onclick="show('m-fix')">🛠️ 8. FIXES — ERRORS</button>
 </div><div class="row"><button class="btn btn-grey" onclick="window.print()">🖨️ PRINT ALL MANUALS</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
 
-<!-- START -->
 <div class="card manual" id="m-start"><h2>🚀 1. START HERE — FIRST TIME — 5 MINUTES</h2>
-<h3>What Is Makhanani LTSM 2.0?</h3><div class="info">System to request, approve, and track LTSM / Textbooks / Workbooks for <b>Grade 4 to 12</b>, <b>ALL CAPS Subjects</b>, Classes <b>A to J</b>. Teacher requests → HOD approves → Librarian issues → Principal / Super Admin sees all.</div>
+<h3>What Is Makhanani LTSM 2.0?</h3><div class="info">System to request, approve, and track LTSM / Textbooks for <b>Grade 4 to 12</b>, <b>ALL CAPS Subjects</b>, Classes <b>A to J</b>. Teacher requests → HOD approves → Librarian issues → Principal / Super Admin sees all.</div>
 <h3>Flow — In Order</h3>
-<div class="step"><b>Step 1:</b> Super Admin creates Users in <b>USERS</b> page — Teacher, HOD, Librarian, Principal.</div>
-<div class="step"><b>Step 2:</b> Teacher logs in → <b>TEACHER</b> → Picks <b>1 CAPS Subject + 1 Class (Grade 4-12)</b> → Types Book → Submit.</div>
-<div class="step"><b>Step 3:</b> HOD logs in → <b>HOD</b> → Sees only <b>YOUR Subjects + YOUR Classes</b> → Approve / Reject.</div>
-<div class="step"><b>Step 4:</b> Librarian logs in → <b>LIBRARIAN</b> → Sees Approved → Issues books → Marks ISSUED.</div>
-<div class="step"><b>Step 5:</b> Principal / Super Admin → <b>HOME / PRINCIPAL</b> → Sees ALL Grades 4-12 + ALL Subjects + Counts.</div>
-<h3>Grades + Phases</h3><table><tr><th>Phase</th><th>Grades</th><th>Classes</th><th>Example Subjects</th></tr><tr><td>INTERMEDIATE</td><td>4,5,6</td><td>4A-4J, 5A-5J, 6A-6J</td><td>ENGLISH HOME LANGUAGE, MATHEMATICS GRADE 4-6, NATURAL SCIENCES AND TECHNOLOGY, SOCIAL SCIENCES, LIFE SKILLS</td></tr><tr><td>SENIOR</td><td>7,8,9</td><td>7A-7J, 8A-8J, 9A-9J</td><td>ENGLISH, AFRIKAANS, MATHEMATICS, NATURAL SCIENCES, SOCIAL SCIENCES, TECHNOLOGY, ECONOMIC AND MANAGEMENT SCIENCES</td></tr><tr><td>FET</td><td>10,11,12</td><td>10A-10J, 11A-11J, 12A-12J</td><td>MATHEMATICS, PHYSICAL SCIENCES, LIFE SCIENCES, ACCOUNTING, BUSINESS STUDIES, GEOGRAPHY, HISTORY</td></tr></table>
-<h3>Ranks — Who Can Do What?</h3><table><tr><th>Role</th><th>Rank</th><th>Subjects</th><th>Classes</th><th>Can Do</th></tr><tr><td>TEACHER</td><td>2</td><td>1 Only</td><td>Multi — Ticked for them</td><td>Request LTSM</td></tr><tr><td>LIBRARIAN</td><td>3</td><td>ALL</td><td>ALL 90</td><td>Issue Books</td></tr><tr><td>HOD</td><td>4</td><td><b>MULTI</b></td><td><b>MULTI</b></td><td>Approve own Subjects/Classes</td></tr><tr><td>PRINCIPAL</td><td>5</td><td>ALL</td><td>ALL 90</td><td>Approve All + Add Users</td></tr><tr><td>SUPER_ADMIN</td><td>6</td><td>ALL</td><td>ALL 90</td><td>Everything + Add Users</td></tr></table>
-</div>
+<div class="step"><b>Step 1:</b> Super Admin creates Users in <b>USERS</b> — Teacher, HOD, Librarian, Principal.</div>
+<div class="step"><b>Step 2:</b> Teacher → <b>TEACHER</b> → Picks <b>1 CAPS Subject + 1 Class (Grade 4-12)</b> → Types Book → Submit.</div>
+<div class="step"><b>Step 3:</b> HOD → <b>HOD</b> → Sees only <b>YOUR Subjects + YOUR Classes</b> → Approve / Reject.</div>
+<div class="step"><b>Step 4:</b> Librarian → <b>LIBRARIAN</b> → Sees Approved → Issues → Marks ISSUED.</div>
+<div class="step"><b>Step 5:</b> Principal / Super Admin → <b>HOME / PRINCIPAL</b> → Sees ALL Grades 4-12 + ALL Subjects.</div>
+<h3>✅ CORRECT CAPS PHASES — LOCKED — V2.30</h3><table><tr><th>Phase</th><th>Grades</th><th>Classes</th><th>Example CAPS Subjects</th></tr><tr><td><b>INTERMEDIATE PHASE</b></td><td>4, 5, 6</td><td>4A-4J, 5A-5J, 6A-6J — 30 Classes</td><td>ENGLISH HOME LANGUAGE, AFRIKAANS FIRST ADDITIONAL LANGUAGE, MATHEMATICS GRADE 4-6, NATURAL SCIENCES AND TECHNOLOGY, SOCIAL SCIENCES, LIFE SKILLS</td></tr><tr><td><b>SENIOR PHASE</b></td><td>7, 8, 9</td><td>7A-7J, 8A-8J, 9A-9J — 30 Classes</td><td>ENGLISH, AFRIKAANS, MATHEMATICS, NATURAL SCIENCES, SOCIAL SCIENCES, TECHNOLOGY, ECONOMIC AND MANAGEMENT SCIENCES, LIFE ORIENTATION, CREATIVE ARTS</td></tr><tr><td><b>FET PHASE</b></td><td>10, 11, 12</td><td>10A-10J, 11A-11J, 12A-12J — 30 Classes</td><td>MATHEMATICS, MATHEMATICAL LITERACY, PHYSICAL SCIENCES, LIFE SCIENCES, ACCOUNTING, BUSINESS STUDIES, GEOGRAPHY, HISTORY</td></tr></table>
+<div class="warn"><b>⚠️ Remember:</b> 4-6 = INTERMEDIATE — NOT Senior. 7-9 = SENIOR PHASE — NOT FET. 10-12 = FET.</div>
+<h3>Ranks</h3><table><tr><th>Role</th><th>Rank</th><th>Subjects</th><th>Classes</th><th>Can Do</th></tr><tr><td>TEACHER</td><td>2</td><td>1 Only</td><td>Multi — Ticked</td><td>Request LTSM</td></tr><tr><td>LIBRARIAN</td><td>3</td><td>ALL</td><td>ALL 90</td><td>Issue Books</td></tr><tr><td>HOD</td><td>4</td><td><b>MULTI</b></td><td><b>MULTI</b></td><td>Approve own Subjects/Classes</td></tr><tr><td>PRINCIPAL</td><td>5</td><td>ALL</td><td>ALL 90</td><td>Approve All + Add Users</td></tr><tr><td>SUPER_ADMIN</td><td>6</td><td>ALL</td><td>ALL 90</td><td>Everything + Add Users</td></tr></table></div>
 
-<!-- ADMIN -->
 <div class="card manual" id="m-admin" style="display:none"><h2>👑 2. SUPER ADMIN / PRINCIPAL MANUAL</h2>
-<div class="step"><b>1. Login:</b> Go to <b>login.html</b> → Enter your Email + Password → You go to <b>HOME</b>.</div>
-<div class="step"><b>2. HOME:</b> Check <b>Welcome VUSI CHAUKE — SUPER_ADMIN — RANK 6</b> + <b>DEBUG: ✅ Firebase Live</b>. If you see <b>classes.join is not a function</b>, go to USERS → EDIT yourself → Tick ALL SUBJECTS + ALL 90 CLASSES → UPDATE.</div>
-<div class="step"><b>3. Add Users:</b> Tap <b>USERS →</b> → Fill form → Save. After each save, Firebase logs you out of new user — Login again as YOU. This is normal.</div>
-<div class="step"><b>4. Check All:</b> HOME shows Total Users + Total Requests + Pending. PRINCIPAL page shows ALL Grades 4-12.</div>
-<div class="warn">⚠️ Never share your Super Admin password. If you forget it, reset in Firebase Console → Authentication.</div>
-</div>
+<div class="step"><b>1. Login:</b> <b>login.html</b> → Email + Password → Auto-go to HOME (Super Admin) or PRINCIPAL page.</div>
+<div class="step"><b>2. HOME:</b> Check <b>Welcome VUSI CHAUKE — SUPER_ADMIN — RANK 6</b> + <b>DEBUG: ✅ Firebase Live</b> + Phases: <b>INT 4-6 • SEN 7-9 • FET 10-12</b>.</div>
+<div class="step"><b>3. Add Users:</b> Tap <b>USERS →</b> → Fill → Save. After save, Firebase logs you out of new user — Login again as YOU. Normal.</div>
+<div class="step"><b>4. Check All:</b> HOME shows Total Users + Total Requests + Pending. PRINCIPAL shows ALL Grades 4-12.</div></div>
 
-<!-- USERS -->
-<div class="card manual" id="m-users" style="display:none"><h2>👥 3. USERS — ADD / EDIT MANUAL — GRADE 4-12 + ALL CAPS</h2>
-<h3>Add New Teacher — Example</h3>
-<div class="step"><b>1.</b> Name: <b>MR DLAMINI</b> → Email: <b>dlamini@wordsworth.co.za</b> → Password: <b>123456</b> (min 6) → Role: <b>TEACHER</b> → Rank auto <b>2</b></div>
-<div class="step"><b>2.</b> Subjects: Tick <b>1 ONLY</b> — e.g. <b>MATHEMATICS</b>. Teacher = 1 Subject. If teacher teaches 2 subjects, make them HOD.</div>
-<div class="step"><b>3.</b> Classes: Tick <b>Grade 10 A-J ✅</b> + <b>Grade 11 A-J ✅</b> → Grades auto = 10,11 → Save.</div>
-<h3>Add New HOD — Example — MULTI SUBJECT</h3>
-<div class="step"><b>1.</b> Name: <b>MRS NKAMBULE</b> → Email → Password → Role: <b>HOD</b> → Rank auto <b>4</b></div>
-<div class="step"><b>2.</b> Subjects: Tick <b>MULTIPLE</b> — e.g. <b>MATHEMATICS + PHYSICAL SCIENCES</b> — HOD can tick many.</div>
-<div class="step"><b>3.</b> Classes: Tick <b>Grades 10-12 ✅</b> → Grades auto = 10,11,12 → Save.</div>
-<div class="step"><b>Saved As:</b> <code>subjects: ["MATHEMATICS","PHYSICAL SCIENCES"], grades: ["10","11","12"], classes: ["10A","10B",...]</code></div>
-<h3>Edit User</h3>
-<div class="step">In All Users table → Click <b>✏️ EDIT</b> → Form fills at top → Tick / Untick Subjects / Classes → <b>UPDATE USER</b> → Leave Password blank to keep old password. Email cannot change.</div>
-<h3>Search / Filter</h3>
-<div class="step">Type name in Search → Or Filter Role = <b>HOD</b> → Filter Grade = <b>10</b> → Table shows only matching users.</div>
-</div>
+<div class="card manual" id="m-users" style="display:none"><h2>👥 3. USERS — ADD / EDIT — GRADE 4-12 + ALL CAPS</h2>
+<h3>Add Teacher — Example</h3><div class="step"><b>1.</b> Name: <b>MR DLAMINI</b> → Email → Password 123456 → Role: <b>TEACHER</b> → Rank auto <b>2</b></div><div class="step"><b>2.</b> Subjects: Tick <b>1 ONLY</b> — e.g. <b>MATHEMATICS</b>. Teacher = 1 Subject.</div><div class="step"><b>3.</b> Classes: Tick <b>10-12 FET ✅</b> → Grades auto = 10,11,12 → Phases auto = FET PHASE → Save.</div>
+<h3>Add HOD — Example — MULTI</h3><div class="step"><b>1.</b> Name: <b>MRS NKAMBULE</b> → Role: <b>HOD</b> → Rank auto <b>4</b></div><div class="step"><b>2.</b> Subjects: Tick <b>MULTIPLE</b> — e.g. <b>MATHEMATICS + PHYSICAL SCIENCES</b></div><div class="step"><b>3.</b> Classes: Tick <b>4-6 INTERMEDIATE ✅</b> if HOD for Intermediate, or <b>7-9 SENIOR PHASE ✅</b>, or <b>10-12 FET ✅</b> → Save.</div>
+<h3>Add Intermediate Teacher — Example</h3><div class="step">Teacher for Grade 4-6: Tick Subject <b>ENGLISH HOME LANGUAGE</b> → Tick <b>4-6 INTERMEDIATE ✅</b> → Classes = 4A-6J → Phases = INTERMEDIATE PHASE. Dropdown will show <b>GRADE 4 4A — INTERMEDIATE PHASE</b>.</div>
+<h3>Edit User</h3><div class="step">In All Users → <b>✏️ EDIT</b> → Form fills → Tick / Untick → <b>UPDATE USER</b> → Leave Password blank to keep old. Email cannot change.</div></div>
 
-<!-- TEACHER -->
 <div class="card manual" id="m-teacher" style="display:none"><h2>👩‍🏫 4. TEACHER MANUAL</h2>
-<div class="step"><b>1. Login</b> → HOME shows: <b>TEACHER — MATHEMATICS</b> + Your Classes.</div>
-<div class="step"><b>2. Tap TEACHER →</b> → Subject dropdown is <b>LOCKED</b> to YOUR CAPS Subject — e.g. MATHEMATICS. You cannot pick another subject.</div>
-<div class="step"><b>3. Class dropdown</b> shows <b>ONLY YOUR Classes</b> — e.g. GRADE 10 10A — FET, GRADE 10 10B — FET. If dropdown says <b>NO CLASSES ASSIGNED</b>, ask Admin to tick classes for you in USERS.</div>
-<div class="step"><b>4. Type Book:</b> e.g. <b>MATHEMATICS GRADE 10 LEARNER BOOK</b> → Qty: <b>30</b> → <b>SUBMIT REQUEST</b> → You see <b>✅ Request Saved</b>.</div>
-<div class="step"><b>5. Track:</b> Below form, <b>My Requests</b> table shows Status: PENDING → APPROVED → ISSUED.</div>
-<div class="warn">Teacher Rule: 1 Subject only. If you need 2 subjects, tell Admin to change you to HOD.</div>
-</div>
+<div class="step"><b>1. Login</b> → Auto-go to TEACHER → Shows: <b>TEACHER — MATHEMATICS</b> + Your Phases.</div>
+<div class="step"><b>2. Subject</b> is <b>LOCKED</b> to YOUR CAPS Subject — e.g. MATHEMATICS. Cannot pick another.</div>
+<div class="step"><b>3. Class dropdown</b> shows <b>ONLY YOUR Classes</b> with correct Phase: <b>GRADE 4 4A — INTERMEDIATE PHASE</b> / <b>GRADE 8 8A — SENIOR PHASE</b> / <b>GRADE 11 11A — FET PHASE</b>. If <b>NO CLASSES ASSIGNED</b>, ask Admin to tick classes in USERS.</div>
+<div class="step"><b>4. Type Book:</b> e.g. <b>MATHEMATICS GRADE 10 LEARNER BOOK</b> → Qty 30 → <b>SUBMIT</b> → <b>✅ Request Saved</b>.</div>
+<div class="step"><b>5. Track:</b> My Requests shows Status: PENDING → APPROVED → ISSUED.</div></div>
 
-<!-- HOD -->
 <div class="card manual" id="m-hod" style="display:none"><h2>📚 5. HOD MANUAL — MULTI SUBJECT + MULTI CLASS</h2>
-<div class="step"><b>1. Login</b> → HOME → Tap <b>HOD — MATHEMATICS + PHYSICAL SCIENCES →</b></div>
-<div class="step"><b>2. Heading:</b> Top shows <b>📚 HOD — MATHEMATICS + PHYSICAL SCIENCES — MAKHANANI LTSM 2.0</b> — All your CAPS subjects, not 1.</div>
-<div class="step"><b>3. Select Subjects:</b> Box 1 — Tick / Untick — e.g. Untick PHYSICAL SCIENCES → Heading becomes <b>HOD — MATHEMATICS</b> → Requests filter to MATHEMATICS only. Tick it back → Both show.</div>
-<div class="step"><b>4. Select Grades / Classes:</b> Box 2 — Tick <b>Grades 10-12 ✅</b> or single classes — e.g. 10A, 10B — Requests filter to those classes only.</div>
-<div class="step"><b>5. Approve:</b> In Requests table, approve only requests where Subject + Class match YOUR subjects + classes. You will NOT see other HOD's subjects.</div>
-<div class="info">Example: HOD for MATHEMATICS + PHYSICAL SCIENCES, Grades 10,11,12 will see: MATHEMATICS 10A, PHYSICAL SCIENCES 11B — But NOT ENGLISH 10A.</div>
-</div>
+<div class="step"><b>1. Login</b> → Auto-go to HOD → Tap <b>HOD — MATHEMATICS + PHYSICAL SCIENCES →</b></div>
+<div class="step"><b>2. Heading:</b> <b>📚 HOD — MATHEMATICS + PHYSICAL SCIENCES</b> — All your CAPS subjects.</div>
+<div class="step"><b>3. Subjects:</b> Tick / Untick — Untick PHYSICAL SCIENCES → Heading becomes <b>HOD — MATHEMATICS</b> → Requests filter to MATHEMATICS only.</div>
+<div class="step"><b>4. Phases / Classes:</b> Buttons: <b>4-6 INTERMEDIATE ✅</b> / <b>7-9 SENIOR PHASE ✅</b> / <b>10-12 FET ✅</b> → Requests filter to those phases only.</div>
+<div class="step"><b>5. Approve:</b> Approve only where Subject + Class match YOUR subjects + classes. You will NOT see other HOD's subjects.</div></div>
 
-<!-- LIBRARIAN -->
 <div class="card manual" id="m-lib" style="display:none"><h2>📖 6. LIBRARIAN MANUAL</h2>
-<div class="step"><b>1. Login</b> → Tap <b>LIBRARIAN →</b></div>
-<div class="step"><b>2. You see ALL</b> Grades 4-12 + ALL CAPS Subjects — Because Librarian = ALL.</div>
-<div class="step"><b>3. Filter</b> by Subject / Grade / Class to find Approved requests.</div>
-<div class="step"><b>4. Issue:</b> When you give books to teacher, mark request as <b>ISSUED</b> + Enter Qty Issued.</div>
-<div class="step"><b>5. Stock:</b> Check stock before issuing. If stock is 0, do NOT issue — Tell HOD / Admin to order.</div>
-</div>
+<div class="step"><b>1. Login</b> → Auto-go to LIBRARIAN → You see <b>ALL</b> Phases + ALL Subjects + ALL 90 Classes.</div>
+<div class="step"><b>2. Dashboard:</b> 3 Boxes: <b>INTERMEDIATE 4-6 / SENIOR PHASE 7-9 / FET 10-12</b> — Counts per phase.</div>
+<div class="step"><b>3. Filter</b> by Phase / Grade / Status. Tap <b>📗 4-6 INTERMEDIATE</b> to see only Grade 4,5,6.</div>
+<div class="step"><b>4. Issue:</b> Only when Status = <b>APPROVED</b> → Tap <b>📖 ISSUE →</b> → Enter Qty → Status becomes ISSUED.</div>
+<div class="step"><b>5. Stock:</b> Type book title → Check stock before issuing. If 0, do NOT issue — Tell HOD / Admin.</div></div>
 
-<!-- PRINCIPAL -->
 <div class="card manual" id="m-principal" style="display:none"><h2>🏫 7. PRINCIPAL MANUAL</h2>
-<div class="step"><b>1. Login</b> → HOME → Tap <b>PRINCIPAL →</b></div>
-<div class="step"><b>2. You see ALL</b> — ALL Grades 4-12, ALL CAPS Subjects, ALL Teachers, ALL Requests.</div>
-<div class="step"><b>3. Approve:</b> You can approve any request, any subject, any grade.</div>
-<div class="step"><b>4. Add Users:</b> Like Super Admin, you can add Users — Tap <b>USERS →</b></div>
-<div class="step"><b>5. Reports:</b> Check Counts: Total Users, Total Requests, Pending — Use for SMT meetings.</div>
-</div>
+<div class="step"><b>1. Login</b> → Auto-go to PRINCIPAL → You see <b>ALL</b> — ALL Phases, ALL Subjects, ALL Grades 4-12.</div>
+<div class="step"><b>2. Dashboard:</b> 3 Boxes: <b>INTERMEDIATE 4-6 / SENIOR PHASE 7-9 / FET 10-12</b> + Pending per phase.</div>
+<div class="step"><b>3. Approve:</b> You can approve <b>ANY</b> PENDING request, any subject, any grade — Even if HOD has not approved.</div>
+<div class="step"><b>4. Add Users:</b> Tap <b>USERS →</b> — Like Super Admin.</div>
+<div class="step"><b>5. Reports:</b> Check Counts for SMT: Total Users, Total Requests, Pending, Approved, Issued, Rejected. Tap <b>🖨️ PRINT REPORT</b>.</div></div>
 
-<!-- FIX -->
 <div class="card manual" id="m-fix" style="display:none"><h2>🛠️ 8. FIXES — COMMON ERRORS</h2>
-<table><tr><th>Error You See</th><th>What It Means</th><th>Fix — 30 Sec</th></tr>
-<tr><td><b>classes.join is not a function</b></td><td>Your user was saved as String "ALL", not Array</td><td>Go to USERS → EDIT yourself → Tick ALL SUBJECTS + ALL 90 CLASSES → UPDATE</td></tr>
-<tr><td><b>getCurrentUser is not defined</b></td><td>Old file trying to load firebase.js</td><td>Re-upload V2.29 file — It has Firebase INSIDE, no firebase.js needed</td></tr>
-<tr><td><b>Not logged in — Go to login.html</b></td><td>Session expired</td><td>Go to login.html → Login again</td></tr>
-<tr><td><b>NO CLASSES ASSIGNED</b> in Teacher</td><td>Admin did not tick classes for teacher</td><td>Admin: USERS → EDIT teacher → Tick Classes → UPDATE</td></tr>
-<tr><td><b>Email already exists</b></td><td>Email already in Firebase Auth</td><td>Delete user in Firebase Console → Authentication → Try again, or EDIT existing user</td></tr>
-<tr><td><b>Page shows old version</b></td><td>Browser cache</td><td>Add <b>?v=999</b> to URL — e.g. index.html?v=999 — Or hard refresh</td></tr>
-<tr><td><b>After Save, I am logged in as new user</b></td><td>Normal Firebase behaviour</td><td>Logout → Login again as YOU (Super Admin)</td></tr>
+<table><tr><th>Error</th><th>Means</th><th>Fix — 30 Sec</th></tr>
+<tr><td><b>classes.join is not a function</b></td><td>User saved as String "ALL", not Array</td><td>USERS → EDIT yourself → Tick ALL SUBJECTS + ALL 90 CLASSES → UPDATE</td></tr>
+<tr><td><b>getCurrentUser is not defined</b></td><td>Old file loading firebase.js</td><td>Re-upload V2.30 file — Firebase INSIDE, no firebase.js</td></tr>
+<tr><td><b>Not logged in</b></td><td>Session expired</td><td>login.html → Login again</td></tr>
+<tr><td><b>NO CLASSES ASSIGNED</b></td><td>Admin did not tick classes</td><td>Admin: USERS → EDIT teacher → Tick Classes → UPDATE</td></tr>
+<tr><td><b>Email already exists</b></td><td>Email in Firebase Auth</td><td>Delete in Firebase Console → Authentication, or EDIT existing user</td></tr>
+<tr><td><b>Page shows old version</b></td><td>Browser cache</td><td>Add <b>?v=999</b> — e.g. index.html?v=999</td></tr>
+<tr><td><b>Wrong Phase — e.g. Grade 5 shows SENIOR</b></td><td>Old file before V2.30</td><td>Re-upload V2.30 file — Phases: 4-6 INT, 7-9 SEN, 10-12 FET</td></tr>
+<tr><td><b>After Save, I am logged in as new user</b></td><td>Normal Firebase</td><td>Logout → Login again as YOU</td></tr>
 </table>
-<h3>After Every Upload — Always Do This</h3><div class="step"><b>1.</b> Wait 60 seconds → <b>2.</b> Open page with <b>?v=999</b> → <b>3.</b> Check top says <b>V2.29</b> → <b>4.</b> Check DEBUG says <b>✅ Firebase Live</b></div>
-</div>
+<h3>After Every Upload</h3><div class="step"><b>1.</b> Wait 60 sec → <b>2.</b> Open with <b>?v=999</b> → <b>3.</b> Check top says <b>V2.30</b> → <b>4.</b> Check DEBUG says <b>✅ Firebase Live</b></div></div>
 
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-green" onclick="go('teacher.html')">👩‍🏫 TEACHER →</button><button class="btn btn-orange" onclick="go('hod.html')">📚 HOD →</button><button class="btn btn-teal" onclick="go('librarian.html')">📖 LIBRARIAN →</button></div></div>
 </div>
@@ -167,9 +120,9 @@ async function init(){
     var u = await getCurrentUser();
     if(!u || !u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in — Manuals still readable below.'; document.getElementById('debug').innerHTML='DEBUG: Not logged in — Manuals work without login.'; return; }
     var subs=toArray(u.subjects); var cls=toArray(u.classes); var gr=toArray(u.grades);
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(u.name||'').toUpperCase()+'</b> — '+u.role+' — RANK '+u.rank+' — Subjects: '+subs.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+' — Grades: '+gr.join(', ')+' — Classes: '+cls.join(', ');
-    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+u.email;
-    // Auto-open manual for their role
+    var phases=[...new Set(gr.map(function(g){return getPhase(g);}))].filter(function(x){return x;});
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(u.name||'').toUpperCase()+'</b> — '+u.role+' — RANK '+u.rank+' — Subjects: '+subs.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+' — Grades: '+gr.join(', ')+' — Phases: <b>'+phases.join(' • ')+'</b> — Classes: '+cls.join(', ');
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+u.email+' — V2.30';
     if(u.role==='TEACHER') show('m-teacher'); else if(u.role==='HOD') show('m-hod'); else if(u.role==='LIBRARIAN') show('m-lib'); else if(u.role==='PRINCIPAL') show('m-principal'); else if(u.role==='SUPER_ADMIN') show('m-admin'); else show('m-start');
   }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
 }
