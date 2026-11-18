@@ -1,128 +1,178 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HOD - Makhanani LTSM 2.0</title>
+<title>Users - Makhanani LTSM 2.0 - HOD Multi</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+    authDomain: "makhanani-ltsm.firebaseapp.com",
+    databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+    projectId: "makhanani-ltsm",
+    storageBucket: "makhanani-ltsm.firebasestorage.app",
+    messagingSenderId: "247180363183",
+    appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+    measurementId: "G-PEST1XFCR8"
+  };
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+  function getCurrentUser(){
+    return new Promise(function(res){
+      auth.onAuthStateChanged(function(u){
+        if(!u) return res(null);
+        db.ref('users/'+u.uid).once('value').then(function(s){
+          var d = s.val() || {}; d.uid = u.uid; d.email = u.email;
+          if(!d.classes && d.className) d.classes = d.className.split(',').map(function(x){return x.trim();});
+          if(!d.subjects && d.subject) d.subjects = d.subject.split(',').map(function(x){return x.trim();});
+          res(d);
+        }).catch(function(){ res({uid:u.uid, email:u.email}); });
+      });
+    });
+  }
+</script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
 header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:900px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.wrap{max-width:900px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input,select,textarea{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
-.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
+.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.kpi{background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}.kpi b{font-size:28px;display:block}.kpi span{font-size:12px;color:#64748b}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
-@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.row{flex-direction:column}}
+.chk-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}.chk{display:flex;align-items:center;gap:6px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:8px;padding:10px;font-weight:900;font-size:13px;cursor:pointer}.chk input{width:auto;padding:0}.chk.on{border-color:#0a1f4d;background:#eef2ff}
+.chk-subj{background:#fff7ed;border-color:#fdba74}.chk-subj.on{background:#ffedd5;border-color:#ea580c}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
+.grade-title{font-weight:900;font-size:14px;margin:16px 0 6px;background:#0a1f4d;color:#fff;padding:8px;border-radius:8px}
+@media(max-width:700px){.row{flex-direction:column}.chk-grid{grid-template-columns:repeat(2,1fr)}}
 </style></head>
 <body>
-<header><h1>🎓 HOD DASHBOARD — MAKHANANI LTSM 2.0 — V2.22</h1><p>HOD ONLY — RANK 4 — APPROVE + MONITOR SUBJECTS — MY SCHOOL ONLY — WHATSAPP 078 023 3263</p>
-<div id="taskbar"></div><script src="nav.js"></script>
-</header>
+<header><h1>👥 USERS — MAKHANANI LTSM 2.0 — FIREBASE V2.26 — HOD MULTI</h1><p>HOD = MULTI SUBJECT + MULTI GRADE + MULTI CLASS — TEACHER = 1 SUBJECT + MULTI CLASS</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I — HOD Only</h2>
-<div class="info" id="whoAmI">Loading...</div>
-<script>
-try{
-  var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-  if(_u && _u.email){
-    var _role=String(_u.role||'').toUpperCase();
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_role+' — RANK '+_u.rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Subject: <b>'+String(_u.subject||'ALL').toUpperCase()+'</b> — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
-    if(_role==='HOD' && _u.rank!=4){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#dc2626">⚠️ Your Rank is '+_u.rank+' — Should be 4 for HOD — Ask Super Admin to fix in Users.</span>'; }
-    if(_role!=='HOD'){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#d97706">👀 VIEW-ONLY MODE — You are '+_role+' — Only a real HOD can Approve / Comment. Login as HOD to approve.</span>'; }
-  } else { document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; setTimeout(function(){ window.location.href='login.html'; },1500); }
-}catch(e){ document.getElementById('whoAmI').innerHTML='Error: '+e.message; }
-</script>
-<div class="info" id="debugBox" style="background:#e0e7ff">🔍 DEBUG: Checking Firebase...</div>
-<div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 OPEN MANUALS → HOD MANUAL</button></div>
-<div class="row"><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-gold" onclick="go('subscriptions.html')">💰 SUBSCRIPTIONS →</button></div></div>
-
-<div class="grid">
-<div class="kpi"><b id="kpiTeachers">-</b><span>TEACHERS — MY SCHOOL</span></div>
-<div class="kpi"><b id="kpiBooks">-</b><span>BOOKS — MY SUBJECT</span></div>
-<div class="kpi"><b id="kpiIssued">-</b><span>ISSUED — MY SUBJECT</span></div>
-<div class="kpi"><b id="kpiReturned">-</b><span>RETURNED</span></div>
-<div class="kpi"><b id="kpiOut">-</b><span>STILL OUT</span></div>
-<div class="kpi"><b id="kpiRetrieval" style="color:#f59e0b">-</b><span>RETRIEVAL % — MY SUBJECT</span></div>
+<div class="card"><h2>👤 Who Am I</h2><div class="info" id="whoAmI">Loading from Firebase...</div><div class="warn" id="blockMsg" style="display:none"></div><div class="ok" id="debug">DEBUG: Connecting to Firebase...</div></div>
+<div id="adminOnly" style="display:none">
+<div class="card"><h2>➕ Add / Edit User — Firebase</h2>
+<label>Full Name *</label><input id="uName" placeholder="e.g. MRS NKAMBULE">
+<label>Email *</label><input id="uEmail" placeholder="e.g. nkambule@wordsworth.co.za">
+<label>Password (6+ chars) *</label><input id="uPass" type="password" placeholder="Min 6 characters">
+<label>Role *</label><select id="uRole" onchange="onRoleChange()"><option value="">-- Pick Role --</option><option>TEACHER</option><option>LIBRARIAN</option><option>HOD</option><option>PRINCIPAL</option><option>SUPER_ADMIN</option></select>
+<label>Rank * (Auto)</label><input id="uRank" type="number" readonly placeholder="Auto from Role">
+<div id="subjBox">
+<label>✅ Subjects — Tick MULTIPLE for HOD / PRINCIPAL / SUPER_ADMIN — Tick 1 for TEACHER</label>
+<div class="row"><button type="button" class="btn btn-grey" onclick="selectAllSubj(true)">✅ ALL SUBJECTS</button><button type="button" class="btn btn-grey" onclick="selectAllSubj(false)">❌ CLEAR SUBJECTS</button></div>
+<div id="subjGrid" class="chk-grid"></div>
+<div class="info" id="subjInfo">Subjects Selected: None</div>
 </div>
-
-<div class="card"><h2>♻️ Retrieval % — My Subject / School</h2>
-<div class="info"><b>Formula:</b> Retrieval % = (Returned / Issued) x 100 — Target 100% — HOD sees their subject. Super Admin sees all.</div>
-<div class="info" style="background:#e2e8f0;padding:4px;border-radius:8px"><div id="retrievalBar" style="background:#f59e0b;height:22px;border-radius:6px;width:0%;text-align:center;color:#fff;font-weight:900;font-size:12px;line-height:22px">Loading...</div></div>
-<div id="retrievalMsg" class="info">Loading...</div></div>
-
-<div class="card"><h2>✅ HOD Approval — Approve Teacher Request</h2>
-<div class="info">HOD approves book requests / allocations for their subject. Pick an Issue / Request → Approve → Status becomes APPROVED. View-Only users cannot approve.</div>
-<label>Pending Issue / Request To Approve *</label><select id="approveSelect"><option value="">-- Pick Pending To Approve --</option></select>
-<label>HOD Comment (Optional)</label><textarea id="hodComment" rows="2" placeholder="e.g. Approved — Maths Grade 10 — 30 books"></textarea>
-<div id="approveMsg"></div>
-<div class="row"><button class="btn btn-green" onclick="approveItem()">✅ APPROVE →</button><button class="btn btn-red" onclick="rejectItem()">❌ REJECT</button></div></div>
-
-<div class="card"><h2>👩‍🏫 Teachers — My School</h2><div style="overflow-x:auto"><table><thead><tr><th>Teacher</th><th>Subject</th><th>Class</th><th>Role / Rank</th></tr></thead><tbody id="teachersBody"><tr><td colspan="4">Loading...</td></tr></tbody></table></div></div>
-
-<div class="card"><h2>📚 Issues — My Subject / School</h2><div style="overflow-x:auto"><table><thead><tr><th>Learner</th><th>Class</th><th>Book</th><th>Subject</th><th>Status</th><th>HOD</th></tr></thead><tbody id="issuesBody"><tr><td colspan="6">Loading...</td></tr></tbody></table></div></div>
-<div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
+<label>School Code *</label><input id="uSchoolCode" value="WHS">
+<label>School Name *</label><input id="uSchool" value="WORDSWORTH HIGH SCHOOL">
+<label>✅ Grades / Classes — Tick MULTIPLE — A to J *</label>
+<div class="row"><button type="button" class="btn btn-grey" onclick="selectGrade('8',true)">Grade 8 A-J ✅</button><button type="button" class="btn btn-grey" onclick="selectGrade('9',true)">Grade 9 A-J ✅</button><button type="button" class="btn btn-grey" onclick="selectGrade('10',true)">Grade 10 A-J ✅</button><button type="button" class="btn btn-grey" onclick="selectGrade('11',true)">Grade 11 A-J ✅</button><button type="button" class="btn btn-grey" onclick="selectGrade('12',true)">Grade 12 A-J ✅</button></div>
+<div class="row"><button type="button" class="btn btn-grey" onclick="selectAllClasses(true)">✅ SELECT ALL 50</button><button type="button" class="btn btn-grey" onclick="selectAllClasses(false)">❌ CLEAR ALL</button></div>
+<div id="classGrid"></div>
+<div class="info" id="selInfo">Classes Selected: None</div>
+<div class="info" id="gradeInfo">Grades Selected: None</div>
+<div id="uMsg"></div>
+<div class="row"><button class="btn btn-green" id="saveBtn" onclick="saveUser()">💾 SAVE USER — FIREBASE</button></div>
+<div class="info"><b>Rules:</b><br>TEACHER (Rank 2) = 1 Subject + Multi Classes — e.g. MATHS + 10A,10B<br>HOD (Rank 4) = <b>MULTI Subject + MULTI Grade + MULTI Class</b> — e.g. MATHS, PHYSICAL SCIENCES + Grades 10,11,12 + 10A-10J, 11A-11J, 12A-12J<br>LIBRARIAN / PRINCIPAL / SUPER_ADMIN = ALL Subjects + ALL Classes</div>
 </div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<div class="card"><h2>📋 All Users — Firebase Live</h2><div id="userList"></div><div class="row"><button class="btn btn-grey" onclick="renderUsers()">🔄 REFRESH</button></div></div>
+</div>
+<div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
+</div>
 <script>
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
-var user=null; try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-// V2.22 FIX — HOD + Super Admin + Admin + Principal can VIEW. Only HOD can Approve/Reject.
-var _ROLE = String(user && user.role || '').toUpperCase();
-if(!user || ['HOD','SUPER_ADMIN','ADMIN','PRINCIPAL'].indexOf(_ROLE)===-1){ alert('⛔ HOD only.'); window.location.href='login.html'; }
-window._IS_VIEW_ONLY = (_ROLE !== 'HOD');
-var rtdb=null, firebaseOK=false, users={}, books={}, issues={};
-try{ if(typeof firebase!=='undefined'){ var cfg={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"}; if(!firebase.apps.length) firebase.initializeApp(cfg); rtdb=firebase.database(); firebaseOK=true; } }catch(e){ firebaseOK=false; }
-function setKPI(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
-function isMine(i){
-  if(_ROLE==='SUPER_ADMIN') return true;
-  // HOD sees own subject, or all if no subject set
-  if(!user.subject) return true;
-  return String(i.subject||'').toUpperCase()===String(user.subject||'').toUpperCase() || String(i.subject||'')==='';
+async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
+var _u=null; var _adminEmail=''; var _adminPass='';
+var LETTERS=['A','B','C','D','E','F','G','H','I','J']; var GRADES=['8','9','10','11','12'];
+var SUBJECTS=['MATHS','ENGLISH','AFRIKAANS','PHYSICAL SCIENCES','LIFE SCIENCES','ACCOUNTING','BUSINESS STUDIES','GEOGRAPHY','HISTORY','LIFE ORIENTATION','ECONOMICS','MATHS LITERACY','CAT','TOURISM','AGRICULTURAL SCIENCES'];
+var subjGrid=document.getElementById('subjGrid');
+SUBJECTS.forEach(function(s){
+  var l=document.createElement('label'); l.className='chk chk-subj';
+  l.innerHTML='<input type="checkbox" value="'+s+'" onchange="updateSubj()"> '+s;
+  subjGrid.appendChild(l);
+});
+var grid=document.getElementById('classGrid');
+grid.innerHTML='<label class="chk" style="background:#fef3c7"><input type="checkbox" value="ALL" onchange="updateSel()"> ALL — All Grades A-J</label>';
+GRADES.forEach(function(g){
+  var t=document.createElement('div'); t.className='grade-title'; t.textContent='GRADE '+g+' — A to J'; grid.appendChild(t);
+  var wrap=document.createElement('div'); wrap.className='chk-grid';
+  LETTERS.forEach(function(l){ var c=g+l; var d=document.createElement('label'); d.className='chk'; d.innerHTML='<input type="checkbox" value="'+c+'" onchange="updateSel()"> '+c; wrap.appendChild(d); });
+  grid.appendChild(wrap);
+});
+function getSelectedSubjects(){ var a=[]; document.querySelectorAll('#subjGrid input:checked').forEach(function(i){a.push(i.value);}); return a; }
+function getSelectedClasses(){ var a=[]; document.querySelectorAll('#classGrid input:checked').forEach(function(i){a.push(i.value);}); return a; }
+function getGradesFromClasses(classes){ var g=[]; classes.forEach(function(c){ if(c==='ALL') return; var gr=c.replace(/[A-J]$/,''); if(!g.includes(gr)) g.push(gr); }); return g.sort(); }
+function updateSubj(){
+  var s=getSelectedSubjects(); document.getElementById('subjInfo').innerHTML='Subjects Selected: <b>'+(s.length?s.join(', '):'None')+'</b> — Count: '+s.length;
+  document.querySelectorAll('#subjGrid .chk').forEach(function(el){ el.classList.toggle('on', el.querySelector('input').checked); });
+  var role=document.getElementById('uRole').value;
+  if(role==='TEACHER' && s.length>1){ alert('TEACHER = 1 Subject only. HOD can pick Multi. Last tick kept.'); var boxes=document.querySelectorAll('#subjGrid input:checked'); for(var i=0;i<boxes.length-1;i++) boxes[i].checked=false; updateSubj(); }
 }
-function render(){
-  var teachers = Object.values(users).filter(function(u){ return String(u.role||'').toUpperCase()==='TEACHER'; });
-  var issuesArr = Object.values(issues).filter(isMine);
-  var issued = issuesArr.length;
-  var returned = issuesArr.filter(function(i){ return String(i.status||'').toUpperCase()==='RETURNED'; }).length;
-  var ret = issued>0?Math.round(returned/issued*100):100;
-  var myBooks = Object.values(books).filter(function(b){ if(_ROLE==='SUPER_ADMIN'||!user.subject) return true; return String(b.subject||'').toUpperCase()===String(user.subject||'').toUpperCase(); });
-  setKPI('kpiTeachers', teachers.length); setKPI('kpiBooks', myBooks.length); setKPI('kpiIssued', issued); setKPI('kpiReturned', returned); setKPI('kpiOut', issued-returned); setKPI('kpiRetrieval', ret+'%');
-  var bar=document.getElementById('retrievalBar'); bar.style.width=ret+'%'; bar.textContent=ret+'% — Retrieval'; bar.style.background=ret>=95?'#22c55e':ret>=85?'#f59e0b':'#ef4444';
-  document.getElementById('retrievalMsg').innerHTML='✅ Issued <b>'+issued+'</b> — Returned <b>'+returned+'</b> — Still Out <b>'+(issued-returned)+'</b> — Retrieval % <b>'+ret+'%</b>';
-  // Approve select — Issues not yet approved
-  var sel=document.getElementById('approveSelect'); var cur=sel.value; sel.innerHTML='<option value="">-- Pick Pending To Approve --</option>';
-  Object.keys(issues).forEach(function(k){ var i=issues[k]; i._id=k; if(!i.hodApproved && isMine(i)){ var o=document.createElement('option'); o.value=k; o.textContent=String(i.learnerName||'').toUpperCase()+' — '+String(i.bookTitle||'').toUpperCase()+' — '+(i.className||''); sel.appendChild(o); } });
-  sel.value=cur;
-  document.getElementById('teachersBody').innerHTML=teachers.length?teachers.map(function(t){ return '<tr><td><b>'+String(t.name||'').toUpperCase()+'</b></td><td>'+String(t.subject||'-').toUpperCase()+'</td><td>'+String(t.className||'-').toUpperCase()+'</td><td>'+String(t.role||'').toUpperCase()+' — RANK '+(t.rank||'')+'</td></tr>'; }).join(''):'<tr><td colspan="4">No teachers yet — Create in Users.</td></tr>';
-  document.getElementById('issuesBody').innerHTML=issuesArr.length?issuesArr.slice().reverse().map(function(i){ return '<tr><td>'+String(i.learnerName||'').toUpperCase()+'</td><td>'+String(i.className||'').toUpperCase()+'</td><td>'+String(i.bookTitle||'').toUpperCase()+'</td><td>'+String(i.subject||'-').toUpperCase()+'</td><td>'+String(i.status||'').toUpperCase()+'</td><td>'+(i.hodApproved?'✅ APPROVED BY '+String(i.hodBy||'').toUpperCase():'⏳ PENDING')+'</td></tr>'; }).join(''):'<tr><td colspan="6">No issues yet.</td></tr>';
-  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Firebase Live Data Loaded ✅';
+function updateSel(){
+  var sel=getSelectedClasses(); var grades=getGradesFromClasses(sel);
+  document.getElementById('selInfo').innerHTML='Classes Selected: <b>'+(sel.length?sel.join(', '):'None')+'</b> — Count: '+sel.length;
+  document.getElementById('gradeInfo').innerHTML='Grades Selected: <b>'+(grades.length?grades.join(', '):(sel.includes('ALL')?'ALL (8,9,10,11,12)':'None'))+'</b>';
+  document.querySelectorAll('#classGrid .chk').forEach(function(el){ el.classList.toggle('on', el.querySelector('input').checked); });
 }
-async function approveItem(){
-  var msg=document.getElementById('approveMsg');
-  if(window._IS_VIEW_ONLY){ msg.innerHTML='<div class="warn">⛔ View-Only — Login as HOD to Approve.</div>'; return; }
-  var id=document.getElementById('approveSelect').value; var comment=document.getElementById('hodComment').value.trim();
-  if(!id){ msg.innerHTML='<div class="warn">❌ Pick a Pending Issue to Approve.</div>'; return; }
-  try{ await rtdb.ref('issues/'+id).update({hodApproved:true,hodBy:user.email,hodComment:comment,hodApprovedAt:Date.now()}); msg.innerHTML='<div class="ok">✅ Approved by HOD.</div>'; document.getElementById('hodComment').value=''; }catch(e){ msg.innerHTML='<div class="warn">❌ Approve failed: '+e.message+'</div>'; }
+function selectAllSubj(on){ document.querySelectorAll('#subjGrid input').forEach(function(i){i.checked=on;}); updateSubj(); }
+function selectAllClasses(on){ document.querySelectorAll('#classGrid input').forEach(function(i){ i.checked=on; }); updateSel(); }
+function selectGrade(g,on){ document.querySelectorAll('#classGrid input').forEach(function(i){ if(i.value.startsWith(g) && i.value!=='ALL') i.checked=on; }); updateSel(); }
+function onRoleChange(){
+  var r=document.getElementById('uRole').value; var m={TEACHER:2,LIBRARIAN:3,HOD:4,PRINCIPAL:5,SUPER_ADMIN:6}; document.getElementById('uRank').value=m[r]||'';
+  if(r==='LIBRARIAN'||r==='PRINCIPAL'||r==='SUPER_ADMIN'){ selectAllSubj(true); selectAllClasses(true); }
+  if(r==='TEACHER'){ selectAllSubj(false); }
+  if(r==='HOD'){ selectAllSubj(false); selectAllClasses(false); document.getElementById('subjInfo').innerHTML='<b>HOD — Now tick MULTIPLE Subjects — e.g. MATHS + PHYSICAL SCIENCES</b>'; }
 }
-async function rejectItem(){
-  var msg=document.getElementById('approveMsg');
-  if(window._IS_VIEW_ONLY){ msg.innerHTML='<div class="warn">⛔ View-Only — Login as HOD to Reject.</div>'; return; }
-  var id=document.getElementById('approveSelect').value; var comment=document.getElementById('hodComment').value.trim();
-  if(!id){ msg.innerHTML='<div class="warn">❌ Pick a Pending Issue to Reject.</div>'; return; }
-  if(!confirm('Reject this issue?')) return;
-  try{ await rtdb.ref('issues/'+id).update({hodApproved:false,hodRejected:true,hodBy:user.email,hodComment:comment,hodApprovedAt:Date.now()}); msg.innerHTML='<div class="ok">✅ Rejected by HOD.</div>'; }catch(e){ msg.innerHTML='<div class="warn">❌ Reject failed: '+e.message+'</div>'; }
+async function init(){
+  try{
+    _u = await getCurrentUser();
+    if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; document.getElementById('debug').innerHTML='DEBUG: ❌ Not logged in'; return; }
+    _adminEmail = _u.email;
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+' — <span style="color:#16a34a">FIREBASE LIVE ✅</span>';
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — Admin: '+_u.email+' — UID: '+_u.uid;
+    var _allowed = (_u.role==='SUPER_ADMIN' && _u.rank===6) || (_u.role==='PRINCIPAL' && _u.rank===5);
+    if(!_allowed){ document.getElementById('blockMsg').style.display='block'; document.getElementById('blockMsg').innerHTML='⛔ ADMIN ONLY — Only Principal Rank 5 + Super Admin Rank 6 can add Users.'; }
+    else document.getElementById('adminOnly').style.display='block';
+    renderUsers();
+  }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
 }
-if(!firebaseOK){ document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Logged in — ❌ Firebase BLOCKED — Turn OFF WiFi, use Phone Data, reload.'; }
-else {
-  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Firebase Loaded — Loading...';
-  rtdb.ref('users').on('value', function(s){ users=s.val()||{}; render(); });
-  rtdb.ref('books').on('value', function(s){ books=s.val()||{}; render(); });
-  rtdb.ref('issues').on('value', function(s){ issues=s.val()||{}; render(); });
+async function saveUser(){
+  var name=document.getElementById('uName').value.trim().toUpperCase(), email=document.getElementById('uEmail').value.trim().toLowerCase(), pass=document.getElementById('uPass').value, role=document.getElementById('uRole').value, rank=document.getElementById('uRank').value, code=document.getElementById('uSchoolCode').value.trim().toUpperCase(), school=document.getElementById('uSchool').value.trim().toUpperCase();
+  var subjects=getSelectedSubjects(); var classes=getSelectedClasses(); var grades=getGradesFromClasses(classes);
+  if(classes.includes('ALL')) grades=['8','9','10','11','12'];
+  var msg=document.getElementById('uMsg');
+  if(!name||!email||!pass||pass.length<6||!role||!rank||!code||!school){ msg.innerHTML='<div class="warn">❌ Fill Name + Email + Password 6+ + Role + School.</div>'; return; }
+  if(!subjects.length){ msg.innerHTML='<div class="warn">❌ Tick at least ONE Subject.</div>'; return; }
+  if(role==='TEACHER' && subjects.length>1){ msg.innerHTML='<div class="warn">❌ TEACHER = 1 Subject only. Use HOD for Multi-Subject.</div>'; return; }
+  if(!classes.length){ msg.innerHTML='<div class="warn">❌ Tick at least ONE Class — Or tick ALL.</div>'; return; }
+  if(!_adminPass){ _adminPass = prompt('Enter YOUR password (Super Admin) to stay logged in after creating this user:'); if(!_adminPass) return; }
+  document.getElementById('saveBtn').disabled=true; document.getElementById('saveBtn').textContent='SAVING TO FIREBASE...';
+  try{
+    var cred = await auth.createUserWithEmailAndPassword(email, pass);
+    var obj={ name:name, email:email, role:role, rank:Number(rank), subject:subjects.join(', '), subjects:subjects, grades:grades, grade:grades.join(', '), schoolCode:code, schoolName:school, classes:classes, className:classes.join(', '), class:classes[0] };
+    await db.ref('users/'+cred.user.uid).set(obj);
+    msg.innerHTML='<div class="ok">✅ Saved: <b>'+name+'</b> — '+role+' Rank '+rank+' — Subjects: <b>'+subjects.join(', ')+'</b> — Grades: <b>'+grades.join(', ')+'</b> — Classes: <b>'+classes.join(', ')+'</b> — UID: '+cred.user.uid+' — Re-logging you back in...</div>';
+    await auth.signOut(); await auth.signInWithEmailAndPassword(_adminEmail, _adminPass); renderUsers();
+  }catch(e){
+    if(e.code==='auth/email-already-in-use'){ msg.innerHTML='<div class="warn">⚠️ Email already exists in Firebase Auth — Delete in Firebase Console → Authentication, then try again.</div>'; }
+    else { msg.innerHTML='<div class="warn">❌ Firebase Error: '+e.message+'</div>'; }
+  }
+  document.getElementById('saveBtn').disabled=false; document.getElementById('saveBtn').textContent='💾 SAVE USER — FIREBASE';
 }
+async function renderUsers(){
+  try{
+    var snap = await db.ref('users').once('value');
+    var all=[]; snap.forEach(function(c){ var v=c.val(); v.uid=c.key; all.push(v); });
+    if(!all.length){ document.getElementById('userList').innerHTML='<div class="warn">No users in Firebase yet.</div>'; return; }
+    var h='<table><tr><th>Name</th><th>Role / Rank</th><th>Subjects</th><th>Grades</th><th>Classes</th></tr>';
+    all.forEach(function(x){ var subs=x.subjects?x.subjects.join(', '):x.subject; var gr=x.grades?x.grades.join(', '):''; h+='<tr><td><b>'+x.name+'</b><br><small>'+x.email+'</small></td><td>'+x.role+' / '+x.rank+'</td><td>'+subs+'</td><td>'+gr+'</td><td>'+(x.classes?x.classes.join(', '):x.className||'')+'</td></tr>'; });
+    h+='</table>'; document.getElementById('userList').innerHTML=h;
+  }catch(e){ document.getElementById('userList').innerHTML='<div class="warn">Firebase Error: '+e.message+'</div>'; }
+}
+init(); updateSubj(); updateSel();
 </script></body></html>
