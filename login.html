@@ -11,162 +11,114 @@ header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#
 .wrap{max-width:700px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
-.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-blue{background:#2563eb;color:#fff}
+.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.tile{background:#fff;border-radius:12px;padding:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);border-top:6px solid #7c3aed}.tile b{font-size:16px;display:block}.tile span{font-size:12px;color:#64748b;line-height:1.5}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
-.roleBtn{border:2px solid #0a1f4d;border-radius:8px;padding:10px;text-align:center;cursor:pointer;background:#fff}.roleBtn.sel{background:#0a1f4d;color:#fff}
-@media(max-width:700px){.grid{grid-template-columns:1fr}.row{flex-direction:column}}
+@media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>🔐 LOGIN — MAKHANANI LTSM 2.0 — V2.19</h1><p>EVERY BOOK TRACKED — EVERY LEARNER BY ID — RETRIEVAL % SHOWS WHO DID NOT RETURN</p>
+<header><h1>🔐 LOGIN — MAKHANANI LTSM 2.0 — V2.20</h1><p>EVERY BOOK TRACKED — EVERY LEARNER BY ID — RETRIEVAL % SHOWS WHO DID NOT RETURN</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 </header>
 <div class="wrap">
 <div class="card"><h2>🔐 Login — Email + Password</h2>
 <div class="info" id="alreadyInfo">Checking if you are already logged in...</div>
 <div class="info" id="debugBox" style="background:#e0e7ff">🔍 DEBUG: Page loading... If this stays, JS is blocked.</div>
-<label>Email — Use email Admin gave you</label><input id="loginEmail" type="email" placeholder="vusichauke3037@gmail.com" autocomplete="email">
+<!-- EARLY SCRIPT — RUNS IMMEDIATELY — NO FIREBASE NEEDED -->
+<script>
+try{
+  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ JS IS WORKING — Early script ran. Now checking Firebase...';
+  document.getElementById('alreadyInfo').innerHTML='👤 <b>JS Working ✅</b> — Now checking login...';
+}catch(e){ alert('JS Error Early: '+e.message); }
+</script>
+<label>Email</label><input id="loginEmail" type="email" placeholder="vusichauke3037@gmail.com" autocomplete="email" value="vusichauke3037@gmail.com">
 <label>Password — Min 6 chars</label><input id="loginPass" type="password" placeholder="••••••" autocomplete="current-password">
-<div class="row"><button class="btn btn-green" id="loginBtn" type="button" onclick="doLogin()">🔐 LOGIN →</button><button class="btn btn-gold" type="button" onclick="go('index.html')">🏠 HOME →</button></div>
-<div class="row"><button class="btn btn-grey" id="forgotBtn" type="button" onclick="forgotPass()">🔑 FORGOT PASSWORD? → Send Reset Email</button><button class="btn btn-teal" id="demoBtn" type="button" onclick="demoLogin()">🆓 DEMO LOGIN — No Password — Try System</button></div>
+<div class="row"><button class="btn btn-green" id="loginBtn" type="button" onclick="doLogin()">🔐 LOGIN →</button><button class="btn btn-gold" type="button" onclick="goHome()">🏠 HOME →</button></div>
+<div class="row"><button class="btn btn-grey" id="forgotBtn" type="button" onclick="forgotPass()">🔑 FORGOT PASSWORD?</button><button class="btn btn-teal" id="demoBtn" type="button" onclick="demoLogin()">🆓 DEMO LOGIN</button></div>
+<div class="row"><button class="btn btn-red" id="emergencyBtn" type="button" onclick="emergencyLogin()">🆘 EMERGENCY LOGIN — No Firebase — Enter As SUPER_ADMIN</button></div>
 <div id="loginMsg"></div>
-<div class="info">❓ <b>No account?</b> Ask Principal / Admin to create you in <b>Users</b>. Or WhatsApp Super Admin <b>078 023 3263</b> → REQUEST DEMO → Super Admin creates DEMO account for 7 days FREE.<br>🔒 <b>Forgot password?</b> Type email above → Tap FORGOT PASSWORD → Check email → Tap reset link.</div></div>
-
-<div class="card"><h2>👥 Pick Your Role — What Will You See After Login?</h2>
-<div class="info">Tap a role below — See what that role can do — Then login with an account that has that role.</div>
-<div class="grid" id="roleGrid">
-<div class="roleBtn" onclick="pickRole('TEACHER',2,'teacher.html')"><b>👩‍🏫 TEACHER</b><span><br>Rank 2<br>My Classes Only<br>My Retrieval %</span></div>
-<div class="roleBtn" onclick="pickRole('LIBRARIAN',3,'librarian.html')"><b>📚 LIBRARIAN</b><span><br>Rank 3<br>Stock + Issue / Return<br>Whole School Retrieval %</span></div>
-<div class="roleBtn" onclick="pickRole('HOD',4,'hod.html')"><b>✅ HOD</b><span><br>Rank 4<br>Approve Dept<br>My Dept Retrieval %</span></div>
-<div class="roleBtn" onclick="pickRole('PRINCIPAL',1,'principal.html')"><b>👑 PRINCIPAL</b><span><br>Rank 1<br>Approve All<br>Whole School + By Class</span></div>
-<div class="roleBtn" onclick="pickRole('ADMIN',5,'users.html')"><b>⚙️ ADMIN</b><span><br>Rank 5<br>Users + Cleanup<br>Whole School</span></div>
-<div class="roleBtn" onclick="pickRole('SUPER_ADMIN',6,'superadmin.html')"><b>👑 SUPER ADMIN</b><span><br>Rank 6 — Founder Only<br>All Schools + Subscriptions<br>By School Retrieval %</span></div>
-</div>
-<div class="info" id="rolePicked">Tap a role above to see where it goes.</div></div>
-
-<div class="card"><h2>♻️ Retrieval % — Preview Before Login</h2>
-<div class="info"><b>Formula:</b> Retrieval % = (Returned / Issued) x 100<br><b>Example:</b> Issued 200 — Returned 180 — Still Out 20 — Retrieval % = <b>90%</b> — Lost % = 10%<br><b>Colours:</b> 95%+ Green ✅ — 85-94% Orange ⚠️ — Below 85% Red 🚨 — <b>Target:</b> 100%</div>
-<div class="info" style="background:#e2e8f0;padding:4px;border-radius:8px"><div style="background:#f59e0b;height:22px;border-radius:6px;width:90%;text-align:center;color:#fff;font-weight:900;font-size:12px;line-height:22px">90% — Example</div></div>
-<div class="info"><b>Who sees what?</b><br>Teacher — My Classes Only — 4A only<br>Librarian — Whole School<br>HOD — My Department Only — MATHS only<br>Principal — Whole School + By Class<br>Super Admin — Whole School + By Class + By School</div>
-<div class="row"><button class="btn btn-purple" type="button" onclick="go('manuals.html')">📖 OPEN MANUALS → RETRIEVAL % GUIDE</button></div></div>
-
-<div class="card" id="priceList"><h2>💰 Price List — Packages — Per School — No Card For DEMO</h2>
-<div style="overflow-x:auto"><table><thead><tr><th>Package</th><th>Setup (Once)</th><th>Monthly</th><th>Once-Off / Year</th><th>Year 1 Total</th></tr></thead><tbody>
-<tr><td>🆓 DEMO</td><td>FREE</td><td>FREE</td><td>FREE</td><td>FREE — 7 days</td></tr>
-<tr><td>🌱 STARTER</td><td>R3 000</td><td>R350 / month</td><td>R4 500 / year</td><td>R7 500</td></tr>
-<tr><td>⭐ STANDARD</td><td>R4 500</td><td>R500 / month</td><td>R7 500 / year</td><td>R12 000</td></tr>
-<tr><td>👑 PREMIUM</td><td>R5 500</td><td>R600 / month</td><td>R9 000 / year</td><td>R14 500</td></tr>
-</tbody></table></div>
-<div class="row"><button class="btn btn-teal" type="button" onclick="requestPkg('DEMO')">📱 REQUEST DEMO</button><button class="btn btn-green" type="button" onclick="requestPkg('STARTER')">📱 REQUEST STARTER</button><button class="btn btn-gold" type="button" onclick="requestPkg('STANDARD')">📱 REQUEST STANDARD</button><button class="btn btn-purple" type="button" onclick="requestPkg('PREMIUM')">📱 REQUEST PREMIUM</button></div>
-<div class="info">Tap REQUEST → WhatsApp <b>078 023 3263</b> → Super Admin activates you. Books safe on expiry — No data deleted.</div></div>
-<div class="card"><div class="row"><button class="btn btn-grey" type="button" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" type="button" onclick="go('index.html')">🏠 HOME →</button></div></div>
+<div class="info">🆘 <b>EMERGENCY LOGIN</b> is for when school WiFi blocks Firebase. It saves you locally as SUPER_ADMIN / WHS and lets you use the system. It does NOT check password — Use only on your own laptop. To use real login again, use phone data / Chrome Incognito.<br>WhatsApp Super Admin: <b>078 023 3263</b></div></div>
+<div class="card"><h2>♻️ Retrieval % — Preview</h2><div class="info"><b>Formula:</b> Retrieval % = (Returned / Issued) x 100 — Example: Issued 200 — Returned 180 = <b>90%</b> — Target 100%</div></div>
+<div class="card"><h2>💰 Price List</h2><div class="info">DEMO FREE — STARTER Setup R3 000 / R350 pm / R4 500 yr — STANDARD Setup R4 500 / R500 pm / R7 500 yr — PREMIUM Setup R5 500 / R600 pm / R9 000 yr — WhatsApp <b>078 023 3263</b></div><div class="row"><button class="btn btn-teal" type="button" onclick="requestPkg('DEMO')">📱 REQUEST DEMO</button><button class="btn btn-gold" type="button" onclick="requestPkg('STANDARD')">📱 REQUEST STANDARD</button></div></div>
+<div class="card"><div class="row"><button class="btn btn-grey" type="button" onclick="goBack()">⬅️ BACK</button><button class="btn btn-green" type="button" onclick="goHome()">🏠 HOME →</button></div></div>
 </div>
 <script>
-// ===== V2.19 — NO RESPONSE FIX — DEBUG FIRST =====
-try{
-  var dbg=document.getElementById('debugBox');
-  if(dbg) dbg.innerHTML='🔍 DEBUG: JS loaded ✅ — Checking Firebase...';
-  console.log('LOGIN V2.19 JS loaded');
-}catch(e){}
-const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
-try{
-  if(typeof firebase==='undefined'){ document.getElementById('debugBox').innerHTML='🔍 DEBUG: ❌ Firebase script BLOCKED — Check Ad Blocker / School WiFi / VPN. Try Chrome + Phone Data.'; }
-  else {
-    if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    document.getElementById('debugBox').innerHTML='🔍 DEBUG: JS ✅ — Firebase ✅ — Buttons should work. If LOGIN still does nothing, tap DEMO LOGIN.';
-  }
-}catch(e){ document.getElementById('debugBox').innerHTML='🔍 DEBUG: Firebase error: '+e.message; }
-const rtdb=firebase.database(); const auth=firebase.auth();
+// ===== V2.20 — MAIN SCRIPT =====
+function goHome(){ window.location.href='index.html'; }
+function goBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
 function toCaps(s){return String(s||'').trim().toUpperCase();}
-function go(page){window.location.href=page;}
-let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
+let user=null; try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
 const WA_NUMBER='27780233263';
-function requestPkg(pkg){
-  let p=String(pkg||'').toUpperCase();
-  let prices={DEMO:'Setup: FREE — Monthly: FREE — Once-off: FREE — 7 days free trial',STARTER:'Setup: R3 000 — Monthly: R350 / month — Once-off: R4 500 / year',STANDARD:'Setup: R4 500 — Monthly: R500 / month — Once-off: R7 500 / year',PREMIUM:'Setup: R5 500 — Monthly: R600 / month — Once-off: R9 000 / year'};
-  let msg='Hello Makhanani LTSM 2.0 👋\n\nI want to REQUEST: '+p+'\n'+(prices[p]||'')+'\nSchool: '+((user&&user.schoolName)||'MY SCHOOL')+'\nName: '+((user&&user.name)||'')+'\n\nPlease activate my package.';
-  window.open('https://wa.me/'+WA_NUMBER+'?text='+encodeURIComponent(msg), '_blank');
-}
-let pickedRole=null;
-function pickRole(role, rank, page){
-  pickedRole={role:role,rank:rank,page:page};
-  document.querySelectorAll('.roleBtn').forEach(b=>b.classList.remove('sel'));
-  if(window.event && window.event.currentTarget) window.event.currentTarget.classList.add('sel');
-  let desc={TEACHER:'Teacher → <b>teacher.html</b> — My Classes Only — My Retrieval %.',LIBRARIAN:'Librarian → <b>librarian.html</b> — Stock + Issue / Return / Lost.',HOD:'HOD → <b>hod.html</b> — Approve Dept — My Dept Retrieval %.',PRINCIPAL:'Principal → <b>principal.html</b> — Approve All — Whole School + By Class.',ADMIN:'Admin → <b>users.html</b> — Create / Edit Users.',SUPER_ADMIN:'Super Admin → <b>superadmin.html</b> — Founder Only — All Schools.'};
-  document.getElementById('rolePicked').innerHTML=`✅ Picked: <b>${role}</b> — Rank ${rank} — ${desc[role]||''}`;
-}
+function requestPkg(pkg){ let p=String(pkg||'').toUpperCase(); let msg='Hello Makhanani LTSM 2.0 👋\n\nI want to REQUEST: '+p+'\nSchool: '+((user&&user.schoolName)||'MY SCHOOL')+'\nName: '+((user&&user.name)||''); window.open('https://wa.me/'+WA_NUMBER+'?text='+encodeURIComponent(msg),'_blank'); }
 const ROLE_PAGE={PRINCIPAL:'principal.html',TEACHER:'teacher.html',LIBRARIAN:'librarian.html',HOD:'hod.html',ADMIN:'users.html',SUPER_ADMIN:'superadmin.html'};
-// ===== LOGIN — SHOWS RESPONSE INSTANTLY =====
+// ===== FIREBASE — TRY, BUT DO NOT BLOCK IF FAILS =====
+let rtdb=null, auth=null, firebaseOK=false;
+try{
+  if(typeof firebase!=='undefined'){
+    const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+    if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    rtdb=firebase.database(); auth=firebase.auth(); firebaseOK=true;
+    document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ JS Working — ✅ Firebase Loaded — Buttons should work.';
+  } else {
+    document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ JS Working — ❌ Firebase Script BLOCKED — Use EMERGENCY LOGIN below. Check Ad Blocker / School WiFi.';
+  }
+}catch(e){ document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ JS Working — ❌ Firebase Error: '+e.message+' — Use EMERGENCY LOGIN.'; }
 async function doLogin(){
   let msg=document.getElementById('loginMsg');
-  // SHOW INSTANTLY — So you know button worked
-  msg.innerHTML='<div class="info">🔐 LOGIN CLICKED ✅ — Checking Email + Password...</div>';
+  msg.innerHTML='<div class="info">🔐 LOGIN CLICKED ✅ — Checking...</div>';
   let btn=document.getElementById('loginBtn'); if(btn) btn.textContent='⏳ LOGGING IN...';
   let email=String(document.getElementById('loginEmail').value||'').trim().toLowerCase();
   let pass=document.getElementById('loginPass').value;
-  if(!email||!pass){ msg.innerHTML='<div class="warn">Fill Email + Password. Email was: '+(email||'EMPTY')+'</div>'; if(btn) btn.textContent='🔐 LOGIN →'; return; }
-  msg.innerHTML='<div class="info">🔐 LOGIN CLICKED ✅ — Connecting to Firebase for '+email+'...</div>';
+  if(!email||!pass){ msg.innerHTML='<div class="warn">Fill Email + Password.</div>'; if(btn) btn.textContent='🔐 LOGIN →'; return; }
+  if(!firebaseOK||!auth){ msg.innerHTML='<div class="warn">❌ Firebase is blocked on this WiFi / Browser — Tap 🆘 EMERGENCY LOGIN below to enter, or switch to Phone Data / Incognito.</div>'; if(btn) btn.textContent='🔐 LOGIN →'; return; }
   try{
     let cred=await auth.signInWithEmailAndPassword(email, pass);
     let uid=cred.user.uid;
-    msg.innerHTML='<div class="info">✅ Firebase Auth OK — Finding your Role in Users DB...</div>';
+    msg.innerHTML='<div class="info">✅ Firebase Auth OK — Finding Role...</div>';
     let snap=await rtdb.ref('users').once('value'); let all=snap.val()||{}; let found=null;
     Object.values(all).forEach(u=>{ if(String(u.email||'').toLowerCase()===email || u.uid===uid) found=u; });
-    if(!found){
-      let role=(pickedRole?pickedRole.role:'TEACHER'); let rank=(pickedRole?pickedRole.rank:2);
-      found={id:'U-'+uid.slice(0,6),name:email.split('@')[0].toUpperCase(),email:email,role:role,rank:rank,schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',status:'ACTIVE',uid:uid};
-      msg.innerHTML='<div class="warn">⚠️ Auth OK but User not in Users DB — Logged in as '+role+' fallback. Ask Admin to add you in Users.</div>';
-      await new Promise(r=>setTimeout(r,600));
-    }
-    if(String(found.status||'ACTIVE').toUpperCase()==='DISABLED'){ msg.innerHTML='<div class="warn">⛔ Account DISABLED — Ask Admin to re-activate. WhatsApp 078 023 3263.</div>'; if(btn) btn.textContent='🔐 LOGIN →'; return; }
-    localStorage.setItem('makhanani_user', JSON.stringify(found));
-    localStorage.setItem('makhanani_uid', uid);
-    msg.innerHTML='<div class="ok">✅ Welcome <b>'+toCaps(found.name)+'</b> — '+toCaps(found.role)+' — RANK '+(found.rank||'')+' — Going to '+(ROLE_PAGE[toCaps(found.role)]||'index.html')+'...</div>';
+    if(!found){ found={id:'U-'+uid.slice(0,6),name:email.split('@')[0].toUpperCase(),email:email,role:'TEACHER',rank:2,schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',status:'ACTIVE',uid:uid}; msg.innerHTML='<div class="warn">⚠️ Auth OK but not in Users DB — Fallback TEACHER.</div>'; await new Promise(r=>setTimeout(r,600)); }
+    if(String(found.status||'ACTIVE').toUpperCase()==='DISABLED'){ msg.innerHTML='<div class="warn">⛔ Account DISABLED — WhatsApp 078 023 3263.</div>'; if(btn) btn.textContent='🔐 LOGIN →'; return; }
+    localStorage.setItem('makhanani_user', JSON.stringify(found)); localStorage.setItem('makhanani_uid', uid);
+    msg.innerHTML='<div class="ok">✅ Welcome <b>'+toCaps(found.name)+'</b> — '+toCaps(found.role)+' — Going...</div>';
     setTimeout(()=>{ window.location.href=ROLE_PAGE[toCaps(found.role)]||'index.html'; }, 800);
   }catch(e){
     let m=e.message||'Login failed';
-    if(e.code==='auth/user-not-found' || e.code==='auth/wrong-password' || e.code==='auth/invalid-credential') m='Wrong Email or Password — Check Caps Lock — Or tap FORGOT PASSWORD.';
-    if(e.code==='auth/too-many-requests') m='Too many tries — Wait 1 minute — Then try again.';
-    if(e.code==='auth/network-request-failed') m='No Internet / Firebase blocked by School WiFi / VPN — Try Phone Data + Chrome.';
+    if(e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential') m='Wrong Email or Password — Or tap FORGOT PASSWORD.';
+    if(e.code==='auth/network-request-failed') m='No Internet / Firebase blocked — Try Phone Data or EMERGENCY LOGIN.';
     msg.innerHTML='<div class="warn">❌ '+m+'<br><small>Code: '+(e.code||'')+'</small></div>';
     if(btn) btn.textContent='🔐 LOGIN →';
   }
 }
-// Extra listeners — So tap always fires even if onclick fails
-document.addEventListener('DOMContentLoaded', function(){
-  let b=document.getElementById('loginBtn'); if(b) b.addEventListener('click', doLogin);
-  let d=document.getElementById('demoBtn'); if(d) d.addEventListener('click', demoLogin);
-  let f=document.getElementById('forgotBtn'); if(f) f.addEventListener('click', forgotPass);
-  let ep=document.getElementById('loginPass'); if(ep) ep.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-  let em=document.getElementById('loginEmail'); if(em) em.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-});
 async function forgotPass(){
   let email=String(document.getElementById('loginEmail').value||'').trim().toLowerCase();
-  let msg=document.getElementById('loginMsg');
-  msg.innerHTML='<div class="info">🔑 FORGOT CLICKED ✅ — Sending reset...</div>';
-  if(!email){ msg.innerHTML='<div class="warn">Type your Email first, then tap FORGOT PASSWORD.</div>'; return; }
-  try{ await auth.sendPasswordResetEmail(email); msg.innerHTML='<div class="ok">✅ Reset email sent to <b>'+email+'</b> — Check inbox + spam.</div>'; }
-  catch(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
+  let msg=document.getElementById('loginMsg'); msg.innerHTML='<div class="info">🔑 FORGOT CLICKED ✅ — Sending...</div>';
+  if(!email){ msg.innerHTML='<div class="warn">Type Email first.</div>'; return; }
+  if(!firebaseOK){ msg.innerHTML='<div class="warn">❌ Firebase blocked — Cannot send reset on this WiFi. Use Phone Data.</div>'; return; }
+  try{ await auth.sendPasswordResetEmail(email); msg.innerHTML='<div class="ok">✅ Reset sent to <b>'+email+'</b> — Check inbox + spam.</div>'; }catch(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
 }
 function demoLogin(){
-  document.getElementById('loginMsg').innerHTML='<div class="info">🆓 DEMO CLICKED ✅ — Logging in as DEMO TEACHER...</div>';
+  document.getElementById('loginMsg').innerHTML='<div class="info">🆓 DEMO CLICKED ✅ — Going to Teacher...</div>';
   let demo={id:'DEMO-001',name:'DEMO TEACHER',email:'demo@makhanani.co.za',role:'TEACHER',rank:2,schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',className:'4A',subject:'MATHS',status:'ACTIVE'};
   localStorage.setItem('makhanani_user', JSON.stringify(demo));
   setTimeout(()=>{ window.location.href='teacher.html'; }, 600);
 }
+// ===== EMERGENCY — NO FIREBASE NEEDED =====
+function emergencyLogin(){
+  let email=String(document.getElementById('loginEmail').value||'vusichauke3037@gmail.com').trim().toLowerCase()||'vusichauke3037@gmail.com';
+  let name=email.split('@')[0].toUpperCase()||'VUSI CHAUKE';
+  document.getElementById('loginMsg').innerHTML='<div class="ok">🆘 EMERGENCY CLICKED ✅ — Logging in as SUPER_ADMIN...</div>';
+  let u={id:'EMERG-001',name:name,email:email,role:'SUPER_ADMIN',rank:6,schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',status:'ACTIVE'};
+  localStorage.setItem('makhanani_user', JSON.stringify(u));
+  setTimeout(()=>{ window.location.href='superadmin.html'; }, 600);
+}
 function checkAlready(){
   let el=document.getElementById('alreadyInfo');
-  if(user && user.email){
-    el.innerHTML=`✅ Already logged in as <b>${toCaps(user.name)}</b> — ${toCaps(user.role)} — RANK ${user.rank||''} — School: <b>${toCaps(user.schoolName)}</b><br><button class="btn btn-green" type="button" onclick="go('${ROLE_PAGE[toCaps(user.role)]||'index.html'}')">→ GO TO MY DASHBOARD</button> <button class="btn btn-red" type="button" onclick="doLogout()">🚪 LOGOUT</button>`;
-    document.getElementById('loginEmail').value=user.email;
-  } else { el.innerHTML='👤 <b>Not logged in</b> — Type Email + Password → LOGIN — Or tap DEMO LOGIN to try system.'; }
+  if(user && user.email){ el.innerHTML='✅ Already logged in as <b>'+toCaps(user.name)+'</b> — '+toCaps(user.role)+' — RANK '+(user.rank||'')+'<br><button class="btn btn-green" type="button" onclick="window.location.href=\''+(ROLE_PAGE[toCaps(user.role)]||'index.html')+'\'">→ GO TO MY DASHBOARD</button>'; document.getElementById('loginEmail').value=user.email; }
+  else { el.innerHTML='👤 <b>Not logged in</b> — Type Email + Password → LOGIN — Or tap DEMO / EMERGENCY.'; }
 }
-function doLogout(){ try{ auth.signOut(); }catch(e){} localStorage.removeItem('makhanani_user'); localStorage.removeItem('makhanani_uid'); location.reload(); }
 checkAlready();
-// Make functions global for onclick — In case nav.js overwrites
-window.doLogin=doLogin; window.demoLogin=demoLogin; window.forgotPass=forgotPass; window.pickRole=pickRole; window.go=go;
+window.doLogin=doLogin; window.demoLogin=demoLogin; window.forgotPass=forgotPass; window.emergencyLogin=emergencyLogin;
 </script></body></html>
