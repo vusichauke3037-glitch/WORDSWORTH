@@ -21,12 +21,27 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;b
 @media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>👥 USERS — MAKHANANI LTSM 2.0 — V2.13</h1><p>ADMIN + SUPER ADMIN — ADD / EDIT / RESET / DELETE USERS — REAL USERS ONLY — NO DEMO</p>
+<header><h1>👥 USERS — MAKHANANI LTSM 2.0 — V2.13.1</h1><p>ADMIN + SUPER ADMIN — ADD / EDIT / RESET / DELETE USERS — REAL USERS ONLY — NO DEMO</p>
 <div id="taskbar"></div><script src="nav.js"></script>
-<script>guardPage(5,'Users');</script>
+<script>
+// V2.13.1 FIX — Who Am I shows immediately, even if Firebase fails
+if(typeof guardPage === 'undefined'){
+  document.getElementById('taskbar').innerHTML = '<div style="background:#ef4444;color:#fff;padding:10px;border-radius:8px;font-size:13px;font-weight:900">⚠️ nav.js NOT FOUND — Check GitHub: File must be named exactly nav.js in same folder as users.html — Hard refresh: Close tab + New tab</div>';
+} else {
+  guardPage(5,'Users');
+}
+(function(){
+  let u=null; try{ u=JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){}
+  let el=document.getElementById('roleInfoTop');
+  if(el){
+    if(u) el.innerHTML='👤 <b>'+String(u.name||'').toUpperCase()+'</b> — '+String(u.role||'').toUpperCase()+' — RANK '+(u.rank||'')+' — School: <b>'+String(u.schoolName||'').toUpperCase()+'</b> ('+(u.schoolId||'')+')<br>'+(String(u.role||'').toUpperCase()==='SUPER_ADMIN'?'👑 <b>Super Admin — You can create ANY role including Super Admin.</b>':'⚙️ <b>Admin — You can create any role including Super Admin — But do NOT give Super Admin to Principal / Staff.</b>');
+    else el.innerHTML='🔒 <b>NOT LOGGED IN</b> — Go to login.html — Login as Admin / Super Admin to use Users page.';
+  }
+})();
+</script>
 </header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I</h2><div class="info" id="roleInfo">Loading...</div></div>
+<div class="card"><h2>👤 Who Am I</h2><div class="info" id="roleInfoTop">Loading...</div></div>
 
 <div class="card"><h2>➕ Add / Edit User — <span id="formMode">ADD NEW</span></h2>
 <div class="info" id="formInfo">Fill Name + Email + Password + Role + Classes + Subjects → ADD USER. Classes are 4A-12J. Subjects are CAPS subjects. Teacher + HOD need Classes / Subjects. Librarian + Principal need none. Admin needs none. Super Admin needs none.</div>
@@ -102,7 +117,6 @@ async function addUser(){
   if(role==='TEACHER' && classes.length===0){ document.getElementById('formMsg').innerHTML='<div class="warn">Teacher must pick at least 1 Class.</div>'; return; }
   document.getElementById('formMsg').innerHTML='<div class="info">Creating user... Do not close.</div>';
   try{
-    // Use secondary app to avoid logging out current admin
     let secAppName='sec-'+Date.now();
     let secApp=firebase.initializeApp(firebaseConfig, secAppName);
     let secAuth=secApp.auth();
@@ -132,9 +146,7 @@ async function saveEdit(){
   if((role==='TEACHER'||role==='HOD') && subjects.length===0){ document.getElementById('formMsg').innerHTML='<div class="warn">Teacher / HOD must pick at least 1 Subject.</div>'; return; }
   try{
     await rtdb.ref('users/'+editUid).update({name:name,role:role,rank:ROLE_RANK[role]||1,subjects:subjects,teachingClasses:classes,classes:classes,schoolId:school[0],schoolName:school[1]});
-    let pass=document.getElementById('fPass').value;
-    if(pass && pass.length>=6){ document.getElementById('formMsg').innerHTML='<div class="warn">Profile saved — Password change: Send reset email via RESET PASS button — Password cannot be changed directly here for safety.</div>'; }
-    else document.getElementById('formMsg').innerHTML='<div class="ok">✅ Saved: <b>'+name+'</b> — '+role+' — Rank '+(ROLE_RANK[role]||1)+'</div>';
+    document.getElementById('formMsg').innerHTML='<div class="ok">✅ Saved: <b>'+name+'</b> — '+role+' — Rank '+(ROLE_RANK[role]||1)+'</div>';
     resetForm(); loadUsers();
   }catch(e){ document.getElementById('formMsg').innerHTML='<div class="warn">Save failed: '+e.message+'</div>'; }
 }
@@ -145,7 +157,7 @@ async function resetPass(uid){
 }
 async function deleteUser(uid){
   let u=allUsers[uid]; if(!u) return;
-  if(!confirm('DELETE user '+toCaps(u.name)+' ('+u.email+')?\n\nThis deletes profile in DB.\nYou must ALSO delete in Firebase Console → Auth → Users → '+u.email+'\n\nType OK to delete?')) return;
+  if(!confirm('DELETE user '+toCaps(u.name)+' ('+u.email+')?\n\nThis deletes profile in DB.\nYou must ALSO delete in Firebase Console → Auth → Users → '+u.email)) return;
   try{ await rtdb.ref('users/'+uid).remove(); alert('✅ Deleted profile for '+toCaps(u.name)+'\n\nNow go to Firebase Console → Auth → Delete '+u.email); loadUsers(); }catch(e){ alert('Delete failed: '+e.message); }
 }
 function renderUsers(){
@@ -172,5 +184,4 @@ async function loadUsers(){
   try{ let snap=await rtdb.ref('users').once('value'); allUsers=snap.val()||{}; renderUsers(); }catch(e){ document.getElementById('usersBody').innerHTML='<tr><td colspan="6">Load failed: '+e.message+'</td></tr>'; }
 }
 fillSelects(); onRoleChange(); loadUsers();
-if(user) document.getElementById('roleInfo').innerHTML=`👤 <b>${toCaps(user.name)}</b> — ${toCaps(user.role)} — RANK ${user.rank||''} — School: <b>${toCaps(user.schoolName||'')}</b> (${user.schoolId||''})<br>${user.role==='SUPER_ADMIN'?'👑 <b>Super Admin — You can create ANY role including Super Admin.</b>':'⚙️ <b>Admin — You can create any role including Super Admin — But do NOT give Super Admin to Principal / Staff.</b>'`;
 </script></body></html>
