@@ -18,7 +18,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;b
 @media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>👩‍🏫 TEACHER DASHBOARD — MAKHANANI LTSM 2.0 — V2.21</h1><p>TEACHER ONLY — RANK 2 — MY CLASSES ONLY — MY RETRIEVAL % — WHATSAPP 078 023 3263</p>
+<header><h1>👩‍🏫 TEACHER DASHBOARD — MAKHANANI LTSM 2.0 — V2.22</h1><p>TEACHER ONLY — RANK 2 — MY CLASS ONLY — MY SCHOOL ONLY — WHATSAPP 078 023 3263</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 </header>
 <div class="wrap">
@@ -28,39 +28,40 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;b
 try{
   var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
   if(_u && _u.email){
-    // AUTO-FIX RANK DISPLAY — Teacher must be 2
-    var _rank=_u.rank; if(String(_u.role||'').toUpperCase()==='TEACHER' && _rank!=2){ _rank=2; }
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+String(_u.role||'').toUpperCase()+' — RANK '+_rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Class: '+(String(_u.className||'ALL MY CLASSES').toUpperCase())+' — Subject: '+String(_u.subject||'').toUpperCase()+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
-    if(String(_u.role||'').toUpperCase()==='TEACHER' && _u.rank!=2){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#dc2626">⚠️ Your Rank in Users is '+_u.rank+' — Should be 2 for TEACHER — Ask Super Admin to fix in Users.</span>'; }
-  } else {
-    document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; setTimeout(function(){ window.location.href='login.html'; }, 1500);
-  }
+    var _role=String(_u.role||'').toUpperCase();
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_role+' — RANK '+_u.rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Class: <b>'+String(_u.className||'ALL').toUpperCase()+'</b> — Subject: <b>'+String(_u.subject||'ALL').toUpperCase()+'</b> — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
+    if(_role==='TEACHER' && _u.rank!=2){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#dc2626">⚠️ Your Rank is '+_u.rank+' — Should be 2 for TEACHER — Ask Super Admin to fix in Users.</span>'; }
+    if(_role!=='TEACHER'){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#d97706">👀 VIEW-ONLY MODE — You are '+_role+' — Only a real TEACHER can Issue / Mark. Login as Teacher to Issue.</span>'; }
+  } else { document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; setTimeout(function(){ window.location.href='login.html'; },1500); }
 }catch(e){ document.getElementById('whoAmI').innerHTML='Error: '+e.message; }
 </script>
 <div class="info" id="debugBox" style="background:#e0e7ff">🔍 DEBUG: Checking Firebase...</div>
 <div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 OPEN MANUALS → TEACHER MANUAL</button></div>
 <div class="row"><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-gold" onclick="go('subscriptions.html')">💰 SUBSCRIPTIONS →</button></div></div>
 
-<div class="card"><h2>🏫 My Class — Filter Everything To My Class</h2>
-<div class="info">Pick your class below — Retrieval % + Learners + Books + Issues will filter to that class only. If you teach 2 classes, pick one, check, then pick the other. Or pick ALL MY CLASSES to see all your classes together.</div>
-<label>My Class</label><select id="classFilter" onchange="loadData()"><option value="ALL">ALL MY CLASSES — All classes I teach</option></select>
-<div class="info" id="classInfo">Loading classes...</div></div>
-
 <div class="grid">
 <div class="kpi"><b id="kpiLearners">-</b><span>LEARNERS — MY CLASS</span></div>
-<div class="kpi"><b id="kpiBooks">-</b><span>BOOKS — MY CLASS</span></div>
+<div class="kpi"><b id="kpiBooks">-</b><span>BOOKS — MY SUBJECT</span></div>
 <div class="kpi"><b id="kpiIssued">-</b><span>ISSUED — MY CLASS</span></div>
-<div class="kpi"><b id="kpiReturned">-</b><span>RETURNED — MY CLASS</span></div>
-<div class="kpi"><b id="kpiOut">-</b><span>STILL OUT — MY CLASS</span></div>
-<div class="kpi"><b id="kpiRetrieval" style="color:#f59e0b">-</b><span>MY RETRIEVAL %</span></div>
+<div class="kpi"><b id="kpiReturned">-</b><span>RETURNED</span></div>
+<div class="kpi"><b id="kpiOut">-</b><span>STILL OUT</span></div>
+<div class="kpi"><b id="kpiRetrieval" style="color:#f59e0b">-</b><span>RETRIEVAL % — MY CLASS</span></div>
 </div>
 
-<div class="card"><h2>♻️ My Retrieval % — My Class Only</h2>
-<div class="info"><b>Formula:</b> Retrieval % = (Returned / Issued) x 100 — Target 100% — 95%+ Green ✅ — 85-94% Orange ⚠️ — Below 85% Red 🚨</div>
+<div class="card"><h2>♻️ Retrieval % — My Class</h2>
+<div class="info"><b>Formula:</b> Retrieval % = (Returned / Issued) x 100 — Target 100%</div>
 <div class="info" style="background:#e2e8f0;padding:4px;border-radius:8px"><div id="retrievalBar" style="background:#f59e0b;height:22px;border-radius:6px;width:0%;text-align:center;color:#fff;font-weight:900;font-size:12px;line-height:22px">Loading...</div></div>
 <div id="retrievalMsg" class="info">Loading...</div></div>
 
-<div class="card"><h2>📚 My Learners — Who Did Not Return?</h2><div style="overflow-x:auto"><table><thead><tr><th>Learner</th><th>Class</th><th>Book</th><th>Status</th></tr></thead><tbody id="learnersBody"><tr><td colspan="4">Loading...</td></tr></tbody></table></div></div>
+<div class="card"><h2>📖 Issue Book — My Class Learner Takes Book</h2>
+<div class="info">Pick Learner in YOUR class + Book → Tap ISSUE. Teacher can only issue to their own class.</div>
+<label>Learner — My Class *</label><select id="issueLearner"><option value="">-- Pick Learner --</option></select>
+<label>Class</label><input id="issueClass" placeholder="Auto — e.g. 10A">
+<label>Book *</label><select id="issueBook"><option value="">-- Pick Book --</option></select>
+<div id="issueMsg"></div>
+<div class="row"><button class="btn btn-green" onclick="issueBook()">📖 ISSUE BOOK →</button></div></div>
+
+<div class="card"><h2>📚 My Class Issues</h2><div style="overflow-x:auto"><table><thead><tr><th>Learner</th><th>Class</th><th>Book</th><th>Status</th><th>Date</th></tr></thead><tbody id="issuesBody"><tr><td colspan="5">Loading...</td></tr></tbody></table></div></div>
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
 </div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -70,45 +71,51 @@ try{
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
 var user=null; try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-if(!user || String(user.role||'').toUpperCase()!=='TEACHER'){ alert('⛔ Teacher only.'); window.location.href='login.html'; }
-var rtdb=null, firebaseOK=false;
+// V2.22 FIX — Teacher + Super Admin + Admin + Principal + HOD can VIEW. Only Teacher can Issue.
+var _ROLE = String(user && user.role || '').toUpperCase();
+if(!user || ['TEACHER','SUPER_ADMIN','ADMIN','PRINCIPAL','HOD'].indexOf(_ROLE)===-1){ alert('⛔ Teacher only.'); window.location.href='login.html'; }
+window._IS_VIEW_ONLY = (_ROLE !== 'TEACHER');
+var rtdb=null, firebaseOK=false, learners={}, books={}, issues={};
 try{ if(typeof firebase!=='undefined'){ var cfg={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"}; if(!firebase.apps.length) firebase.initializeApp(cfg); rtdb=firebase.database(); firebaseOK=true; } }catch(e){ firebaseOK=false; }
 function setKPI(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
-function showBlocked(){
-  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Logged in — ❌ Firebase BLOCKED — Switch to Phone Data and reload.';
-  document.getElementById('retrievalMsg').innerHTML='❌ Firebase blocked — Switch to Phone Data.';
-  document.getElementById('learnersBody').innerHTML='<tr><td colspan="4">❌ Firebase blocked.</td></tr>';
-  document.getElementById('classInfo').innerHTML='❌ Firebase blocked — Class list cannot load.';
+function isMine(i){
+  if(_ROLE==='SUPER_ADMIN') return true;
+  if(user.className && i.className) return String(i.className).toUpperCase()===String(user.className).toUpperCase();
+  return true;
 }
-async function loadData(){
-  if(!firebaseOK){ showBlocked(); return; }
-  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Firebase Loaded — Loading My Class data...';
-  try{
-    var sel=document.getElementById('classFilter').value;
-    var snaps=await Promise.all([rtdb.ref('learners').once('value'), rtdb.ref('books').once('value'), rtdb.ref('issues').once('value')]);
-    var learners=Object.values(snaps[0].val()||{}); var books=Object.values(snaps[1].val()||{}); var issues=Object.values(snaps[2].val()||{});
-    // Filter to my school
-    learners=learners.filter(function(l){ return !user.schoolId || String(l.schoolId||'').toUpperCase()===String(user.schoolId).toUpperCase() || !l.schoolId; });
-    issues=issues.filter(function(i){ return !user.schoolId || String(i.schoolId||'').toUpperCase()===String(user.schoolId).toUpperCase() || !i.schoolId; });
-    // Build class list once
-    var selEl=document.getElementById('classFilter');
-    if(selEl.options.length<=1){
-      var classes={}; learners.forEach(function(l){ if(l.className) classes[String(l.className).toUpperCase()]=1; }); issues.forEach(function(i){ if(i.className) classes[String(i.className).toUpperCase()]=1; });
-      Object.keys(classes).sort().forEach(function(c){ var o=document.createElement('option'); o.value=c; o.textContent=c; selEl.appendChild(o); });
-      if(user.className){ selEl.value=String(user.className).toUpperCase(); sel=selEl.value; }
-    }
-    var myLearners=sel==='ALL'?learners:learners.filter(function(l){ return String(l.className||'').toUpperCase()===sel; });
-    var myIssues=sel==='ALL'?issues:issues.filter(function(i){ return String(i.className||'').toUpperCase()===sel; });
-    var issued=myIssues.length; var returned=myIssues.filter(function(i){ return String(i.status||'').toUpperCase()==='RETURNED'; }).length;
-    var ret=issued>0?Math.round(returned/issued*100):100;
-    setKPI('kpiLearners', myLearners.length); setKPI('kpiBooks', books.length); setKPI('kpiIssued', issued); setKPI('kpiReturned', returned); setKPI('kpiOut', issued-returned); setKPI('kpiRetrieval', ret+'%');
-    var bar=document.getElementById('retrievalBar'); bar.style.width=ret+'%'; bar.textContent=ret+'% — My Retrieval'; bar.style.background=ret>=95?'#22c55e':ret>=85?'#f59e0b':'#ef4444';
-    document.getElementById('retrievalMsg').innerHTML='✅ My Class: <b>'+(sel==='ALL'?'ALL MY CLASSES':sel)+'</b> — Issued <b>'+issued+'</b> — Returned <b>'+returned+'</b> — Still Out <b>'+(issued-returned)+'</b> — Retrieval % <b>'+ret+'%</b>';
-    document.getElementById('classInfo').innerHTML='Showing: <b>'+(sel==='ALL'?'ALL MY CLASSES':sel)+'</b> — Learners: '+myLearners.length;
-    var notReturned=myIssues.filter(function(i){ return String(i.status||'').toUpperCase()!=='RETURNED'; });
-    document.getElementById('learnersBody').innerHTML=notReturned.length?notReturned.map(function(i){ return '<tr><td>'+String(i.learnerName||i.learnerId||'').toUpperCase()+'</td><td>'+String(i.className||'').toUpperCase()+'</td><td>'+String(i.bookTitle||i.bookId||'').toUpperCase()+'</td><td>🚨 NOT RETURNED</td></tr>'; }).join(''):'<tr><td colspan="4">✅ All books returned in this class — 100% Retrieval!</td></tr>';
-    document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Live Data Loaded ✅';
-  }catch(e){ document.getElementById('debugBox').innerHTML='🔍 DEBUG: ❌ Load failed: '+e.message; showBlocked(); }
+function render(){
+  var myLearners = Object.values(learners).filter(function(l){ if(_ROLE==='SUPER_ADMIN'||!user.className) return true; return String(l.className||'').toUpperCase()===String(user.className).toUpperCase(); });
+  var myBooks = Object.values(books).filter(function(b){ if(_ROLE==='SUPER_ADMIN'||!user.subject) return true; return String(b.subject||'').toUpperCase()===String(user.subject).toUpperCase(); });
+  var issuesArr = Object.values(issues).filter(isMine);
+  var issued = issuesArr.length;
+  var returned = issuesArr.filter(function(i){ return String(i.status||'').toUpperCase()==='RETURNED'; }).length;
+  var ret = issued>0?Math.round(returned/issued*100):100;
+  setKPI('kpiLearners', myLearners.length); setKPI('kpiBooks', myBooks.length); setKPI('kpiIssued', issued); setKPI('kpiReturned', returned); setKPI('kpiOut', issued-returned); setKPI('kpiRetrieval', ret+'%');
+  var bar=document.getElementById('retrievalBar'); bar.style.width=ret+'%'; bar.textContent=ret+'% — Retrieval'; bar.style.background=ret>=95?'#22c55e':ret>=85?'#f59e0b':'#ef4444';
+  document.getElementById('retrievalMsg').innerHTML='✅ Issued <b>'+issued+'</b> — Returned <b>'+returned+'</b> — Still Out <b>'+(issued-returned)+'</b> — Retrieval % <b>'+ret+'%</b>';
+  var ls=document.getElementById('issueLearner'); var curL=ls.value; ls.innerHTML='<option value="">-- Pick Learner --</option>';
+  myLearners.forEach(function(l){ var o=document.createElement('option'); o.value=l.id||l.name; o.textContent=String(l.name||l.learnerName||'').toUpperCase()+' — '+(l.className||''); o.dataset.cls=l.className||''; o.dataset.key=l._key||''; ls.appendChild(o); }); ls.value=curL;
+  // Store keys for issue — rebuild map
+  window._myLearnersMap = {}; myLearners.forEach(function(l){ window._myLearnersMap[l.id||l.name]=l; });
+  var bs=document.getElementById('issueBook'); var curB=bs.value; bs.innerHTML='<option value="">-- Pick Book --</option>';
+  Object.keys(books).forEach(function(k){ var b=books[k]; b._key=k; if(_ROLE!=='SUPER_ADMIN' && user.subject && String(b.subject||'').toUpperCase()!==String(user.subject).toUpperCase()) return; var o=document.createElement('option'); o.value=k; o.textContent=String(b.title||b.bookTitle||'').toUpperCase()+' — '+(b.subject||''); bs.appendChild(o); }); bs.value=curB;
+  document.getElementById('issuesBody').innerHTML=issuesArr.length?issuesArr.slice().reverse().map(function(i){ return '<tr><td>'+String(i.learnerName||'').toUpperCase()+'</td><td>'+String(i.className||'').toUpperCase()+'</td><td>'+String(i.bookTitle||'').toUpperCase()+'</td><td>'+(String(i.status||'').toUpperCase()==='RETURNED'?'✅ RETURNED':'🚨 ISSUED — STILL OUT')+'</td><td>'+new Date(i.createdAt||Date.now()).toLocaleDateString()+'</td></tr>'; }).join(''):'<tr><td colspan="5">No issues yet for this class.</td></tr>';
+  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Firebase Live Data Loaded ✅';
 }
-loadData();
+document.getElementById('issueLearner').addEventListener('change', function(){ var o=this.options[this.selectedIndex]; if(o) document.getElementById('issueClass').value=o.dataset.cls||''; });
+async function issueBook(){
+  var msg=document.getElementById('issueMsg');
+  if(window._IS_VIEW_ONLY){ msg.innerHTML='<div class="warn">⛔ View-Only — Login as TEACHER to Issue.</div>'; return; }
+  var lid=document.getElementById('issueLearner').value; var bid=document.getElementById('issueBook').value; var cls=document.getElementById('issueClass').value.trim().toUpperCase();
+  if(!lid||!bid){ msg.innerHTML='<div class="warn">❌ Pick Learner + Book.</div>'; return; }
+  var l = window._myLearnersMap[lid] || {name:lid}; var b=books[bid];
+  try{ await rtdb.ref('issues').push().set({learnerId:lid,learnerName:l.name||l.learnerName||'',className:cls||l.className||'',bookId:bid,bookTitle:b.title||b.bookTitle||'',subject:b.subject||'',schoolId:user.schoolId||'WHS',schoolName:user.schoolName||'',status:'ISSUED',createdAt:Date.now(),issuedBy:user.email}); msg.innerHTML='<div class="ok">✅ Issued: <b>'+String(l.name||'').toUpperCase()+'</b> took <b>'+String(b.title||'').toUpperCase()+'</b></div>'; }catch(e){ msg.innerHTML='<div class="warn">❌ Issue failed: '+e.message+'</div>'; }
+}
+if(!firebaseOK){ document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Logged in — ❌ Firebase BLOCKED — Turn OFF WiFi, use Phone Data, reload.'; }
+else {
+  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Firebase Loaded — Loading...';
+  rtdb.ref('learners').on('value', function(s){ learners=s.val()||{}; Object.keys(learners).forEach(function(k){ learners[k]._key=k; learners[k].id=k; }); render(); });
+  rtdb.ref('books').on('value', function(s){ books=s.val()||{}; render(); });
+  rtdb.ref('issues').on('value', function(s){ issues=s.val()||{}; render(); });
+}
 </script></body></html>
