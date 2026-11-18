@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Teacher / Educator - Makhanani LTSM 2.0</title>
+<script src="firebase.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
@@ -19,23 +20,22 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 @media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>👩‍🏫 TEACHER / EDUCATOR DASHBOARD — MAKHANANI LTSM 2.0 — V2.23</h1><p>TEACHER = EDUCATOR — RANK 2 — ISSUE + REQUEST TEXTBOOK — MY CLASSES A TO J ONLY</p>
+<header><h1>👩‍🏫 TEACHER / EDUCATOR — MAKHANANI LTSM 2.0 — FIREBASE V2.24</h1><p>TEACHER = EDUCATOR — RANK 2 — FIREBASE LIVE — MY CLASSES A TO J ONLY</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 </header>
 <div class="wrap">
 <div class="card"><h2>👤 Who Am I — Teacher / Educator</h2>
-<div class="info" id="whoAmI">Loading...</div>
+<div class="info" id="whoAmI">Loading from Firebase...</div>
 <div class="warn" id="viewOnly" style="display:none"></div>
-<div class="ok" id="debug">DEBUG: Checking...</div>
-<div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 OPEN MANUALS → TEACHER / EDUCATOR</button></div></div>
+<div class="ok" id="debug">DEBUG: Connecting to Firebase...</div>
+<div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 MANUALS → TEACHER</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 
-<div class="card"><h2>📊 My KPIs — My Classes Only</h2>
+<div class="card"><h2>📊 My KPIs — Firebase Live</h2>
 <div class="row"><div class="kpi">My Requests<b id="kReq">0</b></div><div class="kpi">Pending<b id="kPend">0</b></div><div class="kpi">Approved<b id="kAppr">0</b></div><div class="kpi">Issued<b id="kIss">0</b></div></div></div>
 
-<div class="card" id="requestCard"><h2>📝 REQUEST TEXTBOOK — Teacher / Educator — Dropdowns Only, No Typing</h2>
-<div class="info">Request goes to <b>HOD for YOUR subject</b> → HOD Approves → You can then Issue. Pick from dropdowns below.</div>
-
-<label>📚 Book Title * — Pick from Dropdown</label>
+<div class="card"><h2>📝 REQUEST TEXTBOOK — Dropdowns Only</h2>
+<div class="info">Request goes to <b>HOD for YOUR subject</b> → HOD Approves → You Issue. Saved to Firebase <b>requests</b>.</div>
+<label>📚 Book Title *</label>
 <select id="reqTitle"><option value="">-- Pick Textbook --</option>
 <option>MATHS GRADE 8 TEXTBOOK</option><option>MATHS GRADE 9 TEXTBOOK</option><option>MATHS GRADE 10 TEXTBOOK</option><option>MATHS GRADE 11 TEXTBOOK</option><option>MATHS GRADE 12 TEXTBOOK</option>
 <option>ENGLISH GRADE 8 TEXTBOOK</option><option>ENGLISH GRADE 9 TEXTBOOK</option><option>ENGLISH GRADE 10 TEXTBOOK</option><option>ENGLISH GRADE 11 TEXTBOOK</option><option>ENGLISH GRADE 12 TEXTBOOK</option>
@@ -48,106 +48,93 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 <option>HISTORY GRADE 10 TEXTBOOK</option><option>HISTORY GRADE 11 TEXTBOOK</option><option>HISTORY GRADE 12 TEXTBOOK</option>
 <option>LIFE ORIENTATION GRADE 10 TEXTBOOK</option><option>LIFE ORIENTATION GRADE 11 TEXTBOOK</option><option>LIFE ORIENTATION GRADE 12 TEXTBOOK</option>
 <option>OTHER — See Note Below</option></select>
-
-<label>📖 Subject * — Pick from Dropdown</label>
-<select id="reqSubject"><option value="">-- Pick Subject --</option>
-<option>MATHS</option><option>ENGLISH</option><option>AFRIKAANS</option><option>PHYSICAL SCIENCES</option><option>LIFE SCIENCES</option><option>ACCOUNTING</option><option>BUSINESS STUDIES</option><option>GEOGRAPHY</option><option>HISTORY</option><option>LIFE ORIENTATION</option></select>
-
-<label>🏫 Class / Grade * — Pick from Dropdown — ONLY YOUR Assigned Classes A to J Show</label>
+<label>📖 Subject *</label>
+<select id="reqSubject"><option value="">-- Pick Subject --</option><option>MATHS</option><option>ENGLISH</option><option>AFRIKAANS</option><option>PHYSICAL SCIENCES</option><option>LIFE SCIENCES</option><option>ACCOUNTING</option><option>BUSINESS STUDIES</option><option>GEOGRAPHY</option><option>HISTORY</option><option>LIFE ORIENTATION</option></select>
+<label>🏫 Class / Grade * — ONLY YOUR Assigned Classes A-J</label>
 <select id="reqClass"><option value="">-- Pick Class --</option></select>
-<div class="info" id="myClassesInfo">Your classes: Loading...</div>
-
-<label>🔢 Quantity Needed *</label><select id="reqQty"><option value="">-- Pick Quantity --</option><option>1</option><option>5</option><option>10</option><option>15</option><option>20</option><option>25</option><option>30</option><option>35</option><option>40</option><option>50</option></select>
-
-<label>📝 Reason / Note (Optional)</label><input id="reqNote" placeholder="e.g. 5 learners without books">
+<div class="info" id="myClassesInfo">Your classes: Loading from Firebase...</div>
+<label>🔢 Quantity *</label><select id="reqQty"><option value="">-- Pick Quantity --</option><option>1</option><option>5</option><option>10</option><option>15</option><option>20</option><option>25</option><option>30</option><option>35</option><option>40</option><option>50</option></select>
+<label>📝 Reason / Note</label><input id="reqNote" placeholder="e.g. 5 learners without books">
 <div id="reqMsg"></div>
-<div class="row"><button class="btn btn-green" id="reqBtn" onclick="submitRequest()">📝 SUBMIT REQUEST → HOD</button></div></div>
+<div class="row"><button class="btn btn-green" id="reqBtn" onclick="submitRequest()">📝 SUBMIT REQUEST → HOD — FIREBASE</button></div></div>
 
-<div class="card"><h2>📋 MY REQUESTS — Teacher Can See All Hers Here</h2>
-<div class="info">Every request YOU submit appears here instantly.</div>
-<div id="reqList"></div>
-<div class="row"><button class="btn btn-grey" onclick="loadRequests()">🔄 REFRESH MY REQUESTS</button></div></div>
+<div class="card"><h2>📋 MY REQUESTS — Firebase Live</h2><div id="reqList"></div>
+<div class="row"><button class="btn btn-grey" onclick="loadRequests()">🔄 REFRESH</button></div></div>
 
-<div class="card"><h2>📖 ISSUE BOOK — Teacher / Educator — After HOD Approves</h2>
-<div class="info">Only Approved requests can be Issued. If HOD has not approved yet, you will see PENDING above.</div>
+<div class="card"><h2>📖 ISSUE BOOK — After HOD Approves</h2>
 <label>Learner Name *</label><input id="issLearner" placeholder="e.g. THABO MOKOENA">
-<label>Book Title * — Dropdown</label><select id="issBook"><option value="">-- Pick Textbook To Issue --</option>
-<option>MATHS GRADE 10 TEXTBOOK</option><option>ENGLISH GRADE 10 TEXTBOOK</option><option>PHYSICAL SCIENCES GRADE 10 TEXTBOOK</option><option>LIFE SCIENCES GRADE 10 TEXTBOOK</option><option>ACCOUNTING GRADE 10 TEXTBOOK</option><option>GEOGRAPHY GRADE 10 TEXTBOOK</option><option>HISTORY GRADE 10 TEXTBOOK</option></select>
-<label>Class * — Dropdown — Only Your Classes A to J</label><select id="issClass"><option value="">-- Pick Class --</option></select>
+<label>Book Title * — Dropdown</label><select id="issBook"><option value="">-- Pick Textbook --</option><option>MATHS GRADE 10 TEXTBOOK</option><option>ENGLISH GRADE 10 TEXTBOOK</option><option>PHYSICAL SCIENCES GRADE 10 TEXTBOOK</option><option>LIFE SCIENCES GRADE 10 TEXTBOOK</option><option>ACCOUNTING GRADE 10 TEXTBOOK</option><option>GEOGRAPHY GRADE 10 TEXTBOOK</option><option>HISTORY GRADE 10 TEXTBOOK</option></select>
+<label>Class * — Only Your Classes A-J</label><select id="issClass"><option value="">-- Pick Class --</option></select>
 <div id="issMsg"></div>
-<div class="row"><button class="btn btn-green" id="issBtn" onclick="issueBook()">📖 ISSUE BOOK</button></div></div>
+<div class="row"><button class="btn btn-green" id="issBtn" onclick="issueBook()">📖 ISSUE BOOK — FIREBASE</button></div></div>
 
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
 </div>
 <script>
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
-var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-var _role=_u?String(_u.role||'').toUpperCase():''; var _rank=_u?Number(_u.rank||0):0;
-var _isViewOnly = (_role==='SUPER_ADMIN' && _rank===6);
-var _isEducator = (_role==='TEACHER' && _rank===2);
-// CLASSES A TO J — Grade 8 to 12 — All 50
-function allClassesAJ(){
-  var a=[]; var letters=['A','B','C','D','E','F','G','H','I','J']; var grades=['8','9','10','11','12'];
-  grades.forEach(function(g){ letters.forEach(function(l){ a.push(g+l); }); });
-  return a;
-}
-try{
-  if(_u && _u.email){
-    var _cls = _u.classes || (_u.className ? _u.className.split(',').map(function(s){return s.trim();}) : [_u.class || '10A']);
-    // If user has ALL, expand to all 50 A-J
+async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
+var _u=null;
+function allClassesAJ(){ var a=[]; var L=['A','B','C','D','E','F','G','H','I','J']; var G=['8','9','10','11','12']; G.forEach(function(g){ L.forEach(function(l){ a.push(g+l); }); }); return a; }
+async function init(){
+  try{
+    _u = await getCurrentUser();
+    if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; document.getElementById('debug').innerHTML='DEBUG: ❌ Not logged in'; return; }
+    var _cls = _u.classes || (_u.className ? _u.className.split(',').map(function(s){return s.trim();}) : []);
     if(_cls.length===1 && _cls[0]==='ALL') _cls = allClassesAJ();
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — TEACHER / EDUCATOR — RANK '+_rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Classes: <b>'+_cls.join(', ')+'</b> — Subject: '+String(_u.subject||'ALL')+' — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
-    document.getElementById('myClassesInfo').innerHTML='Your classes: <b>'+_cls.join(', ')+'</b> — These are the only classes in the dropdown below. Set in Users by Super Admin.';
-    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live Data Loaded ✅ — Teacher / Educator: '+String(_u.email||'');
+    if(!_cls.length) _cls=['10A'];
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — TEACHER / EDUCATOR — RANK '+_u.rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Classes: <b>'+_cls.join(', ')+'</b> — Subject: '+String(_u.subject||'ALL')+' — Email: '+_u.email+' — <span style="color:#16a34a">FIREBASE LIVE ✅</span>';
+    document.getElementById('myClassesInfo').innerHTML='Your classes: <b>'+_cls.join(', ')+'</b> — From Firebase Users — Set in Users by Super Admin.';
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live Data Loaded ✅ — Teacher: '+_u.email;
     var _rc=document.getElementById('reqClass'); var _ic=document.getElementById('issClass');
     _rc.innerHTML='<option value="">-- Pick Class --</option>'; _ic.innerHTML='<option value="">-- Pick Class --</option>';
-    _cls.forEach(function(c){
-      var o1=document.createElement('option'); o1.value=c; o1.textContent=c; _rc.appendChild(o1);
-      var o2=document.createElement('option'); o2.value=c; o2.textContent=c; _ic.appendChild(o2);
-    });
+    _cls.forEach(function(c){ var o1=document.createElement('option'); o1.value=c; o1.textContent=c; _rc.appendChild(o1); var o2=document.createElement('option'); o2.value=c; o2.textContent=c; _ic.appendChild(o2); });
     if(_u.subject && _u.subject!=='ALL') document.getElementById('reqSubject').value=_u.subject;
-  } else { document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; document.getElementById('debug').innerHTML='DEBUG: ❌ Not logged in'; }
-}catch(e){ document.getElementById('whoAmI').innerHTML='Error: '+e.message; }
-if(_isViewOnly){
-  document.getElementById('viewOnly').style.display='block';
-  document.getElementById('viewOnly').innerHTML='👀 <b>VIEW-ONLY MODE</b> — You are SUPER_ADMIN — Only a real TEACHER / EDUCATOR can Request / Issue. Login as Teacher to Request.';
-  document.getElementById('reqBtn').disabled=true; document.getElementById('issBtn').disabled=true;
+    if(String(_u.role).toUpperCase()==='SUPER_ADMIN'){
+      document.getElementById('viewOnly').style.display='block';
+      document.getElementById('viewOnly').innerHTML='👀 VIEW-ONLY — Super Admin cannot Request / Issue. Login as Teacher.';
+      document.getElementById('reqBtn').disabled=true; document.getElementById('issBtn').disabled=true;
+    }
+    loadRequests();
+    // Live updates — When HOD approves, list updates without refresh
+    db.ref('requests').orderByChild('teacherEmail').equalTo(_u.email).on('value', function(){ loadRequests(); });
+  }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
 }
-function getReqs(){ try{ return JSON.parse(localStorage.getItem('makhanani_requests')||'[]'); }catch(e){ return []; } }
-function saveReqs(a){ localStorage.setItem('makhanani_requests', JSON.stringify(a)); }
-function submitRequest(){
-  if(_isViewOnly){ document.getElementById('reqMsg').innerHTML='<div class="warn">⛔ View-Only — Login as TEACHER / EDUCATOR to Request.</div>'; return; }
+async function submitRequest(){
   var title=document.getElementById('reqTitle').value, subj=document.getElementById('reqSubject').value, cls=document.getElementById('reqClass').value, qty=document.getElementById('reqQty').value, note=document.getElementById('reqNote').value.trim();
-  if(!title||!subj||!cls||!qty){ document.getElementById('reqMsg').innerHTML='<div class="warn">❌ Pick Book Title + Subject + Class + Quantity from Dropdowns.</div>'; return; }
-  var all=getReqs();
-  all.push({ id:Date.now(), title:title, subject:subj, className:cls, qty:qty, note:note, teacher:String(_u.name||''), teacherEmail:String(_u.email||''), school:String(_u.schoolName||''), status:'PENDING', date:new Date().toLocaleString() });
-  saveReqs(all);
-  document.getElementById('reqMsg').innerHTML='<div class="ok">✅ Request SUBMITTED — <b>'+title+'</b> — Class: '+cls+' — Subject: '+subj+' — Qty: '+qty+' — Status: PENDING — HOD for '+subj+' will see it now.</div>';
-  document.getElementById('reqTitle').value=''; document.getElementById('reqNote').value='';
-  loadRequests();
+  if(!title||!subj||!cls||!qty){ document.getElementById('reqMsg').innerHTML='<div class="warn">❌ Pick Book + Subject + Class + Quantity from Dropdowns.</div>'; return; }
+  try{
+    await db.ref('requests').push({ title:title, subject:subj, className:cls, qty:qty, note:note, teacher:String(_u.name||''), teacherEmail:String(_u.email||''), school:String(_u.schoolName||''), schoolCode:String(_u.schoolCode||'WHS'), status:'PENDING', date:new Date().toLocaleString() });
+    document.getElementById('reqMsg').innerHTML='<div class="ok">✅ Saved to Firebase — <b>'+title+'</b> — Class: '+cls+' — Qty: '+qty+' — Status: PENDING — HOD for '+subj+' will see it now.</div>';
+    document.getElementById('reqTitle').value=''; document.getElementById('reqNote').value='';
+    loadRequests();
+  }catch(e){ document.getElementById('reqMsg').innerHTML='<div class="warn">❌ Firebase Error: '+e.message+' — Check Rules + Login.</div>'; }
 }
-function loadRequests(){
-  var all=getReqs();
-  var mine = _isViewOnly ? all : all.filter(function(r){ return r.teacherEmail===(_u&&_u.email); });
-  document.getElementById('kReq').textContent=mine.length;
-  document.getElementById('kPend').textContent=mine.filter(function(r){return r.status==='PENDING'}).length;
-  document.getElementById('kAppr').textContent=mine.filter(function(r){return r.status==='APPROVED'}).length;
-  document.getElementById('kIss').textContent=mine.filter(function(r){return r.status==='ISSUED'}).length;
-  if(!mine.length){ document.getElementById('reqList').innerHTML='<div class="warn">No requests yet — Submit your first request above.</div>'; return; }
-  var h='<table><tr><th>Date</th><th>Book</th><th>Class / Subject</th><th>Qty</th><th>Status</th></tr>';
-  mine.slice().reverse().forEach(function(r){
-    var b=r.status==='PENDING'?'b-pend':r.status==='APPROVED'?'b-appr':'b-rej';
-    h+='<tr><td>'+r.date+'</td><td><b>'+r.title+'</b><br><small>'+(r.note||'')+'</small></td><td>'+r.className+' / '+r.subject+'</td><td>'+r.qty+'</td><td><span class="badge '+b+'">'+r.status+'</span></td></tr>';
-  });
-  h+='</table>';
-  document.getElementById('reqList').innerHTML=h;
+async function loadRequests(){
+  if(!_u) return;
+  try{
+    var snap = await db.ref('requests').orderByChild('teacherEmail').equalTo(_u.email).once('value');
+    var mine=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; mine.push(v); });
+    document.getElementById('kReq').textContent=mine.length;
+    document.getElementById('kPend').textContent=mine.filter(function(r){return r.status==='PENDING'}).length;
+    document.getElementById('kAppr').textContent=mine.filter(function(r){return r.status==='APPROVED'}).length;
+    document.getElementById('kIss').textContent=mine.filter(function(r){return r.status==='ISSUED'}).length;
+    if(!mine.length){ document.getElementById('reqList').innerHTML='<div class="warn">No requests yet in Firebase — Submit your first request above.</div>'; return; }
+    var h='<table><tr><th>Date</th><th>Book</th><th>Class / Subject</th><th>Qty</th><th>Status</th></tr>';
+    mine.slice().reverse().forEach(function(r){
+      var b=r.status==='PENDING'?'b-pend':r.status==='APPROVED'?'b-appr':'b-rej';
+      h+='<tr><td>'+(r.date||'')+'</td><td><b>'+r.title+'</b><br><small>'+(r.note||'')+'</small></td><td>'+r.className+' / '+r.subject+'</td><td>'+r.qty+'</td><td><span class="badge '+b+'">'+r.status+'</span></td></tr>';
+    });
+    h+='</table>'; document.getElementById('reqList').innerHTML=h;
+  }catch(e){ document.getElementById('reqList').innerHTML='<div class="warn">Firebase Error: '+e.message+'</div>'; }
 }
-function issueBook(){
-  if(_isViewOnly){ document.getElementById('issMsg').innerHTML='<div class="warn">⛔ View-Only — Login as TEACHER / EDUCATOR to Issue.</div>'; return; }
+async function issueBook(){
   var l=document.getElementById('issLearner').value.trim(), b=document.getElementById('issBook').value, c=document.getElementById('issClass').value;
-  if(!l||!b||!c){ document.getElementById('issMsg').innerHTML='<div class="warn">❌ Fill Learner + Pick Book + Pick Class from Dropdowns.</div>'; return; }
-  document.getElementById('issMsg').innerHTML='<div class="ok">✅ Issued: <b>'+b+'</b> to '+l+' — Class: '+c+' — Recorded.</div>';
+  if(!l||!b||!c){ document.getElementById('issMsg').innerHTML='<div class="warn">❌ Fill Learner + Pick Book + Pick Class.</div>'; return; }
+  try{
+    await db.ref('issues').push({ learner:l.toUpperCase(), book:b, className:c, teacher:String(_u.name||''), teacherEmail:String(_u.email||''), school:String(_u.schoolName||''), status:'ISSUED', date:new Date().toLocaleString() });
+    document.getElementById('issMsg').innerHTML='<div class="ok">✅ Issued to Firebase: <b>'+b+'</b> to '+l+' — Class: '+c+'</div>';
+  }catch(e){ document.getElementById('issMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
 }
-loadRequests();
+init();
 </script></body></html>
