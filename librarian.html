@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Librarian - Makhanani LTSM 2.0 - V2.30 Phases Fixed</title>
+<title>Librarian - Makhanani LTSM 2.0 - V2.30.3 Scan Book Numbers Stock Control</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
   const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -19,133 +20,188 @@ header h1{margin:0;font-size:20px}header p{margin:6px 0 0;font-size:12px;color:#
 .wrap{max-width:980px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 select,input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
-.btn{border:none;border-radius:8px;padding:10px 10px;font-weight:900;cursor:pointer;font-size:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
+input.scan-input{font-size:22px;text-align:center;letter-spacing:2px;border:3px solid #0d9488;background:#f0fdfa}
+.btn{border:none;border-radius:8px;padding:10px 10px;font-weight:900;cursor:pointer;font-size:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-orange{background:#ea580c;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-blue{background:#0a1f4d}.pill-teal{background:#0d9488}.pill-purple{background:#7c3aed}.pill-red{background:#ef4444}.pill-grey{background:#64748b}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-red{background:#ef4444}.pill-teal{background:#0d9488}.pill-grey{background:#64748b}.pill-purple{background:#7c3aed}.pill-book{background:#0a1f4d;font-size:13px;padding:5px 10px}
 table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
 .phase-box{border-radius:10px;padding:10px;font-size:12px;line-height:1.7;border:2px solid #e2e8f0;text-align:center;font-weight:900}.phase-int{background:#dcfce7;border-color:#22c55e}.phase-sen{background:#dbeafe;border-color:#3b82f6}.phase-fet{background:#ffedd5;border-color:#ea580c}
+#reader{width:100%;max-width:400px;margin:10px auto;border:3px solid #0d9488;border-radius:12px;overflow:hidden;display:none}
+.scan-list{background:#f0fdfa;border:2px solid #0d9488;border-radius:10px;padding:10px;margin-top:10px;min-height:60px}
 @media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>📖 LIBRARIAN — MAKHANANI LTSM 2.0 — V2.30</h1><p>ALL PHASES — 4-6 INTERMEDIATE • 7-9 SENIOR PHASE • 10-12 FET • ALL CAPS SUBJECTS • ALL 90 CLASSES</p><div id="taskbar"></div><script src="nav.js"></script></header>
+<header><h1>📖 LIBRARIAN — MAKHANANI LTSM 2.0 — V2.30.3 SCAN BOOKS</h1><p>SCAN / TYPE BOOK NUMBERS → ISSUE TO TEACHER → STOCK CONTROL • 4-6 INT • 7-9 SEN • 10-12 FET</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
 <div class="card"><h2>👤 Who Am I — Librarian</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
 
-<div class="card"><h2>📊 Librarian Dashboard — Counts By Phase</h2>
-<div class="row">
-<div class="phase-box phase-int">📗 INTERMEDIATE<br>GRADES 4-6<br><span id="cInt" style="font-size:22px">0</span><br>Requests</div>
-<div class="phase-box phase-sen">📘 SENIOR PHASE<br>GRADES 7-9<br><span id="cSen" style="font-size:22px">0</span><br>Requests</div>
-<div class="phase-box phase-fet">📙 FET<br>GRADES 10-12<br><span id="cFet" style="font-size:22px">0</span><br>Requests</div>
+<!-- SCAN / TYPE BOOK NUMBERS -->
+<div class="card" style="border:3px solid #0d9488"><h2>📷 1. SCAN / TYPE BOOK NUMBERS — Stock Control</h2>
+<div class="info"><b>How to use:</b> 1. Tap a Request below → It loads into this Scan Box. 2. Scan barcode with camera OR Type book number + Tap ADD. 3. When you have scanned all books for that teacher, tap <b>✅ ISSUE SCANNED BOOKS</b>. Stock goes down automatically. Same book number CANNOT be issued twice.</div>
+<div id="selectedReqBox" class="warn">⚠️ No request selected yet — Tap <b>📖 SELECT TO SCAN</b> on an APPROVED request below.</div>
+<label>📷 Scan Barcode — Phone Camera</label>
+<div class="row"><button class="btn btn-teal" onclick="startScan()">📷 START CAMERA SCAN</button><button class="btn btn-red" onclick="stopScan()">⏹️ STOP CAMERA</button></div>
+<div id="reader"></div><div id="scanStatus"></div>
+<label>⌨️ OR Type Book Number / Barcode Manually *</label>
+<input id="bookNoInput" class="scan-input" placeholder="e.g. BK-001 / 978-123456 / MATH10-045" onkeydown="if(event.key==='Enter'){addBookNo();}">
+<div class="row"><button class="btn btn-teal" onclick="addBookNo()">➕ ADD BOOK NUMBER</button><button class="btn btn-grey" onclick="clearScanList()">🧹 CLEAR LIST</button></div>
+<div class="scan-list" id="scanList"><b>Scanned Book Numbers (0):</b><br><span style="color:#64748b">No books scanned yet.</span></div>
+<div class="row"><label>Qty To Issue (Auto = Scanned Count)</label><input id="scanQty" type="number" value="0" readonly></div>
+<div id="scanMsg"></div>
+<div class="row"><button class="btn btn-green" id="issueScannedBtn" onclick="issueScanned()" disabled>✅ ISSUE SCANNED BOOKS TO TEACHER</button></div>
+<div class="info" id="stockInfo">Stock: Select a request to see stock for that book.</div>
 </div>
-<div class="info" id="counts">Total: 0 • PENDING: 0 • APPROVED: 0 • ISSUED: 0 • REJECTED: 0</div></div>
 
-<div class="card"><h2>🔍 Filter — Phase / Grade / Status / Subject</h2>
-<div class="row">
-<select id="fPhase" onchange="renderReq()"><option value="">ALL PHASES</option><option>INTERMEDIATE PHASE</option><option>SENIOR PHASE</option><option>FET PHASE</option></select>
-<select id="fGrade" onchange="renderReq()"><option value="">ALL GRADES 4-12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select>
-<select id="fStatus" onchange="renderReq()"><option value="">ALL STATUS</option><option>PENDING</option><option>APPROVED</option><option>ISSUED</option><option>REJECTED</option></select>
-</div>
-<div class="row"><input id="fSearch" placeholder="🔍 Search Teacher / Book / Subject / Class..." oninput="renderReq()"></div>
-<div class="row">
-<button type="button" class="btn btn-grey" onclick="setPhaseFilter('INTERMEDIATE PHASE')">📗 4-6 INTERMEDIATE</button>
-<button type="button" class="btn btn-grey" onclick="setPhaseFilter('SENIOR PHASE')">📘 7-9 SENIOR PHASE</button>
-<button type="button" class="btn btn-grey" onclick="setPhaseFilter('FET PHASE')">📙 10-12 FET</button>
-<button type="button" class="btn btn-grey" onclick="clearFilters()">❌ CLEAR FILTERS</button>
-</div></div>
+<div class="card"><h2>📊 Dashboard — Counts By Phase</h2><div class="row"><div class="phase-box phase-int">📗 INTERMEDIATE<br>GRADES 4-6<br><span id="cInt" style="font-size:22px">0</span><br>Requests</div><div class="phase-box phase-sen">📘 SENIOR PHASE<br>GRADES 7-9<br><span id="cSen" style="font-size:22px">0</span><br>Requests</div><div class="phase-box phase-fet">📙 FET<br>GRADES 10-12<br><span id="cFet" style="font-size:22px">0</span><br>Requests</div></div><div class="info" id="counts">Total: 0 • PENDING: 0 • APPROVED: 0 • ISSUED: 0 • REJECTED: 0 • CANCELLED: 0</div></div>
 
-<div class="card"><h2>📚 Requests — Issue Books Here</h2><div class="info" id="filterInfo">Showing: All</div><div id="reqList"></div><div class="row"><button class="btn btn-grey" onclick="loadReq()">🔄 REFRESH</button><button class="btn btn-green" onclick="window.print()">🖨️ PRINT LIST</button></div>
-<div class="info"><b>Librarian Rule:</b> You see ALL Phases + ALL Subjects + ALL Classes. Only ISSUE when Status = <b>APPROVED</b>. If PENDING, wait for HOD. If ISSUED, already given out.</div></div>
+<div class="card"><h2>📦 Add Book Stock — With Book Numbers (Optional)</h2><label>Book Title * — ALL CAPS</label><input id="bTitle" placeholder="e.g. MATHEMATICS GRADE 10 LEARNER BOOK">
+<div class="row"><label>Grade *</label><select id="bGrade"><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option></select><label>Subject *</label><select id="bSubject"><option>MATHEMATICS</option><option>ENGLISH HOME LANGUAGE</option><option>AFRIKAANS FIRST ADDITIONAL LANGUAGE</option><option>PHYSICAL SCIENCES</option><option>LIFE SCIENCES</option><option>ACCOUNTING</option><option>BUSINESS STUDIES</option><option>GEOGRAPHY</option><option>HISTORY</option><option>NATURAL SCIENCES</option><option>SOCIAL SCIENCES</option><option>TECHNOLOGY</option><option>ECONOMIC AND MANAGEMENT SCIENCES</option><option>LIFE ORIENTATION</option></select><label>Stock Qty *</label><input id="bStock" type="number" value="0" min="0"></div>
+<label>Book Numbers — One Per Line (Optional — e.g. BK-001, BK-002)</label><input id="bNumbers" placeholder="BK-001, BK-002, BK-003  OR  one per line in next box"><div id="bookMsg"></div><div class="row"><button class="btn btn-teal" onclick="addBook()">📦 ADD BOOK / STOCK</button></div><div id="bookList"></div></div>
 
-<div class="card"><h2>📦 Stock Quick Check — By Book Title</h2><div class="row"><input id="stockSearch" placeholder="e.g. MATHEMATICS GRADE 10"><button class="btn btn-teal" onclick="checkStock()">🔍 CHECK STOCK</button></div><div id="stockResult"></div></div>
+<div class="card"><h2>🔍 Filter — Phase / Grade / Status</h2><div class="row"><select id="fPhase" onchange="renderReq()"><option value="">ALL PHASES</option><option>INTERMEDIATE PHASE</option><option>SENIOR PHASE</option><option>FET PHASE</option></select><select id="fGrade" onchange="renderReq()"><option value="">ALL GRADES 4-12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="fStatus" onchange="renderReq()"><option value="">ALL STATUS</option><option>PENDING</option><option>APPROVED</option><option>ISSUED</option><option>REJECTED</option><option>CANCELLED</option></select></div><div class="row"><input id="fSearch" placeholder="🔍 Search Teacher / Book / Subject / Class / Book No / Reason..." oninput="renderReq()"></div><div class="row"><button type="button" class="btn btn-grey" onclick="setStatusFilter('APPROVED')">✅ APPROVED ONLY — Ready To Issue</button><button type="button" class="btn btn-grey" onclick="setStatusFilter('ISSUED')">✅ ISSUED ONLY — See Book Numbers</button><button type="button" class="btn btn-grey" onclick="clearFilters()">❌ CLEAR</button></div></div>
+
+<div class="card"><h2>📚 Requests — Tap SELECT TO SCAN To Issue With Book Numbers</h2><div class="info" id="filterInfo">Showing: All</div><div id="reqList"></div><div class="row"><button class="btn btn-grey" onclick="loadReq()">🔄 REFRESH</button><button class="btn btn-green" onclick="window.print()">🖨️ PRINT LIST</button></div></div>
+
+<div class="card"><h2>📋 Issued Log — Every Book Number Issued — Searchable</h2><div class="row"><input id="logSearch" placeholder="🔍 Search Book No / Teacher / Book Title..." oninput="renderLog()"></div><div id="logList"></div></div>
 
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
 <script>
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
-async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
-var _u=null; var _allReq=[];
-function setPhaseFilter(p){ document.getElementById('fPhase').value=p; renderReq(); }
+async function doLogout(){ stopScan(); await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
+var _u=null; var _allReq=[]; var _allBooks=[]; var _issuedLog=[]; var _selectedId=''; var _scanned=[];
+var _html5Qr=null; var _scanning=false;
+function setStatusFilter(s){ document.getElementById('fStatus').value=s; renderReq(); }
 function clearFilters(){ document.getElementById('fPhase').value=''; document.getElementById('fGrade').value=''; document.getElementById('fStatus').value=''; document.getElementById('fSearch').value=''; renderReq(); }
-async function init(){
+async function init(){ try{ _u = await getCurrentUser(); if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in'; return; } if(!['LIBRARIAN','HOD','PRINCIPAL','SUPER_ADMIN'].includes(_u.role)){ document.getElementById('whoAmI').innerHTML='⛔ Librarian / HOD / Principal / Super Admin only. Your role: '+_u.role; return; } document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+'<br>Access: <b>ALL PHASES</b> — INTERMEDIATE (4-6) • SENIOR PHASE (7-9) • FET (10-12) — ALL 90 Classes — <b>SCAN BOOK NUMBERS</b>'; document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — Librarian: '+_u.email+' — V2.30.3 Scan'; loadReq(); loadBooks(); loadLog(); }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; } }
+// --- SCANNER ---
+async function startScan(){
   try{
-    _u = await getCurrentUser();
-    if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; return; }
-    if(!['LIBRARIAN','HOD','PRINCIPAL','SUPER_ADMIN'].includes(_u.role)){ document.getElementById('whoAmI').innerHTML='⛔ Librarian / HOD / Principal / Super Admin only. Your role: '+_u.role+' — Teachers use TEACHER page.'; return; }
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+' — '+_u.email+'<br>Access: <b>ALL PHASES</b> — INTERMEDIATE PHASE (4-6) • SENIOR PHASE (7-9) • FET PHASE (10-12) — ALL CAPS Subjects — ALL 90 Classes (4A-12J)';
-    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — Librarian: '+_u.email;
-    loadReq();
-  }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
+    document.getElementById('reader').style.display='block';
+    if(!_html5Qr) _html5Qr=new Html5Qrcode("reader");
+    _scanning=true; document.getElementById('scanStatus').innerHTML='<div class="ok">📷 Camera ON — Point at barcode. It will add automatically + beep.</div>';
+    await _html5Qr.start({facingMode:"environment"}, {fps:10, qrbox:{width:250,height:150}}, function(decoded){ onScan(decoded); }, function(err){});
+  }catch(e){ document.getElementById('scanStatus').innerHTML='<div class="warn">❌ Camera failed: '+e.message+' — Use Type Manually below. Allow camera permission.</div>'; }
 }
-async function loadReq(){
+async function stopScan(){ try{ if(_html5Qr && _scanning){ await _html5Qr.stop(); _scanning=false; } }catch(e){} document.getElementById('reader').style.display='none'; }
+function onScan(code){ code=String(code||'').trim().toUpperCase(); if(!code) return; addScanned(code, true); }
+function addBookNo(){ var v=document.getElementById('bookNoInput').value.trim().toUpperCase(); if(!v){ document.getElementById('scanMsg').innerHTML='<div class="warn">❌ Type a Book Number first.</div>'; return; } addScanned(v, false); document.getElementById('bookNoInput').value=''; document.getElementById('bookNoInput').focus(); }
+function addScanned(code, fromCamera){
+  code=String(code||'').trim().toUpperCase(); if(!code) return;
+  if(!_selectedId){ document.getElementById('scanMsg').innerHTML='<div class="warn">⚠️ Select a Request first — Tap <b>📖 SELECT TO SCAN</b> below.</div>'; return; }
+  if(_scanned.includes(code)){ document.getElementById('scanMsg').innerHTML='<div class="warn">⚠️ Already scanned: <b>'+code+'</b> — Duplicate not added.</div>'; return; }
+  // Check if this book number already issued before
+  var already=_issuedLog.find(function(l){ return String(l.bookNo||'').toUpperCase()===code; });
+  if(already){ document.getElementById('scanMsg').innerHTML='<div class="warn">⛔ ALREADY ISSUED: <b>'+code+'</b> to <b>'+(already.teacherName||'')+'</b> on '+new Date(already.issuedAt||Date.now()).toLocaleDateString()+' — Cannot issue twice.</div>'; return; }
+  _scanned.push(code);
+  document.getElementById('scanMsg').innerHTML='<div class="ok">✅ Added: <b>'+code+'</b> '+(fromCamera?'📷 Scanned':'⌨️ Typed')+' — Total scanned: <b>'+_scanned.length+'</b></div>';
+  try{ var a=new AudioContext(); var o=a.createOscillator(); o.frequency.value=880; o.connect(a.destination); o.start(); setTimeout(function(){o.stop();},120); }catch(e){}
+  renderScanList();
+}
+function clearScanList(){ _scanned=[]; renderScanList(); document.getElementById('scanMsg').innerHTML='<div class="info">List cleared.</div>'; }
+function removeScanned(code){ _scanned=_scanned.filter(function(x){return x!==code;}); renderScanList(); }
+function renderScanList(){
+  var el=document.getElementById('scanList');
+  if(!_scanned.length){ el.innerHTML='<b>Scanned Book Numbers (0):</b><br><span style="color:#64748b">No books scanned yet.</span>'; }
+  else { el.innerHTML='<b>Scanned Book Numbers ('+_scanned.length+'):</b><br>'+_scanned.map(function(c){return '<span class="pill pill-book">'+c+' <span style="cursor:pointer" onclick="removeScanned(\''+c+'\')">✕</span></span>';}).join(' '); }
+  document.getElementById('scanQty').value=_scanned.length;
+  document.getElementById('issueScannedBtn').disabled=!(_selectedId && _scanned.length);
+}
+function selectToScan(id){
+  var r=_allReq.find(function(x){return x.id===id;}); if(!r) return;
+  if((r.status||'')!=='APPROVED'){ alert('Only APPROVED can be issued. This is '+r.status); return; }
+  _selectedId=id; _scanned=[]; renderScanList();
+  document.getElementById('selectedReqBox').className='ok';
+  document.getElementById('selectedReqBox').innerHTML='✅ SELECTED TO ISSUE:<br><b>'+(r.bookTitle||'')+'</b> — '+r.subject+' — GRADE '+(r.grade||'')+' '+(r.className||'')+' — '+r.phase+'<br>Teacher: <b>'+(r.teacherName||'')+'</b> — Requested Qty: <b>'+(r.qty||'')+'</b><br>Now scan / type book numbers above.';
+  document.getElementById('scanMsg').innerHTML='<div class="info">Ready — Scan '+ (r.qty||'') +' book numbers for <b>'+(r.teacherName||'')+'</b>.</div>';
+  // Stock info
+  var match=_allBooks.filter(function(b){ return String(b.title||'').toUpperCase().includes(String(r.bookTitle||'').toUpperCase().substring(0,12)) || String(r.bookTitle||'').toUpperCase().includes(String(b.title||'').toUpperCase().substring(0,12)); });
+  if(match.length) document.getElementById('stockInfo').innerHTML='📦 Stock for this book: '+match.map(function(b){return '<b>'+b.title+'</b> — Stock: <b>'+(b.stock||0)+'</b> — Available Book Nos: <b>'+(toArray(b.bookNumbers).filter(function(n){return !_issuedLog.find(function(l){return String(l.bookNo).toUpperCase()===String(n).toUpperCase();});}).length)+'</b>';}).join('<br>');
+  else document.getElementById('stockInfo').innerHTML='📦 No stock record found for this title in Books. You can still issue by scanning — Stock will be tracked in Issued Log.';
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('bookNoInput').focus();
+}
+async function issueScanned(){
+  if(!_selectedId){ alert('Select a Request first.'); return; }
+  if(!_scanned.length){ alert('Scan / Type at least 1 Book Number first.'); return; }
+  var r=_allReq.find(function(x){return x.id===_selectedId;}); if(!r) return;
+  if(!confirm('ISSUE '+_scanned.length+' books to '+r.teacherName+'?\n\n'+r.bookTitle+'\nBook Nos: '+_scanned.join(', ')+'\n\nStock will go down by '+_scanned.length+'.')) return;
   try{
-    var snap=await db.ref('requests').once('value'); _allReq=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _allReq.push(v); });
-    // Fix old requests with no phase - calculate from grade
-    _allReq.forEach(function(r){ if(!r.phase) r.phase=getPhase(r.grade||String(r.className||'').replace(/[A-J]$/,'')); });
-    renderReq();
-  }catch(e){ document.getElementById('reqList').innerHTML='<div class="warn">'+e.message+'</div>'; }
+    // Save each book number to issuedLog
+    for(var i=0;i<_scanned.length;i++){
+      await db.ref('issuedLog').push({ bookNo:_scanned[i], bookTitle:r.bookTitle, subject:r.subject, grade:r.grade, className:r.className, phase:r.phase, teacherName:r.teacherName, teacherEmail:r.teacherEmail, teacherUid:r.teacherUid, requestId:r.id, issuedBy:_u.name, issuedByEmail:_u.email, issuedAt:Date.now() });
+    }
+    await db.ref('requests/'+_selectedId).update({ status:'ISSUED', qtyIssued:_scanned.length, qty:_scanned.length, bookNumbers:_scanned, bookNos:_scanned.join(', '), issuedBy:_u.name, issuedByEmail:_u.email, issuedAt:Date.now() });
+    // Try to reduce stock in books table if title matches
+    var snap=await db.ref('books').once('value'); snap.forEach(function(ch){ var b=ch.val(); var t=String(b.title||'').toUpperCase(); var rt=String(r.bookTitle||'').toUpperCase(); if(t && (rt.includes(t.substring(0,12)) || t.includes(rt.substring(0,12)))){ var cur=Number(b.stock||0); db.ref('books/'+ch.key).update({ stock:Math.max(0,cur-_scanned.length) }); } });
+    document.getElementById('scanMsg').innerHTML='<div class="ok">✅ ISSUED '+_scanned.length+' books to <b>'+r.teacherName+'</b> — Book Nos: <b>'+_scanned.join(', ')+'</b> — Stock reduced.</div>';
+    _selectedId=''; _scanned=[]; renderScanList(); document.getElementById('selectedReqBox').className='warn'; document.getElementById('selectedReqBox').innerHTML='⚠️ No request selected yet — Tap <b>📖 SELECT TO SCAN</b> on an APPROVED request below.';
+    stopScan(); loadReq(); loadBooks(); loadLog();
+  }catch(e){ document.getElementById('scanMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
 }
+// --- Requests / Books / Log ---
+async function loadReq(){ try{ var snap=await db.ref('requests').once('value'); _allReq=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _allReq.push(v); }); _allReq.forEach(function(r){ if(!r.phase) r.phase=getPhase(r.grade||String(r.className||'').replace(/[A-J]$/,'')); }); renderReq(); }catch(e){ document.getElementById('reqList').innerHTML='<div class="warn">'+e.message+'</div>'; } }
 function renderReq(){
   var fp=document.getElementById('fPhase').value, fg=document.getElementById('fGrade').value, fs=document.getElementById('fStatus').value, q=(document.getElementById('fSearch').value||'').toLowerCase();
-  // Counts by phase - always on ALL
-  var ci=_allReq.filter(function(r){return r.phase==='INTERMEDIATE PHASE';}).length;
-  var cs=_allReq.filter(function(r){return r.phase==='SENIOR PHASE';}).length;
-  var cf=_allReq.filter(function(r){return r.phase==='FET PHASE';}).length;
+  var ci=_allReq.filter(function(r){return r.phase==='INTERMEDIATE PHASE';}).length, cs=_allReq.filter(function(r){return r.phase==='SENIOR PHASE';}).length, cf=_allReq.filter(function(r){return r.phase==='FET PHASE';}).length;
   document.getElementById('cInt').textContent=ci; document.getElementById('cSen').textContent=cs; document.getElementById('cFet').textContent=cf;
-  var pend=_allReq.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length;
-  var appr=_allReq.filter(function(r){return r.status==='APPROVED';}).length;
-  var iss=_allReq.filter(function(r){return r.status==='ISSUED';}).length;
-  var rej=_allReq.filter(function(r){return r.status==='REJECTED';}).length;
-  document.getElementById('counts').innerHTML='Total: <b>'+_allReq.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+appr+'</b> • ISSUED: <b>'+iss+'</b> • REJECTED: <b>'+rej+'</b>';
-  var list=_allReq.filter(function(r){
-    var okP=!fp||r.phase===fp;
-    var okG=!fg||String(r.grade)===fg;
-    var okS=!fs||(r.status||'PENDING')===fs;
-    var hay=(r.teacherName+' '+r.subject+' '+r.bookTitle+' '+r.className+' '+r.phase).toLowerCase();
-    var okQ=!q||hay.includes(q);
-    return okP&&okG&&okS&&okQ;
-  });
+  var pend=_allReq.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length, appr=_allReq.filter(function(r){return r.status==='APPROVED';}).length, iss=_allReq.filter(function(r){return r.status==='ISSUED';}).length, rej=_allReq.filter(function(r){return r.status==='REJECTED';}).length, canc=_allReq.filter(function(r){return r.status==='CANCELLED';}).length;
+  document.getElementById('counts').innerHTML='Total: <b>'+_allReq.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+appr+'</b> • ISSUED: <b>'+iss+'</b> • REJECTED: <b>'+rej+'</b> • CANCELLED: <b>'+canc+'</b>';
+  var list=_allReq.filter(function(r){ var okP=!fp||r.phase===fp, okG=!fg||String(r.grade)===fg, okS=!fs||(r.status||'PENDING')===fs; var hay=(r.teacherName+' '+r.subject+' '+r.bookTitle+' '+r.className+' '+r.phase+' '+(r.rejectReason||'')+' '+(r.cancelledReason||'')+' '+toArray(r.bookNumbers).join(' ')+' '+(r.bookNos||'')).toLowerCase(); var okQ=!q||hay.includes(q); return okP&&okG&&okS&&okQ; });
   document.getElementById('filterInfo').innerHTML='Showing: <b>'+list.length+'</b> / '+_allReq.length+' — Phase: <b>'+(fp||'ALL')+'</b> — Grade: <b>'+(fg||'ALL')+'</b> — Status: <b>'+(fs||'ALL')+'</b>';
   if(!list.length){ document.getElementById('reqList').innerHTML='<div class="info">No requests match filter.</div>'; return; }
-  var h='<table><tr><th>Teacher</th><th>Subject</th><th>Grade / Class / Phase</th><th>Book / Item</th><th>Qty Req</th><th>Status</th><th>Action</th></tr>';
+  var h='<table><tr><th>Teacher</th><th>Subject</th><th>Grade / Class / Phase</th><th>Book</th><th>Qty</th><th>Status / Reason / Book Nos</th><th>Action</th></tr>';
   list.slice().reverse().forEach(function(r){
-    var st=r.status||'PENDING';
-    var pillClass=st==='APPROVED'?'pill-green':st==='ISSUED'?'pill-teal':st==='REJECTED'?'pill-red':st==='PENDING'?'pill':'pill-grey';
+    var st=r.status||'PENDING'; var pillClass=st==='APPROVED'?'pill-green':st==='ISSUED'?'pill-teal':st==='REJECTED'?'pill-red':st==='CANCELLED'?'pill-grey':st==='PENDING'?'pill':'pill-grey';
+    var reason='';
+    if(st==='REJECTED' && r.rejectReason) reason+='<br><span style="color:#991b1b;font-size:11px"><b>HOD Reason:</b> '+r.rejectReason+'</span>';
+    if(st==='CANCELLED') reason+='<br><span style="color:#475569;font-size:11px"><b>Teacher Cancelled:</b> '+(r.cancelledReason||'')+'</span>';
+    if(st==='APPROVED' && r.approvedBy) reason+='<br><small>Approved by <b>'+r.approvedBy+'</b></small>';
+    if(st==='ISSUED') reason+='<br><small>Issued by <b>'+(r.issuedBy||'')+'</b> — Qty: <b>'+(r.qtyIssued||'')+'</b></small><br>'+toArray(r.bookNumbers).map(function(n){return '<span class="pill pill-book">'+n+'</span>';}).join(' ');
     var btn='';
-    if(st==='APPROVED') btn='<button class="btn btn-teal" onclick="issueBook(\''+r.id+'\')">📖 ISSUE →</button>';
+    if(st==='APPROVED') btn='<button class="btn btn-teal" onclick="selectToScan(\''+r.id+'\')">📖 SELECT TO SCAN →</button>';
     else if(st==='PENDING') btn='<span style="font-size:11px;color:#92400e">⏳ Wait HOD</span>';
     else if(st==='ISSUED') btn='<span style="font-size:11px;color:#0d9488">✅ Issued</span>';
-    else btn='<span style="font-size:11px;color:#ef4444">❌ Rejected</span>';
-    h+='<tr><td><b>'+(r.teacherName||'')+'</b><br><small>'+(r.teacherEmail||'')+'</small></td><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||r.class||'')+'<br><small><b>'+(r.phase||'')+'</b></small></td><td>'+(r.bookTitle||r.item||'')+'</td><td><b>'+(r.qty||r.quantity||'')+'</b></td><td><span class="pill '+pillClass+'">'+st+'</span></td><td>'+btn+'</td></tr>';
+    else if(st==='REJECTED') btn='<span style="font-size:11px;color:#ef4444">❌ Rejected</span>';
+    else if(st==='CANCELLED') btn='<span style="font-size:11px;color:#64748b">🚫 Cancelled</span>';
+    h+='<tr><td><b>'+(r.teacherName||'')+'</b></td><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||'')+'<br><small><b>'+(r.phase||'')+'</b></small></td><td>'+(r.bookTitle||'')+'</td><td><b>'+(r.qty||'')+'</b></td><td><span class="pill '+pillClass+'">'+st+'</span>'+reason+'</td><td>'+btn+'</td></tr>';
   });
   h+='</table>'; document.getElementById('reqList').innerHTML=h;
 }
-async function issueBook(id){
-  var qty = prompt('How many books are you ISSUING? (Qty Issued)', '1');
-  if(qty===null) return;
-  qty=Number(qty); if(!qty||qty<1){ alert('Enter Qty 1+'); return; }
-  if(!confirm('Confirm ISSUE this request? Status will become ISSUED.')) return;
+async function addBook(){
+  var t=document.getElementById('bTitle').value.trim().toUpperCase(), g=document.getElementById('bGrade').value, s=document.getElementById('bSubject').value, st=document.getElementById('bStock').value;
+  var nums=document.getElementById('bNumbers').value.split(/[\n,]+/).map(function(x){return x.trim().toUpperCase();}).filter(function(x){return x;});
+  var msg=document.getElementById('bookMsg');
+  if(!t){ msg.innerHTML='<div class="warn">❌ Type Book Title.</div>'; return; }
   try{
-    await db.ref('requests/'+id).update({ status:'ISSUED', qtyIssued:qty, issuedBy:_u.name, issuedByEmail:_u.email, issuedAt:Date.now() });
-    alert('✅ ISSUED — Qty '+qty);
-    loadReq();
-  }catch(e){ alert('❌ '+e.message); }
+    await db.ref('books').push({ title:t, bookTitle:t, grade:g, grades:[g], phase:getPhase(g), phases:[getPhase(g)], subject:s, subjects:[s], stock:Number(st||nums.length||0), qty:Number(st||nums.length||0), bookNumbers:nums, bookNos:nums.join(', '), createdAt:Date.now() });
+    msg.innerHTML='<div class="ok">✅ Book Added: <b>'+t+'</b> — GRADE '+g+' — '+getPhase(g)+' — Stock '+ (st||nums.length) +' — Book Nos: '+nums.join(', ')+'</div>';
+    document.getElementById('bTitle').value=''; document.getElementById('bNumbers').value=''; loadBooks();
+  }catch(e){ msg.innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
-async function checkStock(){
-  var q=(document.getElementById('stockSearch').value||'').trim().toUpperCase();
-  var el=document.getElementById('stockResult');
-  if(!q){ el.innerHTML='<div class="warn">Type a book title first.</div>'; return; }
-  try{
-    var snap=await db.ref('books').once('value'); var found=[];
-    snap.forEach(function(c){ var v=c.val(); var title=String(v.title||v.bookTitle||'').toUpperCase(); if(title.includes(q)) found.push(v); });
-    if(!found.length){ el.innerHTML='<div class="warn">No stock record found for <b>'+q+'</b> — Check spelling or add book in Admin.</div>'; return; }
-    var h='<table><tr><th>Book</th><th>Grade</th><th>Phase</th><th>Stock</th></tr>';
-    found.forEach(function(b){ h+='<tr><td>'+(b.title||b.bookTitle||'')+'</td><td>'+(b.grade||'')+'</td><td>'+getPhase(b.grade||'')+'</td><td><b>'+(b.stock||b.qty||0)+'</b></td></tr>'; });
-    h+='</table>'; el.innerHTML=h;
-  }catch(e){ el.innerHTML='<div class="warn">'+e.message+'</div>'; }
+async function loadBooks(){ try{ var snap=await db.ref('books').once('value'); _allBooks=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _allBooks.push(v); }); renderBooks(); }catch(e){} }
+function renderBooks(){
+  if(!_allBooks.length){ document.getElementById('bookList').innerHTML='<div class="info">No books yet.</div>'; return; }
+  var h='<table><tr><th>Book</th><th>Subject</th><th>Grade / Phase</th><th>Stock</th><th>Book Numbers</th><th>Action</th></tr>';
+  _allBooks.slice().reverse().forEach(function(b){
+    var nums=toArray(b.bookNumbers); var avail=nums.filter(function(n){ return !_issuedLog.find(function(l){return String(l.bookNo).toUpperCase()===String(n).toUpperCase();}); });
+    h+='<tr><td>'+(b.title||'')+'</td><td>'+(b.subject||'')+'</td><td>GRADE '+(b.grade||'')+'<br><small>'+(b.phase||getPhase(b.grade||''))+'</small></td><td><b>'+(b.stock||0)+'</b><br><small>Available Nos: '+avail.length+' / '+nums.length+'</small></td><td>'+nums.map(function(n){ var isIss=_issuedLog.find(function(l){return String(l.bookNo).toUpperCase()===String(n).toUpperCase();}); return '<span class="pill '+(isIss?'pill-grey':'pill-teal')+'">'+n+(isIss?' ✓ISSUED':'')+'</span>'; }).join(' ')+'</td><td><button class="btn btn-red" onclick="delBook(\''+b.id+'\')">🗑️</button></td></tr>';
+  });
+  h+='</table>'; document.getElementById('bookList').innerHTML=h;
+}
+async function delBook(id){ if(!confirm('Delete this book?')) return; await db.ref('books/'+id).remove(); loadBooks(); }
+async function loadLog(){ try{ var snap=await db.ref('issuedLog').once('value'); _issuedLog=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _issuedLog.push(v); }); renderLog(); renderBooks(); }catch(e){} }
+function renderLog(){
+  var q=(document.getElementById('logSearch').value||'').toLowerCase();
+  var list=_issuedLog.filter(function(l){ var hay=(l.bookNo+' '+l.bookTitle+' '+l.teacherName+' '+l.subject+' '+l.grade+' '+l.className).toLowerCase(); return !q||hay.includes(q); });
+  if(!list.length){ document.getElementById('logList').innerHTML='<div class="info">No issued books yet. Scan / Issue to see log here.</div>'; return; }
+  var h='<div class="info">Total Books Issued (by Book Number): <b>'+list.length+'</b></div><table><tr><th>Book No</th><th>Book Title</th><th>Teacher</th><th>Grade / Class</th><th>Issued By</th><th>Date</th></tr>';
+  list.slice().reverse().forEach(function(l){ h+='<tr><td><span class="pill pill-book">'+(l.bookNo||'')+'</span></td><td>'+(l.bookTitle||'')+'</td><td><b>'+(l.teacherName||'')+'</b></td><td>GRADE '+(l.grade||'')+' '+(l.className||'')+'</td><td>'+(l.issuedBy||'')+'</td><td>'+new Date(l.issuedAt||Date.now()).toLocaleString()+'</td></tr>'; });
+  h+='</table>'; document.getElementById('logList').innerHTML=h;
 }
 init();
 </script></body></html>
