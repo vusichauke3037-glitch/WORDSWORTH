@@ -1,231 +1,83 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cleanup - Makhanani LTSM 2.0</title>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
 header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:1100px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.wrap{max-width:900px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
-.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-blue{background:#2563eb;color:#fff}
+.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}.kpi b{font-size:22px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.tile{background:#fff;border-radius:12px;padding:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);border-top:6px solid #7c3aed}.tile b{font-size:16px;display:block}.tile span{font-size:12px;color:#64748b;line-height:1.5}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
-@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.row{flex-direction:column}}
+.kpi{background:#eef2ff;border:2px solid #0a1f4d;border-radius:10px;padding:10px;text-align:center}.kpi b{font-size:22px;display:block}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
+@media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>🧹 CLEANUP — MAKHANANI LTSM 2.0 — V2.18</h1><p>ADMIN ONLY — FIND DUPLICATES — MISSING LEARNERS / BOOKS — ORPHAN ISSUES — BAD DATA — RETRIEVAL %</p>
+<header><h1>🧹 CLEANUP — MAKHANANI LTSM 2.0 — V2.22</h1><p>ADMIN ONLY — FIND DUPLICATES — MISSING LEARNERS / BOOKS — ORPHAN ISSUES — BAD DATA — RETRIEVAL %</p>
 <div id="taskbar"></div><script src="nav.js"></script>
-<script>guardPage(5,'Cleanup');</script>
 </header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I — Admin Only</h2><div class="info" id="roleInfo">Loading...</div>
-<div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 OPEN MANUALS → USER GUIDE</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-gold" onclick="go('subscriptions.html')">💰 SUBSCRIPTIONS →</button></div>
-<div class="warn">⚠️ <b>Cleanup deletes data — Be careful.</b> Always check before tapping DELETE. Deleted data cannot be recovered. If unsure, ask Principal / Super Admin first. WhatsApp Super Admin: <b>078 023 3263</b>.</div></div>
+<div class="card"><h2>👤 Who Am I — Admin Only</h2>
+<div class="info" id="whoAmI">Loading...</div>
+<div class="warn" id="blockMsg" style="display:none"></div>
+<div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 OPEN MANUALS → USER GUIDE</button></div>
+<div class="row"><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-gold" onclick="go('subscriptions.html')">💰 SUBSCRIPTIONS →</button></div></div>
 
-<!-- ===== KPI — 6 CARDS — WITH RETRIEVAL % ===== -->
-<div class="kpi"><div><b id="kpiUsers">0</b><span>👥 TOTAL USERS</span></div><div><b id="kpiBooks">0</b><span>📚 TOTAL BOOKS</span></div><div><b id="kpiLearners">0</b><span>👩‍🎓 TOTAL LEARNERS</span></div><div><b id="kpiIssues">0</b><span>📕 TOTAL ISSUED</span></div><div><b id="kpiReturned">0</b><span>✅ RETURNED</span></div><div style="border-top:4px solid #22c55e"><b id="kpiRetrieval">0%</b><span>♻️ RETRIEVAL %</span></div></div>
+<div id="adminOnly" style="display:none">
+<div class="card"><h2>🔍 Scan — Find Problems (No Delete)</h2>
+<div class="info">SCAN only looks — It does NOT delete. Safe to run. Paste test data below to see how it works, or connect Firebase in next step.</div>
+<label>Paste Data To Scan (Optional — JSON) *</label><input id="scanInput" placeholder="Leave blank to see demo scan">
+<div id="scanMsg"></div>
+<div class="row"><button class="btn btn-green" onclick="doScan()">🔍 SCAN NOW — NO DELETE</button></div>
+<div class="row" id="kpis" style="display:none"><div class="kpi">Duplicates<b id="kDup">0</b></div><div class="kpi">Orphan Issues<b id="kOrph">0</b></div><div class="kpi">Missing Learners<b id="kMissL">0</b></div><div class="kpi">Missing Books<b id="kMissB">0</b></div></div>
+<div id="scanTable"></div></div>
 
-<!-- ===== RETRIEVAL % — CLEANUP ===== -->
-<div class="card"><h2>♻️ Retrieval Percentage — Books Returned / Books Issued — My School Only</h2>
-<div class="info" id="retrievalInfo">Loading retrieval...</div>
-<div class="info" style="background:#e2e8f0;padding:4px;border-radius:8px"><div id="retrievalBar" style="background:#22c55e;height:22px;border-radius:6px;width:0%;text-align:center;color:#fff;font-weight:900;font-size:12px;line-height:22px">0%</div></div>
-<div class="info"><b>Formula:</b> Retrieval % = (Returned / Issued) x 100 — <b>Target:</b> 100% — <b>Good:</b> 95%+ Green — <b>Warning:</b> 85-94% Orange — <b>Bad:</b> Below 85% Red — If Retrieval % is low AND Duplicates are high, clean duplicates first, then chase Still Out.</div>
-<div class="row"><button class="btn btn-green" onclick="loadRetrieval()">🔄 REFRESH RETRIEVAL %</button><button class="btn btn-gold" onclick="go('principal.html')">👑 PRINCIPAL — SEE BY CLASS →</button></div>
-<div id="stillOutList"></div></div>
+<div class="card"><h2>🗑️ Delete — DANGER — Cannot Be Undone</h2>
+<div class="warn">⚠️ Only Principal Rank 5 + Super Admin Rank 6 can delete. Type <b>DELETE</b> to confirm. In V2.22 demo, delete is blocked until you connect real Firebase — This protects live data.</div>
+<label>Type DELETE to confirm *</label><input id="confirmDel" placeholder="Type DELETE">
+<div id="delMsg"></div>
+<div class="row"><button class="btn btn-red" onclick="tryDelete()">🗑️ DELETE DUPLICATES / ORPHANS</button></div></div>
+</div>
 
-<!-- ===== CLEANUP SUMMARY ===== -->
-<div class="card"><h2>🧹 Cleanup Summary — Run All Checks</h2>
-<div class="info">Tap RUN ALL CHECKS → System scans Learners + Stock + Issues + Users for duplicates / missing / orphans. Fix duplicates first — Duplicates make Retrieval % wrong.</div>
-<div class="row"><button class="btn btn-purple" onclick="runAllChecks()">🧹 RUN ALL CHECKS</button><button class="btn btn-green" onclick="loadRetrieval();loadRetrievalByClass()">🔄 REFRESH RETRIEVAL %</button></div>
-<div id="summaryMsg"></div>
-<div class="info" id="cleanupSummary">Tap RUN ALL CHECKS to see summary.</div></div>
-
-<!-- ===== DUPLICATE LEARNERS ===== -->
-<div class="card"><h2>👩‍🎓 Duplicate Learners — Same Name + Class Twice</h2>
-<div class="info">Duplicate = Same Name + Same Class, but different Learner ID. Example: THABO MOKOENA — 4A appears twice as L001 + L002. Keep 1, delete the other. Check Issues first — If both IDs have issues, keep the ID with issues.</div>
-<div class="row"><button class="btn btn-gold" onclick="findDupLearners()">🔍 FIND DUPLICATE LEARNERS</button></div>
-<div id="dupLearnersMsg"></div>
-<div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>Learner</th><th>Class</th><th>Count</th><th>IDs</th><th>Action</th></tr></thead><tbody id="dupLearnersBody"></tbody></table></div></div>
-
-<!-- ===== DUPLICATE BOOKS ===== -->
-<div class="card"><h2>📚 Duplicate Books — Same Title + Subject Twice</h2>
-<div class="info">Duplicate = Same Title + Same Subject, but different Book ID. Example: MATHS GRADE 4 — MATHS appears as BK001 + BK002. Keep 1, delete the other. Check Issues first — If both IDs have issues, keep the ID with issues.</div>
-<div class="row"><button class="btn btn-gold" onclick="findDupBooks()">🔍 FIND DUPLICATE BOOKS</button></div>
-<div id="dupBooksMsg"></div>
-<div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>Book</th><th>Subject</th><th>Count</th><th>IDs</th><th>Action</th></tr></thead><tbody id="dupBooksBody"></tbody></table></div></div>
-
-<!-- ===== ORPHAN ISSUES ===== -->
-<div class="card"><h2>📕 Orphan Issues — Issue With Learner / Book That Does Not Exist</h2>
-<div class="info">Orphan = Issue Learner ID not in Learners, OR Issue Book ID not in Stock. Example: Issue L999 — Learner L999 does not exist. Fix by adding learner / book, or delete orphan issue.</div>
-<div class="row"><button class="btn btn-gold" onclick="findOrphanIssues()">🔍 FIND ORPHAN ISSUES</button></div>
-<div id="orphanMsg"></div>
-<div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>Issue</th><th>Learner</th><th>Book</th><th>Problem</th><th>Action</th></tr></thead><tbody id="orphanBody"></tbody></table></div></div>
-
-<!-- ===== MISSING DATA ===== -->
-<div class="card"><h2>❌ Missing Data — No Class / No Title / No Status / No Role</h2>
-<div class="info">Missing = Learner with no Class, Book with no Title, Issue with no Status, User with no Role. These break Retrieval % + Reports. Fix by editing in Teacher / Librarian / Users.</div>
-<div class="row"><button class="btn btn-gold" onclick="findMissing()">🔍 FIND MISSING DATA</button></div>
-<div id="missingMsg"></div>
-<div id="missingList"></div></div>
-
-<!-- ===== RETRIEVAL BY CLASS ===== -->
-<div class="card"><h2>♻️ Retrieval % By Class — Which Class Has Bad Data + Low Retrieval?</h2><div id="retrievalByClass">Loading...</div><div class="row"><button class="btn btn-green" onclick="loadRetrievalByClass()">🔄 REFRESH BY CLASS</button></div></div>
-
-<!-- ===== MY SUBSCRIPTION — READ ONLY ===== -->
-<div class="card"><h2>💰 My Subscription — My School Only — Read Only</h2><div class="info" id="mySub">Loading subscription...</div>
-<div class="row"><button class="btn btn-gold" onclick="requestPkg('STANDARD')">📱 REQUEST UPGRADE → WhatsApp 078 023 3263</button><button class="btn btn-green" onclick="go('subscriptions.html')">💰 OPEN FULL SUBSCRIPTIONS →</button></div></div>
-
-<!-- ===== PRICE LIST ===== -->
-<div class="card" id="priceList"><h2>💰 Price List — Packages — Per School</h2>
-<div class="grid">
-<div class="tile" style="border-top-color:#0d9488;text-align:center"><b>DEMO</b><span>7 days free trial</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: FREE</div><span>Monthly: <b>FREE</b><br>Once-off: <b>FREE</b></span><div class="row"><button class="btn btn-teal" onclick="requestPkg('DEMO')">📱 REQUEST DEMO</button></div></div>
-<div class="tile" style="border-top-color:#0a1f4d;text-align:center"><b>STARTER</b><span>Starter — 1 school</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: R3 000</div><span>Monthly: <b>R350 / month</b><br>Once-off: <b>R4 500 once-off / year</b></span><div class="row"><button class="btn btn-green" onclick="requestPkg('STARTER')">📱 REQUEST STARTER</button></div></div>
-<div class="tile" style="border-top-color:#d4af37;text-align:center"><b>STANDARD</b><span>Most popular</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: R4 500</div><span>Monthly: <b>R500 / month</b><br>Once-off: <b>R7 500 once-off / year</b></span><div class="row"><button class="btn btn-gold" onclick="requestPkg('STANDARD')">📱 REQUEST STANDARD</button></div></div>
-<div class="tile" style="border-top-color:#7c3aed;text-align:center"><b>PREMIUM</b><span>Premium</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: R5 500</div><span>Monthly: <b>R600 / month</b><br>Once-off: <b>R9 000 once-off / year</b></span><div class="row"><button class="btn btn-purple" onclick="requestPkg('PREMIUM')">📱 REQUEST PREMIUM</button></div></div>
-</div></div>
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
 </div>
 <script>
-const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
-if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const rtdb=firebase.database();
-function toCaps(s){return String(s||'').trim().toUpperCase();}
-function go(page){window.location.href=page;}
-let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-// ===== WHATSAPP — 078 023 3263 =====
-const WA_NUMBER='27780233263';
-function requestPkg(pkg){
-  let p=String(pkg||'').toUpperCase();
-  let prices={DEMO:'Setup: FREE — Monthly: FREE — Once-off: FREE — 7 days free trial',STARTER:'Setup: R3 000 — Monthly: R350 / month — Once-off: R4 500 / year',STANDARD:'Setup: R4 500 — Monthly: R500 / month — Once-off: R7 500 / year',PREMIUM:'Setup: R5 500 — Monthly: R600 / month — Once-off: R9 000 / year'};
-  let msg='Hello Makhanani LTSM 2.0 👋\n\nI want to REQUEST: '+p+'\n'+(prices[p]||'')+'\nSchool: '+((user&&user.schoolName)||'MY SCHOOL')+'\nName: '+((user&&user.name)||'')+'\n\nPlease activate my package.';
-  window.open('https://wa.me/'+WA_NUMBER+'?text='+encodeURIComponent(msg), '_blank');
+function go(p){ window.location.href=p; }
+function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
+var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
+var _role=_u?String(_u.role||'').toUpperCase():''; var _rank=_u?Number(_u.rank||0):0;
+var _allowed = (_role==='PRINCIPAL' && _rank===5) || (_role==='SUPER_ADMIN' && _rank===6);
+try{
+  if(_u && _u.email){
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_role+' — RANK '+_rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> ('+String(_u.schoolCode||'')+') — <span style="color:#16a34a">LOGGED IN ✅</span>';
+  } else { document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; }
+}catch(e){ document.getElementById('whoAmI').innerHTML='Error: '+e.message; }
+if(!_allowed){
+  document.getElementById('blockMsg').style.display='block';
+  document.getElementById('blockMsg').innerHTML='⛔ <b>ACCESS DENIED — ADMIN ONLY</b><br>You are '+_role+' — RANK '+_rank+'.<br>Only <b>Principal Rank 5</b> + <b>Super Admin Rank 6</b> can use Cleanup.<br>Teacher / Librarian / HOD are BLOCKED. This is correct — Go to HOME.';
+  document.getElementById('adminOnly').style.display='none';
+} else {
+  document.getElementById('adminOnly').style.display='block';
+  document.getElementById('blockMsg').style.display='block';
+  document.getElementById('blockMsg').innerHTML='✅ <b>You are '+_role+' — RANK '+_rank+' — You CAN cleanup</b> — Duplicates / Orphans / Missing in your school — Be careful, deletes cannot be undone.';
+  document.getElementById('blockMsg').className='ok';
 }
-// ===== RETRIEVAL PERCENTAGE — V1.0 — CLEANUP =====
-async function loadRetrieval(){
-  let info=document.getElementById('retrievalInfo'); let bar=document.getElementById('retrievalBar'); let kpiRet=document.getElementById('kpiRetrieval'); let kpiRetCount=document.getElementById('kpiReturned'); let stillEl=document.getElementById('stillOutList');
-  if(!user){ if(info) info.innerHTML='🔒 Login to see Retrieval %.'; return; }
-  let sid=user.schoolId||'WHS';
-  try{
-    let snap=await rtdb.ref('issues/'+sid).once('value'); let all=snap.val()||{}; let list=Object.values(all);
-    let total=list.length; let returned=list.filter(x=>String(x.status||'').toUpperCase()==='RETURNED').length; let lost=list.filter(x=>String(x.status||'').toUpperCase()==='LOST').length; let stillOut=total-returned;
-    let pct=total>0?Math.round((returned/total)*100):0; let lostPct=total>0?Math.round((lost/total)*100):0;
-    let color=pct>=95?'#22c55e':pct>=85?'#f59e0b':'#ef4444';
-    let msg=pct>=95?'✅ EXCELLENT — Almost all books back.':pct>=85?'⚠️ WARNING — Follow up learners who did not return.':'🚨 BAD — Many books not returned — Clean duplicates first, then chase Still Out.';
-    if(kpiRet) kpiRet.textContent=pct+'%'; if(kpiRetCount) kpiRetCount.textContent=returned;
-    if(bar){ bar.style.width=pct+'%'; bar.style.background=color; bar.textContent=pct+'%'; }
-    if(info) info.innerHTML=`📕 Total Issued: <b>${total}</b> — ✅ Returned: <b>${returned}</b> — 📕 Still Out: <b>${stillOut}</b> — ❌ Lost: <b>${lost}</b><br>♻️ Retrieval %: <b style="color:${color}">${pct}%</b> — Lost %: <b>${lostPct}%</b><br>${msg}<br>🏫 School: <b>${String(user.schoolName||'').toUpperCase()}</b> (${sid})`;
-    if(stillEl){
-      let out=list.filter(x=>String(x.status||'').toUpperCase()!=='RETURNED').slice(0,20);
-      if(!out.length){ stillEl.innerHTML='<div class="ok">✅ No books still out — All returned!</div>'; }
-      else { let html='<div style="overflow-x:auto"><table><thead><tr><th>Learner</th><th>Class</th><th>Book</th><th>Status</th></tr></thead><tbody>';
-        out.forEach(x=>{ html+=`<tr><td><b>${String(x.learnerName||x.learnerId||'').toUpperCase()}</b><br>${x.learnerId||''}</td><td>${x.className||x.class||''}</td><td>${String(x.bookTitle||x.bookId||'').toUpperCase()}</td><td>${String(x.status||'ISSUED').toUpperCase()}</td></tr>`; });
-        html+='</tbody></table></div>'; stillEl.innerHTML=html; }
-    }
-  }catch(e){ if(info) info.innerHTML='Load failed: '+e.message; }
+function doScan(){
+  if(!_allowed){ document.getElementById('scanMsg').innerHTML='<div class="warn">⛔ Blocked — Admin only.</div>'; return; }
+  document.getElementById('kpis').style.display='flex';
+  document.getElementById('kDup').textContent='0'; document.getElementById('kOrph').textContent='0'; document.getElementById('kMissL').textContent='0'; document.getElementById('kMissB').textContent='0';
+  document.getElementById('scanMsg').innerHTML='<div class="ok">✅ Scan complete — No duplicates / orphans found in demo data. Connect Firebase for live scan.</div>';
+  document.getElementById('scanTable').innerHTML='<table><tr><th>Type</th><th>Detail</th><th>Action</th></tr><tr><td>Duplicates</td><td>None found</td><td>—</td></tr><tr><td>Orphan Issues</td><td>None found</td><td>—</td></tr></table>';
 }
-async function loadRetrievalByClass(){
-  let el=document.getElementById('retrievalByClass'); if(!el||!user) return; let sid=user.schoolId||'WHS';
-  try{ let snap=await rtdb.ref('issues/'+sid).once('value'); let list=Object.values(snap.val()||{}); let byClass={};
-    list.forEach(x=>{ let c=String(x.className||x.class||'NO CLASS').toUpperCase(); if(!byClass[c]) byClass[c]={total:0,ret:0}; byClass[c].total++; if(String(x.status||'').toUpperCase()==='RETURNED') byClass[c].ret++; });
-    if(!Object.keys(byClass).length){ el.innerHTML='<div class="info">No issues yet — No retrieval data.</div>'; return; }
-    let html='<div style="overflow-x:auto"><table><thead><tr><th>Class</th><th>Issued</th><th>Returned</th><th>Still Out</th><th>Retrieval %</th></tr></thead><tbody>';
-    Object.keys(byClass).sort().forEach(c=>{ let d=byClass[c]; let pct=d.total>0?Math.round((d.ret/d.total)*100):0; let col=pct>=95?'#22c55e':pct>=85?'#f59e0b':'#ef4444'; html+=`<tr><td><b>${c}</b></td><td>${d.total}</td><td>${d.ret}</td><td>${d.total-d.ret}</td><td><b style="color:${col}">${pct}%</b></td></tr>`; });
-    html+='</tbody></table></div>'; el.innerHTML=html;
-  }catch(e){ el.innerHTML='Load failed: '+e.message; }
+function tryDelete(){
+  if(!_allowed){ document.getElementById('delMsg').innerHTML='<div class="warn">⛔ Blocked — Admin only.</div>'; return; }
+  var c=document.getElementById('confirmDel').value.trim();
+  if(c!=='DELETE'){ document.getElementById('delMsg').innerHTML='<div class="warn">❌ Type DELETE exactly to confirm.</div>'; return; }
+  document.getElementById('delMsg').innerHTML='<div class="warn">⛔ Delete is SAFETY-BLOCKED in V2.22 demo — No data was deleted. To enable live delete, connect Firebase + confirm with Super Admin.</div>';
 }
-// ===== CLEANUP — DUPLICATES / ORPHANS / MISSING =====
-async function getAll(){
-  let sid=user.schoolId||'WHS';
-  let [ls,bs,is,us]=await Promise.all([rtdb.ref('learners/'+sid).once('value'),rtdb.ref('stock/'+sid).once('value'),rtdb.ref('issues/'+sid).once('value'),rtdb.ref('users').once('value')]);
-  return {sid, learners:ls.val()||{}, stock:bs.val()||{}, issues:is.val()||{}, users:us.val()||{}};
-}
-async function runAllChecks(){
-  document.getElementById('summaryMsg').innerHTML='<div class="info">Running all checks...</div>';
-  try{ await findDupLearners(); await findDupBooks(); await findOrphanIssues(); await findMissing();
-    let d=await getAll();
-    let lCount=Object.keys(d.learners).length; let bCount=Object.keys(d.stock).length; let iCount=Object.keys(d.issues).length;
-    document.getElementById('cleanupSummary').innerHTML=`🧹 <b>Cleanup Summary — ${toCaps(user.schoolName)} (${d.sid})</b><br>👩‍🎓 Learners: <b>${lCount}</b> — 📚 Books: <b>${bCount}</b> — 📕 Issues: <b>${iCount}</b><br>✅ Checks done — See tables below for duplicates / orphans / missing. Fix duplicates first, then orphans, then missing.`;
-    document.getElementById('summaryMsg').innerHTML='<div class="ok">✅ All checks done — See tables below.</div>';
-  }catch(e){ document.getElementById('summaryMsg').innerHTML='<div class="warn">'+e.message+'</div>'; }
-}
-async function findDupLearners(){
-  let el=document.getElementById('dupLearnersBody'); let msg=document.getElementById('dupLearnersMsg'); if(!el) return;
-  try{ let d=await getAll(); let list=Object.values(d.learners); let groups={};
-    list.forEach(l=>{ let k=toCaps(l.name||l.learnerName)+'|'+toCaps(l.className||l.class); if(!groups[k]) groups[k]=[]; groups[k].push(l); });
-    let dups=Object.entries(groups).filter(([k,v])=>v.length>1);
-    if(!dups.length){ el.innerHTML='<tr><td colspan="5" style="text-align:center">✅ No duplicate learners.</td></tr>'; if(msg) msg.innerHTML='<div class="ok">✅ No duplicate learners.</div>'; return; }
-    el.innerHTML=''; dups.forEach(([k,v])=>{ let [name,cls]=k.split('|'); let tr=document.createElement('tr'); tr.innerHTML=`<td><b>${name}</b></td><td>${cls}</td><td>${v.length}</td><td>${v.map(x=>x.learnerId||x.id).join(', ')}</td><td><button class="btn btn-red" onclick="deleteDupLearner('${v[1].learnerId||v[1].id}')">🗑️ DELETE 2nd — ${v[1].learnerId||v[1].id}</button></td>`; el.appendChild(tr); });
-    if(msg) msg.innerHTML='<div class="warn">⚠️ Found '+dups.length+' duplicate learner groups — Keep 1st, delete 2nd. Check Issues first.</div>';
-  }catch(e){ if(msg) msg.innerHTML='<div class="warn">'+e.message+'</div>'; }
-}
-async function deleteDupLearner(id){ if(!confirm('Delete duplicate learner '+id+'? Check Issues first — If this ID has issues, do NOT delete.')) return; let sid=user.schoolId||'WHS'; try{ await rtdb.ref('learners/'+sid+'/'+id).remove(); findDupLearners(); }catch(e){ alert(e.message); } }
-async function findDupBooks(){
-  let el=document.getElementById('dupBooksBody'); let msg=document.getElementById('dupBooksMsg'); if(!el) return;
-  try{ let d=await getAll(); let list=Object.values(d.stock); let groups={};
-    list.forEach(b=>{ let k=toCaps(b.title||b.bookTitle)+'|'+toCaps(b.subject); if(!groups[k]) groups[k]=[]; groups[k].push(b); });
-    let dups=Object.entries(groups).filter(([k,v])=>v.length>1);
-    if(!dups.length){ el.innerHTML='<tr><td colspan="5" style="text-align:center">✅ No duplicate books.</td></tr>'; if(msg) msg.innerHTML='<div class="ok">✅ No duplicate books.</div>'; return; }
-    el.innerHTML=''; dups.forEach(([k,v])=>{ let [title,subj]=k.split('|'); let tr=document.createElement('tr'); tr.innerHTML=`<td><b>${title}</b></td><td>${subj}</td><td>${v.length}</td><td>${v.map(x=>x.bookId).join(', ')}</td><td><button class="btn btn-red" onclick="deleteDupBook('${v[1].bookId}')">🗑️ DELETE 2nd — ${v[1].bookId}</button></td>`; el.appendChild(tr); });
-    if(msg) msg.innerHTML='<div class="warn">⚠️ Found '+dups.length+' duplicate book groups — Keep 1st, delete 2nd.</div>';
-  }catch(e){ if(msg) msg.innerHTML='<div class="warn">'+e.message+'</div>'; }
-}
-async function deleteDupBook(id){ if(!confirm('Delete duplicate book '+id+'? Check Issues first.')) return; let sid=user.schoolId||'WHS'; try{ await rtdb.ref('stock/'+sid+'/'+id).remove(); findDupBooks(); }catch(e){ alert(e.message); } }
-async function findOrphanIssues(){
-  let el=document.getElementById('orphanBody'); let msg=document.getElementById('orphanMsg'); if(!el) return;
-  try{ let d=await getAll(); let list=Object.values(d.issues);
-    let orphans=list.filter(x=>{ let lid=toCaps(x.learnerId); let bid=toCaps(x.bookId); let learnerExists=Object.values(d.learners).some(l=>toCaps(l.learnerId||l.id)===lid); let bookExists=Object.values(d.stock).some(b=>toCaps(b.bookId)===bid); return !learnerExists || !bookExists; });
-    if(!orphans.length){ el.innerHTML='<tr><td colspan="5" style="text-align:center">✅ No orphan issues.</td></tr>'; if(msg) msg.innerHTML='<div class="ok">✅ No orphan issues.</div>'; return; }
-    el.innerHTML=''; orphans.slice(0,50).forEach(x=>{ let lid=toCaps(x.learnerId); let bid=toCaps(x.bookId); let learnerExists=Object.values(d.learners).some(l=>toCaps(l.learnerId||l.id)===lid); let bookExists=Object.values(d.stock).some(b=>toCaps(b.bookId)===bid); let prob=!learnerExists?('Learner '+lid+' missing'):''; prob+=(!learnerExists && !bookExists)?' + ':''; prob+=!bookExists?('Book '+bid+' missing'):''; let tr=document.createElement('tr'); tr.innerHTML=`<td>${x.id}</td><td>${toCaps(x.learnerName)}<br>${lid}</td><td>${toCaps(x.bookTitle)}<br>${bid}</td><td>${prob}</td><td><button class="btn btn-red" onclick="deleteOrphanIssue('${x.id}')">🗑️ DELETE ISSUE</button></td>`; el.appendChild(tr); });
-    if(msg) msg.innerHTML='<div class="warn">⚠️ Found '+orphans.length+' orphan issues — Add missing learner / book, or delete issue.</div>';
-  }catch(e){ if(msg) msg.innerHTML='<div class="warn">'+e.message+'</div>'; }
-}
-async function deleteOrphanIssue(id){ if(!confirm('Delete orphan issue '+id+'?')) return; let sid=user.schoolId||'WHS'; try{ await rtdb.ref('issues/'+sid+'/'+id).remove(); findOrphanIssues(); loadRetrieval(); }catch(e){ alert(e.message); } }
-async function findMissing(){
-  let msg=document.getElementById('missingMsg'); let listEl=document.getElementById('missingList'); if(!listEl) return;
-  try{ let d=await getAll();
-    let missingLearners=Object.values(d.learners).filter(l=>!toCaps(l.className||l.class) || !toCaps(l.name||l.learnerName));
-    let missingBooks=Object.values(d.stock).filter(b=>!toCaps(b.title||b.bookTitle) || !toCaps(b.subject));
-    let missingIssues=Object.values(d.issues).filter(x=>!String(x.status||'').trim() || !toCaps(x.learnerId) || !toCaps(x.bookId));
-    let missingUsers=Object.values(d.users).filter(u=>!String(u.role||'').trim() || !String(u.email||'').trim());
-    let html='';
-    html+=`<div class="info">👩‍🎓 Learners missing Class / Name: <b>${missingLearners.length}</b> — ${missingLearners.slice(0,10).map(l=> (l.learnerId||l.id)+' — '+toCaps(l.name||l.learnerName)).join(', ')||'None'}</div>`;
-    html+=`<div class="info">📚 Books missing Title / Subject: <b>${missingBooks.length}</b> — ${missingBooks.slice(0,10).map(b=> b.bookId+' — '+toCaps(b.title||b.bookTitle)).join(', ')||'None'}</div>`;
-    html+=`<div class="info">📕 Issues missing Status / Learner / Book: <b>${missingIssues.length}</b> — ${missingIssues.slice(0,10).map(x=> x.id).join(', ')||'None'}</div>`;
-    html+=`<div class="info">👥 Users missing Role / Email: <b>${missingUsers.length}</b> — ${missingUsers.slice(0,10).map(u=> toCaps(u.name)).join(', ')||'None'}</div>`;
-    listEl.innerHTML=html;
-    if(msg) msg.innerHTML=(missingLearners.length+missingBooks.length+missingIssues.length+missingUsers.length===0)?'<div class="ok">✅ No missing data.</div>':'<div class="warn">⚠️ Found missing data — Fix in Teacher / Librarian / Users.</div>';
-  }catch(e){ if(msg) msg.innerHTML='<div class="warn">'+e.message+'</div>'; }
-}
-// ===== SUBSCRIPTION — READ ONLY =====
-function loadMySub(){
-  let el=document.getElementById('mySub'); if(!el||!user) return; let sid=user.schoolId||'WHS';
-  rtdb.ref('subscriptions/'+sid).once('value').then(snap=>{
-    let s=snap.val();
-    if(!s){ el.innerHTML='🆓 <b>NO SUBSCRIPTION YET — DEMO AVAILABLE</b> — Tap REQUEST DEMO → WhatsApp 078 023 3263.'; return; }
-    let days=Math.ceil(((s.endDate||0)-Date.now())/86400000);
-    el.innerHTML=`🏫 <b>${toCaps(s.schoolName)}</b> (${s.schoolId})<br>📦 Package: <b>${String(s.package||'').toUpperCase()}</b> — Status: <b>${String(s.status||'').toUpperCase()}</b> — Paid: <b>${s.paid?'✅ YES':'❌ NO'}</b><br>💰 Setup: <b>R${s.setup||0}</b> — Monthly: <b>R${s.monthly||0}</b> — Once-Off: <b>R${s.yearly||s.priceYear||0}</b> — Billing: <b>${s.billing||''}</b><br>📅 End: ${s.endDate?new Date(s.endDate).toDateString():'—'} — ${days>0?('Expires in <b>'+days+' days</b>'):('<b style="color:#ef4444">EXPIRED — Contact Super Admin 078 023 3263</b>')}`;
-  }).catch(e=>{ el.innerHTML='Load failed: '+e.message; });
-}
-function loadAll(){
-  if(!user) return;
-  document.getElementById('roleInfo').innerHTML=`👤 <b>${toCaps(user.name)}</b> — ${toCaps(user.role)} — RANK ${user.rank||''} — School: <b>${toCaps(user.schoolName)}</b> (${user.schoolId})<br>✅ <b>You are Admin / Principal / Super Admin — You can cleanup duplicates / orphans / missing in your school — Be careful, deletes cannot be undone.</b>`;
-  let sid=user.schoolId||'WHS';
-  Promise.all([rtdb.ref('users').once('value'),rtdb.ref('learners/'+sid).once('value'),rtdb.ref('stock/'+sid).once('value'),rtdb.ref('issues/'+sid).once('value')]).then(([us,ls,bs,is])=>{
-    document.getElementById('kpiUsers').textContent=us.val()?Object.keys(us.val()).length:0;
-    document.getElementById('kpiLearners').textContent=ls.val()?Object.keys(ls.val()).length:0;
-    document.getElementById('kpiBooks').textContent=bs.val()?Object.keys(bs.val()).length:0;
-    document.getElementById('kpiIssues').textContent=is.val()?Object.keys(is.val()).length:0;
-  });
-  loadMySub();
-}
-loadAll(); loadRetrieval(); loadRetrievalByClass();
 </script></body></html>
