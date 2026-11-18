@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Super Admin Dashboard - Makhanani LTSM 2.0</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
+header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
+header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
+.wrap{max-width:1100px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+h2{margin:0 0 10px;font-size:16px}h3{margin:14px 0 6px;font-size:15px}
+label{font-weight:900;font-size:13px;display:block;margin-top:12px}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
+.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-blue{background:#2563eb;color:#fff}.btn-orange{background:#ea580c;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
+.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}.kpi b{font-size:22px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.tile{background:#fff;border-radius:12px;padding:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);border-top:6px solid #7c3aed}.tile b{font-size:16px;display:block}.tile span{font-size:12px;color:#64748b;line-height:1.5}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
+@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.row{flex-direction:column}}
+</style></head>
+<body>
+<header><h1>👑 SUPER ADMIN DASHBOARD — MAKHANANI LTSM 2.0</h1><p>SUPER ADMIN ONLY — RANK 6 — FOUNDER + MARKETING + FINANCIAL + EMPLOYMENT — NO OTHER ROLE CAN SEE THESE</p>
+<div id="taskbar"></div><script src="nav.js"></script>
+<script>guardPage(6,'Super Admin Dashboard');</script>
+</header>
+<div class="wrap">
+
+<div class="card"><h2>👤 Who Am I — Super Admin Only</h2><div class="info" id="roleInfo">Loading...</div>
+<div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 OPEN MANUALS → FOUNDER / MARKETING / FINANCIAL / EMPLOYMENT VISIBLE ONLY FOR YOU</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-gold" onclick="go('users.html')">👥 USERS →</button></div></div>
+
+<div class="kpi"><div><b id="kpiUsers">0</b><span>👥 TOTAL USERS</span></div><div><b id="kpiBooks">0</b><span>📚 TOTAL BOOKS</span></div><div><b id="kpiLearners">0</b><span>👩‍🎓 TOTAL LEARNERS</span></div><div><b id="kpiIssues">0</b><span>📕 TOTAL ISSUES</span></div></div>
+
+<div class="card"><h2>🔒 Super Admin Only — 4 Restricted Manuals — Tap To Open In Manuals</h2>
+<div class="info">These 4 manuals are <b>NOT shown</b> in normal Manuals for Teacher / Librarian / HOD / Principal / Admin. They are <b>ONLY shown here + in Manuals when you are logged in as Super Admin</b>. If you print Manuals as Super Admin, these 4 sections will be in the PDF. If Principal / Admin prints Manuals, these 4 sections will NOT be in their PDF.</div>
+<div class="grid">
+<div class="tile" onclick="go('manuals.html#sec-2')"><b>📖 2. FOUNDER MANUAL</b><span>Vision, mission, founder story, school setup, legal, registration, how Makhanani was built. Super Admin only.</span><div class="row"><button class="btn btn-purple" onclick="event.stopPropagation();go('manuals.html#sec-2')">📖 OPEN FOUNDER →</button></div></div>
+<div class="tile" onclick="go('manuals.html#sec-4')"><b>📢 4. MARKETING MANUAL</b><span>How to market Makhanani to schools, pricing, flyers, WhatsApp, school visits, demo script. Super Admin only.</span><div class="row"><button class="btn btn-purple" onclick="event.stopPropagation();go('manuals.html#sec-4')">📢 OPEN MARKETING →</button></div></div>
+<div class="tile" onclick="go('manuals.html#sec-5')"><b>💰 5. FINANCIAL PROJECTIONS</b><span>Costs, pricing, revenue, projections, budget, profit, school fees, LTSM costs. Super Admin only — Do NOT share with Principal / Admin.</span><div class="row"><button class="btn btn-purple" onclick="event.stopPropagation();go('manuals.html#sec-5')">💰 OPEN FINANCIAL →</button></div></div>
+<div class="tile" onclick="go('manuals.html#sec-6')"><b>💼 6. EMPLOYMENT OPPORTUNITIES</b><span>Jobs, roles, salaries, contracts, hiring, who to hire, when to hire. Super Admin only — Do NOT share with staff.</span><div class="row"><button class="btn btn-purple" onclick="event.stopPropagation();go('manuals.html#sec-6')">💼 OPEN EMPLOYMENT →</button></div></div>
+</div></div>
+
+<div class="card"><h2>📊 All Schools Overview — Super Admin Sees Every School</h2><div class="info" id="schoolInfo">Loading...</div>
+<div class="row"><button class="btn btn-blue" onclick="go('principal.html')">👑 PRINCIPAL OVERVIEW →</button><button class="btn btn-teal" onclick="go('users.html')">👥 USERS → CREATE SUPER ADMIN / ADMIN</button><button class="btn btn-red" onclick="go('cleanup.html')">🧹 CLEANUP →</button></div></div>
+
+<div class="card"><h2>👥 Super Admin Actions — Only Here</h2>
+<div class="row"><button class="btn btn-purple" onclick="go('users.html')">👥 CREATE / EDIT USERS — INCLUDING SUPER ADMIN</button><button class="btn btn-gold" onclick="go('manuals.html')">📖 PRINT FULL MANUALS — ALL 1-9 — INCLUDING 2,4,5,6</button></div>
+<div class="info">⚠️ <b>Keep Super Admin account secret.</b> Do NOT give Super Admin login to Principal, Admin, or staff. If Super Admin login leaks, anyone with it can see Financial + Employment. Change Super Admin password in Firebase Console → Auth → Users → Super Admin → Reset.</div>
+<div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
+
+<div class="card"><h2>📋 Super Admin — What Each Role Can See — For Reference</h2>
+<table><tr><th>Role</th><th>Rank</th><th>Manuals Sections</th><th>Can See 2,4,5,6?</th></tr>
+<tr><td>TEACHER</td><td>1</td><td>1, 3, 9</td><td>❌ No</td></tr>
+<tr><td>LIBRARIAN</td><td>2</td><td>1, 3, 9</td><td>❌ No</td></tr>
+<tr><td>HOD</td><td>3</td><td>1, 3, 7, 9</td><td>❌ No</td></tr>
+<tr><td>PRINCIPAL</td><td>4</td><td>1, 3, 7, 9</td><td>❌ No — Blocked in V1.3</td></tr>
+<tr><td>ADMIN</td><td>5</td><td>1, 3, 7, 8, 9</td><td>❌ No — Blocked in V1.3</td></tr>
+<tr><td><b>SUPER ADMIN</b></td><td><b>6</b></td><td><b>1, 2, 3, 4, 5, 6, 7, 8, 9</b></td><td><b>✅ Yes — Only Role</b></td></tr>
+</table></div>
+
+</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const rtdb=firebase.database();
+function toCaps(s){return String(s||'').trim().toUpperCase();}
+function go(page){ window.location.href=page; }
+let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
+function loadAll(){
+  if(!user) return;
+  document.getElementById('roleInfo').innerHTML=`👤 <b>${toCaps(user.name)}</b> — SUPER_ADMIN — RANK 6 — School: <b>${toCaps(user.schoolName||'ALL SCHOOLS')}</b> (${user.schoolId||'ALL'})<br>✅ <b>You are Super Admin — Only you can see Founder (2), Marketing (4), Financial (5), Employment (6).</b><br>Principal, Admin, HOD, Teacher, Librarian cannot see these — Even if they type manuals.html#sec-2, they will be blocked.`;
+  let schoolId=user.schoolId||'WHS';
+  Promise.all([
+    rtdb.ref('users').once('value'),
+    rtdb.ref('learners/'+schoolId).once('value'),
+    rtdb.ref('stock/'+schoolId).once('value'),
+    rtdb.ref('issues/'+schoolId).once('value'),
+  ]).then(([us,ls,bs,is])=>{
+    document.getElementById('kpiUsers').textContent=us.val()?Object.keys(us.val()).length:0;
+    document.getElementById('kpiLearners').textContent=ls.val()?Object.keys(ls.val()).length:0;
+    document.getElementById('kpiBooks').textContent=bs.val()?Object.keys(bs.val()).length:0;
+    document.getElementById('kpiIssues').textContent=is.val()?Object.keys(is.val()).length:0;
+    document.getElementById('schoolInfo').innerHTML=`School: <b>${toCaps(user.schoolName||'ALL')}</b> (${schoolId}) — Users: <b>${us.val()?Object.keys(us.val()).length:0}</b> — Learners: <b>${ls.val()?Object.keys(ls.val()).length:0}</b> — Books: <b>${bs.val()?Object.keys(bs.val()).length:0}</b> — Issues: <b>${is.val()?Object.keys(is.val()).length:0}</b><br>Super Admin can create users for any school in Users page.`;
+  }).catch(e=>{ document.getElementById('schoolInfo').innerHTML='<div class="warn">Load failed: '+e.message+'</div>'; });
+}
+loadAll();
+</script></body></html>
