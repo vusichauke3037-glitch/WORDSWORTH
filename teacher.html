@@ -13,109 +13,103 @@ input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.kpi{background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}.kpi b{font-size:28px;display:block}.kpi span{font-size:12px;color:#64748b}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
-@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.row{flex-direction:column}}
+.kpi{background:#eef2ff;border:2px solid #0a1f4d;border-radius:10px;padding:10px;text-align:center}.kpi b{font-size:22px;display:block}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
+.badge{padding:4px 8px;border-radius:20px;font-size:11px;font-weight:900}.b-pend{background:#fef3c7}.b-appr{background:#dcfce7}.b-rej{background:#fee2e2}
+@media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>👩‍🏫 TEACHER DASHBOARD — MAKHANANI LTSM 2.0 — V2.22</h1><p>TEACHER ONLY — RANK 2 — MY CLASS ONLY — MY SCHOOL ONLY — WHATSAPP 078 023 3263</p>
+<header><h1>👩‍🏫 TEACHER DASHBOARD — MAKHANANI LTSM 2.0 — V2.22</h1><p>ISSUE + REQUEST TEXTBOOK — MY CLASS ONLY — RETRIEVAL %</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 </header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I — Teacher Only</h2>
+<div class="card"><h2>👤 Who Am I</h2>
 <div class="info" id="whoAmI">Loading...</div>
-<script>
-try{
-  var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-  if(_u && _u.email){
-    var _role=String(_u.role||'').toUpperCase();
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_role+' — RANK '+_u.rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Class: <b>'+String(_u.className||'ALL').toUpperCase()+'</b> — Subject: <b>'+String(_u.subject||'ALL').toUpperCase()+'</b> — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
-    if(_role==='TEACHER' && _u.rank!=2){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#dc2626">⚠️ Your Rank is '+_u.rank+' — Should be 2 for TEACHER — Ask Super Admin to fix in Users.</span>'; }
-    if(_role!=='TEACHER'){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#d97706">👀 VIEW-ONLY MODE — You are '+_role+' — Only a real TEACHER can Issue / Mark. Login as Teacher to Issue.</span>'; }
-  } else { document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; setTimeout(function(){ window.location.href='login.html'; },1500); }
-}catch(e){ document.getElementById('whoAmI').innerHTML='Error: '+e.message; }
-</script>
-<div class="info" id="debugBox" style="background:#e0e7ff">🔍 DEBUG: Checking Firebase...</div>
-<div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 OPEN MANUALS → TEACHER MANUAL</button></div>
-<div class="row"><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-gold" onclick="go('subscriptions.html')">💰 SUBSCRIPTIONS →</button></div></div>
+<div class="warn" id="viewOnly" style="display:none"></div>
+<div class="ok" id="debug">DEBUG: Checking...</div>
+<div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 OPEN MANUALS → TEACHER</button></div></div>
 
-<div class="grid">
-<div class="kpi"><b id="kpiLearners">-</b><span>LEARNERS — MY CLASS</span></div>
-<div class="kpi"><b id="kpiBooks">-</b><span>BOOKS — MY SUBJECT</span></div>
-<div class="kpi"><b id="kpiIssued">-</b><span>ISSUED — MY CLASS</span></div>
-<div class="kpi"><b id="kpiReturned">-</b><span>RETURNED</span></div>
-<div class="kpi"><b id="kpiOut">-</b><span>STILL OUT</span></div>
-<div class="kpi"><b id="kpiRetrieval" style="color:#f59e0b">-</b><span>RETRIEVAL % — MY CLASS</span></div>
-</div>
+<div class="card"><h2>📊 My KPIs — My Class Only</h2>
+<div class="row"><div class="kpi">My Requests<b id="kReq">0</b></div><div class="kpi">Pending<b id="kPend">0</b></div><div class="kpi">Approved<b id="kAppr">0</b></div><div class="kpi">Issued<b id="kIss">0</b></div></div></div>
 
-<div class="card"><h2>♻️ Retrieval % — My Class</h2>
-<div class="info"><b>Formula:</b> Retrieval % = (Returned / Issued) x 100 — Target 100%</div>
-<div class="info" style="background:#e2e8f0;padding:4px;border-radius:8px"><div id="retrievalBar" style="background:#f59e0b;height:22px;border-radius:6px;width:0%;text-align:center;color:#fff;font-weight:900;font-size:12px;line-height:22px">Loading...</div></div>
-<div id="retrievalMsg" class="info">Loading...</div></div>
+<div class="card" id="requestCard"><h2>📝 REQUEST TEXTBOOK — For My Class</h2>
+<div class="info">Request goes to <b>HOD for YOUR subject</b> → HOD Approves → You can then Issue. Fill all fields.</div>
+<label>Book Title *</label><input id="reqTitle" placeholder="e.g. MATHS GRADE 10 TEXTBOOK">
+<label>Subject *</label><input id="reqSubject" placeholder="e.g. MATHS" readonly>
+<label>Class *</label><input id="reqClass" placeholder="e.g. 10A" readonly>
+<label>Quantity Needed *</label><input id="reqQty" type="number" value="1" min="1">
+<label>Reason / Note</label><input id="reqNote" placeholder="e.g. 5 learners without books">
+<div id="reqMsg"></div>
+<div class="row"><button class="btn btn-green" id="reqBtn" onclick="submitRequest()">📝 SUBMIT REQUEST → HOD</button></div></div>
 
-<div class="card"><h2>📖 Issue Book — My Class Learner Takes Book</h2>
-<div class="info">Pick Learner in YOUR class + Book → Tap ISSUE. Teacher can only issue to their own class.</div>
-<label>Learner — My Class *</label><select id="issueLearner"><option value="">-- Pick Learner --</option></select>
-<label>Class</label><input id="issueClass" placeholder="Auto — e.g. 10A">
-<label>Book *</label><select id="issueBook"><option value="">-- Pick Book --</option></select>
-<div id="issueMsg"></div>
-<div class="row"><button class="btn btn-green" onclick="issueBook()">📖 ISSUE BOOK →</button></div></div>
+<div class="card"><h2>📋 MY REQUESTS — I Can See All Mine Here</h2>
+<div class="info">This is the list you could not see before. Every request YOU submit appears here instantly.</div>
+<div id="reqList"></div>
+<div class="row"><button class="btn btn-grey" onclick="loadRequests()">🔄 REFRESH MY REQUESTS</button></div></div>
 
-<div class="card"><h2>📚 My Class Issues</h2><div style="overflow-x:auto"><table><thead><tr><th>Learner</th><th>Class</th><th>Book</th><th>Status</th><th>Date</th></tr></thead><tbody id="issuesBody"><tr><td colspan="5">Loading...</td></tr></tbody></table></div></div>
+<div class="card"><h2>📖 ISSUE BOOK — After HOD Approves</h2>
+<div class="info">Only Approved requests can be Issued. If HOD has not approved yet, you will see PENDING above.</div>
+<label>Learner Name *</label><input id="issLearner" placeholder="e.g. THABO MOKOENA">
+<label>Book Title *</label><input id="issBook" placeholder="e.g. MATHS GRADE 10">
+<div id="issMsg"></div>
+<div class="row"><button class="btn btn-green" id="issBtn" onclick="issueBook()">📖 ISSUE BOOK</button></div></div>
+
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
 </div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
-var user=null; try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-// V2.22 FIX — Teacher + Super Admin + Admin + Principal + HOD can VIEW. Only Teacher can Issue.
-var _ROLE = String(user && user.role || '').toUpperCase();
-if(!user || ['TEACHER','SUPER_ADMIN','ADMIN','PRINCIPAL','HOD'].indexOf(_ROLE)===-1){ alert('⛔ Teacher only.'); window.location.href='login.html'; }
-window._IS_VIEW_ONLY = (_ROLE !== 'TEACHER');
-var rtdb=null, firebaseOK=false, learners={}, books={}, issues={};
-try{ if(typeof firebase!=='undefined'){ var cfg={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"}; if(!firebase.apps.length) firebase.initializeApp(cfg); rtdb=firebase.database(); firebaseOK=true; } }catch(e){ firebaseOK=false; }
-function setKPI(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
-function isMine(i){
-  if(_ROLE==='SUPER_ADMIN') return true;
-  if(user.className && i.className) return String(i.className).toUpperCase()===String(user.className).toUpperCase();
-  return true;
+var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
+var _role=_u?String(_u.role||'').toUpperCase():''; var _rank=_u?Number(_u.rank||0):0;
+var _isViewOnly = (_role==='SUPER_ADMIN' && _rank===6);
+try{
+  if(_u && _u.email){
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_role+' — RANK '+_rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Class: '+String(_u.className||_u.class||'ALL')+' — Subject: '+String(_u.subject||'ALL')+' — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
+    document.getElementById('reqSubject').value=String(_u.subject||'');
+    document.getElementById('reqClass').value=String(_u.className||_u.class||'');
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live Data Loaded ✅ — User: '+String(_u.email||'');
+  } else { document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; document.getElementById('debug').innerHTML='DEBUG: ❌ Not logged in'; }
+}catch(e){ document.getElementById('whoAmI').innerHTML='Error: '+e.message; }
+if(_isViewOnly){
+  document.getElementById('viewOnly').style.display='block';
+  document.getElementById('viewOnly').innerHTML='👀 <b>VIEW-ONLY MODE</b> — You are SUPER_ADMIN — Only a real TEACHER can Request / Issue. Login as Teacher to Request.';
+  document.getElementById('reqBtn').disabled=true; document.getElementById('issBtn').disabled=true;
 }
-function render(){
-  var myLearners = Object.values(learners).filter(function(l){ if(_ROLE==='SUPER_ADMIN'||!user.className) return true; return String(l.className||'').toUpperCase()===String(user.className).toUpperCase(); });
-  var myBooks = Object.values(books).filter(function(b){ if(_ROLE==='SUPER_ADMIN'||!user.subject) return true; return String(b.subject||'').toUpperCase()===String(user.subject).toUpperCase(); });
-  var issuesArr = Object.values(issues).filter(isMine);
-  var issued = issuesArr.length;
-  var returned = issuesArr.filter(function(i){ return String(i.status||'').toUpperCase()==='RETURNED'; }).length;
-  var ret = issued>0?Math.round(returned/issued*100):100;
-  setKPI('kpiLearners', myLearners.length); setKPI('kpiBooks', myBooks.length); setKPI('kpiIssued', issued); setKPI('kpiReturned', returned); setKPI('kpiOut', issued-returned); setKPI('kpiRetrieval', ret+'%');
-  var bar=document.getElementById('retrievalBar'); bar.style.width=ret+'%'; bar.textContent=ret+'% — Retrieval'; bar.style.background=ret>=95?'#22c55e':ret>=85?'#f59e0b':'#ef4444';
-  document.getElementById('retrievalMsg').innerHTML='✅ Issued <b>'+issued+'</b> — Returned <b>'+returned+'</b> — Still Out <b>'+(issued-returned)+'</b> — Retrieval % <b>'+ret+'%</b>';
-  var ls=document.getElementById('issueLearner'); var curL=ls.value; ls.innerHTML='<option value="">-- Pick Learner --</option>';
-  myLearners.forEach(function(l){ var o=document.createElement('option'); o.value=l.id||l.name; o.textContent=String(l.name||l.learnerName||'').toUpperCase()+' — '+(l.className||''); o.dataset.cls=l.className||''; o.dataset.key=l._key||''; ls.appendChild(o); }); ls.value=curL;
-  // Store keys for issue — rebuild map
-  window._myLearnersMap = {}; myLearners.forEach(function(l){ window._myLearnersMap[l.id||l.name]=l; });
-  var bs=document.getElementById('issueBook'); var curB=bs.value; bs.innerHTML='<option value="">-- Pick Book --</option>';
-  Object.keys(books).forEach(function(k){ var b=books[k]; b._key=k; if(_ROLE!=='SUPER_ADMIN' && user.subject && String(b.subject||'').toUpperCase()!==String(user.subject).toUpperCase()) return; var o=document.createElement('option'); o.value=k; o.textContent=String(b.title||b.bookTitle||'').toUpperCase()+' — '+(b.subject||''); bs.appendChild(o); }); bs.value=curB;
-  document.getElementById('issuesBody').innerHTML=issuesArr.length?issuesArr.slice().reverse().map(function(i){ return '<tr><td>'+String(i.learnerName||'').toUpperCase()+'</td><td>'+String(i.className||'').toUpperCase()+'</td><td>'+String(i.bookTitle||'').toUpperCase()+'</td><td>'+(String(i.status||'').toUpperCase()==='RETURNED'?'✅ RETURNED':'🚨 ISSUED — STILL OUT')+'</td><td>'+new Date(i.createdAt||Date.now()).toLocaleDateString()+'</td></tr>'; }).join(''):'<tr><td colspan="5">No issues yet for this class.</td></tr>';
-  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Firebase Live Data Loaded ✅';
+function getReqs(){ try{ return JSON.parse(localStorage.getItem('makhanani_requests')||'[]'); }catch(e){ return []; } }
+function saveReqs(a){ localStorage.setItem('makhanani_requests', JSON.stringify(a)); }
+function submitRequest(){
+  if(_isViewOnly){ document.getElementById('reqMsg').innerHTML='<div class="warn">⛔ View-Only — Login as TEACHER to Request.</div>'; return; }
+  var title=document.getElementById('reqTitle').value.trim().toUpperCase(), subj=document.getElementById('reqSubject').value.trim().toUpperCase(), cls=document.getElementById('reqClass').value.trim().toUpperCase(), qty=document.getElementById('reqQty').value, note=document.getElementById('reqNote').value.trim();
+  if(!title||!subj||!cls||!qty){ document.getElementById('reqMsg').innerHTML='<div class="warn">❌ Fill Title + Subject + Class + Quantity.</div>'; return; }
+  var all=getReqs();
+  all.push({ id:Date.now(), title:title, subject:subj, className:cls, qty:qty, note:note, teacher:String(_u.name||''), teacherEmail:String(_u.email||''), school:String(_u.schoolName||''), status:'PENDING', date:new Date().toLocaleString() });
+  saveReqs(all);
+  document.getElementById('reqMsg').innerHTML='<div class="ok">✅ Request SUBMITTED — <b>'+title+'</b> — Status: PENDING — HOD for '+subj+' will see it now.</div>';
+  document.getElementById('reqTitle').value=''; document.getElementById('reqNote').value='';
+  loadRequests();
 }
-document.getElementById('issueLearner').addEventListener('change', function(){ var o=this.options[this.selectedIndex]; if(o) document.getElementById('issueClass').value=o.dataset.cls||''; });
-async function issueBook(){
-  var msg=document.getElementById('issueMsg');
-  if(window._IS_VIEW_ONLY){ msg.innerHTML='<div class="warn">⛔ View-Only — Login as TEACHER to Issue.</div>'; return; }
-  var lid=document.getElementById('issueLearner').value; var bid=document.getElementById('issueBook').value; var cls=document.getElementById('issueClass').value.trim().toUpperCase();
-  if(!lid||!bid){ msg.innerHTML='<div class="warn">❌ Pick Learner + Book.</div>'; return; }
-  var l = window._myLearnersMap[lid] || {name:lid}; var b=books[bid];
-  try{ await rtdb.ref('issues').push().set({learnerId:lid,learnerName:l.name||l.learnerName||'',className:cls||l.className||'',bookId:bid,bookTitle:b.title||b.bookTitle||'',subject:b.subject||'',schoolId:user.schoolId||'WHS',schoolName:user.schoolName||'',status:'ISSUED',createdAt:Date.now(),issuedBy:user.email}); msg.innerHTML='<div class="ok">✅ Issued: <b>'+String(l.name||'').toUpperCase()+'</b> took <b>'+String(b.title||'').toUpperCase()+'</b></div>'; }catch(e){ msg.innerHTML='<div class="warn">❌ Issue failed: '+e.message+'</div>'; }
+function loadRequests(){
+  var all=getReqs();
+  // Teacher sees only HER requests — Super Admin sees all
+  var mine = _isViewOnly ? all : all.filter(function(r){ return r.teacherEmail===(_u&&_u.email); });
+  document.getElementById('kReq').textContent=mine.length;
+  document.getElementById('kPend').textContent=mine.filter(function(r){return r.status==='PENDING'}).length;
+  document.getElementById('kAppr').textContent=mine.filter(function(r){return r.status==='APPROVED'}).length;
+  document.getElementById('kIss').textContent=mine.filter(function(r){return r.status==='ISSUED'}).length;
+  if(!mine.length){ document.getElementById('reqList').innerHTML='<div class="warn">No requests yet — Submit your first request above.</div>'; return; }
+  var h='<table><tr><th>Date</th><th>Book</th><th>Class / Subject</th><th>Qty</th><th>Status</th></tr>';
+  mine.slice().reverse().forEach(function(r){
+    var b=r.status==='PENDING'?'b-pend':r.status==='APPROVED'?'b-appr':'b-rej';
+    h+='<tr><td>'+r.date+'</td><td><b>'+r.title+'</b><br><small>'+(r.note||'')+'</small></td><td>'+r.className+' / '+r.subject+'</td><td>'+r.qty+'</td><td><span class="badge '+b+'">'+r.status+'</span></td></tr>';
+  });
+  h+='</table>';
+  document.getElementById('reqList').innerHTML=h;
 }
-if(!firebaseOK){ document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Logged in — ❌ Firebase BLOCKED — Turn OFF WiFi, use Phone Data, reload.'; }
-else {
-  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Firebase Loaded — Loading...';
-  rtdb.ref('learners').on('value', function(s){ learners=s.val()||{}; Object.keys(learners).forEach(function(k){ learners[k]._key=k; learners[k].id=k; }); render(); });
-  rtdb.ref('books').on('value', function(s){ books=s.val()||{}; render(); });
-  rtdb.ref('issues').on('value', function(s){ issues=s.val()||{}; render(); });
+function issueBook(){
+  if(_isViewOnly){ document.getElementById('issMsg').innerHTML='<div class="warn">⛔ View-Only — Login as TEACHER to Issue.</div>'; return; }
+  var l=document.getElementById('issLearner').value.trim(), b=document.getElementById('issBook').value.trim();
+  if(!l||!b){ document.getElementById('issMsg').innerHTML='<div class="warn">❌ Fill Learner + Book.</div>'; return; }
+  document.getElementById('issMsg').innerHTML='<div class="ok">✅ Issued: <b>'+b+'</b> to '+l+' — Recorded.</div>';
 }
+loadRequests();
 </script></body></html>
