@@ -2,191 +2,151 @@
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Subscriptions - Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
 header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:1200px;margin:0 auto;padding:12px}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.wrap{max-width:1100px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
-input{cursor:text}input[type="number"]{text-transform:none}input[type="date"]{text-transform:none}
-select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
-.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}
-.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}
-.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
-.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
+.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-blue{background:#2563eb;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:middle}th{background:#0a1f4d;color:#fff}
-.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-active{background:#dcfce7;color:#166534}.badge-trial{background:#dbeafe;color:#1e40af}.badge-expired{background:#fee2e2;color:#991b1b}.badge-expiring{background:#fef3c7;color:#92400e}.badge-suspended{background:#111827;color:#fff}.badge-grace{background:#f59e0b;color:#fff}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.search-box{position:relative}.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#ef4444;color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-weight:900;cursor:pointer;font-size:14px;display:none}.search-count{font-size:11px;color:#64748b;margin-top:4px;font-weight:700}
-@media(max-width:700px){.row{flex-direction:column}table{font-size:12px}}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.tile{background:#fff;border-radius:16px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);border:2px solid #0a1f4d;border-top:6px solid #0a1f4d}.tile b{font-size:18px;display:block}.tile span{font-size:12px;color:#64748b}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
+.opt{border:2px solid #e2e8f0;border-radius:12px;padding:12px;margin-top:10px}.opt b{font-size:14px}.opt span{font-size:12px;color:#475569;line-height:1.6}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>💰 SUBSCRIPTIONS — MAKHANANI LTSM 2.0</h1><p>SUPER ADMIN ONLY TO CHANGE • PRINCIPAL / ADMIN VIEW ONLY • GRACE <span id="graceLabel">7</span> DAYS</p>
+<header><h1>💰 SUBSCRIPTIONS — MAKHANANI LTSM 2.0 — V1.1</h1><p>PACKAGES + OPTIONS — DEMO / STARTER / STANDARD / PREMIUM — SETUP + MONTHLY OR ONCE-OFF / YEAR — WHATSAPP 078 023 3263</p>
 <div id="taskbar"></div><script src="nav.js"></script>
-<script>guardPage(3,'Subscriptions');</script>
+<script>if(typeof renderTaskbar==='function'){ try{renderTaskbar('Subscriptions');}catch(e){} }</script>
 </header>
 <div class="wrap">
-<div class="info" id="roleInfo">Loading...</div>
-
-<div class="card" id="createCard">
-<h2>💰 Create / Renew Subscription</h2>
-<div class="info" id="createInfo"></div>
-<!-- ★ PICK OR SEARCH SCHOOL — V2.1 ★ -->
-<label>🏫 School — Pick OR Search *</label>
-<div class="search-box">
-<input id="schoolSearch" placeholder="🔍 Type to search school... e.g. WORDSWORTH, WHS, MAKHANANI" oninput="filterSchools()" autocomplete="off">
-<button class="search-clear" id="clearSearchBtn" onclick="clearSchoolSearch()">✕</button>
+<div class="card"><h2>👤 Who Am I</h2><div class="info" id="roleInfo">Loading...</div>
+<div class="row"><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-gold" onclick="go('login.html')">🔐 LOGIN →</button><button class="btn btn-purple" onclick="go('superadmin.html')">👑 SUPER ADMIN →</button><button class="btn btn-blue" onclick="go('principal.html')">👑 PRINCIPAL →</button></div></div>
+<div class="card" id="priceList"><h2>💰 Price List — Packages — Per School</h2>
+<div class="info">Pay <b>Setup once</b> + Then pick <b>Monthly OR Once-Off / Year</b>. DEMO = 7 Days FREE — No Card. Tap REQUEST → WhatsApp <b>078 023 3263</b> → Super Admin activates you.</div>
+<div class="grid">
+<div class="tile" style="border-top-color:#0d9488"><b>DEMO</b><span>7 days free trial</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: FREE</div><span>Monthly: <b>FREE</b><br>Once-off: <b>FREE</b></span><div class="info" style="text-align:left">✅ Try ALL Premium features<br>✅ 1 School — Up to 300 Learners<br>✅ No Card — No Commitment</div><button class="btn btn-teal btn-full" onclick="requestPkg('DEMO')">📱 REQUEST DEMO</button></div>
+<div class="tile" style="border-top-color:#0a1f4d"><b>STARTER</b><span>Starter — 1 school</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: R3 000</div><span>Monthly: <b>R350 / month</b><br>Once-off: <b>R4 500 once-off / year</b></span><div class="info" style="text-align:left">✅ Teacher + Librarian + HOD + Principal<br>✅ Stock + Barcode + Bulk Learners<br>✅ Up to 300 Learners — Up to 5 Users<br>✅ WhatsApp Support</div><button class="btn btn-green btn-full" onclick="requestPkg('STARTER')">📱 REQUEST STARTER</button></div>
+<div class="tile" style="border-top-color:#d4af37"><b>STANDARD</b><span>Most popular</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: R4 500</div><span>Monthly: <b>R500 / month</b><br>Once-off: <b>R7 500 once-off / year</b></span><div class="info" style="text-align:left">✅ Everything in Starter<br>✅ Bulk Books + Cleanup + Export CSV<br>✅ Principal Dashboard + Priority Support<br>✅ Up to 800 Learners — Up to 15 Users</div><button class="btn btn-gold btn-full" onclick="requestPkg('STANDARD')">📱 REQUEST STANDARD</button></div>
+<div class="tile" style="border-top-color:#7c3aed"><b>PREMIUM</b><span>Premium</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: R5 500</div><span>Monthly: <b>R600 / month</b><br>Once-off: <b>R9 000 once-off / year</b></span><div class="info" style="text-align:left">✅ Everything in Standard<br>✅ Super Admin + Manuals Full 1-9<br>✅ Training 2 Hours + Phone Support<br>✅ Unlimited Learners — Unlimited Users</div><button class="btn btn-purple btn-full" onclick="requestPkg('PREMIUM')">📱 REQUEST PREMIUM</button></div>
 </div>
-<div class="search-count" id="schoolCount">Showing schools — Type to search</div>
-<select id="subSchool"><option value="">-- PICK SCHOOL --</option></select>
-
-<label>💰 Plan *</label><select id="subPlan"><option value="DEMO">🆓 DEMO — FREE — 14 DAYS</option><option value="STARTER">STARTER — R350/mo</option><option value="STANDARD">STANDARD — R500/mo</option><option value="PREMIUM">PREMIUM — R600/mo</option></select>
-<label>💳 Pay Type *</label><select id="subPayType"><option value="Monthly">Monthly</option><option value="Term">Term</option><option value="Yearly">Yearly</option><option value="Trial">Trial</option></select>
-<div class="row"><div><label>📅 Start Date *</label><input id="subStart" type="date"></div><div><label>📅 End Date *</label><input id="subEnd" type="date"></div></div>
-<div class="row"><div><label>💰 Setup Due</label><input id="subSetupDue" type="number" value="4500"></div><div><label>💰 Setup Paid</label><input id="subSetupPaid" type="number" value="4500"></div></div>
-<div class="row"><div><label>💰 Sub Due</label><input id="subSubDue" type="number" value="500"></div><div><label>💰 Sub Paid</label><input id="subSubPaid" type="number" value="500"></div></div>
-<button class="btn btn-gold btn-full" onclick="saveSub()">💰 SAVE / RENEW SUBSCRIPTION →</button>
-<div id="subMsg"></div>
+<div class="info"><b>Year 1 Total (Setup + Once-Off):</b> STARTER R7 500 — STANDARD R12 000 — PREMIUM R14 500 — After Year 1, pay only Once-Off / Year OR Monthly.<br><b>Monthly Total Year 1 (Setup + Monthly x 12):</b> STARTER R7 200 — STANDARD R10 500 — PREMIUM R12 700</div>
 </div>
-
-<div class="card"><h2>💰 All Subscriptions</h2>
-<label>🏫 Filter School — Pick OR Search</label><input id="filterSchoolSearch" placeholder="🔍 Type to filter... e.g. WORDS" oninput="filterFilterSchools()"><select id="filterSchool" onchange="renderSubs()"><option value="">🏫 ALL SCHOOLS</option></select>
-<div id="subsInfo" class="info">Loading...</div>
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>School</th><th>Plan</th><th>Pay Type</th><th>Start</th><th>End</th><th>Grace Ends</th><th>Status</th><th>Owe</th><th>Action</th></tr></thead><tbody id="subsTable"></tbody></table></div></div>
-
-<div class="card"><h2>⚙️ Subscription Settings — Grace Days — Super Admin Only</h2><label>Grace Days After Expiry (Default 7)</label><input id="graceDaysInput" type="number" value="7" min="0" max="30"><button class="btn btn-green btn-full" onclick="saveGraceDays()">💾 SAVE GRACE DAYS →</button><div id="graceMsg"></div></div>
+<div class="card"><h2>⚙️ Package Options — Compare</h2>
+<div class="opt"><b>🌱 STARTER — Options</b><br><span>✔️ Classes: 4A-12J — ✔️ Subjects: CAPS — ✔️ Roles: Teacher, Librarian, HOD, Principal — ✔️ Stock + Barcode — ✔️ Bulk Learners — ❌ Bulk Books — ❌ Cleanup — ❌ Export CSV — ❌ Super Admin — ❌ Manuals 1-9 Full — ❌ Training</span></div>
+<div class="opt"><b>⭐ STANDARD — Options — Most Popular</b><br><span>✔️ Everything in Starter — ✔️ Bulk Books — ✔️ Cleanup — ✔️ Export CSV — ✔️ Principal Dashboard Full — ✔️ Priority WhatsApp Support — ❌ Super Admin — ❌ Manuals 1-9 Full — ❌ Training</span></div>
+<div class="opt"><b>👑 PREMIUM — Options</b><br><span>✔️ Everything in Standard — ✔️ Super Admin Dashboard — ✔️ Manuals Full 1-9 — ✔️ Training 2 Hours — ✔️ Phone Support — ✔️ Unlimited Learners / Users</span></div>
+<div class="opt"><b>🆓 DEMO — Options — 7 Days FREE</b><br><span>✔️ Try Premium for 7 Days — ✔️ No Card — ✔️ 1 School — ✔️ Up to 300 Learners — ❌ After 7 Days, pick Starter / Standard / Premium — Books safe, no data deleted.</span></div>
+<div class="info"><b>Billing Options:</b><br>1. <b>MONTHLY</b> — Pay every month — Setup once + Monthly — Cancel anytime.<br>2. <b>ONCE-OFF / YEAR</b> — Pay once per year — Setup once + Once-Off — Cheaper.<br>3. <b>FREE / TRIAL</b> — DEMO only — 7 Days FREE.<br><b>Payment:</b> EFT / SnapScan / Card — Invoice in Principal Dashboard — Receipt via Email / WhatsApp <b>078 023 3263</b>.</div>
+</div>
+<div class="card" id="mySubCard"><h2>🏫 My Subscription — My School Only</h2><div class="info" id="mySub">Loading... Login to see your school subscription.</div>
+<div class="row"><button class="btn btn-gold" onclick="requestPkg('STANDARD')">📱 REQUEST UPGRADE →</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
+<div class="card" id="manageCard" style="display:none"><h2>💰 Manage Subscriptions — All Schools — Super Admin Only</h2>
+<div class="info">Super Admin is ONLY role that can change package / extend / mark paid. Principal can only see own school.</div>
+<label>School ID — e.g. WHS</label><input id="sSchoolId" placeholder="WHS" value="WHS">
+<label>School Name</label><input id="sSchoolName" placeholder="WORDSWORTH HIGH SCHOOL">
+<label>Package</label><select id="sPackage" onchange="onPackageChange()">
+<option value="DEMO">🆓 DEMO — Setup: FREE — Monthly: FREE — Once-off: FREE — 7 days</option>
+<option value="STARTER">🌱 STARTER — Setup: R3 000 — Monthly: R350 — Once-off: R4 500 / year — 1 school</option>
+<option value="STANDARD" selected>⭐ STANDARD — Setup: R4 500 — Monthly: R500 — Once-off: R7 500 / year — Most popular</option>
+<option value="PREMIUM">👑 PREMIUM — Setup: R5 500 — Monthly: R600 — Once-off: R9 000 / year</option>
+</select>
+<label>Billing — Monthly OR Once-Off / Year?</label><select id="sBilling"><option value="ONCE-OFF">Once-Off / Year — Pay once per year — Cheaper</option><option value="MONTHLY">Monthly — Pay every month</option><option value="FREE">FREE — Demo</option></select>
+<label>Setup (R) — Once — Auto-fills — Edit for discount</label><input id="sSetup" type="number" value="4500">
+<label>Monthly (R)</label><input id="sMonthly" type="number" value="500">
+<label>Once-Off / Year (R)</label><input id="sYearly" type="number" value="7500">
+<label>Learners Limit</label><input id="sLearners" type="number" value="800">
+<label>Users Limit</label><input id="sUsers" type="number" value="15">
+<label>Status</label><select id="sStatus"><option value="TRIAL">TRIAL — Demo 7 days</option><option value="ACTIVE" selected>ACTIVE — Paid</option><option value="EXPIRED">EXPIRED</option><option value="CANCELLED">CANCELLED</option></select>
+<label>Paid?</label><select id="sPaid"><option value="true">✅ YES — Paid</option><option value="false">❌ NO — Not Paid</option></select>
+<label>Invoice No</label><input id="sInvoice" placeholder="INV-2026-001">
+<label>Duration</label><select id="sMonths"><option value="0.25">7 Days — Demo Trial</option><option value="1">1 Month</option><option value="12" selected>12 Months — 1 Year</option><option value="24">24 Months — 2 Years</option></select>
+<div class="row"><button class="btn btn-purple" onclick="saveSub()">💾 SAVE SUBSCRIPTION</button><button class="btn btn-gold" onclick="extendSub()">➕ EXTEND +12 MONTHS</button><button class="btn btn-red" onclick="expireSub()">⛔ MARK EXPIRED</button></div>
+<div id="subMsg"></div></div>
+<div class="card" id="allSubsCard" style="display:none"><h2>💰 All Subscriptions — All Schools — Super Admin Only</h2><div style="overflow-x:auto"><table><thead><tr><th>School</th><th>Package</th><th>Status</th><th>Setup</th><th>Monthly</th><th>Once-Off / Year</th><th>Expires</th><th>Paid</th><th>Actions</th></tr></thead><tbody id="subsBody"></tbody></table></div></div>
+<div class="card"><h2>❓ FAQ — Subscriptions</h2><div class="info"><b>Q: What happens when trial ends?</b><br>A: Pick Starter / Standard / Premium. Books safe, no data deleted.<br><b>Q: Can I change Monthly to Once-Off / Year?</b><br>A: Yes — Contact Super Admin on 078 023 3263 — Super Admin changes Billing in this file.<br><b>Q: Can I upgrade Starter to Standard?</b><br>A: Yes — Pay difference in Setup + New Monthly / Once-Off — Super Admin upgrades you.<br><b>Q: How do I pay?</b><br>A: EFT / SnapScan / Card — Super Admin sends Invoice No — You pay — Super Admin marks Paid: YES.<br><b>Q: Does price include VAT?</b><br>A: Prices shown are as quoted — Super Admin confirms VAT on invoice.</div></div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
-const ADMIN_WHATSAPP='27780233263';
 function toCaps(s){return String(s||'').trim().toUpperCase();}
-function fmtDate(ts){if(!ts) return '—';return new Date(ts).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});}
-function fmtR(n){return 'R'+Math.round(n||0).toLocaleString('en-ZA');}
+function go(page){window.location.href=page;}
 let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-let isSuper=user?.role==='Super Admin';
-let mySchoolId=user?.schoolId||'WHS';
-let schools=[],subs=[];
-let settings={graceDays:7,autoSuspend:true,adminWhatsapp:ADMIN_WHATSAPP};
-try{let s=JSON.parse(localStorage.getItem('makhanani_sub_settings')||'{}');settings={...settings,...s};}catch(e){}
-function graceEndFor(sub){return sub.endDate + ((settings.graceDays??7)*24*60*60*1000);}
-function getSubStatus(sub){ if(!sub) return 'NO SUBSCRIPTION'; if(sub.suspended) return 'SUSPENDED'; let now=Date.now(); if(sub.plan==='DEMO'||sub.payType==='Trial'){ if(sub.endDate<now) return 'EXPIRED'; return 'TRIAL'; } if(sub.endDate>=now){ let dl=Math.ceil((sub.endDate-now)/(1000*60*60*24)); if(dl<=7) return 'EXPIRING'; return 'ACTIVE'; } if(now<=graceEndFor(sub)) return 'GRACE'; return 'EXPIRED'; }
-function statusBadge(st){let cls=st==='ACTIVE'?'badge-active':st==='TRIAL'?'badge-trial':st==='EXPIRING'?'badge-expiring':st==='GRACE'?'badge-grace':st==='EXPIRED'?'badge-expired':st==='SUSPENDED'?'badge-suspended':'badge-active';return `<span class="badge ${cls}">${st}</span>`;}
-function amountOwe(sub){return Math.max(0,((sub.setupDue||0)-(sub.setupPaid||0))+((sub.subDue||0)-(sub.subPaid||0)));}
-
-// ===== PICK OR SEARCH — CREATE FORM =====
-function filterSchools(){
-  let q=document.getElementById('schoolSearch').value.trim().toUpperCase();
-  let sel=document.getElementById('subSchool');
-  document.getElementById('clearSearchBtn').style.display=q?'block':'none';
-  let list = !q ? schools : schools.filter(s=> (toCaps(s.schoolName)+' '+toCaps(s.schoolId)+' '+(s.emis||'')).toUpperCase().split(/\s+/).join(' ').includes(q) || q.split(/\s+/).every(w=>(toCaps(s.schoolName)+' '+toCaps(s.schoolId)).toUpperCase().includes(w)) );
-  if(!isSuper) list = list.filter(s=>s.schoolId===mySchoolId);
-  let cur=sel.value;
-  sel.innerHTML='<option value="">-- PICK SCHOOL --</option>'+list.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('');
-  if(cur && list.some(s=>s.schoolId===cur)) sel.value=cur; else sel.value='';
-  let c=document.getElementById('schoolCount');
-  if(!q) c.textContent=`Showing ${list.length} school(s) — Type to search`;
-  else if(list.length===0) c.textContent=`❌ No school for "${document.getElementById('schoolSearch').value}" — Try WHS / WORDSWORTH`;
-  else c.textContent=`✅ Found ${list.length} school(s) for "${document.getElementById('schoolSearch').value}"`;
-  if(q && list.length===1) sel.value=list[0].schoolId;
+// ===== WHATSAPP — 078 023 3263 =====
+const WA_NUMBER='27780233263';
+function requestPkg(pkg){
+  let p=String(pkg||'').toUpperCase();
+  let prices={DEMO:'Setup: FREE — Monthly: FREE — Once-off: FREE — 7 days free trial',STARTER:'Setup: R3 000 — Monthly: R350 / month — Once-off: R4 500 / year',STANDARD:'Setup: R4 500 — Monthly: R500 / month — Once-off: R7 500 / year',PREMIUM:'Setup: R5 500 — Monthly: R600 / month — Once-off: R9 000 / year'};
+  let msg='Hello Makhanani LTSM 2.0 👋\n\nI want to REQUEST: '+p+'\n'+(prices[p]||'')+'\nSchool: '+((user&&user.schoolName)||'MY SCHOOL')+'\nName: '+((user&&user.name)||'')+'\n\nPlease activate my package.';
+  window.open('https://wa.me/'+WA_NUMBER+'?text='+encodeURIComponent(msg), '_blank');
 }
-function clearSchoolSearch(){ document.getElementById('schoolSearch').value=''; document.getElementById('clearSearchBtn').style.display='none'; filterSchools(); }
-function filterFilterSchools(){
-  let q=document.getElementById('filterSchoolSearch').value.trim().toUpperCase();
-  let sel=document.getElementById('filterSchool');
-  let list = !q ? schools : schools.filter(s=> (toCaps(s.schoolName)+' '+toCaps(s.schoolId)).toUpperCase().includes(q) );
-  if(!isSuper) list = list.filter(s=>s.schoolId===mySchoolId);
-  let cur=sel.value;
-  sel.innerHTML='<option value="">🏫 ALL SCHOOLS</option>'+list.map(s=>`<option value="${s.schoolId}">${s.schoolName} (${s.schoolId})</option>`).join('');
-  if(cur && list.some(s=>s.schoolId===cur)) sel.value=cur;
-  if(q && list.length===1) sel.value=list[0].schoolId;
-  renderSubs();
-}
-async function loadData(){
-  try{let st=await rtdb.ref('settings/subscriptions').once('value');if(st.val()){settings={...settings,...st.val()};localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));}}catch(e){}
-  try{let sc=await rtdb.ref('schools').once('value');schools=Object.entries(sc.val()||{}).map(([id,v])=>({id,...v,schoolName:toCaps(v.schoolName||v.name||''),schoolId:toCaps(v.schoolId||id),emis:v.emis||''}));}catch(e){}
-  if(schools.length===0) schools=[{id:'WHS',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',emis:'700310854'},{id:'MHS',schoolId:'MHS',schoolName:'MAKHANANI HIGH SCHOOL (MHS)',emis:''}];
-  try{let sb=await rtdb.ref('subscriptions').once('value');subs=Object.entries(sb.val()||{}).map(([id,v])=>({id,...v}));}catch(e){}
-  if(subs.length===0){ let d1=new Date();d1.setDate(d1.getDate()-10);let end=new Date(d1);end.setMonth(end.getMonth()+1); subs=[{id:'s1',schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL (WHS)',plan:'STANDARD',payType:'Monthly',startDate:d1.getTime(),endDate:end.getTime(),setupDue:4500,setupPaid:4500,subDue:500,subPaid:500,suspended:false}]; }
-  document.getElementById('graceLabel').textContent=settings.graceDays;
-  document.getElementById('graceDaysInput').value=settings.graceDays;
-  document.getElementById('roleInfo').innerHTML=`💰 <b>${toCaps(user?.name||'')}</b> — Role: <b>${toCaps(user?.role||'')}</b> — School: <b>${isSuper?'ALL SCHOOLS':toCaps(mySchoolId)}</b> — Grace: <b>${settings.graceDays} days</b>`;
-  document.getElementById('createInfo').innerHTML=isSuper
-    ? `<b>Super Admin CAN:</b> ✅ Create / Renew / Suspend any school's subscription — Use Search to find school fast.`
-    : `<b>${toCaps(user?.role||'')} — View Only:</b> You can view your school's subscription. Only Super Admin (0780233263) can change it. — Create form hidden.`;
-  if(!isSuper){
-    document.getElementById('createCard').style.display='none';
-    let mine=schools.find(s=>s.schoolId===mySchoolId);
-    document.getElementById('filterSchoolSearch').value=mine?mine.schoolName:'';
-    document.getElementById('filterSchoolSearch').disabled=true;
-  }
-  filterSchools(); filterFilterSchools();
-  if(!isSuper) document.getElementById('filterSchool').value=mySchoolId;
-  renderSubs();
-}
-function renderSubs(){
-  let sc=document.getElementById('filterSchool').value;
-  let list=[...subs];
-  if(!isSuper) list=list.filter(s=>s.schoolId===mySchoolId);
-  if(sc) list=list.filter(s=>s.schoolId===sc);
-  document.getElementById('subsInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${subs.length}</b> subscriptions — Grace <b>${settings.graceDays} days</b>`;
-  list.sort((a,b)=>(b.endDate||0)-(a.endDate||0));
-  document.getElementById('subsTable').innerHTML=list.length?list.map(s=>{
-    let st=getSubStatus(s);
-    return `<tr><td><b>${s.schoolId}</b><br><small>${toCaps(s.schoolName||'')}</small></td><td><b>${s.plan}</b></td><td>${s.payType}</td><td>${fmtDate(s.startDate)}</td><td>${fmtDate(s.endDate)}</td><td>${fmtDate(graceEndFor(s))}</td><td>${statusBadge(st)}</td><td><b>${fmtR(amountOwe(s))}</b></td><td>${isSuper?`<button class="btn btn-gold" onclick="renewSub('${s.schoolId}')">💰 RENEW</button> <button class="btn btn-red" onclick="suspendSub('${s.id}')">⛔ SUSPEND</button> <button class="btn btn-teal" onclick="unsuspendSub('${s.id}')">✅ UNSUSPEND</button>`:'View only'}</td></tr>`;
-  }).join(''):`<tr><td colspan="9" style="text-align:center;padding:20px">No subscriptions for this filter.</td></tr>`;
-}
-function renewSub(schoolId){
-  let s=schools.find(x=>x.schoolId===schoolId);
-  document.getElementById('schoolSearch').value=s?s.schoolName:'';
-  filterSchools();
-  document.getElementById('subSchool').value=schoolId;
-  let sub=subs.filter(x=>x.schoolId===schoolId).sort((a,b)=>(b.endDate||0)-(a.endDate||0))[0];
-  if(sub){ document.getElementById('subPlan').value=sub.plan||'STANDARD'; document.getElementById('subPayType').value=sub.payType||'Monthly'; document.getElementById('subSetupDue').value=sub.setupDue||4500; document.getElementById('subSetupPaid').value=sub.setupPaid||4500; document.getElementById('subSubDue').value=sub.subDue||500; document.getElementById('subSubPaid').value=sub.subPaid||500; }
-  let today=new Date();let end=new Date(today);end.setMonth(end.getMonth()+1);
-  document.getElementById('subStart').value=today.toISOString().slice(0,10);
-  document.getElementById('subEnd').value=end.toISOString().slice(0,10);
-  document.getElementById('subMsg').innerHTML=`<div class="info">Renewing <b>${schoolId}</b> — Start today, End in 1 month — Edit then tap SAVE.</div>`;
-  window.scrollTo(0,0);
+const PKG_MAP={DEMO:{setup:0,monthly:0,yearly:0,learners:300,users:5},STARTER:{setup:3000,monthly:350,yearly:4500,learners:300,users:5},STANDARD:{setup:4500,monthly:500,yearly:7500,learners:800,users:15},PREMIUM:{setup:5500,monthly:600,yearly:9000,learners:999999,users:999999}};
+function onPackageChange(){
+  let p=document.getElementById('sPackage').value; let m=PKG_MAP[p]||PKG_MAP.STANDARD;
+  document.getElementById('sSetup').value=m.setup; document.getElementById('sMonthly').value=m.monthly; document.getElementById('sYearly').value=m.yearly; document.getElementById('sLearners').value=m.learners; document.getElementById('sUsers').value=m.users;
+  if(p==='DEMO'){ document.getElementById('sBilling').value='FREE'; document.getElementById('sStatus').value='TRIAL'; document.getElementById('sMonths').value='0.25'; }
 }
 async function saveSub(){
-  if(!isSuper){document.getElementById('subMsg').innerHTML='<div class="warn">⛔ Only Super Admin can change subscriptions.</div>';return;}
-  let schoolId=document.getElementById('subSchool').value;
-  if(!schoolId){ let q=document.getElementById('schoolSearch').value.trim().toUpperCase(); if(q){ let m=schools.find(s=>toCaps(s.schoolId)===q||toCaps(s.schoolName).includes(q)); if(m) schoolId=m.schoolId; } }
-  let plan=document.getElementById('subPlan').value;
-  let payType=document.getElementById('subPayType').value;
-  let start=document.getElementById('subStart').value;
-  let end=document.getElementById('subEnd').value;
-  let setupDue=parseFloat(document.getElementById('subSetupDue').value)||0;
-  let setupPaid=parseFloat(document.getElementById('subSetupPaid').value)||0;
-  let subDue=parseFloat(document.getElementById('subSubDue').value)||0;
-  let subPaid=parseFloat(document.getElementById('subSubPaid').value)||0;
-  let msg=document.getElementById('subMsg');
-  if(!schoolId){msg.innerHTML='<div class="warn">⚠️ Pick School — Type in search (e.g. WORDSWORTH) then pick from dropdown.</div>';return;}
-  if(!start||!end){msg.innerHTML='<div class="warn">⚠️ Pick Start + End dates.</div>';return;}
-  let sc=schools.find(s=>s.schoolId===schoolId);
-  let rec={schoolId,schoolName:sc?sc.schoolName:schoolId,plan,payType,startDate:new Date(start).getTime(),endDate:new Date(end).getTime(),setupDue,setupPaid,subDue,subPaid,suspended:false,updatedAt:Date.now(),updatedBy:user?.email||''};
-  let existing=subs.filter(s=>s.schoolId===schoolId).sort((a,b)=>(b.endDate||0)-(a.endDate||0))[0];
-  try{ if(existing && existing.id && !existing.id.startsWith('s1')){ await rtdb.ref('subscriptions/'+existing.id).set(rec); rec.id=existing.id; } else { let ref=rtdb.ref('subscriptions').push(); await ref.set(rec); rec.id=ref.key; } }catch(e){ rec.id=existing?existing.id:'tmp'+Date.now(); }
-  if(existing) subs=subs.map(s=>s.id===existing.id?rec:s); else subs.push(rec);
-  msg.innerHTML=`<div class="ok">✅ Saved: <b>${schoolId}</b> — ${plan} — ${payType} — ${fmtDate(rec.startDate)} to ${fmtDate(rec.endDate)} — Grace Ends ${fmtDate(graceEndFor(rec))} — Owe ${fmtR(amountOwe(rec))}</div>`;
-  loadData();
+  let sid=String(document.getElementById('sSchoolId').value||'').trim().toUpperCase(); if(!sid){ document.getElementById('subMsg').innerHTML='<div class="warn">Fill School ID.</div>'; return; }
+  let months=parseFloat(document.getElementById('sMonths').value||'12'); let now=Date.now(); let end=now + months*30*86400000;
+  let data={schoolId:sid,schoolName:String(document.getElementById('sSchoolName').value||'').toUpperCase(),package:document.getElementById('sPackage').value,billing:document.getElementById('sBilling').value,setup:parseInt(document.getElementById('sSetup').value||'0'),monthly:parseInt(document.getElementById('sMonthly').value||'0'),yearly:parseInt(document.getElementById('sYearly').value||'0'),priceYear:parseInt(document.getElementById('sYearly').value||'0'),learnersLimit:parseInt(document.getElementById('sLearners').value||'0'),usersLimit:parseInt(document.getElementById('sUsers').value||'0'),status:document.getElementById('sStatus').value,paid:document.getElementById('sPaid').value==='true',invoiceNo:document.getElementById('sInvoice').value||'',startDate:now,endDate:end,updatedAt:now};
+  try{ await rtdb.ref('subscriptions/'+sid).set(data); document.getElementById('subMsg').innerHTML='<div class="ok">✅ Saved: <b>'+sid+'</b> — '+data.package+' — '+data.status+' — Setup R'+data.setup+' — Monthly R'+data.monthly+' — Once-Off R'+data.yearly+' — Expires '+new Date(end).toDateString()+'</div>'; loadSubs(); loadMySub(); }catch(e){ document.getElementById('subMsg').innerHTML='<div class="warn">Save failed: '+e.message+'</div>'; }
 }
-async function suspendSub(id){ if(!confirm('Suspend this subscription?')) return; try{await rtdb.ref('subscriptions/'+id).update({suspended:true});}catch(e){} let s=subs.find(x=>String(x.id)===String(id)); if(s) s.suspended=true; renderSubs(); }
-async function unsuspendSub(id){ try{await rtdb.ref('subscriptions/'+id).update({suspended:false});}catch(e){} let s=subs.find(x=>String(x.id)===String(id)); if(s) s.suspended=false; renderSubs(); }
-async function saveGraceDays(){
-  if(!isSuper){document.getElementById('graceMsg').innerHTML='<div class="warn">⛔ Only Super Admin can change Grace Days.</div>';return;}
-  let g=parseInt(document.getElementById('graceDaysInput').value);
-  if(isNaN(g)||g<0||g>30){document.getElementById('graceMsg').innerHTML='<div class="warn">⚠️ Grace days must be 0 to 30.</div>';return;}
-  settings.graceDays=g; localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));
-  try{await rtdb.ref('settings/subscriptions').update({graceDays:g});}catch(e){}
-  document.getElementById('graceMsg').innerHTML=`<div class="ok">✅ Grace Days saved: <b>${g} days</b></div>`;
-  loadData();
+async function extendSub(){
+  let sid=String(document.getElementById('sSchoolId').value||'').trim().toUpperCase(); if(!sid) return;
+  try{ let snap=await rtdb.ref('subscriptions/'+sid).once('value'); let s=snap.val(); if(!s){ document.getElementById('subMsg').innerHTML='<div class="warn">No subscription for '+sid+' — Save first.</div>'; return; }
+    let newEnd=Math.max(s.endDate||0, Date.now()) + 12*30*86400000;
+    await rtdb.ref('subscriptions/'+sid).update({endDate:newEnd,status:'ACTIVE',updatedAt:Date.now()});
+    document.getElementById('subMsg').innerHTML='<div class="ok">✅ Extended: <b>'+sid+'</b> — New expiry '+new Date(newEnd).toDateString()+'</div>'; loadSubs(); loadMySub();
+  }catch(e){ document.getElementById('subMsg').innerHTML='<div class="warn">Extend failed: '+e.message+'</div>'; }
 }
-loadData();
+async function expireSub(){
+  let sid=String(document.getElementById('sSchoolId').value||'').trim().toUpperCase(); if(!sid) return;
+  if(!confirm('Mark '+sid+' as EXPIRED?')) return;
+  try{ await rtdb.ref('subscriptions/'+sid).update({status:'EXPIRED',updatedAt:Date.now()}); document.getElementById('subMsg').innerHTML='<div class="ok">✅ Marked EXPIRED: '+sid+'</div>'; loadSubs(); loadMySub(); }catch(e){ document.getElementById('subMsg').innerHTML='<div class="warn">Failed: '+e.message+'</div>'; }
+}
+function editSub(sid){
+  rtdb.ref('subscriptions/'+sid).once('value').then(snap=>{ let s=snap.val(); if(!s) return;
+    document.getElementById('sSchoolId').value=s.schoolId; document.getElementById('sSchoolName').value=s.schoolName||''; document.getElementById('sPackage').value=s.package||'STANDARD'; document.getElementById('sBilling').value=s.billing||'ONCE-OFF'; document.getElementById('sSetup').value=s.setup||0; document.getElementById('sMonthly').value=s.monthly||0; document.getElementById('sYearly').value=s.yearly||s.priceYear||0; document.getElementById('sLearners').value=s.learnersLimit||0; document.getElementById('sUsers').value=s.usersLimit||0; document.getElementById('sStatus').value=s.status||'ACTIVE'; document.getElementById('sPaid').value=String(s.paid); document.getElementById('sInvoice').value=s.invoiceNo||''; window.scrollTo({top:document.getElementById('manageCard').offsetTop,behavior:'smooth'});
+  });
+}
+async function loadSubs(){
+  let el=document.getElementById('subsBody'); if(!el) return;
+  try{ let snap=await rtdb.ref('subscriptions').once('value'); let all=snap.val()||{}; el.innerHTML='';
+    if(!Object.keys(all).length){ el.innerHTML='<tr><td colspan="9" style="text-align:center;padding:14px">No subscriptions yet — Add WHS / STANDARD / ACTIVE / 12 Months → SAVE.</td></tr>'; return; }
+    Object.values(all).forEach(s=>{
+      let days=Math.ceil(((s.endDate||0)-Date.now())/86400000);
+      let tr=document.createElement('tr');
+      tr.innerHTML=`<td><b>${String(s.schoolName||'').toUpperCase()}</b><br>${s.schoolId}</td><td><b>${s.package}</b><br>${s.billing||''}</td><td>${s.status}</td><td>R${s.setup||0}</td><td>R${s.monthly||0}</td><td>R${s.yearly||s.priceYear||0}</td><td>${s.endDate?new Date(s.endDate).toDateString():'—'}<br>${days>0?('In '+days+' days'):('EXPIRED')}<br>Inv: ${s.invoiceNo||'—'}</td><td>${s.paid?'✅ YES':'❌ NO'}</td><td><button class="btn btn-gold" onclick="editSub('${s.schoolId}')">✏️ EDIT</button></td>`;
+      el.appendChild(tr);
+    });
+  }catch(e){ el.innerHTML='<tr><td colspan="9">Load failed: '+e.message+'</td></tr>'; }
+}
+async function loadMySub(){
+  let el=document.getElementById('mySub'); if(!el) return;
+  if(!user){ el.innerHTML='🔒 <b>NOT LOGGED IN</b> — Login to see your school subscription — Or tap REQUEST above to start DEMO on WhatsApp 078 023 3263.'; return; }
+  let sid=user.schoolId||'WHS';
+  try{ let snap=await rtdb.ref('subscriptions/'+sid).once('value'); let s=snap.val();
+    if(!s){ el.innerHTML='🆓 <b>NO SUBSCRIPTION YET — DEMO AVAILABLE</b><br>School: <b>'+toCaps(user.schoolName)+'</b> ('+sid+')<br>Tap <b>REQUEST DEMO</b> → 7 Days FREE → Then pick Starter / Standard / Premium.'; return; }
+    let days=Math.ceil(((s.endDate||0)-Date.now())/86400000);
+    el.innerHTML=`🏫 <b>${toCaps(s.schoolName)}</b> (${s.schoolId}) — Invoice: <b>${s.invoiceNo||'—'}</b><br>📦 Package: <b>${String(s.package||'').toUpperCase()}</b> — Status: <b>${String(s.status||'').toUpperCase()}</b> — Paid: <b>${s.paid?'✅ YES':'❌ NO'}</b><br>💰 Setup: <b>R${s.setup||0}</b> — Monthly: <b>R${s.monthly||0}</b> — Once-Off: <b>R${s.yearly||s.priceYear||0}</b> — Billing: <b>${s.billing||''}</b><br>👩‍🎓 Learners Limit: <b>${s.learnersLimit>=999999?'Unlimited':s.learnersLimit}</b> — Users Limit: <b>${s.usersLimit>=999999?'Unlimited':s.usersLimit}</b><br>📅 End: ${s.endDate?new Date(s.endDate).toDateString():'—'} — ${days>0?('Expires in <b>'+days+' days</b>'):('<b style="color:#ef4444">EXPIRED — Contact Super Admin 078 023 3263 — Books safe.</b>')}`;
+  }catch(e){ el.innerHTML='Load failed: '+e.message; }
+}
+function init(){
+  let el=document.getElementById('roleInfo');
+  if(!user){ el.innerHTML='👤 <b>VISITOR — NOT LOGGED IN</b><br>🆓 You can see Price List + Tap REQUEST DEMO / STARTER / STANDARD / PREMIUM → WhatsApp 078 023 3263 → Super Admin activates you.<br>🔐 Login to see My Subscription.'; }
+  else { el.innerHTML=`👤 <b>${toCaps(user.name)}</b> — ${toCaps(user.role)} — RANK ${user.rank||''} — School: <b>${toCaps(user.schoolName)}</b> (${user.schoolId})<br>${String(user.role||'').toUpperCase()==='SUPER_ADMIN'?'👑 <b>Super Admin — You can Manage Subscriptions below.</b>':'🏫 <b>You can see My Subscription only — Super Admin manages packages.</b>`; }
+  let isSuper = user && String(user.role||'').toUpperCase()==='SUPER_ADMIN';
+  if(isSuper){ document.getElementById('manageCard').style.display='block'; document.getElementById('allSubsCard').style.display='block'; loadSubs(); }
+  loadMySub();
+}
+init();
 </script></body></html>
