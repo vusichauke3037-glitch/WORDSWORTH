@@ -1,260 +1,126 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin - Makhanani LTSM 2.0</title>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<title>Admin - Makhanani LTSM 2.0 - V2.30</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth(); const db = firebase.database();
+  function toArray(v){ if(!v) return []; if(Array.isArray(v)) return v; if(typeof v==='string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;}); return []; }
+  function getPhase(g){ g=Number(String(g||'').replace(/[^0-9]/g,'')); if(g>=4&&g<=6) return 'INTERMEDIATE PHASE'; if(g>=7&&g<=9) return 'SENIOR PHASE'; if(g>=10&&g<=12) return 'FET PHASE'; return ''; }
+  function getCurrentUser(){ return new Promise(function(res){ auth.onAuthStateChanged(function(u){ if(!u) return res(null); db.ref('users/'+u.uid).once('value').then(function(s){ var d=s.val()||{}; d.uid=u.uid; d.email=u.email; d.classes=toArray(d.classes||d.className||d.class); d.subjects=toArray(d.subjects||d.subject); d.grades=toArray(d.grades||d.grade); d.phases=toArray(d.phases||d.phase); res(d); }).catch(function(){ res({uid:u.uid, email:u.email, classes:[], subjects:[], grades:[], phases:[]}); }); }); }); }
+</script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
-header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:1200px;margin:0 auto;padding:12px}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+header h1{margin:0;font-size:20px}header p{margin:6px 0 0;font-size:12px;color:#d4af37}
+.wrap{max-width:980px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer;text-transform:uppercase}
-input{cursor:text}
-select:focus,input:focus{border-color:#d4af37;outline:none;background:#fef3c7}
-.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}
-.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-teal{background:#0d9488;color:#fff}
-.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
-.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+select,input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
+.btn{border:none;border-radius:8px;padding:10px 10px;font-weight:900;cursor:pointer;font-size:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.grace{background:#fffbeb;border:2px solid #f59e0b;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
-.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
-.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
-.kpi b{font-size:20px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:middle}th{background:#0a1f4d;color:#fff}
-.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900}.badge-active{background:#dcfce7;color:#166534}.badge-expiring{background:#fef3c7;color:#92400e}.badge-expired{background:#fee2e2;color:#991b1b}.badge-pending{background:#fef3c7;color:#92400e}.badge-approved{background:#dcfce7;color:#166534}.badge-rejected{background:#fee2e2;color:#991b1b}.badge-issued{background:#dbeafe;color:#1e40af}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{flex:1;min-width:110px;padding:12px;border:none;border-radius:8px;background:#e2e8f0;font-weight:900;cursor:pointer}.tabs button.active{background:#0a1f4d;color:#fff}
-.tab{display:none}.tab.active{display:block}
-.search-box{position:relative}.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#ef4444;color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-weight:900;cursor:pointer;font-size:14px;display:none}.search-count{font-size:11px;color:#64748b;margin-top:4px;font-weight:700}
-@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}table{font-size:12px}}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-blue{background:#0a1f4d}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
+.phase-box{border-radius:10px;padding:12px;font-size:12px;line-height:1.7;border:2px solid #e2e8f0;text-align:center;font-weight:900}.phase-int{background:#dcfce7;border-color:#22c55e}.phase-sen{background:#dbeafe;border-color:#3b82f6}.phase-fet{background:#ffedd5;border-color:#ea580c}
+@media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>🛡️ ADMIN — MAKHANANI LTSM 2.0</h1><p>RANK 4/5 • YOUR SCHOOL ONLY • USERS • STOCK • ORDERS • REPORTS • SUB VIEW</p>
-<div id="taskbar"></div><script src="nav.js"></script>
-<script>guardPage(4,'Admin');</script>
-</header>
+<header><h1>👑 ADMIN — MAKHANANI LTSM 2.0 — V2.30 — SUPER ADMIN ONLY</h1><p>4-6 INTERMEDIATE • 7-9 SENIOR PHASE • 10-12 FET • ALL CAPS • GRADE 4-12</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
-<div class="info" id="roleInfo">Loading...</div>
-
-<div class="card"><h2>💰 My School Subscription — View Only (Super Admin Changes This)</h2><div id="subInfo" class="info">Loading subscription...</div>
-<button class="btn btn-gold btn-full" onclick="window.open('https://wa.me/27780233263?text='+encodeURIComponent('Hello Makhanani! Subscription for '+mySchoolId+' — Please renew.'),'_blank')">📱 WHATSAPP SUPER ADMIN TO RENEW (0780233263) →</button>
-<button class="btn btn-grey btn-full" onclick="location.href='pricing.html'">💰 SEE PRICING →</button>
+<div class="card"><h2>👤 Who Am I — Admin</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div><div class="warn" id="blockMsg" style="display:none"></div></div>
+<div id="adminOnly" style="display:none">
+<div class="card"><h2>🚀 Quick Links</h2><div class="row"><button class="btn btn-gold" onclick="go('users.html')">👥 USERS — ADD / EDIT →</button><button class="btn btn-purple" onclick="go('principal.html')">🏫 PRINCIPAL →</button><button class="btn btn-orange" onclick="go('hod.html')">📚 HOD →</button><button class="btn btn-teal" onclick="go('librarian.html')">📖 LIBRARIAN →</button><button class="btn btn-green" onclick="go('teacher.html')">👩‍🏫 TEACHER →</button><button class="btn btn-grey" onclick="go('manuals.html')">📖 MANUALS →</button></div></div>
+<div class="card"><h2>📊 Whole School — By Phase</h2>
+<div class="row">
+<div class="phase-box phase-int">📗 INTERMEDIATE<br>GRADES 4-6<br>Users: <span id="uInt">0</span><br>Requests: <span id="rInt">0</span><br>Pending: <span id="pInt">0</span></div>
+<div class="phase-box phase-sen">📘 SENIOR PHASE<br>GRADES 7-9<br>Users: <span id="uSen">0</span><br>Requests: <span id="rSen">0</span><br>Pending: <span id="pSen">0</span></div>
+<div class="phase-box phase-fet">📙 FET<br>GRADES 10-12<br>Users: <span id="uFet">0</span><br>Requests: <span id="rFet">0</span><br>Pending: <span id="pFet">0</span></div>
 </div>
-
-<div class="kpi">
-<div onclick="showTab('users')"><b id="kpiUsers">0</b><span>👥 USERS IN MY SCHOOL</span></div>
-<div onclick="showTab('users')"><b id="kpiTeachers">0</b><span>👩‍🏫 TEACHERS</span></div>
-<div onclick="showTab('stock')"><b id="kpiBooks">0</b><span>📖 BOOKS</span></div>
-<div onclick="showTab('stock')"><b id="kpiLow">0</b><span>⚠️ LOW STOCK</span></div>
-<div onclick="showTab('orders')"><b id="kpiPending">0</b><span>🧾 PENDING ORDERS</span></div>
+<div class="info" id="counts">Loading...</div><div class="row"><button class="btn btn-grey" onclick="loadAll()">🔄 REFRESH ALL</button><button class="btn btn-green" onclick="window.print()">🖨️ PRINT REPORT</button></div></div>
+<div class="card"><h2>🛠️ Fix My Account — If You See classes.join Error</h2><div class="info">If YOUR account was saved as String "ALL", tap below to fix it to Array — ALL 90 Classes + ALL Phases + ALL Subjects.</div><div id="fixMsg"></div><div class="row"><button class="btn btn-gold" onclick="fixMyAccount()">🛠️ FIX MY ACCOUNT NOW</button></div></div>
+<div class="card"><h2>📦 Add Book / Stock — CAPS</h2>
+<label>Book Title * — ALL CAPS</label><input id="bTitle" placeholder="e.g. MATHEMATICS GRADE 10 LEARNER BOOK">
+<div class="row"><label>Grade *</label><select id="bGrade"><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option></select><label>Subject *</label><select id="bSubject"><option>MATHEMATICS</option><option>ENGLISH HOME LANGUAGE</option><option>AFRIKAANS FIRST ADDITIONAL LANGUAGE</option><option>PHYSICAL SCIENCES</option><option>LIFE SCIENCES</option><option>ACCOUNTING</option><option>BUSINESS STUDIES</option><option>GEOGRAPHY</option><option>HISTORY</option><option>NATURAL SCIENCES</option><option>SOCIAL SCIENCES</option><option>TECHNOLOGY</option><option>ECONOMIC AND MANAGEMENT SCIENCES</option><option>LIFE ORIENTATION</option></select><label>Stock Qty *</label><input id="bStock" type="number" value="0" min="0"></div>
+<div id="bookMsg"></div><div class="row"><button class="btn btn-teal" onclick="addBook()">📦 ADD BOOK / STOCK</button></div><div id="bookList"></div></div>
+<div class="card"><h2>📋 All Requests — Admin Can Delete / Reset</h2><div class="row"><select id="fPhase" onchange="renderReq()"><option value="">ALL PHASES</option><option>INTERMEDIATE PHASE</option><option>SENIOR PHASE</option><option>FET PHASE</option></select><select id="fStatus" onchange="renderReq()"><option value="">ALL STATUS</option><option>PENDING</option><option>APPROVED</option><option>ISSUED</option><option>REJECTED</option></select></div><div id="reqList"></div></div>
+<div class="card"><h2>⚠️ Danger Zone — Super Admin Only</h2><div class="warn">Delete ALL Requests will remove every request in Firebase. Cannot undo. Use only at start of new term / year.</div><div class="row"><button class="btn btn-red" onclick="deleteAllRequests()">🗑️ DELETE ALL REQUESTS</button><button class="btn btn-red" onclick="resetAllToPending()">↩️ RESET ALL TO PENDING</button></div><div id="dangerMsg"></div></div>
 </div>
-
-<div class="tabs">
-<button id="tabBtnOverview" class="active" onclick="showTab('overview')">📊 Overview</button>
-<button id="tabBtnUsers" onclick="showTab('users')">👥 Users</button>
-<button id="tabBtnStock" onclick="showTab('stock')">📦 Stock / Books</button>
-<button id="tabBtnOrders" onclick="showTab('orders')">🧾 Orders — Approve</button>
-</div>
-
-<!-- OVERVIEW -->
-<div id="tab-overview" class="tab active">
-<div class="card"><h2>📊 Overview — Today — My School</h2><div id="overviewInfo" class="info">Loading...</div></div>
-<div class="card"><h2>⚡ Quick Links — Admin</h2><div class="row">
-<button class="btn btn-green" onclick="showTab('users')">👥 MANAGE USERS →</button>
-<button class="btn btn-purple" onclick="showTab('stock')">📦 MANAGE STOCK →</button>
-<button class="btn btn-gold" onclick="showTab('orders')">🧾 APPROVE ORDERS →</button>
-<button class="btn btn-teal" onclick="location.href='reports.html'">📊 REPORTS →</button>
-<button class="btn btn-grey" onclick="location.href='users.html'">👥 OPEN FULL USERS PAGE →</button>
-</div><div class="info" style="margin-top:12px"><b>Admin CAN:</b> ✅ Create Principal (3) / Librarian / HOD (2) / Teacher (1) in OWN school ✅ Manage stock ✅ Approve / Reject orders ✅ View subscription<br><b>Admin CANNOT:</b> ❌ Create Super Admin (5) ❌ Create Admin (4) ❌ Change subscription ❌ See other schools ❌ See Super Admin page</div></div>
-<div class="card"><h2>🧾 Pending Orders — Need Your Approval</h2><div id="pendingList"></div></div>
-</div>
-
-<!-- USERS -->
-<div id="tab-users" class="tab"><div class="card">
-<h2>👥 Users — My School Only</h2>
-<div class="info">Admin can create <b>Principal / Librarian / HOD / Teacher</b> in own school. Full form on Users page.</div>
-<div class="row"><button class="btn btn-purple" style="flex:1" onclick="location.href='users.html'">👥 OPEN USERS PAGE — CREATE USER →</button><button class="btn btn-grey" style="flex:1" onclick="loadData()">🔄 REFRESH</button></div>
-<label>🔍 Search User — Name / Email / Role</label>
-<div class="search-box"><input id="userSearch" placeholder="🔍 Type to search user... e.g. DUBE, TEACHER, MATHS" oninput="renderUsers()"><button class="search-clear" id="clearUserSearchBtn" onclick="clearUserSearch()">✕</button></div>
-<div class="search-count" id="userCount">Showing users</div>
-<div id="usersInfo" class="info">Loading...</div>
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Subject</th><th>Classes</th><th>Action</th></tr></thead><tbody id="usersTable"></tbody></table></div>
-</div></div>
-
-<!-- STOCK -->
-<div id="tab-stock" class="tab"><div class="card">
-<h2>📦 Stock / Books — My School</h2>
-<label>🔍 Search Book — Title / Subject</label>
-<div class="search-box"><input id="bookSearch" placeholder="🔍 Type to search book... e.g. MATHS, ENGLISH" oninput="renderBooks()"><button class="search-clear" id="clearBookSearchBtn" onclick="clearBookSearch()">✕</button></div>
-<div class="search-count" id="bookCount">Showing books</div>
-<div id="booksInfo" class="info">Loading...</div>
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Title</th><th>Subject</th><th>Grade</th><th>Qty</th><th>Status</th><th>Action</th></tr></thead><tbody id="booksTable"></tbody></table></div>
-<button class="btn btn-purple btn-full" onclick="location.href='stock.html'">📦 OPEN FULL STOCK PAGE →</button>
-</div></div>
-
-<!-- ORDERS -->
-<div id="tab-orders" class="tab"><div class="card">
-<h2>🧾 Orders — Approve / Reject — My School</h2>
-<label>🔍 Search Order — Item / Teacher</label>
-<div class="search-box"><input id="orderSearch" placeholder="🔍 Type to search order... e.g. MATHS, DUBE" oninput="renderOrders()"><button class="search-clear" id="clearOrderSearchBtn" onclick="clearOrderSearch()">✕</button></div>
-<div class="search-count" id="orderCount">Showing orders</div>
-<div id="ordersInfo" class="info">Loading...</div>
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Date</th><th>By</th><th>Item</th><th>Class</th><th>Qty</th><th>Status</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div>
-</div></div>
-
+<div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
 <script>
-const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
-if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const rtdb=firebase.database();
-const ADMIN_WHATSAPP='27780233263';
-function toCaps(s){return String(s||'').trim().toUpperCase();}
-function fmtDate(ts){if(!ts) return '—';return new Date(ts).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});}
-function fmtR(n){return 'R'+Math.round(n||0).toLocaleString('en-ZA');}
-let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-let mySchoolId = user?.schoolId||'WHS';
-let mySchoolName = user?.schoolName||mySchoolId;
-let myName = user?.name||'ADMIN';
-let usersList=[], books=[], orders=[], subs=[];
-let settings={graceDays:7};
-try{let s=JSON.parse(localStorage.getItem('makhanani_sub_settings')||'{}');settings={...settings,...s};}catch(e){}
-function showTab(t){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');}
-function statusBadge(st){let cls=st==='ACTIVE'?'badge-active':st==='EXPIRING'?'badge-expiring':st==='EXPIRED'?'badge-expired':st==='PENDING'?'badge-pending':st==='APPROVED'?'badge-approved':st==='REJECTED'?'badge-rejected':'badge-issued';return `<span class="badge ${cls}">${st}</span>`;}
-function clearUserSearch(){document.getElementById('userSearch').value='';document.getElementById('clearUserSearchBtn').style.display='none';renderUsers();}
-function clearBookSearch(){document.getElementById('bookSearch').value='';document.getElementById('clearBookSearchBtn').style.display='none';renderBooks();}
-function clearOrderSearch(){document.getElementById('orderSearch').value='';document.getElementById('clearOrderSearchBtn').style.display='none';renderOrders();}
-
-// ===== FIX: SHOW DEMO DATA INSTANTLY, THEN REPLACE WITH REAL DATA =====
-function demoData(){
-  usersList=[
-    {id:'u2',name:'ADMIN WHS',email:'admin@wordsworth.co.za',role:'Admin',subject:'',teachingClasses:[],schoolId:mySchoolId},
-    {id:'u3',name:'PRINCIPAL WHS',email:'principal@wordsworth.co.za',role:'Principal',subject:'',teachingClasses:[],schoolId:mySchoolId},
-    {id:'u4',name:'LIBRARIAN WHS',email:'librarian@wordsworth.co.za',role:'Librarian',subject:'',teachingClasses:[],schoolId:mySchoolId},
-    {id:'u5',name:'HOD MATHS',email:'hod@wordsworth.co.za',role:'HOD',subject:'MATHS',teachingClasses:['10A','10B','11A','12A'],schoolId:mySchoolId},
-    {id:'u6',name:'MRS DUBE',email:'dube@wordsworth.co.za',role:'Teacher',subject:'MATHS',teachingClasses:['10A','10B','11A'],schoolId:mySchoolId},
-  ];
-  books=[
-    {id:'b1',title:'MATHS GRADE 10 TEXTBOOK',subject:'MATHS',grade:'10',qty:25},
-    {id:'b2',title:'ENGLISH GRADE 10 TEXTBOOK',subject:'ENGLISH',grade:'10',qty:18},
-    {id:'b3',title:'SCIENCE GRADE 11 TEXTBOOK',subject:'SCIENCE',grade:'11',qty:4},
-    {id:'b4',title:'HISTORY GRADE 12 TEXTBOOK',subject:'HISTORY',grade:'12',qty:12},
-  ];
-  orders=[
-    {id:'o1',item:'MATHS GRADE 10 TEXTBOOK',class:'10A',qty:5,status:'PENDING',requestedBy:'MRS DUBE',createdAt:Date.now()-3600000,note:'For test'},
-    {id:'o2',item:'ENGLISH GRADE 10 TEXTBOOK',class:'10B',qty:3,status:'APPROVED',requestedBy:'MRS DUBE',createdAt:Date.now()-86400000,note:''},
-  ];
-  subs=[{id:'s1',schoolId:mySchoolId,schoolName:mySchoolName,plan:'STANDARD',payType:'Monthly',startDate:Date.now()-10*86400000,endDate:Date.now()+20*86400000,setupDue:4500,setupPaid:4500,subDue:500,subPaid:500,suspended:false}];
-  renderAll('Demo data — Loading real data...');
-}
-function graceEndFor(sub){return sub.endDate + ((settings.graceDays??7)*24*60*60*1000);}
-function getSubStatus(sub){ if(!sub) return 'NO SUBSCRIPTION'; if(sub.suspended) return 'SUSPENDED'; let now=Date.now(); if(sub.plan==='DEMO'||sub.payType==='Trial'){ if(sub.endDate<now) return 'EXPIRED'; return 'TRIAL'; } if(sub.endDate>=now){ let dl=Math.ceil((sub.endDate-now)/(1000*60*60*24)); if(dl<=7) return 'EXPIRING'; return 'ACTIVE'; } if(now<=graceEndFor(sub)) return 'GRACE'; return 'EXPIRED'; }
-function amountOwe(sub){return Math.max(0,((sub.setupDue||0)-(sub.setupPaid||0))+((sub.subDue||0)-(sub.subPaid||0)));}
-
-function renderAll(note){
-  document.getElementById('roleInfo').innerHTML=`🛡️ <b>${toCaps(myName)}</b> — Role: <b>ADMIN — RANK 4/5</b> — School: <b>${toCaps(mySchoolName)} (${mySchoolId})</b> — You manage <b>USERS + STOCK + ORDERS</b> in <b>YOUR SCHOOL ONLY</b> ${note?'<br><small>'+note+'</small>':''}`;
-  let sub=subs.filter(s=>s.schoolId===mySchoolId).sort((a,b)=>(b.endDate||0)-(a.endDate||0))[0];
-  if(sub){
-    let st=getSubStatus(sub);
-    let dl=Math.ceil((sub.endDate-Date.now())/(1000*60*60*24));
-    document.getElementById('subInfo').innerHTML=`<b>Plan:</b> ${sub.plan} — ${sub.payType} • <b>Status:</b> ${statusBadge(st)} • <b>Ends:</b> ${fmtDate(sub.endDate)} — ${dl} days left • <b>Grace:</b> ${settings.graceDays} days • <b>Owe:</b> ${fmtR(amountOwe(sub))}<br><small>Only Super Admin (0780233263) can change this.</small>`;
-  } else {
-    document.getElementById('subInfo').innerHTML=`<b>No subscription found for ${mySchoolId}.</b> Contact Super Admin (0780233263).`;
-  }
-  let pending=orders.filter(o=>String(o.status||'PENDING').toUpperCase()==='PENDING').length;
-  let low=books.filter(b=>parseInt(b.qty||0)<=5).length;
-  let teachers=usersList.filter(u=>u.role==='Teacher').length;
-  document.getElementById('kpiUsers').textContent=usersList.length;
-  document.getElementById('kpiTeachers').textContent=teachers;
-  document.getElementById('kpiBooks').textContent=books.length;
-  document.getElementById('kpiLow').textContent=low;
-  document.getElementById('kpiPending').textContent=pending;
-  document.getElementById('overviewInfo').innerHTML=`<b>School:</b> ${toCaps(mySchoolName)} (${mySchoolId}) • <b>Users:</b> ${usersList.length} (Teachers ${teachers}) • <b>Books:</b> ${books.length} titles • <b>Low Stock:</b> ${low}<br><b>Orders:</b> ${orders.length} (Pending ${pending} • Approved ${orders.filter(o=>String(o.status||'').toUpperCase()==='APPROVED').length})`;
-  document.getElementById('pendingList').innerHTML=orders.filter(o=>String(o.status||'PENDING').toUpperCase()==='PENDING').length?orders.filter(o=>String(o.status||'PENDING').toUpperCase()==='PENDING').map(o=>`<div class="info"><b>${toCaps(o.item||'')}</b> — Class <b>${o.class||''}</b> — Qty <b>${o.qty||1}</b> — By <b>${toCaps(o.requestedBy||o.by||'')}</b> — <button class="btn btn-green" onclick="approveOrder('${o.id}')">✅ APPROVE</button> <button class="btn btn-red" onclick="rejectOrder('${o.id}')">❌ REJECT</button></div>`).join(''):`<div class="ok">✅ No pending orders.</div>`;
-  renderUsers(); renderBooks(); renderOrders();
-}
-function renderUsers(){
-  let q=document.getElementById('userSearch').value.trim().toUpperCase();
-  document.getElementById('clearUserSearchBtn').style.display=q?'block':'none';
-  let list=usersList.filter(u=> !q || (toCaps(u.name)+' '+toCaps(u.email)+' '+toCaps(u.role)+' '+toCaps(u.subject||'')).toUpperCase().includes(q));
-  document.getElementById('userCount').textContent=!q?`Showing ${list.length} user(s)`: (list.length?`✅ Found ${list.length} user(s) for "${document.getElementById('userSearch').value}"`:`❌ No user for "${document.getElementById('userSearch').value}"`);
-  document.getElementById('usersInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${usersList.length}</b> users in ${mySchoolId}`;
-  document.getElementById('usersTable').innerHTML=list.length?list.map(u=>`<tr><td><b>${toCaps(u.name||'')}</b></td><td>${u.email||''}</td><td><b>${toCaps(u.role||'')}</b></td><td>${toCaps(u.subject||'—')}</td><td>${(u.teachingClasses||[]).join(', ')||'—'}</td><td><button class="btn btn-teal" onclick="resetPass('${u.id}')">🔑 RESET 1234</button> <button class="btn btn-red" onclick="deleteUser('${u.id}','${u.email||''}')">🗑️</button></td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No users for this search.</td></tr>`;
-}
-function renderBooks(){
-  let q=document.getElementById('bookSearch').value.trim().toUpperCase();
-  document.getElementById('clearBookSearchBtn').style.display=q?'block':'none';
-  let list=books.filter(b=> !q || (toCaps(b.title)+' '+toCaps(b.subject||'')).toUpperCase().includes(q));
-  document.getElementById('bookCount').textContent=!q?`Showing ${list.length} book(s)`: (list.length?`✅ Found ${list.length} book(s)`:`❌ No book for "${document.getElementById('bookSearch').value}"`);
-  document.getElementById('booksInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${books.length}</b> books — Low stock = Qty ≤ 5`;
-  document.getElementById('booksTable').innerHTML=list.length?list.map(b=>{let qty=parseInt(b.qty||0);return `<tr><td><b>${toCaps(b.title||'')}</b></td><td>${toCaps(b.subject||'—')}</td><td>${b.grade||'—'}</td><td><b>${qty}</b></td><td>${statusBadge(qty<=0?'EXPIRED':qty<=5?'EXPIRING':'ACTIVE')}</td><td><button class="btn btn-teal" onclick="adjustQty('${b.id}',1)">+1</button> <button class="btn btn-grey" onclick="adjustQty('${b.id}',-1)">-1</button></td></tr>`;}).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px">No books for this search.</td></tr>`;
-}
-function renderOrders(){
-  let q=document.getElementById('orderSearch').value.trim().toUpperCase();
-  document.getElementById('clearOrderSearchBtn').style.display=q?'block':'none';
-  let list=orders.filter(o=> !q || (toCaps(o.item||o.bookTitle||'')+' '+toCaps(o.requestedBy||o.by||'')).toUpperCase().includes(q));
-  document.getElementById('orderCount').textContent=!q?`Showing ${list.length} order(s)`: (list.length?`✅ Found ${list.length} order(s)`:`❌ No order for "${document.getElementById('orderSearch').value}"`);
-  document.getElementById('ordersInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${orders.length}</b> orders — Pending <b>${orders.filter(o=>String(o.status||'PENDING').toUpperCase()==='PENDING').length}</b>`;
-  document.getElementById('ordersTable').innerHTML=list.length?list.slice().reverse().map(o=>{let st=String(o.status||'PENDING').toUpperCase();return `<tr><td>${fmtDate(o.createdAt||o.date)}</td><td><b>${toCaps(o.requestedBy||o.by||'')}</b></td><td><b>${toCaps(o.item||o.bookTitle||'')}</b></td><td><b>${o.class||''}</b></td><td><b>${o.qty||1}</b></td><td>${statusBadge(st)}</td><td>${st==='PENDING'?`<button class="btn btn-green" onclick="approveOrder('${o.id}')">✅ APPROVE</button> <button class="btn btn-red" onclick="rejectOrder('${o.id}')">❌ REJECT</button>`:'—'}</td></tr>`;}).join(''):`<tr><td colspan="7" style="text-align:center;padding:20px">No orders for this search.</td></tr>`;
-}
-async function loadData(){
-  // 1. Show demo instantly — never stuck on Loading
-  demoData();
-  // 2. Try Firebase in background — if it works, replace demo with real
+function go(p){ window.location.href=p; }
+function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
+async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
+var _u=null; var _allReq=[]; var _allUsers=[];
+async function init(){
   try{
-    let p1=rtdb.ref('settings/subscriptions').once('value');
-    let p2=rtdb.ref('users/'+mySchoolId).once('value');
-    let p3=rtdb.ref('books').once('value');
-    let p4=rtdb.ref('orders').once('value');
-    let p5=rtdb.ref('subscriptions').once('value');
-    let [st,u,b,o,sb]=await Promise.all([p1,p2,p3,p4,p5]);
-    if(st.val()){settings={...settings,...st.val()};localStorage.setItem('makhanani_sub_settings',JSON.stringify(settings));}
-    let fbUsers=Object.entries(u.val()||{}).map(([id,v])=>({id,...v}));
-    if(fbUsers.length>0) usersList=fbUsers;
-    let fbBooks=Object.entries(b.val()||{}).map(([id,v])=>({id,...v}));
-    if(fbBooks.length>0) books=fbBooks;
-    let fbOrders=Object.entries(o.val()||{}).map(([id,v])=>({id,...v}));
-    // Admin sees own school orders, or all if no schoolId on order
-    let myOrders=fbOrders.filter(x=>!x.schoolId||x.schoolId===mySchoolId);
-    if(fbOrders.length>0 && myOrders.length>0) orders=myOrders;
-    let fbSubs=Object.entries(sb.val()||{}).map(([id,v])=>({id,...v}));
-    if(fbSubs.length>0) subs=fbSubs;
-    renderAll('Real data loaded from Firebase ✅');
-  }catch(e){
-    console.log('Firebase load failed, keeping demo',e);
-    renderAll('Showing demo data — Firebase not reachable / empty. Check internet / Firebase rules. Data you add will still try to save.');
-  }
+    _u = await getCurrentUser();
+    if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in'; return; }
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+' — '+_u.email;
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+_u.email;
+    if(_u.role!=='SUPER_ADMIN' || _u.rank!==6){ document.getElementById('blockMsg').style.display='block'; document.getElementById('blockMsg').innerHTML='⛔ SUPER_ADMIN RANK 6 ONLY. Your role: '+_u.role+' Rank '+_u.rank+' — Principals use PRINCIPAL page.'; return; }
+    document.getElementById('adminOnly').style.display='block'; loadAll();
+  }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
 }
-async function adjustQty(id,delta){
-  let b=books.find(x=>String(x.id)===String(id)); if(!b) return;
-  b.qty=Math.max(0,parseInt(b.qty||0)+delta);
-  try{await rtdb.ref('books/'+id).update({qty:b.qty});}catch(e){}
-  renderAll();
+async function loadAll(){
+  try{
+    var uSnap=await db.ref('users').once('value'); _allUsers=[]; uSnap.forEach(function(c){ var v=c.val(); v.uid=c.key; _allUsers.push(v); });
+    var rSnap=await db.ref('requests').once('value'); _allReq=[]; rSnap.forEach(function(c){ var v=c.val(); v.id=c.key; _allReq.push(v); });
+    _allReq.forEach(function(r){ if(!r.phase) r.phase=getPhase(r.grade||String(r.className||'').replace(/[A-J]$/,'')); });
+    // Users by phase
+    function usersInPhase(ph){ return _allUsers.filter(function(x){ var gr=toArray(x.grades); var phs=toArray(x.phases); if(!phs.length) phs=gr.map(function(g){return getPhase(g);}); return phs.includes(ph)||toArray(x.classes).includes('ALL'); }).length; }
+    function reqInPhase(ph){ return _allReq.filter(function(r){return r.phase===ph;}); }
+    var ri=reqInPhase('INTERMEDIATE PHASE'), rs=reqInPhase('SENIOR PHASE'), rf=reqInPhase('FET PHASE');
+    document.getElementById('uInt').textContent=usersInPhase('INTERMEDIATE PHASE'); document.getElementById('uSen').textContent=usersInPhase('SENIOR PHASE'); document.getElementById('uFet').textContent=usersInPhase('FET PHASE');
+    document.getElementById('rInt').textContent=ri.length; document.getElementById('rSen').textContent=rs.length; document.getElementById('rFet').textContent=rf.length;
+    document.getElementById('pInt').textContent=ri.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length; document.getElementById('pSen').textContent=rs.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length; document.getElementById('pFet').textContent=rf.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length;
+    var pend=_allReq.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length, appr=_allReq.filter(function(r){return r.status==='APPROVED';}).length, iss=_allReq.filter(function(r){return r.status==='ISSUED';}).length, rej=_allReq.filter(function(r){return r.status==='REJECTED';}).length;
+    document.getElementById('counts').innerHTML='Total Users: <b>'+_allUsers.length+'</b> • Total Requests: <b>'+_allReq.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+appr+'</b> • ISSUED: <b>'+iss+'</b> • REJECTED: <b>'+rej+'</b>';
+    renderReq(); loadBooks();
+  }catch(e){ document.getElementById('counts').innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
-async function approveOrder(id){
-  let o=orders.find(x=>String(x.id)===String(id)); if(!o) return;
-  o.status='APPROVED';
-  try{await rtdb.ref('orders/'+id).update({status:'APPROVED'});}catch(e){}
-  renderAll('Order approved ✅');
+function renderReq(){
+  var fp=document.getElementById('fPhase').value, fs=document.getElementById('fStatus').value;
+  var list=_allReq.filter(function(r){ var okP=!fp||r.phase===fp; var okS=!fs||(r.status||'PENDING')===fs; return okP&&okS; });
+  if(!list.length){ document.getElementById('reqList').innerHTML='<div class="info">No requests.</div>'; return; }
+  var h='<table><tr><th>Teacher</th><th>Subject</th><th>Grade / Phase</th><th>Book</th><th>Status</th><th>Action</th></tr>';
+  list.slice().reverse().forEach(function(r){ h+='<tr><td>'+(r.teacherName||'')+'</td><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||'')+'<br><small>'+(r.phase||'')+'</small></td><td>'+(r.bookTitle||'')+'</td><td>'+(r.status||'PENDING')+'</td><td><button class="btn btn-red" onclick="delReq(\''+r.id+'\')">🗑️ DEL</button></td></tr>'; });
+  h+='</table>'; document.getElementById('reqList').innerHTML=h;
 }
-async function rejectOrder(id){
-  let o=orders.find(x=>String(x.id)===String(id)); if(!o) return;
-  if(!confirm('Reject this order?')) return;
-  o.status='REJECTED';
-  try{await rtdb.ref('orders/'+id).update({status:'REJECTED'});}catch(e){}
-  renderAll('Order rejected.');
+async function delReq(id){ if(!confirm('Delete this request?')) return; await db.ref('requests/'+id).remove(); loadAll(); }
+async function fixMyAccount(){
+  try{
+    var classes=[]; ['4','5','6','7','8','9','10','11','12'].forEach(function(g){ ['A','B','C','D','E','F','G','H','I','J'].forEach(function(l){ classes.push(g+l); }); });
+    await db.ref('users/'+_u.uid).update({ classes:classes, className:classes.join(', '), class:classes[0], grades:['4','5','6','7','8','9','10','11','12'], grade:'4, 5, 6, 7, 8, 9, 10, 11, 12', phases:['INTERMEDIATE PHASE','SENIOR PHASE','FET PHASE'], phase:'INTERMEDIATE PHASE, SENIOR PHASE, FET PHASE', subjects:['ALL'], subject:'ALL' });
+    document.getElementById('fixMsg').innerHTML='<div class="ok">✅ Fixed: You now have ALL 90 Classes + ALL Phases + ALL Subjects as Arrays. Refresh page.</div>';
+  }catch(e){ document.getElementById('fixMsg').innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
-async function deleteUser(id,email){
-  if(!confirm('Delete user '+email+'?')) return;
-  try{await rtdb.ref('users/'+mySchoolId+'/'+id).remove();}catch(e){}
-  usersList=usersList.filter(u=>String(u.id)!==String(id));
-  renderAll();
+async function addBook(){
+  var t=document.getElementById('bTitle').value.trim().toUpperCase(), g=document.getElementById('bGrade').value, s=document.getElementById('bSubject').value, st=document.getElementById('bStock').value;
+  var msg=document.getElementById('bookMsg');
+  if(!t){ msg.innerHTML='<div class="warn">❌ Type Book Title.</div>'; return; }
+  try{
+    await db.ref('books').push({ title:t, bookTitle:t, grade:g, grades:[g], phase:getPhase(g), phases:[getPhase(g)], subject:s, subjects:[s], stock:Number(st), qty:Number(st), createdAt:Date.now() });
+    msg.innerHTML='<div class="ok">✅ Book Added: <b>'+t+'</b> — GRADE '+g+' — '+getPhase(g)+' — Stock '+st+'</div>';
+    document.getElementById('bTitle').value=''; loadBooks();
+  }catch(e){ msg.innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
-async function resetPass(id){
-  if(!confirm('Reset this user password to 1234?')) return;
-  try{await rtdb.ref('users/'+mySchoolId+'/'+id).update({password:'1234'});}catch(e){}
-  alert('✅ Password reset to 1234');
+async function loadBooks(){
+  try{
+    var snap=await db.ref('books').once('value'); var arr=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; arr.push(v); });
+    if(!arr.length){ document.getElementById('bookList').innerHTML='<div class="info">No books yet.</div>'; return; }
+    var h='<table><tr><th>Book</th><th>Subject</th><th>Grade / Phase</th><th>Stock</th><th>Action</th></tr>';
+    arr.reverse().forEach(function(b){ h+='<tr><td>'+(b.title||'')+'</td><td>'+(b.subject||'')+'</td><td>GRADE '+(b.grade||'')+'<br><small>'+(b.phase||getPhase(b.grade||''))+'</small></td><td><b>'+(b.stock||0)+'</b></td><td><button class="btn btn-red" onclick="delBook(\''+b.id+'\')">🗑️</button></td></tr>'; });
+    h+='</table>'; document.getElementById('bookList').innerHTML=h;
+  }catch(e){ document.getElementById('bookList').innerHTML=''; }
 }
-loadData();
+async function delBook(id){ if(!confirm('Delete this book?')) return; await db.ref('books/'+id).remove(); loadBooks(); }
+async function deleteAllRequests(){ if(!confirm('⚠️ DELETE ALL REQUESTS? Cannot undo. Type OK?')) return; var c=prompt('Type DELETE to confirm'); if(c!=='DELETE') return; await db.ref('requests').remove(); document.getElementById('dangerMsg').innerHTML='<div class="ok">✅ All requests deleted.</div>'; loadAll(); }
+async function resetAllToPending(){ if(!confirm('Reset ALL requests to PENDING?')) return; var snap=await db.ref('requests').once('value'); var updates={}; snap.forEach(function(ch){ updates[ch.key+'/status']='PENDING'; }); await db.ref('requests').update(updates); document.getElementById('dangerMsg').innerHTML='<div class="ok">✅ All reset to PENDING.</div>'; loadAll(); }
+init();
 </script></body></html>
