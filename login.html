@@ -8,140 +8,96 @@
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
 header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:600px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.wrap{max-width:500px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
-.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px;width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-blue{background:#2563eb;color:#fff}
-.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-@media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>🔐 LOGIN — MAKHANANI LTSM 2.0</h1><p>WORDSWORTH HIGH SCHOOL — GRADES 4-12 — CLASSES 4A TO 12J — FIREBASE LOGIN — NO DEMO ACCOUNTS</p>
+<header><h1>🔐 LOGIN — MAKHANANI LTSM 2.0</h1><p>WORDSWORTH HIGH SCHOOL — GRADES 4-12 — CLASSES 4A-12J — REAL USERS ONLY</p>
+<div id="taskbar"></div><script src="nav.js"></script>
 </header>
 <div class="wrap">
-<div class="card"><h2>🔐 Login — Email + Password — Firebase Auth — Real Users Only</h2>
-<div class="info" id="authInfo">Checking Firebase Auth...</div>
-<label>📧 Email — Given By Admin</label><input id="email" type="email" placeholder="e.g. your.name@wordsworth.co.za" autocomplete="email">
-<label>🔑 Password — Given By Admin</label><input id="password" type="password" placeholder="Type your password" autocomplete="current-password">
-<div class="row"><button class="btn btn-green" onclick="loginEmail()">🔐 LOGIN →</button><button class="btn btn-gold" onclick="forgotPassword()">🔑 FORGOT PASSWORD → SEND RESET EMAIL</button></div>
-<div class="row"><button class="btn btn-teal" onclick="goHome()">🏠 GO TO HOME (If Already Logged In)</button><button class="btn btn-grey" onclick="logout()">🚪 LOGOUT — CLEAR SESSION</button></div>
-<div class="info" id="loginMsg"></div></div>
+<div class="card"><h2>🔐 Login With Email + Password</h2>
+<div class="info">Login with email + password given by Admin. If you don't have login, ask Admin to create you in Users page.<br>Demo users were deleted — No demo login. Real users only.</div>
+<label>Email</label><input id="email" type="email" placeholder="thabo@makhanani.co.za" autocomplete="email">
+<label>Password</label><input id="password" type="password" placeholder="••••••" autocomplete="current-password">
+<div class="row"><button class="btn btn-green" onclick="doLogin()">🔐 LOGIN →</button><button class="btn btn-gold" onclick="doReset()">🔑 FORGOT PASSWORD → SEND RESET EMAIL</button></div>
+<div id="msg"></div>
+<div class="info" id="roleInfo">Not logged in.</div></div>
 
-<div class="card"><h2>🆕 New User? — Ask Admin To Create Your Account</h2>
-<div class="info">There are <b>NO demo accounts</b> in this system. Demo accounts (MOKOENA, DLAMINI, DUBE, etc. with password 1234) have been <b>removed</b>.<br><br><b>To get an account:</b><br>1. Ask Admin / Principal to create your account in <b>Users</b> page.<br>2. Admin gives you Email + Password.<br>3. Login here with that Email + Password.<br>4. If you forgot password, type Email above → Tap FORGOT PASSWORD → Check inbox + spam.<br><br><b>Admin — First Account:</b> If no Admin exists yet, create first Admin in Firebase Console → Auth → Add User → Email + Password → Then login → Go to Users → Add other users.</div>
-<div class="row"><button class="btn btn-blue" onclick="go('manuals.html')">📖 MANUALS PACK → HOW TO LOGIN</button></div></div>
+<div class="card"><h2>👤 Where Will I Go After Login?</h2>
+<div class="info">
+<b>👩‍🏫 TEACHER — Rank 1</b> → Teacher page — My Classes + My Subjects<br>
+<b>📚 LIBRARIAN — Rank 2</b> → Librarian page — All Classes + All Subjects<br>
+<b>✅ HOD — Rank 3</b> → HOD page — My Subjects — Approve / Reject<br>
+<b>👑 PRINCIPAL — Rank 4</b> → Principal page — All — Overview + Export<br>
+<b>⚙️ ADMIN — Rank 5</b> → Users page — Users + Cleanup — No Founder / Marketing / Financial / Employment<br>
+<b>👑 SUPER ADMIN — Rank 6</b> → Super Admin Dashboard — All + Founder / Marketing / Financial / Employment — Only Role That Sees 2,4,5,6
+</div></div>
 
-<div class="card"><h2>📖 Manuals — How To Login + Use System</h2><div class="row"><button class="btn btn-gold" onclick="go('manuals.html')">📖 MANUALS PACK → USER + BULK</button></div></div>
+<div class="card"><h2>❓ Forgot Password?</h2><div class="info">Type your Email above → Tap <b>FORGOT PASSWORD</b> → Check your inbox + spam → Tap reset link → Set new password → Login again.<br>If you don't get email, ask Admin to reset in Users page → RESET PASS.</div></div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(); const rtdb=firebase.database();
 function toCaps(s){return String(s||'').trim().toUpperCase();}
-function go(page){ window.location.href=page; }
-function saveSession(userObj){
-  localStorage.setItem('makhanani_user', JSON.stringify(userObj));
-  localStorage.setItem('makhanani_uid', userObj.uid||userObj.id||'');
-  localStorage.setItem('makhanani_email', userObj.email||'');
-}
-function getSession(){
-  try{ return JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){ return null; }
-}
+function go(page){window.location.href=page;}
 function gotoHomeForRole(role){
-  let r=toCaps(role||'');
-  if(r==='TEACHER') go('teacher.html');
+  let r=toCaps(role);
+  if(r==='SUPER_ADMIN') go('superadmin.html');
+  else if(r==='ADMIN') go('users.html');
+  else if(r==='TEACHER') go('teacher.html');
   else if(r==='LIBRARIAN') go('librarian.html');
   else if(r==='HOD') go('hod.html');
   else if(r==='PRINCIPAL') go('principal.html');
-  else if(r==='ADMIN') go('users.html');
   else go('index.html');
 }
-function goHome(){
-  let s=getSession();
-  if(!s){ document.getElementById('loginMsg').innerHTML='<div class="warn">⛔ Not logged in yet — Login above first.</div>'; return; }
-  gotoHomeForRole(s.role);
-}
-async function loginEmail(){
-  let email=(document.getElementById('email').value||'').trim().toLowerCase();
-  let pass=document.getElementById('password').value||'';
-  let msg=document.getElementById('loginMsg');
-  if(!email || !pass){ msg.innerHTML='<div class="warn">⛔ Type email + password first — Ask Admin if you do not have an account.</div>'; return; }
-  msg.innerHTML='<div class="info">⏳ Logging in via Firebase Auth...</div>';
+async function doLogin(){
+  let email=document.getElementById('email').value.trim().toLowerCase();
+  let pass=document.getElementById('password').value;
+  let msg=document.getElementById('msg');
+  if(!email||!pass){ msg.innerHTML='<div class="warn">Fill Email + Password.</div>'; return; }
+  msg.innerHTML='<div class="info">Logging in... Do not close.</div>';
   try{
     let cred=await auth.signInWithEmailAndPassword(email, pass);
     let uid=cred.user.uid;
-    let profile=await loadProfileByUid(uid, email);
-    if(!profile){
-      msg.innerHTML='<div class="warn">⛔ Logged in to Firebase Auth, but no profile in Realtime DB for '+email+' — Ask Admin to create your profile in Users page (Users → Add User with same email).</div>';
-      return;
-    }
-    saveSession({...profile, uid:uid});
-    msg.innerHTML=`<div class="ok">✅ Logged in as <b>${toCaps(profile.name)}</b> — ${toCaps(profile.role)} — Rank ${profile.rank} — Going to ${toCaps(profile.role)} page...</div>`;
-    setTimeout(()=>gotoHomeForRole(profile.role), 600);
-  }catch(e){
-    let err=String(e.message||e.code||'');
-    if(err.includes('user-not-found')) msg.innerHTML='<div class="warn">⛔ No account with that email. Demo accounts have been removed. Ask Admin to create your account.</div>';
-    else if(err.includes('wrong-password') || err.includes('invalid-credential')) msg.innerHTML='<div class="warn">⛔ Wrong password. Tap FORGOT PASSWORD to reset, or ask Admin to reset it.</div>';
-    else if(err.includes('operation-not-allowed')) msg.innerHTML='<div class="warn">⛔ Firebase Auth Email/Password is NOT enabled. Admin: Go to Firebase Console → Auth → Sign-in method → Enable Email/Password → Save.</div>';
-    else if(err.includes('too-many-requests')) msg.innerHTML='<div class="warn">⛔ Too many attempts — Wait 1 minute, then try again.</div>';
-    else if(err.includes('invalid-email')) msg.innerHTML='<div class="warn">⛔ Email is not valid — Check spelling — e.g. name@wordsworth.co.za</div>';
-    else msg.innerHTML=`<div class="warn">⛔ Login failed: ${err}</div>`;
-  }
-}
-async function loadProfileByUid(uid, email){
-  try{
     let snap=await rtdb.ref('users/'+uid).once('value');
-    if(snap.val()) return {...snap.val(), uid:uid};
-  }catch(e){}
-  try{
-    let snap=await rtdb.ref('users').once('value');
-    if(snap.val()){
-      let all=Object.values(snap.val());
-      let found=all.find(u=>String(u.email||'').toLowerCase()===String(email||'').toLowerCase());
-      if(found) return {...found, uid:uid};
-    }
-  }catch(e){}
-  return null;
-}
-async function forgotPassword(){
-  let email=(document.getElementById('email').value||'').trim().toLowerCase();
-  let msg=document.getElementById('loginMsg');
-  if(!email){ msg.innerHTML='<div class="warn">⛔ Type your email first, then tap FORGOT PASSWORD.</div>'; return; }
-  try{
-    await auth.sendPasswordResetEmail(email);
-    msg.innerHTML=`<div class="ok">✅ Reset email sent to <b>${email}</b> — Check inbox + spam — Tap link → Set new password → Login again.</div>`;
+    let profile=snap.val();
+    if(!profile){ msg.innerHTML='<div class="warn">No profile in DB for this email — Ask Admin to create profile in Users page for '+email+' — UID: '+uid+'</div>'; await auth.signOut(); return; }
+    let userObj={uid:uid, name:profile.name||'', email:profile.email||email, role:toCaps(profile.role||'TEACHER'), rank:profile.rank||1, subjects:profile.subjects||[], teachingClasses:profile.teachingClasses||profile.classes||[], classes:profile.teachingClasses||profile.classes||[], schoolId:profile.schoolId||'WHS', schoolName:profile.schoolName||'WORDSWORTH HIGH SCHOOL'};
+    localStorage.setItem('makhanani_user', JSON.stringify(userObj));
+    localStorage.setItem('makhanani_uid', uid);
+    localStorage.setItem('makhanani_email', email);
+    msg.innerHTML='<div class="ok">✅ Welcome <b>'+toCaps(userObj.name)+'</b> — '+userObj.role+' — Rank '+userObj.rank+' — Going to your page...</div>';
+    setTimeout(()=>gotoHomeForRole(userObj.role), 800);
   }catch(e){
-    msg.innerHTML=`<div class="warn">⛔ Could not send reset email: ${String(e.message||e.code)} — Ask Admin to reset your password.</div>`;
+    let m=e.message||'Login failed';
+    if(e.code==='auth/user-not-found') m='No user with this email — Ask Admin to create you in Users page.';
+    else if(e.code==='auth/wrong-password') m='Wrong password — Tap FORGOT PASSWORD to reset.';
+    else if(e.code==='auth/invalid-email') m='Invalid email — Check spelling.';
+    else if(e.code==='auth/too-many-requests') m='Too many tries — Wait 5 min or reset password.';
+    msg.innerHTML='<div class="warn">Login failed: '+m+'</div>';
   }
 }
-async function logout(){
-  try{ await auth.signOut(); }catch(e){}
-  localStorage.removeItem('makhanani_user');
-  localStorage.removeItem('makhanani_uid');
-  localStorage.removeItem('makhanani_email');
-  document.getElementById('loginMsg').innerHTML='<div class="ok">✅ Logged out — Session cleared.</div>';
-  document.getElementById('authInfo').innerHTML='Logged out. Login again to continue.';
+async function doReset(){
+  let email=document.getElementById('email').value.trim().toLowerCase();
+  let msg=document.getElementById('msg');
+  if(!email){ msg.innerHTML='<div class="warn">Type your Email first, then tap FORGOT PASSWORD.</div>'; return; }
+  try{ await auth.sendPasswordResetEmail(email); msg.innerHTML='<div class="ok">✅ Reset email sent to <b>'+email+'</b> — Check inbox + spam — Tap link → Set new password → Login again.</div>'; }
+  catch(e){ msg.innerHTML='<div class="warn">Reset failed: '+e.message+'</div>'; }
 }
-function checkAuthState(){
-  let sess=getSession();
-  try{
-    auth.onAuthStateChanged((u)=>{
-      if(u){
-        document.getElementById('authInfo').innerHTML=`Firebase Auth: <b>✅ Connected</b> — Signed in as <b>${u.email}</b> — Session: <b>${sess?toCaps(sess.name)+' — '+toCaps(sess.role):'—'}</b> — Tap HOME to continue.`;
-      } else {
-        document.getElementById('authInfo').innerHTML=`Firebase Auth: <b>⚠️ Not signed in</b> — Session: <b>${sess?toCaps(sess.name)+' — '+toCaps(sess.role):'None'}</b> — Login below. No demo accounts.`;
-      }
-    });
-  }catch(e){
-    document.getElementById('authInfo').innerHTML='Firebase Auth: <b>Check connection</b> — Login below.';
-  }
-  if(sess){
-    document.getElementById('email').value=sess.email||'';
-    document.getElementById('loginMsg').innerHTML=`<div class="info">Already logged in as <b>${toCaps(sess.name)}</b> — ${toCaps(sess.role)} — Tap HOME to continue, or LOGOUT to switch user.</div>`;
-  }
-}
-checkAuthState();
+// Enter key logs in
+document.getElementById('password').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('email').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+// If already logged in, show who + go to their page
+(function(){
+  let u=null; try{ u=JSON.parse(localStorage.getItem('makhanani_user')||'null'); }catch(e){}
+  if(u) document.getElementById('roleInfo').innerHTML=`Already logged in as <b>${toCaps(u.name)}</b> — ${toCaps(u.role)} — Rank ${u.rank||''} — <a href="#" onclick="localStorage.removeItem('makhanani_user');location.reload();return false;">Logout and login as different user</a> — Or tap LOGIN to go to your page.`;
+})();
 </script></body></html>
