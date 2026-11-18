@@ -18,7 +18,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;b
 @media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>📚 LIBRARIAN DASHBOARD — MAKHANANI LTSM 2.0 — V2.21</h1><p>LIBRARIAN ONLY — RANK 3 — ISSUE + RETURN + STOCK — MY SCHOOL ONLY — WHATSAPP 078 023 3263</p>
+<header><h1>📚 LIBRARIAN DASHBOARD — MAKHANANI LTSM 2.0 — V2.22</h1><p>LIBRARIAN ONLY — RANK 3 — ISSUE + RETURN + STOCK — MY SCHOOL ONLY — WHATSAPP 078 023 3263</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 </header>
 <div class="wrap">
@@ -28,9 +28,10 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;b
 try{
   var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
   if(_u && _u.email){
-    var _rank=_u.rank; if(String(_u.role||'').toUpperCase()==='LIBRARIAN' && _rank!=3){ _rank=3; }
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+String(_u.role||'').toUpperCase()+' — RANK '+_rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
-    if(String(_u.role||'').toUpperCase()==='LIBRARIAN' && _u.rank!=3){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#dc2626">⚠️ Your Rank in Users is '+_u.rank+' — Should be 3 for LIBRARIAN — Ask Super Admin to fix in Users.</span>'; }
+    var _rank=_u.rank; var _role=String(_u.role||'').toUpperCase();
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_role+' — RANK '+_rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
+    if(_role==='LIBRARIAN' && _u.rank!=3){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#dc2626">⚠️ Your Rank in Users is '+_u.rank+' — Should be 3 for LIBRARIAN — Ask Super Admin to fix in Users.</span>'; }
+    if(_role!=='LIBRARIAN'){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#d97706">👀 VIEW-ONLY MODE — You are '+_role+' — Only a real LIBRARIAN can Issue / Return. Login as Librarian to Issue.</span>'; }
   } else { document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; setTimeout(function(){ window.location.href='login.html'; },1500); }
 }catch(e){ document.getElementById('whoAmI').innerHTML='Error: '+e.message; }
 </script>
@@ -53,7 +54,7 @@ try{
 <div id="retrievalMsg" class="info">Loading...</div></div>
 
 <div class="card"><h2>📖 Issue Book — Learner Takes Book</h2>
-<div class="info">Pick Learner + Book → Tap ISSUE → Book moves to ISSUED + Still Out +1. Learner must be in Learners list. Book must be in Books list. If not, add them in Books / Learners first.</div>
+<div class="info">Pick Learner + Book → Tap ISSUE → Book moves to ISSUED + Still Out +1. If Learner / Book not in list, add them in Books / Learners first.</div>
 <label>Learner *</label><select id="issueLearner"><option value="">-- Pick Learner --</option></select>
 <label>Class</label><input id="issueClass" placeholder="Auto from learner — e.g. 10A">
 <label>Book *</label><select id="issueBook"><option value="">-- Pick Book --</option></select>
@@ -76,7 +77,10 @@ try{
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
 var user=null; try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-if(!user || String(user.role||'').toUpperCase()!=='LIBRARIAN'){ alert('⛔ Librarian only.'); window.location.href='login.html'; }
+// V2.22 FIX — Librarian + Super Admin + Admin + Principal can VIEW. Only Librarian can Issue/Return.
+var _ROLE = String(user && user.role || '').toUpperCase();
+if(!user || ['LIBRARIAN','SUPER_ADMIN','ADMIN','PRINCIPAL'].indexOf(_ROLE)===-1){ alert('⛔ Librarian only.'); window.location.href='login.html'; }
+window._IS_VIEW_ONLY = (_ROLE !== 'LIBRARIAN');
 var rtdb=null, firebaseOK=false, learners={}, books={}, issues={};
 try{ if(typeof firebase!=='undefined'){ var cfg={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"}; if(!firebase.apps.length) firebase.initializeApp(cfg); rtdb=firebase.database(); firebaseOK=true; } }catch(e){ firebaseOK=false; }
 function setKPI(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
@@ -99,13 +103,17 @@ function render(){
 }
 document.getElementById('issueLearner').addEventListener('change', function(){ var o=this.options[this.selectedIndex]; if(o) document.getElementById('issueClass').value=o.dataset.cls||''; });
 async function issueBook(){
-  var lid=document.getElementById('issueLearner').value; var bid=document.getElementById('issueBook').value; var cls=document.getElementById('issueClass').value.trim().toUpperCase(); var msg=document.getElementById('issueMsg');
+  var msg=document.getElementById('issueMsg');
+  if(window._IS_VIEW_ONLY){ msg.innerHTML='<div class="warn">⛔ View-Only — Login as LIBRARIAN to Issue.</div>'; return; }
+  var lid=document.getElementById('issueLearner').value; var bid=document.getElementById('issueBook').value; var cls=document.getElementById('issueClass').value.trim().toUpperCase();
   if(!lid||!bid){ msg.innerHTML='<div class="warn">❌ Pick Learner + Book.</div>'; return; }
   var l=learners[lid]; var b=books[bid];
   try{ await rtdb.ref('issues').push().set({learnerId:lid,learnerName:l.name||l.learnerName||'',className:cls||l.className||'',bookId:bid,bookTitle:b.title||b.bookTitle||'',subject:b.subject||'',schoolId:user.schoolId||'WHS',schoolName:user.schoolName||'',status:'ISSUED',createdAt:Date.now(),issuedBy:user.email}); msg.innerHTML='<div class="ok">✅ Issued: <b>'+String(l.name||'').toUpperCase()+'</b> took <b>'+String(b.title||'').toUpperCase()+'</b></div>'; }catch(e){ msg.innerHTML='<div class="warn">❌ Issue failed: '+e.message+'</div>'; }
 }
 async function returnBook(){
-  var id=document.getElementById('returnIssue').value; var msg=document.getElementById('returnMsg');
+  var msg=document.getElementById('returnMsg');
+  if(window._IS_VIEW_ONLY){ msg.innerHTML='<div class="warn">⛔ View-Only — Login as LIBRARIAN to Return.</div>'; return; }
+  var id=document.getElementById('returnIssue').value;
   if(!id){ msg.innerHTML='<div class="warn">❌ Pick an Issued Book.</div>'; return; }
   try{ await rtdb.ref('issues/'+id).update({status:'RETURNED',returnedAt:Date.now(),returnedBy:user.email}); msg.innerHTML='<div class="ok">✅ Book returned — Retrieval % up!</div>'; }catch(e){ msg.innerHTML='<div class="warn">❌ Return failed: '+e.message+'</div>'; }
 }
