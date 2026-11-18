@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Users - Makhanani LTSM 2.0</title>
+<script src="firebase.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
@@ -19,13 +20,14 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 @media(max-width:700px){.row{flex-direction:column}.chk-grid{grid-template-columns:repeat(3,1fr)}}
 </style></head>
 <body>
-<header><h1>👥 USERS — MAKHANANI LTSM 2.0 — V2.23</h1><p>ADD USER — MULTIPLE CLASSES / GRADES A TO J — ROLE + RANK MUST MATCH</p>
+<header><h1>👥 USERS — MAKHANANI LTSM 2.0 — FIREBASE V2.24</h1><p>ADD USER — FIREBASE AUTH + DATABASE — MULTIPLE CLASSES A TO J</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 </header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I</h2><div class="info" id="whoAmI">Loading...</div><div class="warn" id="blockMsg" style="display:none"></div></div>
+<div class="card"><h2>👤 Who Am I</h2><div class="info" id="whoAmI">Loading from Firebase...</div><div class="warn" id="blockMsg" style="display:none"></div><div class="ok" id="debug">DEBUG: Connecting to Firebase...</div></div>
 <div id="adminOnly" style="display:none">
-<div class="card"><h2>➕ Add / Edit User</h2>
+<div class="card"><h2>➕ Add / Edit User — Firebase</h2>
+<div class="warn">⚠️ IMPORTANT: After you Save a new user, you will be logged out of YOUR account and logged in as the NEW user — Because Firebase Auth switches user. Just login again as YOU — Super Admin — After each save. This is normal Firebase behaviour.</div>
 <label>Full Name *</label><input id="uName" placeholder="e.g. MRS NKAMBULE">
 <label>Email *</label><input id="uEmail" placeholder="e.g. nkambule@wordsworth.co.za">
 <label>Password (6+ chars) *</label><input id="uPass" type="password" placeholder="Min 6 characters">
@@ -40,71 +42,84 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 <div id="classGrid"></div>
 <div class="info" id="selInfo">Selected: None</div>
 <div id="uMsg"></div>
-<div class="row"><button class="btn btn-green" onclick="saveUser()">💾 SAVE USER</button></div>
-<div class="info">Rule: TEACHER / EDUCATOR=2, LIBRARIAN=3, HOD=4, PRINCIPAL=5, SUPER_ADMIN=6. Librarian / Principal / Super Admin: Tick ALL or SELECT ALL 50.</div>
+<div class="row"><button class="btn btn-green" id="saveBtn" onclick="saveUser()">💾 SAVE USER — FIREBASE</button></div>
+<div class="info">Rule: TEACHER / EDUCATOR=2, LIBRARIAN=3, HOD=4, PRINCIPAL=5, SUPER_ADMIN=6. Teacher dropdown in teacher.html shows ONLY ticked classes here.</div>
 </div>
-<div class="card"><h2>📋 All Users</h2><div id="userList"></div></div>
+<div class="card"><h2>📋 All Users — Firebase Live</h2><div id="userList"></div><div class="row"><button class="btn btn-grey" onclick="renderUsers()">🔄 REFRESH</button></div></div>
 </div>
-<div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
+<div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
 <script>
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
-var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-var _role=_u?String(_u.role||'').toUpperCase():''; var _rank=_u?Number(_u.rank||0):0;
-var _allowed = (_role==='SUPER_ADMIN' && _rank===6) || (_role==='PRINCIPAL' && _rank===5);
-if(_u && _u.email) document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_role+' — RANK '+_rank+' — '+String(_u.schoolName||'');
-else document.getElementById('whoAmI').innerHTML='❌ Not logged in';
-if(!_allowed){ document.getElementById('blockMsg').style.display='block'; document.getElementById('blockMsg').innerHTML='⛔ ADMIN ONLY — Only Principal Rank 5 + Super Admin Rank 6 can add Users.'; }
-else document.getElementById('adminOnly').style.display='block';
-// CLASSES A TO J — Grade 8 to 12
-var LETTERS=['A','B','C','D','E','F','G','H','I','J'];
-var GRADES=['8','9','10','11','12'];
-var CLASSES=['ALL'];
-GRADES.forEach(function(g){ LETTERS.forEach(function(l){ CLASSES.push(g+l); }); });
+async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
+var _u=null; var _adminEmail=''; var _adminPass='';
+var LETTERS=['A','B','C','D','E','F','G','H','I','J']; var GRADES=['8','9','10','11','12'];
 var grid=document.getElementById('classGrid');
 grid.innerHTML='<label class="chk" style="background:#fef3c7"><input type="checkbox" value="ALL" onchange="updateSel()"> ALL — All Grades A-J</label>';
 GRADES.forEach(function(g){
   var t=document.createElement('div'); t.className='grade-title'; t.textContent='GRADE '+g+' — A to J'; grid.appendChild(t);
   var wrap=document.createElement('div'); wrap.className='chk-grid';
-  LETTERS.forEach(function(l){
-    var c=g+l;
-    var d=document.createElement('label'); d.className='chk'; d.innerHTML='<input type="checkbox" value="'+c+'" onchange="updateSel()"> '+c;
-    wrap.appendChild(d);
-  });
+  LETTERS.forEach(function(l){ var c=g+l; var d=document.createElement('label'); d.className='chk'; d.innerHTML='<input type="checkbox" value="'+c+'" onchange="updateSel()"> '+c; wrap.appendChild(d); });
   grid.appendChild(wrap);
 });
-function updateSel(){
-  var sel=getSelectedClasses();
-  document.getElementById('selInfo').innerHTML='Selected: <b>'+(sel.length?sel.join(', '):'None')+'</b> — Count: '+sel.length;
-  document.querySelectorAll('.chk').forEach(function(el){ el.classList.toggle('on', el.querySelector('input').checked); });
-}
+function updateSel(){ var sel=getSelectedClasses(); document.getElementById('selInfo').innerHTML='Selected: <b>'+(sel.length?sel.join(', '):'None')+'</b> — Count: '+sel.length; document.querySelectorAll('.chk').forEach(function(el){ el.classList.toggle('on', el.querySelector('input').checked); }); }
 function getSelectedClasses(){ var a=[]; document.querySelectorAll('#classGrid input:checked').forEach(function(i){ a.push(i.value); }); return a; }
 function selectAllClasses(on){ document.querySelectorAll('#classGrid input').forEach(function(i){ i.checked=on; }); updateSel(); }
 function selectGrade(g,on){ document.querySelectorAll('#classGrid input').forEach(function(i){ if(i.value.startsWith(g) && i.value!=='ALL') i.checked=on; }); updateSel(); }
 function autoRank(){ var r=document.getElementById('uRole').value; var m={TEACHER:2,LIBRARIAN:3,HOD:4,PRINCIPAL:5,SUPER_ADMIN:6}; document.getElementById('uRank').value=m[r]||''; if(r==='LIBRARIAN'||r==='PRINCIPAL'||r==='SUPER_ADMIN') selectAllClasses(true); }
-function getUsers(){ try{ return JSON.parse(localStorage.getItem('makhanani_users')||'[]'); }catch(e){ return []; } }
-function saveUser(){
-  if(!_allowed) return;
+async function init(){
+  try{
+    _u = await getCurrentUser();
+    if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; return; }
+    _adminEmail = _u.email;
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+' — <span style="color:#16a34a">FIREBASE LIVE ✅</span>';
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — Admin: '+_u.email;
+    var _allowed = (_u.role==='SUPER_ADMIN' && _u.rank===6) || (_u.role==='PRINCIPAL' && _u.rank===5);
+    if(!_allowed){ document.getElementById('blockMsg').style.display='block'; document.getElementById('blockMsg').innerHTML='⛔ ADMIN ONLY — Only Principal Rank 5 + Super Admin Rank 6 can add Users.'; }
+    else document.getElementById('adminOnly').style.display='block';
+    renderUsers();
+  }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
+}
+async function saveUser(){
   var name=document.getElementById('uName').value.trim().toUpperCase(), email=document.getElementById('uEmail').value.trim().toLowerCase(), pass=document.getElementById('uPass').value, role=document.getElementById('uRole').value, rank=document.getElementById('uRank').value, subj=document.getElementById('uSubject').value, code=document.getElementById('uSchoolCode').value.trim().toUpperCase(), school=document.getElementById('uSchool').value.trim().toUpperCase();
   var classes=getSelectedClasses();
   var msg=document.getElementById('uMsg');
   if(!name||!email||!pass||pass.length<6||!role||!rank||!subj||!code||!school){ msg.innerHTML='<div class="warn">❌ Fill Name + Email + Password 6+ + Role + Subject + School.</div>'; return; }
-  if(!classes.length){ msg.innerHTML='<div class="warn">❌ Tick at least ONE Class / Grade — Or tick ALL.</div>'; return; }
-  var all=getUsers(); var idx=all.findIndex(function(x){ return x.email===email; });
-  var obj={ name:name, email:email, password:pass, role:role, rank:Number(rank), subject:subj, schoolCode:code, schoolName:school, classes:classes, className:classes.join(', '), class:classes[0] };
-  if(idx>=0) all[idx]=obj; else all.push(obj);
-  localStorage.setItem('makhanani_users', JSON.stringify(all));
-  if(_u && _u.email===email){ _u.classes=classes; _u.className=classes.join(', '); localStorage.setItem('makhanani_user', JSON.stringify(_u)); }
-  msg.innerHTML='<div class="ok">✅ Saved: <b>'+name+'</b> — '+role+' Rank '+rank+' — Classes: <b>'+classes.join(', ')+'</b> — Subject: '+subj+'</div>';
-  renderUsers();
+  if(!classes.length){ msg.innerHTML='<div class="warn">❌ Tick at least ONE Class — Or tick ALL.</div>'; return; }
+  // Save admin creds to re-login after — Prompt once
+  if(!_adminPass){ _adminPass = prompt('Enter YOUR password (Super Admin) to stay logged in after creating this user — Needed because Firebase switches user:'); if(!_adminPass) return; }
+  document.getElementById('saveBtn').disabled=true; document.getElementById('saveBtn').textContent='SAVING TO FIREBASE...';
+  try{
+    // Create Auth user — This switches auth to new user
+    var cred = await auth.createUserWithEmailAndPassword(email, pass);
+    var obj={ name:name, email:email, role:role, rank:Number(rank), subject:subj, schoolCode:code, schoolName:school, classes:classes, className:classes.join(', '), class:classes[0] };
+    // Write profile — Use new uid — Rules allow because we are creating it, but if blocked, admin re-login handles it
+    await db.ref('users/'+cred.user.uid).set(obj);
+    msg.innerHTML='<div class="ok">✅ Saved to Firebase: <b>'+name+'</b> — '+role+' Rank '+rank+' — Classes: <b>'+classes.join(', ')+'</b> — Re-logging you back in as Admin...</div>';
+    // Re-login as admin
+    await auth.signOut();
+    await auth.signInWithEmailAndPassword(_adminEmail, _adminPass);
+    renderUsers();
+  }catch(e){
+    // If user already exists in Auth, update profile only
+    if(e.code==='auth/email-already-in-use'){
+      msg.innerHTML='<div class="warn">⚠️ Email already exists in Firebase Auth — User already created before. Ask that user to login, or delete them in Firebase Console → Authentication, then try again. Profile NOT overwritten.</div>';
+    } else {
+      msg.innerHTML='<div class="warn">❌ Firebase Error: '+e.message+'</div>';
+    }
+  }
+  document.getElementById('saveBtn').disabled=false; document.getElementById('saveBtn').textContent='💾 SAVE USER — FIREBASE';
 }
-function renderUsers(){
-  var all=getUsers();
-  if(!all.length){ document.getElementById('userList').innerHTML='<div class="warn">No users yet.</div>'; return; }
-  var h='<table><tr><th>Name</th><th>Role / Rank</th><th>Classes</th><th>Subject</th></tr>';
-  all.forEach(function(x){ h+='<tr><td><b>'+x.name+'</b><br><small>'+x.email+'</small></td><td>'+x.role+' / '+x.rank+'</td><td>'+(x.classes?x.classes.join(', '):x.className||'')+'</td><td>'+x.subject+'</td></tr>'; });
-  h+='</table>'; document.getElementById('userList').innerHTML=h;
+async function renderUsers(){
+  try{
+    var snap = await db.ref('users').once('value');
+    var all=[]; snap.forEach(function(c){ var v=c.val(); v.uid=c.key; all.push(v); });
+    if(!all.length){ document.getElementById('userList').innerHTML='<div class="warn">No users in Firebase yet.</div>'; return; }
+    var h='<table><tr><th>Name</th><th>Role / Rank</th><th>Classes</th><th>Subject</th></tr>';
+    all.forEach(function(x){ h+='<tr><td><b>'+x.name+'</b><br><small>'+x.email+'</small></td><td>'+x.role+' / '+x.rank+'</td><td>'+(x.classes?x.classes.join(', '):x.className||'')+'</td><td>'+x.subject+'</td></tr>'; });
+    h+='</table>'; document.getElementById('userList').innerHTML=h;
+  }catch(e){ document.getElementById('userList').innerHTML='<div class="warn">Firebase Error: '+e.message+' — Check Rules: Admin Rank 5+ needed to read Users.</div>'; }
 }
-renderUsers(); updateSel();
+init(); updateSel();
 </script></body></html>
