@@ -13,96 +13,85 @@ input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
-@media(max-width:700px){.row{flex-direction:column}}
+.chk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}.chk{display:flex;align-items:center;gap:6px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:8px;padding:10px;font-weight:900;font-size:13px;cursor:pointer}.chk input{width:auto;padding:0}.chk.on{border-color:#0a1f4d;background:#eef2ff}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
+@media(max-width:700px){.row{flex-direction:column}.chk-grid{grid-template-columns:repeat(2,1fr)}}
 </style></head>
 <body>
-<header><h1>👥 USERS — MAKHANANI LTSM 2.0 — V2.21</h1><p>ADMIN ONLY — CREATE / EDIT USERS — ROLES + RANKS — RETRIEVAL % BY USER — MY SCHOOL ONLY</p>
+<header><h1>👥 USERS — MAKHANANI LTSM 2.0 — V2.23</h1><p>ADD USER — MULTIPLE CLASSES / GRADES — ROLE + RANK MUST MATCH</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 </header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I — Admin Only</h2>
-<div class="info" id="whoAmI">Loading...</div>
-<script>
-try{
-  var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-  if(_u && _u.email){ document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+String(_u.role||'').toUpperCase()+' — RANK '+(_u.rank||'')+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>'; }
-  else { document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; setTimeout(function(){ window.location.href='login.html'; },1500); }
-}catch(e){ document.getElementById('whoAmI').innerHTML='Error: '+e.message; }
-</script>
-<div class="info" id="debugBox" style="background:#e0e7ff">🔍 DEBUG: Checking Firebase...</div>
-<div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 OPEN MANUALS → USER GUIDE</button></div>
-<div class="row"><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-gold" onclick="go('subscriptions.html')">💰 SUBSCRIPTIONS →</button></div></div>
-
-<div class="card"><h2>⚠️ Rank Rules — Never Mix</h2>
-<div class="info"><b>⚠️ Never give Super Admin (Rank 6) to anyone except Founder.</b><br>Principal = Rank 1. Teacher = Rank 2. Librarian = Rank 3. HOD = Rank 4. Admin = Rank 5. Super Admin = Rank 6 — Founder only.<br><b>Users Limit:</b> Check My Subscription below — DEMO 5 users, STARTER 20, STANDARD 50, PREMIUM Unlimited.</div></div>
-
-<div class="card"><h2>➕ Create / Edit User</h2>
-<div class="info">Fill all fields → Tap 💾 SAVE USER → User appears in list below instantly. To EDIT: Tap Edit on a user → Form fills → Change Rank / Password → Save again. Password must be 6+ chars.</div>
-<label>Full Name *</label><input id="fName" placeholder="e.g. VUSI CHAUKE">
-<label>Email * — This is the Login Email</label><input id="fEmail" placeholder="e.g. vusichauke3037@gmail.com" type="email">
-<label>Password * — 6+ chars — For NEW user or to RESET password</label><input id="fPass" placeholder="Min 6 characters" type="password">
-<label>Role *</label><select id="fRole" onchange="autoRank()"><option value="">-- Pick Role --</option><option>PRINCIPAL</option><option>TEACHER</option><option>LIBRARIAN</option><option>HOD</option><option>ADMIN</option><option>SUPER_ADMIN</option></select>
-<label>Rank * — Auto-fills from Role — Check it!</label><select id="fRank"><option value="">-- Pick Rank --</option><option value="1">1 — PRINCIPAL</option><option value="2">2 — TEACHER</option><option value="3">3 — LIBRARIAN</option><option value="4">4 — HOD</option><option value="5">5 — ADMIN</option><option value="6">6 — SUPER_ADMIN — Founder Only</option></select>
-<label>School ID *</label><input id="fSchoolId" placeholder="e.g. WHS" value="WHS">
-<label>School Name *</label><input id="fSchoolName" placeholder="e.g. WORDSWORTH HIGH SCHOOL" value="WORDSWORTH HIGH SCHOOL">
-<label>Class (Teacher only — e.g. 10A — Leave blank for others)</label><input id="fClass" placeholder="e.g. 10A">
-<label>Subject (Teacher only)</label><input id="fSubject" placeholder="e.g. MATHS">
-<input type="hidden" id="fEditId" value="">
-<div id="saveMsg"></div>
-<div class="row"><button class="btn btn-green" onclick="saveUser()">💾 SAVE USER</button><button class="btn btn-grey" onclick="clearForm()">🧹 CLEAR FORM</button></div></div>
-
-<div class="card"><h2>👥 Users List — <span id="userCount">Loading...</span></h2>
-<div class="info" id="filterInfo">Showing all users for your school. Super Admin sees all schools.</div>
-<div style="overflow-x:auto"><table><thead><tr><th>Name</th><th>Role / Rank</th><th>School</th><th>Email</th><th>Action</th></tr></thead><tbody id="usersBody"><tr><td colspan="5">Loading...</td></tr></tbody></table></div></div>
+<div class="card"><h2>👤 Who Am I</h2><div class="info" id="whoAmI">Loading...</div><div class="warn" id="blockMsg" style="display:none"></div></div>
+<div id="adminOnly" style="display:none">
+<div class="card"><h2>➕ Add / Edit User</h2>
+<label>Full Name *</label><input id="uName" placeholder="e.g. MRS NKAMBULE">
+<label>Email *</label><input id="uEmail" placeholder="e.g. nkambule@wordsworth.co.za">
+<label>Password (6+ chars) *</label><input id="uPass" type="password" placeholder="Min 6 characters">
+<label>Role *</label><select id="uRole" onchange="autoRank()"><option value="">-- Pick Role --</option><option>TEACHER</option><option>LIBRARIAN</option><option>HOD</option><option>PRINCIPAL</option><option>SUPER_ADMIN</option></select>
+<label>Rank * (Auto)</label><input id="uRank" type="number" readonly placeholder="Auto from Role">
+<label>Subject *</label><select id="uSubject"><option value="">-- Pick Subject --</option><option>ALL</option><option>MATHS</option><option>ENGLISH</option><option>AFRIKAANS</option><option>PHYSICAL SCIENCES</option><option>LIFE SCIENCES</option><option>ACCOUNTING</option><option>BUSINESS STUDIES</option><option>GEOGRAPHY</option><option>HISTORY</option><option>LIFE ORIENTATION</option></select>
+<label>School Code *</label><input id="uSchoolCode" value="WHS">
+<label>School Name *</label><input id="uSchool" value="WORDSWORTH HIGH SCHOOL">
+<label>✅ Classes / Grades — Tick MULTIPLE — e.g. Teacher teaches 10A + 10B + 11A *</label>
+<div class="chk-grid" id="classGrid"></div>
+<div class="row"><button class="btn btn-grey" onclick="selectAllClasses(true)">✅ SELECT ALL</button><button class="btn btn-grey" onclick="selectAllClasses(false)">❌ CLEAR ALL</button></div>
+<div class="info" id="selInfo">Selected: None</div>
+<div id="uMsg"></div>
+<div class="row"><button class="btn btn-green" onclick="saveUser()">💾 SAVE USER</button></div>
+<div class="info">Rule: TEACHER=2, LIBRARIAN=3, HOD=4, PRINCIPAL=5, SUPER_ADMIN=6. Librarian / Principal / Super Admin: Tick ALL or leave ALL.</div>
+</div>
+<div class="card"><h2>📋 All Users</h2><div id="userList"></div></div>
+</div>
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
 </div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
-var user=null; try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-var myRole=String(user&&user.role||'').toUpperCase();
-if(!user || !(myRole==='ADMIN'||myRole==='SUPER_ADMIN'||myRole==='PRINCIPAL')){ alert('⛔ Admin / Principal / Super Admin only.'); window.location.href='login.html'; }
-function autoRank(){ var r=document.getElementById('fRole').value; var map={PRINCIPAL:'1',TEACHER:'2',LIBRARIAN:'3',HOD:'4',ADMIN:'5',SUPER_ADMIN:'6'}; if(map[r]) document.getElementById('fRank').value=map[r]; }
-function clearForm(){ ['fName','fEmail','fPass','fClass','fSubject'].forEach(function(id){ document.getElementById(id).value=''; }); document.getElementById('fRole').value=''; document.getElementById('fRank').value=''; document.getElementById('fEditId').value=''; document.getElementById('saveMsg').innerHTML=''; document.getElementById('fSchoolId').value='WHS'; document.getElementById('fSchoolName').value='WORDSWORTH HIGH SCHOOL'; }
-var rtdb=null, firebaseOK=false, allUsers={};
-try{ if(typeof firebase!=='undefined'){ var cfg={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"}; if(!firebase.apps.length) firebase.initializeApp(cfg); rtdb=firebase.database(); firebaseOK=true; } }catch(e){ firebaseOK=false; }
+var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
+var _role=_u?String(_u.role||'').toUpperCase():''; var _rank=_u?Number(_u.rank||0):0;
+var _allowed = (_role==='SUPER_ADMIN' && _rank===6) || (_role==='PRINCIPAL' && _rank===5);
+if(_u && _u.email) document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_role+' — RANK '+_rank+' — '+String(_u.schoolName||'');
+else document.getElementById('whoAmI').innerHTML='❌ Not logged in';
+if(!_allowed){ document.getElementById('blockMsg').style.display='block'; document.getElementById('blockMsg').innerHTML='⛔ ADMIN ONLY — Only Principal Rank 5 + Super Admin Rank 6 can add Users.'; }
+else document.getElementById('adminOnly').style.display='block';
+var CLASSES=['ALL','8A','8B','8C','9A','9B','9C','10A','10B','10C','11A','11B','11C','12A','12B','12C'];
+var grid=document.getElementById('classGrid');
+CLASSES.forEach(function(c){
+  var d=document.createElement('label'); d.className='chk'; d.innerHTML='<input type="checkbox" value="'+c+'" onchange="updateSel()"> '+c;
+  grid.appendChild(d);
+});
+function updateSel(){
+  var sel=getSelectedClasses();
+  document.getElementById('selInfo').innerHTML='Selected: <b>'+(sel.length?sel.join(', '):'None')+'</b>';
+  document.querySelectorAll('.chk').forEach(function(el){ el.classList.toggle('on', el.querySelector('input').checked); });
+}
+function getSelectedClasses(){ var a=[]; document.querySelectorAll('#classGrid input:checked').forEach(function(i){ a.push(i.value); }); return a; }
+function selectAllClasses(on){ document.querySelectorAll('#classGrid input').forEach(function(i){ i.checked=on; }); updateSel(); }
+function autoRank(){ var r=document.getElementById('uRole').value; var m={TEACHER:2,LIBRARIAN:3,HOD:4,PRINCIPAL:5,SUPER_ADMIN:6}; document.getElementById('uRank').value=m[r]||''; if(r==='LIBRARIAN'||r==='PRINCIPAL'||r==='SUPER_ADMIN') selectAllClasses(true); }
+function getUsers(){ try{ return JSON.parse(localStorage.getItem('makhanani_users')||'[]'); }catch(e){ return []; } }
+function saveUser(){
+  if(!_allowed) return;
+  var name=document.getElementById('uName').value.trim().toUpperCase(), email=document.getElementById('uEmail').value.trim().toLowerCase(), pass=document.getElementById('uPass').value, role=document.getElementById('uRole').value, rank=document.getElementById('uRank').value, subj=document.getElementById('uSubject').value, code=document.getElementById('uSchoolCode').value.trim().toUpperCase(), school=document.getElementById('uSchool').value.trim().toUpperCase();
+  var classes=getSelectedClasses();
+  var msg=document.getElementById('uMsg');
+  if(!name||!email||!pass||pass.length<6||!role||!rank||!subj||!code||!school){ msg.innerHTML='<div class="warn">❌ Fill Name + Email + Password 6+ + Role + Subject + School.</div>'; return; }
+  if(!classes.length){ msg.innerHTML='<div class="warn">❌ Tick at least ONE Class / Grade — Or tick ALL.</div>'; return; }
+  var all=getUsers(); var idx=all.findIndex(function(x){ return x.email===email; });
+  var obj={ name:name, email:email, password:pass, role:role, rank:Number(rank), subject:subj, schoolCode:code, schoolName:school, classes:classes, className:classes.join(', '), class:classes[0] };
+  if(idx>=0) all[idx]=obj; else all.push(obj);
+  localStorage.setItem('makhanani_users', JSON.stringify(all));
+  // Also update current logged-in user if it's them, so Teacher dropdown updates instantly
+  if(_u && _u.email===email){ _u.classes=classes; _u.className=classes.join(', '); localStorage.setItem('makhanani_user', JSON.stringify(_u)); }
+  msg.innerHTML='<div class="ok">✅ Saved: <b>'+name+'</b> — '+role+' Rank '+rank+' — Classes: <b>'+classes.join(', ')+'</b> — Subject: '+subj+'</div>';
+  renderUsers();
+}
 function renderUsers(){
-  var arr=Object.keys(allUsers).map(function(k){ var u=allUsers[k]; u._id=k; return u; });
-  if(myRole!=='SUPER_ADMIN'){ arr=arr.filter(function(u){ return String(u.schoolId||'').toUpperCase()===String(user.schoolId||'WHS').toUpperCase(); }); }
-  document.getElementById('userCount').textContent=arr.length+' users';
-  document.getElementById('usersBody').innerHTML=arr.length?arr.map(function(u){ return '<tr><td><b>'+String(u.name||'').toUpperCase()+'</b><br><small>Class: '+String(u.className||'-')+'</small></td><td>'+String(u.role||'').toUpperCase()+'<br><b>RANK '+(u.rank||'')+'</b></td><td>'+String(u.schoolName||u.schoolId||'').toUpperCase()+'</td><td>'+String(u.email||'')+'</td><td><button class="btn btn-gold" onclick="editUser(\''+u._id+'\')">✏️ Edit</button> <button class="btn btn-red" onclick="deleteUser(\''+u._id+'\')">🗑️ Delete</button></td></tr>'; }).join(''):'<tr><td colspan="5">No users yet — Create the first user above.</td></tr>';
+  var all=getUsers();
+  if(!all.length){ document.getElementById('userList').innerHTML='<div class="warn">No users yet.</div>'; return; }
+  var h='<table><tr><th>Name</th><th>Role / Rank</th><th>Classes</th><th>Subject</th></tr>';
+  all.forEach(function(x){ h+='<tr><td><b>'+x.name+'</b><br><small>'+x.email+'</small></td><td>'+x.role+' / '+x.rank+'</td><td>'+(x.classes?x.classes.join(', '):x.className||'')+'</td><td>'+x.subject+'</td></tr>'; });
+  h+='</table>'; document.getElementById('userList').innerHTML=h;
 }
-function editUser(id){ var u=allUsers[id]; if(!u) return; document.getElementById('fEditId').value=id; document.getElementById('fName').value=u.name||''; document.getElementById('fEmail').value=u.email||''; document.getElementById('fPass').value=''; document.getElementById('fRole').value=String(u.role||'').toUpperCase(); document.getElementById('fRank').value=String(u.rank||''); document.getElementById('fSchoolId').value=u.schoolId||'WHS'; document.getElementById('fSchoolName').value=u.schoolName||'WORDSWORTH HIGH SCHOOL'; document.getElementById('fClass').value=u.className||''; document.getElementById('fSubject').value=u.subject||''; document.getElementById('saveMsg').innerHTML='<div class="info">✏️ Editing <b>'+String(u.name||'').toUpperCase()+'</b> — Leave Password blank to KEEP old password. Type new password to RESET it.</div>'; window.scrollTo({top:0,behavior:'smooth'}); }
-async function deleteUser(id){ if(!confirm('Delete this user? This cannot be undone.')) return; try{ await rtdb.ref('users/'+id).remove(); document.getElementById('saveMsg').innerHTML='<div class="ok">✅ User deleted.</div>'; }catch(e){ document.getElementById('saveMsg').innerHTML='<div class="warn">❌ Delete failed: '+e.message+'</div>'; } }
-async function saveUser(){
-  var name=document.getElementById('fName').value.trim(); var email=document.getElementById('fEmail').value.trim().toLowerCase(); var pass=document.getElementById('fPass').value; var role=document.getElementById('fRole').value; var rank=document.getElementById('fRank').value; var sid=document.getElementById('fSchoolId').value.trim().toUpperCase(); var sname=document.getElementById('fSchoolName').value.trim().toUpperCase(); var cls=document.getElementById('fClass').value.trim().toUpperCase(); var subj=document.getElementById('fSubject').value.trim().toUpperCase(); var editId=document.getElementById('fEditId').value;
-  var msg=document.getElementById('saveMsg');
-  if(!name||!email||!role||!rank||!sid||!sname){ msg.innerHTML='<div class="warn">❌ Fill Name, Email, Role, Rank, School ID, School Name.</div>'; return; }
-  if(!editId && (!pass||pass.length<6)){ msg.innerHTML='<div class="warn">❌ New user needs Password 6+ chars.</div>'; return; }
-  if(pass && pass.length<6){ msg.innerHTML='<div class="warn">❌ Password must be 6+ chars.</div>'; return; }
-  if(role==='SUPER_ADMIN' && myRole!=='SUPER_ADMIN'){ msg.innerHTML='<div class="warn">❌ Only Super Admin can create Super Admin.</div>'; return; }
-  // Auto-check Rank matches Role
-  var map={PRINCIPAL:'1',TEACHER:'2',LIBRARIAN:'3',HOD:'4',ADMIN:'5',SUPER_ADMIN:'6'};
-  if(map[role] && map[role]!==String(rank)){ if(!confirm('⚠️ Rank '+rank+' does NOT match Role '+role+' (should be '+map[role]+'). Save anyway?')) return; }
-  msg.innerHTML='<div class="info">⏳ Saving...</div>';
-  try{
-    // Create Auth user if new — If email already exists in Auth, we still save to DB
-    if(!editId && firebaseOK){ try{ await firebase.auth().createUserWithEmailAndPassword(email, pass); }catch(ae){ if(ae.code!=='auth/email-already-in-use'){ /* still save to DB */ } } }
-    var data={name:name,email:email,role:role,rank:parseInt(rank),schoolId:sid,schoolName:sname,className:cls,subject:subj,createdAt:Date.now(),createdBy:user.email};
-    if(pass) data.password=pass;
-    if(editId){ var old=allUsers[editId]||{}; if(!pass && old.password) data.password=old.password; if(!pass) data.password=old.password||''; await rtdb.ref('users/'+editId).update(data); }
-    else { var ref=rtdb.ref('users').push(); await ref.set(data); }
-    msg.innerHTML='<div class="ok">✅ User saved: <b>'+name.toUpperCase()+'</b> — '+role+' — RANK '+rank+' — Login Email: '+email+'</div>';
-    clearForm();
-  }catch(e){ msg.innerHTML='<div class="warn">❌ Save failed: '+e.message+' — Check Firebase is Live (Phone Data) and try again.</div>'; }
-}
-if(!firebaseOK){ document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Logged in — ❌ Firebase BLOCKED — Turn OFF WiFi, use Phone Data, reload.'; document.getElementById('usersBody').innerHTML='<tr><td colspan="5">❌ Firebase blocked — Turn OFF WiFi, use Phone Data.</td></tr>'; }
-else {
-  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Firebase Loaded — Loading users...';
-  rtdb.ref('users').on('value', function(snap){ allUsers=snap.val()||{}; renderUsers(); document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Firebase Live Data Loaded ✅'; }, function(e){ document.getElementById('debugBox').innerHTML='🔍 DEBUG: ❌ Load failed: '+e.message; });
-}
+renderUsers(); updateSel();
 </script></body></html>
