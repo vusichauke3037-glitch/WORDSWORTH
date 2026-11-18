@@ -19,11 +19,11 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 @media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>👩‍🏫 TEACHER / EDUCATOR DASHBOARD — MAKHANANI LTSM 2.0 — V2.23</h1><p>EDUCATOR = TEACHER — RANK 2 — ISSUE + REQUEST TEXTBOOK — MY CLASSES ONLY</p>
+<header><h1>👩‍🏫 TEACHER / EDUCATOR DASHBOARD — MAKHANANI LTSM 2.0 — V2.23</h1><p>TEACHER = EDUCATOR — RANK 2 — ISSUE + REQUEST TEXTBOOK — MY CLASSES A TO J ONLY</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 </header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I — Educator</h2>
+<div class="card"><h2>👤 Who Am I — Teacher / Educator</h2>
 <div class="info" id="whoAmI">Loading...</div>
 <div class="warn" id="viewOnly" style="display:none"></div>
 <div class="ok" id="debug">DEBUG: Checking...</div>
@@ -32,7 +32,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 <div class="card"><h2>📊 My KPIs — My Classes Only</h2>
 <div class="row"><div class="kpi">My Requests<b id="kReq">0</b></div><div class="kpi">Pending<b id="kPend">0</b></div><div class="kpi">Approved<b id="kAppr">0</b></div><div class="kpi">Issued<b id="kIss">0</b></div></div></div>
 
-<div class="card" id="requestCard"><h2>📝 REQUEST TEXTBOOK — Educator Request — Dropdowns Only, No Typing</h2>
+<div class="card" id="requestCard"><h2>📝 REQUEST TEXTBOOK — Teacher / Educator — Dropdowns Only, No Typing</h2>
 <div class="info">Request goes to <b>HOD for YOUR subject</b> → HOD Approves → You can then Issue. Pick from dropdowns below.</div>
 
 <label>📚 Book Title * — Pick from Dropdown</label>
@@ -53,7 +53,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 <select id="reqSubject"><option value="">-- Pick Subject --</option>
 <option>MATHS</option><option>ENGLISH</option><option>AFRIKAANS</option><option>PHYSICAL SCIENCES</option><option>LIFE SCIENCES</option><option>ACCOUNTING</option><option>BUSINESS STUDIES</option><option>GEOGRAPHY</option><option>HISTORY</option><option>LIFE ORIENTATION</option></select>
 
-<label>🏫 Class / Grade * — Pick from Dropdown — ONLY YOUR Assigned Classes Show</label>
+<label>🏫 Class / Grade * — Pick from Dropdown — ONLY YOUR Assigned Classes A to J Show</label>
 <select id="reqClass"><option value="">-- Pick Class --</option></select>
 <div class="info" id="myClassesInfo">Your classes: Loading...</div>
 
@@ -63,17 +63,17 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 <div id="reqMsg"></div>
 <div class="row"><button class="btn btn-green" id="reqBtn" onclick="submitRequest()">📝 SUBMIT REQUEST → HOD</button></div></div>
 
-<div class="card"><h2>📋 MY REQUESTS — Educator Can See All Hers Here</h2>
+<div class="card"><h2>📋 MY REQUESTS — Teacher Can See All Hers Here</h2>
 <div class="info">Every request YOU submit appears here instantly.</div>
 <div id="reqList"></div>
 <div class="row"><button class="btn btn-grey" onclick="loadRequests()">🔄 REFRESH MY REQUESTS</button></div></div>
 
-<div class="card"><h2>📖 ISSUE BOOK — Educator — After HOD Approves</h2>
+<div class="card"><h2>📖 ISSUE BOOK — Teacher / Educator — After HOD Approves</h2>
 <div class="info">Only Approved requests can be Issued. If HOD has not approved yet, you will see PENDING above.</div>
 <label>Learner Name *</label><input id="issLearner" placeholder="e.g. THABO MOKOENA">
 <label>Book Title * — Dropdown</label><select id="issBook"><option value="">-- Pick Textbook To Issue --</option>
 <option>MATHS GRADE 10 TEXTBOOK</option><option>ENGLISH GRADE 10 TEXTBOOK</option><option>PHYSICAL SCIENCES GRADE 10 TEXTBOOK</option><option>LIFE SCIENCES GRADE 10 TEXTBOOK</option><option>ACCOUNTING GRADE 10 TEXTBOOK</option><option>GEOGRAPHY GRADE 10 TEXTBOOK</option><option>HISTORY GRADE 10 TEXTBOOK</option></select>
-<label>Class * — Dropdown — Only Your Classes</label><select id="issClass"><option value="">-- Pick Class --</option></select>
+<label>Class * — Dropdown — Only Your Classes A to J</label><select id="issClass"><option value="">-- Pick Class --</option></select>
 <div id="issMsg"></div>
 <div class="row"><button class="btn btn-green" id="issBtn" onclick="issueBook()">📖 ISSUE BOOK</button></div></div>
 
@@ -85,31 +85,39 @@ function navBack(){ if(window.history.length>1) window.history.back(); else wind
 var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
 var _role=_u?String(_u.role||'').toUpperCase():''; var _rank=_u?Number(_u.rank||0):0;
 var _isViewOnly = (_role==='SUPER_ADMIN' && _rank===6);
-// Educator = Teacher — Both use same page
 var _isEducator = (_role==='TEACHER' && _rank===2);
+// CLASSES A TO J — Grade 8 to 12 — All 50
+function allClassesAJ(){
+  var a=[]; var letters=['A','B','C','D','E','F','G','H','I','J']; var grades=['8','9','10','11','12'];
+  grades.forEach(function(g){ letters.forEach(function(l){ a.push(g+l); }); });
+  return a;
+}
 try{
   if(_u && _u.email){
     var _cls = _u.classes || (_u.className ? _u.className.split(',').map(function(s){return s.trim();}) : [_u.class || '10A']);
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — EDUCATOR / TEACHER — RANK '+_rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Classes: <b>'+_cls.join(', ')+'</b> — Subject: '+String(_u.subject||'ALL')+' — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
+    // If user has ALL, expand to all 50 A-J
+    if(_cls.length===1 && _cls[0]==='ALL') _cls = allClassesAJ();
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — TEACHER / EDUCATOR — RANK '+_rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Classes: <b>'+_cls.join(', ')+'</b> — Subject: '+String(_u.subject||'ALL')+' — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
     document.getElementById('myClassesInfo').innerHTML='Your classes: <b>'+_cls.join(', ')+'</b> — These are the only classes in the dropdown below. Set in Users by Super Admin.';
-    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live Data Loaded ✅ — Educator: '+String(_u.email||'');
-    // Fill Class dropdowns — ONLY this educator's assigned classes
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live Data Loaded ✅ — Teacher / Educator: '+String(_u.email||'');
     var _rc=document.getElementById('reqClass'); var _ic=document.getElementById('issClass');
     _rc.innerHTML='<option value="">-- Pick Class --</option>'; _ic.innerHTML='<option value="">-- Pick Class --</option>';
-    _cls.forEach(function(c){ if(c==='ALL'){ ['8A','8B','9A','9B','10A','10B','11A','11B','12A','12B'].forEach(function(cc){ var o1=document.createElement('option'); o1.value=cc; o1.textContent=cc; _rc.appendChild(o1); var o2=document.createElement('option'); o2.value=cc; o2.textContent=cc; _ic.appendChild(o2); }); return; } var o1=document.createElement('option'); o1.value=c; o1.textContent=c; _rc.appendChild(o1); var o2=document.createElement('option'); o2.value=c; o2.textContent=c; _ic.appendChild(o2); });
-    // Auto-set subject to educator's subject
+    _cls.forEach(function(c){
+      var o1=document.createElement('option'); o1.value=c; o1.textContent=c; _rc.appendChild(o1);
+      var o2=document.createElement('option'); o2.value=c; o2.textContent=c; _ic.appendChild(o2);
+    });
     if(_u.subject && _u.subject!=='ALL') document.getElementById('reqSubject').value=_u.subject;
   } else { document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; document.getElementById('debug').innerHTML='DEBUG: ❌ Not logged in'; }
 }catch(e){ document.getElementById('whoAmI').innerHTML='Error: '+e.message; }
 if(_isViewOnly){
   document.getElementById('viewOnly').style.display='block';
-  document.getElementById('viewOnly').innerHTML='👀 <b>VIEW-ONLY MODE</b> — You are SUPER_ADMIN — Only a real EDUCATOR / TEACHER can Request / Issue. Login as Educator to Request.';
+  document.getElementById('viewOnly').innerHTML='👀 <b>VIEW-ONLY MODE</b> — You are SUPER_ADMIN — Only a real TEACHER / EDUCATOR can Request / Issue. Login as Teacher to Request.';
   document.getElementById('reqBtn').disabled=true; document.getElementById('issBtn').disabled=true;
 }
 function getReqs(){ try{ return JSON.parse(localStorage.getItem('makhanani_requests')||'[]'); }catch(e){ return []; } }
 function saveReqs(a){ localStorage.setItem('makhanani_requests', JSON.stringify(a)); }
 function submitRequest(){
-  if(_isViewOnly){ document.getElementById('reqMsg').innerHTML='<div class="warn">⛔ View-Only — Login as EDUCATOR / TEACHER to Request.</div>'; return; }
+  if(_isViewOnly){ document.getElementById('reqMsg').innerHTML='<div class="warn">⛔ View-Only — Login as TEACHER / EDUCATOR to Request.</div>'; return; }
   var title=document.getElementById('reqTitle').value, subj=document.getElementById('reqSubject').value, cls=document.getElementById('reqClass').value, qty=document.getElementById('reqQty').value, note=document.getElementById('reqNote').value.trim();
   if(!title||!subj||!cls||!qty){ document.getElementById('reqMsg').innerHTML='<div class="warn">❌ Pick Book Title + Subject + Class + Quantity from Dropdowns.</div>'; return; }
   var all=getReqs();
@@ -136,7 +144,7 @@ function loadRequests(){
   document.getElementById('reqList').innerHTML=h;
 }
 function issueBook(){
-  if(_isViewOnly){ document.getElementById('issMsg').innerHTML='<div class="warn">⛔ View-Only — Login as EDUCATOR / TEACHER to Issue.</div>'; return; }
+  if(_isViewOnly){ document.getElementById('issMsg').innerHTML='<div class="warn">⛔ View-Only — Login as TEACHER / EDUCATOR to Issue.</div>'; return; }
   var l=document.getElementById('issLearner').value.trim(), b=document.getElementById('issBook').value, c=document.getElementById('issClass').value;
   if(!l||!b||!c){ document.getElementById('issMsg').innerHTML='<div class="warn">❌ Fill Learner + Pick Book + Pick Class from Dropdowns.</div>'; return; }
   document.getElementById('issMsg').innerHTML='<div class="ok">✅ Issued: <b>'+b+'</b> to '+l+' — Class: '+c+' — Recorded.</div>';
