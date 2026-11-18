@@ -1,42 +1,142 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Login - Makhanani LTSM</title>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login - Makhanani LTSM 2.0 - V2.30</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
-    authDomain: "makhanani-ltsm.firebaseapp.com",
-    databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
-    projectId: "makhanani-ltsm",
-    storageBucket: "makhanani-ltsm.firebasestorage.app",
-    messagingSenderId: "247180363183",
-    appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
-    measurementId: "G-PEST1XFCR8"
-  };
+  const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
+  const auth = firebase.auth(); const db = firebase.database();
+  function toArray(v){ if(!v) return []; if(Array.isArray(v)) return v; if(typeof v==='string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;}); return []; }
+  function getPhase(g){ g=Number(String(g||'').replace(/[^0-9]/g,'')); if(g>=4&&g<=6) return 'INTERMEDIATE PHASE'; if(g>=7&&g<=9) return 'SENIOR PHASE'; if(g>=10&&g<=12) return 'FET PHASE'; return ''; }
 </script>
-<style>body{margin:0;font-family:Arial;background:#0f172a;color:#0a1f4d}.card{max-width:420px;margin:40px auto;background:#fff;border-radius:12px;padding:20px}input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;margin-top:12px;font-size:16px;font-weight:700}button{width:100%;padding:14px;border:none;border-radius:8px;background:#0a1f4d;color:#fff;font-weight:900;margin-top:14px;cursor:pointer}.ok{background:#dcfce7;padding:10px;border-radius:8px;margin-top:10px}.warn{background:#fee2e2;padding:10px;border-radius:8px;margin-top:10px}</style>
-</head><body><div class="card"><h2>🔐 MAKHANANI LTSM — LOGIN — FIREBASE</h2>
-<div id="status" style="font-size:12px;background:#fef3c7;padding:8px;border-radius:6px">Checking Firebase...</div>
-<input id="email" placeholder="Email — Use vusichauke3037@gmail.com">
-<input id="pass" type="password" placeholder="Password">
-<div id="msg"></div><button onclick="doLogin()">LOGIN →</button></div>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:12px}
+.wrap{width:100%;max-width:460px}.logo{text-align:center;color:#fff;margin-bottom:12px}.logo h1{margin:0;font-size:24px;line-height:1.3}.logo p{margin:6px 0 0;font-size:12px;color:#d4af37}
+.card{background:#fff;border-radius:14px;padding:20px}
+h2{margin:0 0 6px;font-size:18px;text-align:center}label{font-weight:900;font-size:13px;display:block;margin-top:14px}
+input,select{width:100%;padding:15px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
+.btn{border:none;border-radius:8px;padding:14px 12px;font-weight:900;cursor:pointer;font-size:14px;width:100%}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-gold{background:#d4af37;color:#0a1f4d}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:12px}
+.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:12px}
+.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:12px}
+.row{display:flex;gap:10px;margin-top:12px}.row>*{flex:1}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}
+.phase-box{border-radius:10px;padding:8px;font-size:11px;line-height:1.6;border:2px solid #e2e8f0;text-align:center}.phase-int{background:#dcfce7;border-color:#22c55e}.phase-sen{background:#dbeafe;border-color:#3b82f6}.phase-fet{background:#ffedd5;border-color:#ea580c}
+.small{font-size:11px;color:#64748b;text-align:center;margin-top:10px;line-height:1.6}
+.eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer}
+</style></head>
+<body>
+<div class="wrap">
+<div class="logo"><h1>🏫 MAKHANANI LTSM 2.0</h1><p>WORDSWORTH HIGH SCHOOL • CAPS • GRADE 4 TO 12 • FIREBASE V2.30</p><p>4-6 INTERMEDIATE • 7-9 SENIOR PHASE • 10-12 FET</p></div>
+<div class="card">
+<h2>🔐 LOGIN</h2><p style="text-align:center;font-size:12px;color:#64748b;margin:4px 0 0">Use Email + Password given by Super Admin / Principal</p>
+<label>Email *</label><input id="email" type="email" placeholder="e.g. nkambule@wordsworth.co.za" autocomplete="email">
+<label>Password *</label><div style="position:relative"><input id="password" type="password" placeholder="Your password" autocomplete="current-password"><button type="button" class="eye" onclick="togglePass()">👁️</button></div>
+<label style="display:flex;align-items:center;gap:8px;font-weight:700"><input id="remember" type="checkbox" checked style="width:auto;padding:0"> Keep me logged in on this device</label>
+<div id="msg"></div>
+<div class="row"><button class="btn btn-green" id="loginBtn" onclick="doLogin()">🔐 LOGIN →</button></div>
+<div class="row"><button class="btn btn-grey" onclick="go('index.html')">🏠 HOME</button><button class="btn btn-gold" onclick="go('manuals.html')">📖 MANUALS</button></div>
+<div class="info" id="whoBox" style="display:none"></div>
+<div class="row" id="goBtns" style="display:none"></div>
+<div class="warn" id="forgotBox" style="display:none"></div>
+</div>
+<div class="card" style="margin-top:12px">
+<h2 style="font-size:14px">📚 CAPS PHASES — CORRECT</h2>
+<div class="row">
+<div class="phase-box phase-int"><b>📗 INTERMEDIATE</b><br>GRADES 4-6<br>4A-12J? No — 4A-6J</div>
+<div class="phase-box phase-sen"><b>📘 SENIOR PHASE</b><br>GRADES 7-9<br>7A-9J</div>
+<div class="phase-box phase-fet"><b>📙 FET</b><br>GRADES 10-12<br>10A-12J</div>
+</div>
+<div class="info"><b>After Login You Go To:</b><br>👩‍🏫 TEACHER → <b>teacher.html</b><br>📚 HOD → <b>hod.html</b><br>📖 LIBRARIAN → <b>librarian.html</b><br>🏫 PRINCIPAL → <b>principal.html</b><br>👑 SUPER_ADMIN → <b>index.html</b> (then USERS)</div>
+<div class="small">No account? Ask Super Admin / Principal to create you in USERS page.<br>Do NOT create account yourself — You will have no Subjects / Classes.<br>V2.30 • Firebase Live • If page looks old, add <b>?v=999</b> to URL</div>
+</div>
+</div>
 <script>
-document.getElementById('status').innerHTML = (typeof auth !== 'undefined' ? '✅ Firebase Loaded — auth OK' : '❌ Firebase NOT loaded — Check internet');
-async function doLogin(){
-  var email=document.getElementById('email').value.trim().toLowerCase(); var pass=document.getElementById('pass').value; var msg=document.getElementById('msg');
-  if(!email||!pass){ msg.innerHTML='<div class="warn">Fill Email + Password</div>'; return; }
-  try{
-    var cred = await auth.signInWithEmailAndPassword(email, pass);
-    var snap = await db.ref('users/'+cred.user.uid).once('value'); var u = snap.val();
-    if(!u){ msg.innerHTML='<div class="warn">❌ Logged in to Auth, but NO profile in Database for UID: '+cred.user.uid+' — Add this UID to Database users node.</div>'; return; }
-    u.uid = cred.user.uid; u.email = email; localStorage.setItem('makhanani_user', JSON.stringify(u));
-    msg.innerHTML='<div class="ok">✅ Welcome '+u.name+' — '+u.role+' Rank '+u.rank+' — UID: '+u.uid+'</div>';
-    var map = {TEACHER:'teacher.html', LIBRARIAN:'librarian.html', HOD:'hod.html', PRINCIPAL:'principal.html', SUPER_ADMIN:'index.html'};
-    setTimeout(function(){ window.location.href = map[u.role] || 'index.html'; }, 800);
-  }catch(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
+function go(p){ window.location.href=p; }
+function togglePass(){ var p=document.getElementById('password'); p.type = p.type==='password' ? 'text' : 'password'; }
+function getRedirect(role){
+  if(role==='TEACHER') return 'teacher.html';
+  if(role==='HOD') return 'hod.html';
+  if(role==='LIBRARIAN') return 'librarian.html';
+  if(role==='PRINCIPAL') return 'principal.html';
+  if(role==='SUPER_ADMIN') return 'index.html';
+  return 'index.html';
 }
+function getRoleLabel(role){
+  if(role==='TEACHER') return '👩‍🏫 TEACHER';
+  if(role==='HOD') return '📚 HOD';
+  if(role==='LIBRARIAN') return '📖 LIBRARIAN';
+  if(role==='PRINCIPAL') return '🏫 PRINCIPAL';
+  if(role==='SUPER_ADMIN') return '👑 SUPER_ADMIN';
+  return role;
+}
+async function doLogin(){
+  var email=document.getElementById('email').value.trim().toLowerCase();
+  var pass=document.getElementById('password').value;
+  var msg=document.getElementById('msg');
+  if(!email||!pass){ msg.innerHTML='<div class="warn">❌ Enter Email + Password.</div>'; return; }
+  var btn=document.getElementById('loginBtn'); btn.disabled=true; btn.textContent='LOGGING IN...';
+  msg.innerHTML='<div class="info">Connecting to Firebase...</div>';
+  try{
+    var cred=await auth.signInWithEmailAndPassword(email,pass);
+    var snap=await db.ref('users/'+cred.user.uid).once('value');
+    var d=snap.val();
+    if(!d){
+      msg.innerHTML='<div class="warn">❌ Login OK in Auth, but NO profile in Database (users/'+cred.user.uid+'). Ask Super Admin to create your profile in USERS page with this exact email. You are logged in, but no Role / Subjects / Classes.</div>';
+      btn.disabled=false; btn.textContent='🔐 LOGIN →';
+      document.getElementById('whoBox').style.display='block'; document.getElementById('whoBox').innerHTML='UID: <b>'+cred.user.uid+'</b><br>Email: <b>'+email+'</b><br>Give this UID + Email to Super Admin.';
+      return;
+    }
+    var subjects=toArray(d.subjects||d.subject); var classes=toArray(d.classes||d.className||d.class); var grades=toArray(d.grades||d.grade);
+    if(classes.length===1 && classes[0]==='ALL'){ classes=[]; ['4','5','6','7','8','9','10','11','12'].forEach(function(g){ ['A','B','C','D','E','F','G','H','I','J'].forEach(function(l){ classes.push(g+l); }); }); grades=['4','5','6','7','8','9','10','11','12']; }
+    if(!grades.length && classes.length){ var gs=[]; classes.forEach(function(c){ var gr=c.replace(/[A-J]$/,''); if(!gs.includes(gr)) gs.push(gr); }); grades=gs.sort(function(a,b){return Number(a)-Number(b);}); }
+    var phases=[...new Set(grades.map(function(g){return getPhase(g);}))].filter(function(x){return x;});
+    // Save for other pages (fallback if Firebase read fails)
+    try{ localStorage.setItem('makhanani_user', JSON.stringify({ uid:cred.user.uid, name:d.name, email:email, role:d.role, rank:d.rank, subjects:subjects, classes:classes, grades:grades, phases:phases, schoolName:d.schoolName, schoolCode:d.schoolCode })); }catch(e){}
+    var dest=getRedirect(d.role);
+    msg.innerHTML='<div class="ok">✅ Welcome <b>'+String(d.name||'').toUpperCase()+'</b> — '+getRoleLabel(d.role)+' — RANK '+d.rank+'</div>';
+    var box=document.getElementById('whoBox'); box.style.display='block';
+    box.innerHTML='✅ <b>'+String(d.name||'').toUpperCase()+'</b> — '+d.role+' — RANK '+d.rank+' — '+String(d.schoolName||'')+'<br>CAPS Subjects: '+subjects.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+'<br>Grades: <b>'+grades.join(', ')+'</b> — Phases: <b>'+phases.join(' • ')+'</b><br>Classes: <b>'+classes.join(', ')+'</b><br>Going to: <b>'+dest+'</b> in 1.5 sec...';
+    var gb=document.getElementById('goBtns'); gb.style.display='flex';
+    gb.innerHTML='<button class="btn btn-green" onclick="go(\''+dest+'\')">GO NOW → '+getRoleLabel(d.role)+'</button><button class="btn btn-grey" onclick="go(\'index.html\')">🏠 HOME</button>';
+    setTimeout(function(){ window.location.href=dest; }, 1500);
+  }catch(e){
+    var txt=e.message||'Login failed';
+    if(e.code==='auth/user-not-found' || e.code==='auth/invalid-credential') txt='❌ Wrong Email or Password — Or no account with this email. Ask Super Admin to create you in USERS.';
+    if(e.code==='auth/wrong-password') txt='❌ Wrong Password for this email.';
+    if(e.code==='auth/too-many-requests') txt='❌ Too many tries — Wait 5 mins, then try again.';
+    if(e.code==='auth/invalid-email') txt='❌ Email format wrong — e.g. name@wordsworth.co.za';
+    msg.innerHTML='<div class="warn">'+txt+'</div>';
+    document.getElementById('forgotBox').style.display='block';
+    document.getElementById('forgotBox').innerHTML='Forgot password? Ask Super Admin to reset it in Firebase Console → Authentication → Users → Reset. Or tap below to send reset email to the email above.<br><br><button class="btn btn-grey" onclick="resetPass()" style="width:auto;padding:8px 12px">📧 SEND RESET EMAIL</button>';
+    btn.disabled=false; btn.textContent='🔐 LOGIN →';
+  }
+}
+async function resetPass(){
+  var email=document.getElementById('email').value.trim().toLowerCase();
+  if(!email){ alert('Type your Email first.'); return; }
+  try{ await auth.sendPasswordResetEmail(email); alert('✅ Reset email sent to '+email+' — Check Inbox / Spam.'); }
+  catch(e){ alert('❌ '+e.message); }
+}
+// Enter key = Login
+document.getElementById('password').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+document.getElementById('email').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+// If already logged in, show who + Go button
+auth.onAuthStateChanged(async function(u){
+  if(!u) return;
+  try{
+    var snap=await db.ref('users/'+u.uid).once('value'); var d=snap.val(); if(!d) return;
+    var subjects=toArray(d.subjects||d.subject); var grades=toArray(d.grades||d.grade);
+    var phases=[...new Set(grades.map(function(g){return getPhase(g);}))].filter(function(x){return x;});
+    var box=document.getElementById('whoBox'); box.style.display='block';
+    box.innerHTML='🔓 Already logged in as <b>'+String(d.name||'').toUpperCase()+'</b> — '+getRoleLabel(d.role)+' — RANK '+d.rank+'<br>Subjects: '+subjects.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+' — Phases: <b>'+phases.join(' • ')+'</b>';
+    var gb=document.getElementById('goBtns'); gb.style.display='flex';
+    var dest=getRedirect(d.role);
+    gb.innerHTML='<button class="btn btn-green" onclick="go(\''+dest+'\')">CONTINUE → '+getRoleLabel(d.role)+'</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button>';
+    document.getElementById('msg').innerHTML='<div class="ok">✅ Already logged in — Tap CONTINUE.</div>';
+  }catch(e){}
+});
+async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.reload(); }
 </script></body></html>
