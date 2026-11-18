@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Librarian - Makhanani LTSM 2.0</title>
+<title>Librarian Dashboard - Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
@@ -9,304 +10,235 @@ header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-
 header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
 .wrap{max-width:1100px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer}
-input{cursor:text}.btn{border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:12px}.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-pink{background:#db2777;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-blue{background:#2563eb;color:#fff}
-.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}
+input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
+.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-blue{background:#2563eb;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}.kpi b{font-size:22px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
-.pill{display:inline-block;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:900}.pill-available{background:#dcfce7;color:#166534}.pill-issued{background:#dbeafe;color:#1e40af}.pill-lost{background:#fee2e2;color:#991b1b}.pill-damaged{background:#fef3c7;color:#92400e}
-.phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.phase-card{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer;border:3px solid transparent}.phase-card.active{border-color:#d4af37;background:#fef3c7}.phase-card b{font-size:16px;display:block}.phase-card span{font-size:12px;color:#64748b;font-weight:700}
-.format-box{background:#f0fdfa;border:2px solid #0d9488;border-radius:8px;padding:12px;margin-top:10px;font-size:13px;line-height:1.7}
-@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.phase-grid{grid-template-columns:1fr}.row{flex-direction:column}}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}.kpi b{font-size:22px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.tile{background:#fff;border-radius:12px;padding:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);border-top:6px solid #7c3aed}.tile b{font-size:16px;display:block}.tile span{font-size:12px;color:#64748b;line-height:1.5}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
+@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>📚 LIBRARIAN — MAKHANANI LTSM 2.0</h1><p>STOCK + ISSUE / RETURN — ALL SUBJECTS — GRADES 4-12 — CLASSES 4A TO 12J — A TO J</p>
+<header><h1>📚 LIBRARIAN DASHBOARD — MAKHANANI LTSM 2.0 — V2.18</h1><p>LIBRARIAN ONLY — STOCK + BARCODE + ISSUES + RETURNS — RETRIEVAL % — MY SCHOOL ONLY</p>
 <div id="taskbar"></div><script src="nav.js"></script>
-<script>guardPage(2,'Librarian');</script>
+<script>guardPage(3,'Librarian Dashboard');</script>
 </header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I</h2><div class="info" id="roleInfo">Loading...</div></div>
-<div class="kpi"><div><b id="kpiTotal">0</b><span>📚 TOTAL BOOKS</span></div><div><b id="kpiAvail">0</b><span>✅ AVAILABLE</span></div><div><b id="kpiIssued">0</b><span>📕 ISSUED</span></div><div><b id="kpiLost">0</b><span>❌ LOST + DAMAGED</span></div></div>
+<div class="card"><h2>👤 Who Am I — Librarian Only</h2><div class="info" id="roleInfo">Loading...</div>
+<div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 OPEN MANUALS → LIBRARIAN MANUAL</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-gold" onclick="go('subscriptions.html')">💰 SUBSCRIPTIONS →</button></div></div>
 
-<div class="card"><h2>🔢 Number Formats — Locked</h2><div class="format-box" id="formatBox">Loading...</div><div class="row"><button class="btn btn-purple" onclick="go('barcode.html')" style="text-align:center">🖨️ GO TO BARCODE PRINT → A4 3x5</button><button class="btn btn-teal" onclick="go('stock.html')" style="text-align:center">📦 GO TO STOCK → BULK ADD</button><button class="btn btn-green" onclick="go('teacher.html')" style="text-align:center">👩‍🏫 GO TO TEACHER → ISSUE</button></div></div>
+<!-- ===== KPI — 6 CARDS — WITH RETRIEVAL % ===== -->
+<div class="kpi"><div><b id="kpiUsers">0</b><span>👥 TOTAL USERS</span></div><div><b id="kpiBooks">0</b><span>📚 TOTAL BOOKS</span></div><div><b id="kpiLearners">0</b><span>👩‍🎓 TOTAL LEARNERS</span></div><div><b id="kpiIssues">0</b><span>📕 TOTAL ISSUED</span></div><div><b id="kpiReturned">0</b><span>✅ RETURNED</span></div><div style="border-top:4px solid #22c55e"><b id="kpiRetrieval">0%</b><span>♻️ RETRIEVAL %</span></div></div>
 
-<div class="card"><h2>🏫 Phases — Tap A Phase To Filter Stock + Issued — A To J</h2><div class="phase-grid">
-<div class="phase-card" id="phase-INTERMEDIATE" onclick="selectPhase('INTERMEDIATE')"><b>📗 INTERMEDIATE</b><span>GRADES 4-6<br>12 Subjects<br>Classes 4A-4J, 5A-5J, 6A-6J<br>30 Classes</span></div>
-<div class="phase-card" id="phase-SENIOR" onclick="selectPhase('SENIOR')"><b>📘 SENIOR</b><span>GRADES 7-9<br>5 New Subjects<br>Classes 7A-7J, 8A-8J, 9A-9J<br>30 Classes</span></div>
-<div class="phase-card" id="phase-FET" onclick="selectPhase('FET')"><b>📕 FET</b><span>GRADES 10-12<br>21 Subjects<br>Classes 10A-10J, 11A-11J, 12A-12J<br>30 Classes</span></div>
-</div><div id="phaseInfo" class="info">Tap a phase, or leave all phases to see everything.</div></div>
+<!-- ===== RETRIEVAL PERCENTAGE — V1.0 — LIBRARIAN — MY SCHOOL ONLY ===== -->
+<div class="card"><h2>♻️ Retrieval Percentage — Books Returned / Books Issued — My School Only</h2>
+<div class="info" id="retrievalInfo">Loading retrieval...</div>
+<div class="info" style="background:#e2e8f0;padding:4px;border-radius:8px"><div id="retrievalBar" style="background:#22c55e;height:22px;border-radius:6px;width:0%;text-align:center;color:#fff;font-weight:900;font-size:12px;line-height:22px">0%</div></div>
+<div class="info"><b>Formula:</b> Retrieval % = (Returned / Issued) x 100 — <b>Target:</b> 100% — <b>Good:</b> 95%+ Green — <b>Warning:</b> 85-94% Orange — <b>Bad:</b> Below 85% Red — Librarian must chase Still Out books every Friday.</div>
+<div class="row"><button class="btn btn-green" onclick="loadRetrieval()">🔄 REFRESH RETRIEVAL %</button><button class="btn btn-gold" onclick="go('principal.html')">👑 PRINCIPAL — SEE BY CLASS →</button></div>
+<div id="stillOutList"></div></div>
+<div class="card"><h2>♻️ Retrieval % By Class — Which Class Returns Books?</h2><div id="retrievalByClass">Loading...</div><div class="row"><button class="btn btn-green" onclick="loadRetrievalByClass()">🔄 REFRESH BY CLASS</button></div></div>
 
-<div class="card"><h2>📷 Scan Book / Learner — Auto Fill — Fastest</h2><div class="row"><button class="btn btn-blue" onclick="startScan('book')">📷 SCAN BOOK → FILL BARCODE</button><button class="btn btn-pink" onclick="startScan('learner')">📷 SCAN LEARNER → FILL LEARNER ID</button><button class="btn btn-grey" onclick="stopScan()">✖️ STOP CAMERA</button></div><div id="scanBox" style="display:none;margin-top:10px"><video id="scanVideo" playsinline style="width:100%;border-radius:8px;background:#000"></video></div><div class="info" id="scanMsg">Tap SCAN BOOK, point camera at WHS000001 barcode — It fills Barcode box. Tap SCAN LEARNER, point at 4J001 — It fills Learner ID box.</div></div>
+<!-- ===== ISSUE BOOK ===== -->
+<div class="card"><h2>📕 Issue Book To Learner — Scan / Type</h2>
+<div class="info">Librarian issues book to learner by Learner ID + Book ID / Barcode. Book must exist in Stock. Learner must exist in Learners.</div>
+<label>Learner ID — e.g. L001</label><input id="iLearnerId" placeholder="L001">
+<label>Learner Name — Auto-fills if learner exists</label><input id="iLearnerName" placeholder="THABO MOKOENA">
+<label>Class — e.g. 4A</label><input id="iClass" placeholder="4A">
+<label>Book ID / Barcode — e.g. BK001 / Scan</label><input id="iBookId" placeholder="BK001">
+<label>Book Title</label><input id="iBookTitle" placeholder="MATHS GRADE 4">
+<div class="row"><button class="btn btn-green" onclick="issueBook()">📕 ISSUE BOOK</button><button class="btn btn-gold" onclick="findLearner()">🔍 FIND LEARNER</button><button class="btn btn-blue" onclick="findBook()">🔍 FIND BOOK</button></div>
+<div id="issueMsg"></div></div>
 
-<div class="card"><h2>📦 Add Book — Auto Book Number — Leave Barcode Blank</h2><div class="info" id="addBookMsg"></div>
-<div class="row"><div><label>📚 Subject — ALL CAPS — Intermediate To FET</label><select id="bookSubject"></select></div><div><label>🎓 Grade — 4 To 12</label><select id="bookGrade"><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option></select></div><div><label>📚 Title — ALL CAPS — Auto From Subject + Grade</label><input id="bookTitle" placeholder="e.g. MATHEMATICS GRADE 10"></div></div>
-<div class="row"><div><label>🔢 Qty — 1 To 20</label><input id="bookQty" type="number" value="1" min="1" max="20"></div><div><label>🔢 Barcode — Leave Blank = Auto (WHS000001) — Or Type Your Own</label><input id="bookBarcode" placeholder="Leave blank = auto"></div><div><label>🏫 Condition — Optional</label><select id="bookCondition"><option>GOOD</option><option>NEW</option><option>FAIR</option></select></div></div>
-<div class="row"><button class="btn btn-green" onclick="addBook()">📦 ADD BOOK → AUTO BARCODE</button><button class="btn btn-purple" onclick="addBookAndPrint()">📦 + 🖨️ ADD + PRINT BARCODE →</button><button class="btn btn-grey" onclick="clearBookForm()">🧹 CLEAR</button></div></div>
+<!-- ===== RETURN / LOST ===== -->
+<div class="card"><h2>✅ Return Book / ❌ Mark Lost</h2>
+<div class="info">To return: Type Issue ID OR Learner ID + Book ID → Tap RETURN. To mark lost: Tap MARK LOST — Retrieval % will drop — Principal sees it.</div>
+<label>Issue ID — From Issues Table Below — OR Learner ID + Book ID</label><input id="rIssueId" placeholder="Issue ID or L001 + BK001">
+<label>Learner ID — For Return By Learner + Book</label><input id="rLearnerId" placeholder="L001">
+<label>Book ID — For Return By Learner + Book</label><input id="rBookId" placeholder="BK001">
+<div class="row"><button class="btn btn-teal" onclick="returnBook()">✅ RETURN BOOK</button><button class="btn btn-red" onclick="markLost()">❌ MARK LOST</button><button class="btn btn-gold" onclick="loadIssues()">🔄 REFRESH ISSUES</button></div>
+<div id="returnMsg"></div></div>
 
-<div class="card"><h2>📕 Issue Book — Librarian Can Issue To ANY Class 4A-12J</h2><div class="info" id="issueMsg"></div>
-<div class="row"><div><label>🏫 Class — A To J — 4A To 12J</label><select id="issueClass" onchange="loadClassLearners()"></select></div><div><label>👤 Learner — Pick From Class — Learner ID Auto</label><select id="issueLearner"></select></div><div><label>🔢 Learner ID — e.g. 4J001 / 10J001 — Type Or Scan</label><input id="issueLearnerId" placeholder="e.g. 4J001" oninput="syncLearnerFromId()"></div></div>
-<div class="row"><div><label>📚 Subject — ALL CAPS</label><select id="issueSubject" onchange="loadAvailableBooks()"></select></div><div><label>🎓 Grade — Must = Learner Grade</label><select id="issueGrade" onchange="loadAvailableBooks()"><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option></select></div><div><label>📖 Book — Available Only — Barcode</label><select id="issueBook"></select></div></div>
-<div class="row"><div><label>🔢 Book Barcode — e.g. WHS000001 — Type Or Scan</label><input id="issueBarcode" placeholder="e.g. WHS000001" oninput="syncBookFromBarcode()"></div><div><label>🔍 Search Book / Learner — Quick Find</label><input id="quickSearch" placeholder="🔍 WHS000001 / 4J001 / Title" oninput="renderStock();renderIssued()"></div></div>
-<div class="row"><button class="btn btn-green" onclick="issueBook()">📕 CHECK + ISSUE →</button><button class="btn btn-teal" onclick="returnByIdInput()">↩️ RETURN BY BARCODE →</button><button class="btn btn-grey" onclick="clearIssueForm()">🧹 CLEAR</button></div></div>
+<!-- ===== ISSUES TABLE ===== -->
+<div class="card"><h2>📕 All Issues — My School Only — Search Still Out</h2>
+<div class="row"><input id="searchIssue" placeholder="Search Learner / Book / Class / Status..." oninput="loadIssues()"><select id="filterStatus" onchange="loadIssues()"><option value="ALL">All — Issued + Returned + Lost</option><option value="ISSUED">📕 Still Out — ISSUED Only</option><option value="RETURNED">✅ RETURNED Only</option><option value="LOST">❌ LOST Only</option></select></div>
+<div style="overflow-x:auto"><table><thead><tr><th>Issue ID</th><th>Learner</th><th>Class</th><th>Book</th><th>Status</th><th>Date Issued</th><th>Actions</th></tr></thead><tbody id="issuesBody"></tbody></table></div></div>
 
-<div class="card"><h2>📚 Stock List — Tap 🖨️ BARCODE To Print 1 Label — A4 3x5</h2>
-<div class="row"><div><label>📚 Filter Subject — ALL CAPS</label><select id="filterSubject" onchange="renderStock()"><option value="">-- ALL SUBJECTS --</option></select></div><div><label>🎓 Filter Grade — 4 To 12</label><select id="filterGrade" onchange="renderStock()"><option value="">-- ALL GRADES --</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>📊 Filter Status</label><select id="filterStatus" onchange="renderStock()"><option value="">-- ALL STATUS --</option><option>AVAILABLE</option><option>ISSUED</option><option>LOST</option><option>DAMAGED</option></select></div></div>
-<div class="info" id="stockInfo"></div>
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Barcode</th><th>Title — ALL CAPS</th><th>Subject</th><th>Grade</th><th>Status</th><th>Issued To</th><th>Actions — 🖨️ BARCODE First</th></tr></thead><tbody id="stockTable"></tbody></table></div></div>
+<!-- ===== STOCK ===== -->
+<div class="card"><h2>📚 Stock — Add Book — Barcode</h2>
+<label>Book ID / Barcode</label><input id="sBookId" placeholder="BK001">
+<label>Book Title</label><input id="sTitle" placeholder="MATHS GRADE 4">
+<label>Subject</label><input id="sSubject" placeholder="MATHS">
+<label>Grade</label><input id="sGrade" placeholder="4">
+<label>Quantity</label><input id="sQty" type="number" value="1">
+<div class="row"><button class="btn btn-blue" onclick="addStock()">📚 ADD STOCK</button><button class="btn btn-gold" onclick="loadStock()">🔄 REFRESH STOCK</button></div>
+<div id="stockMsg"></div>
+<div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>Book ID</th><th>Title</th><th>Subject</th><th>Grade</th><th>Qty</th></tr></thead><tbody id="stockBody"></tbody></table></div></div>
 
-<div class="card"><h2>📕 Issued List — Who Has What — Tap 🖨️ / 👤 To Print Barcode</h2>
-<div class="row"><div><label>🏫 Filter Class — A To J</label><select id="filterIssuedClass" onchange="renderIssued()"><option value="">-- ALL CLASSES 4A-12J --</option></select></div><div><label>📚 Filter Subject — ALL CAPS</label><select id="filterIssuedSubject" onchange="renderIssued()"><option value="">-- ALL SUBJECTS --</option></select></div><div><label>🎓 Filter Grade — 4 To 12</label><select id="filterIssuedGrade" onchange="renderIssued()"><option value="">-- ALL GRADES --</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div></div>
-<div class="info" id="issuedInfo"></div>
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Learner — ID — Class — Grade</th><th>Book — Barcode</th><th>Subject / Grade</th><th>Date</th><th>Action</th></tr></thead><tbody id="issuedTable"></tbody></table></div></div>
+<!-- ===== MY SUBSCRIPTION — LIBRARIAN — READ ONLY ===== -->
+<div class="card"><h2>💰 My Subscription — My School Only — Read Only</h2><div class="info" id="mySub">Loading subscription...</div>
+<div class="row"><button class="btn btn-gold" onclick="requestPkg('STANDARD')">📱 REQUEST UPGRADE → WhatsApp 078 023 3263</button><button class="btn btn-green" onclick="go('subscriptions.html')">💰 OPEN FULL SUBSCRIPTIONS →</button></div></div>
+
+<!-- ===== PRICE LIST ===== -->
+<div class="card" id="priceList"><h2>💰 Price List — Packages — Per School</h2>
+<div class="grid">
+<div class="tile" style="border-top-color:#0d9488;text-align:center"><b>DEMO</b><span>7 days free trial</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: FREE</div><span>Monthly: <b>FREE</b><br>Once-off: <b>FREE</b></span><div class="row"><button class="btn btn-teal" onclick="requestPkg('DEMO')">📱 REQUEST DEMO</button></div></div>
+<div class="tile" style="border-top-color:#0a1f4d;text-align:center"><b>STARTER</b><span>Starter — 1 school</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: R3 000</div><span>Monthly: <b>R350 / month</b><br>Once-off: <b>R4 500 once-off / year</b></span><div class="row"><button class="btn btn-green" onclick="requestPkg('STARTER')">📱 REQUEST STARTER</button></div></div>
+<div class="tile" style="border-top-color:#d4af37;text-align:center"><b>STANDARD</b><span>Most popular</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: R4 500</div><span>Monthly: <b>R500 / month</b><br>Once-off: <b>R7 500 once-off / year</b></span><div class="row"><button class="btn btn-gold" onclick="requestPkg('STANDARD')">📱 REQUEST STANDARD</button></div></div>
+<div class="tile" style="border-top-color:#7c3aed;text-align:center"><b>PREMIUM</b><span>Premium</span><div style="color:#0d9488;font-size:22px;font-weight:900;margin:8px 0">Setup: R5 500</div><span>Monthly: <b>R600 / month</b><br>Once-off: <b>R9 000 once-off / year</b></span><div class="row"><button class="btn btn-purple" onclick="requestPkg('PREMIUM')">📱 REQUEST PREMIUM</button></div></div>
+</div></div>
+<div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const rtdb=firebase.database();
 function toCaps(s){return String(s||'').trim().toUpperCase();}
-function pad(n,l){return String(n).padStart(l,'0');}
-function phaseOfGrade(grade){ let g=parseInt(grade,10); if(g<=6) return 'INTERMEDIATE'; if(g<=9) return 'SENIOR'; return 'FET'; }
-function phaseOfSubject(sub){ if(['NATURAL SCIENCES AND TECHNOLOGY','LIFE SKILLS'].includes(sub)) return 'INTERMEDIATE'; if(['NATURAL SCIENCES','ECONOMIC AND MANAGEMENT SCIENCES','TECHNOLOGY','CREATIVE ARTS'].includes(sub)) return 'SENIOR'; return 'FET'; }
-const SUBJECT_GROUPS=[
-  {label:'INTERMEDIATE — GRADES 4-6', phase:'INTERMEDIATE', items:['ENGLISH HOME LANGUAGE','ENGLISH FIRST ADDITIONAL LANGUAGE','AFRIKAANS HOME LANGUAGE','AFRIKAANS FIRST ADDITIONAL LANGUAGE','ISIZULU HOME LANGUAGE','ISIXHOSA HOME LANGUAGE','SESOTHO HOME LANGUAGE','SETSWANA HOME LANGUAGE','MATHEMATICS','NATURAL SCIENCES AND TECHNOLOGY','SOCIAL SCIENCES','LIFE SKILLS']},
-  {label:'SENIOR — GRADES 7-9', phase:'SENIOR', items:['NATURAL SCIENCES','ECONOMIC AND MANAGEMENT SCIENCES','TECHNOLOGY','CREATIVE ARTS','LIFE ORIENTATION']},
-  {label:'FET — GRADES 10-12', phase:'FET', items:['MATHEMATICAL LITERACY','TECHNICAL MATHEMATICS','PHYSICAL SCIENCES','TECHNICAL SCIENCES','LIFE SCIENCES','AGRICULTURAL SCIENCES','ACCOUNTING','BUSINESS STUDIES','ECONOMICS','HISTORY','GEOGRAPHY','TOURISM','CONSUMER STUDIES','COMPUTER APPLICATIONS TECHNOLOGY','INFORMATION TECHNOLOGY','ENGINEERING GRAPHICS AND DESIGN','VISUAL ARTS','DRAMATIC ARTS','MUSIC','PHYSICAL EDUCATION','RELIGION STUDIES']}
-];
-const ALL_SUBJECTS=[...new Set(SUBJECT_GROUPS.flatMap(g=>g.items))];
-const ALL_CLASSES=['4A','4B','4C','4D','4E','4F','4G','4H','4I','4J','5A','5B','5C','5D','5E','5F','5G','5H','5I','5J','6A','6B','6C','6D','6E','6F','6G','6H','6I','6J','7A','7B','7C','7D','7E','7F','7G','7H','7I','7J','8A','8B','8C','8D','8E','8F','8G','8H','8I','8J','9A','9B','9C','9D','9E','9F','9G','9H','9I','9J','10A','10B','10C','10D','10E','10F','10G','10H','10I','10J','11A','11B','11C','11D','11E','11F','11G','11H','11I','11J','12A','12B','12C','12D','12E','12F','12G','12H','12I','12J'];
+function go(page){window.location.href=page;}
 let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-let mySchoolId=user?.schoolId||'WHS';
-let mySchoolName=user?.schoolName||'WORDSWORTH HIGH SCHOOL';
-let books=[], learners=[], issues=[];
-let selectedPhase=''; let scanStream=null; let scanMode='book'; let lastAddedCode='';
-// ===== BOOK NUMBER + LEARNER ID — V2.13 — LOCKED =====
-// BOOK: First Letter Each Word In School Name + 6-Digit — WHS000001
-function schoolPrefix(schoolName){
-  let words=toCaps(schoolName||mySchoolName||'WORDSWORTH HIGH SCHOOL').split(/\s+/).filter(w=>/[A-Z]/.test(w));
-  if(words.length===1) return words[0].replace(/[^A-Z]/g,'').slice(0,3).padEnd(3,'X');
-  return words.map(w=>w.replace(/[^A-Z]/g,'')[0]).join('').slice(0,4);
+// ===== WHATSAPP — 078 023 3263 =====
+const WA_NUMBER='27780233263';
+function requestPkg(pkg){
+  let p=String(pkg||'').toUpperCase();
+  let prices={DEMO:'Setup: FREE — Monthly: FREE — Once-off: FREE — 7 days free trial',STARTER:'Setup: R3 000 — Monthly: R350 / month — Once-off: R4 500 / year',STANDARD:'Setup: R4 500 — Monthly: R500 / month — Once-off: R7 500 / year',PREMIUM:'Setup: R5 500 — Monthly: R600 / month — Once-off: R9 000 / year'};
+  let msg='Hello Makhanani LTSM 2.0 👋\n\nI want to REQUEST: '+p+'\n'+(prices[p]||'')+'\nSchool: '+((user&&user.schoolName)||'MY SCHOOL')+'\nName: '+((user&&user.name)||'')+'\n\nPlease activate my package.';
+  window.open('https://wa.me/'+WA_NUMBER+'?text='+encodeURIComponent(msg), '_blank');
 }
-function nextBookNumber(){
-  let prefix=schoolPrefix(mySchoolName);
-  let max=0;
-  books.forEach(b=>{ let code=toCaps(b.barcode||''); if(code.startsWith(prefix)){ let m=code.match(/(\d+)$/); if(m) max=Math.max(max,parseInt(m[1],10)); } });
-  return prefix+pad(max+1,6);
-}
-// LEARNER ID: Grade + Class Letter + 3-Digit — 4J001, 10J001, 12A001
-function makeLearnerId(grade, className, seq){
-  let g=String(grade||'').replace(/[^0-9]/g,'');
-  let letter=toCaps(className||'').replace(/[^A-Z]/g,'').slice(-1)||'A';
-  let classGrade=toCaps(className||'').replace(/[^0-9]/g,'');
-  if(classGrade && classGrade!==g) return null;
-  return g+letter+pad(seq,3);
-}
-function nextLearnerId(grade, className){
-  let used=new Set(learners.filter(l=>toCaps(l.className)===toCaps(className)).map(l=>toCaps(l.learnerId)));
-  let seq=1;
-  while(true){ let id=makeLearnerId(grade, className, seq); if(!id) return null; if(!used.has(id)) return id; seq++; if(seq>999) return null; }
-}
-function go(page){ window.location.href=page; }
-function printBarcode(code, type, title, grade){
-  let url='barcode.html?code='+encodeURIComponent(code)+'&type='+encodeURIComponent(type||'BOOK')+'&title='+encodeURIComponent(title||'')+'&grade='+encodeURIComponent(grade||'');
-  window.open(url,'_blank');
-}
-function demoData(){
-  books=[]; let n=1;
-  [['ENGLISH HOME LANGUAGE','4'],['MATHEMATICS','4'],['MATHEMATICS','10'],['PHYSICAL SCIENCES','11'],['HISTORY','12']].forEach(([sub,gr])=>{ for(let i=1;i<=3;i++) books.push({barcode:schoolPrefix(mySchoolName)+pad(n++,6),title:toCaps(sub)+' GRADE '+gr,subject:toCaps(sub),grade:String(gr),status:'AVAILABLE',condition:'GOOD'}); });
-  learners=[]; ['4A','4J','10A','10J','12A','12J'].forEach(cl=>{ let g=cl.replace(/[^0-9]/g,''); for(let i=1;i<=5;i++) learners.push({learnerId:cl+pad(i,3),name:'LEARNER '+cl+'-'+i,className:cl,grade:g}); });
-  issues=[
-    {id:'I1',learnerName:'LEARNER 4J-1',learnerId:'4J001',learnerClass:'4J',learnerGrade:'4',title:'ENGLISH HOME LANGUAGE GRADE 4',subject:'ENGLISH HOME LANGUAGE',grade:'4',bookBarcode:schoolPrefix(mySchoolName)+'000001',barcode:schoolPrefix(mySchoolName)+'000001',teacher:'MRS MOKOENA',date:'2026-11-17',status:'APPROVED'},
-    {id:'I2',learnerName:'LEARNER 10J-1',learnerId:'10J001',learnerClass:'10J',learnerGrade:'10',title:'MATHEMATICS GRADE 10',subject:'MATHEMATICS',grade:'10',bookBarcode:schoolPrefix(mySchoolName)+'000011',barcode:schoolPrefix(mySchoolName)+'000011',teacher:'MRS DUBE',date:'2026-11-17',status:'APPROVED'},
-    {id:'I3',learnerName:'LEARNER 12J-1',learnerId:'12J001',learnerClass:'12J',learnerGrade:'12',title:'HISTORY GRADE 12',subject:'HISTORY',grade:'12',bookBarcode:schoolPrefix(mySchoolName)+'000021',barcode:schoolPrefix(mySchoolName)+'000021',teacher:'MS JONES',date:'2026-11-17',status:'APPROVED'},
-  ];
-  books.forEach(b=>{ let iss=issues.find(i=>i.bookBarcode===b.barcode); if(iss){ b.status='ISSUED'; b.issuedTo=iss.learnerId+' — '+iss.learnerName; } });
-}
-function selectPhase(phase){
-  selectedPhase=phase;
-  document.querySelectorAll('.phase-card').forEach(c=>c.classList.remove('active'));
-  document.getElementById('phase-'+phase).classList.add('active');
-  let g=SUBJECT_GROUPS.find(x=>x.phase===phase);
-  let grades=phase==='INTERMEDIATE'?'4, 5, 6':phase==='SENIOR'?'7, 8, 9':'10, 11, 12';
-  let classes=ALL_CLASSES.filter(c=>phaseOfGrade(c.replace(/[^0-9]/g,''))===phase);
-  document.getElementById('phaseInfo').innerHTML=`<b>${phase}</b> — Grades: <b>${grades}</b><br>Subjects: <b>${g.items.join(', ')}</b><br>Classes (30): <b>${classes.join(', ')}</b><br>Stock in this phase: <b>${books.filter(b=>phaseOfGrade(b.grade)===phase).length}</b> — Issued in this phase: <b>${issues.filter(i=>phaseOfGrade(i.grade)===phase).length}</b> — Tap again / Clear to see all.`;
-  renderStock(); renderIssued();
-}
-function loadAll(){
-  document.getElementById('roleInfo').innerHTML=`👤 <b>${toCaps(user?.name||'GUEST')}</b> — ${toCaps(user?.role||'GUEST')} — RANK ${user?.rank||0} — School: <b>${toCaps(mySchoolName)}</b> (${mySchoolId}) — Prefix: <b>${schoolPrefix(mySchoolName)}</b> — Sees ALL subjects, ALL grades 4-12, ALL classes 4A-12J.<br>Email: <b>${toCaps(user?.email||'—')}</b>`;
-  document.getElementById('formatBox').innerHTML=`<b>📖 BOOK NUMBER:</b> First Letter Of Each Word In School Name + 6-Digit Sequence<br>Your school: <b>${toCaps(mySchoolName)}</b> → Prefix: <b>${schoolPrefix(mySchoolName)}</b> → Example: <b>${schoolPrefix(mySchoolName)}000001</b><br><b>👤 LEARNER ID:</b> Grade + Class Letter + 3-Digit Sequence<br>Examples: Grade 4 + Class 4J → <b>4J001</b> — Grade 10 + Class 10J → <b>10J001</b> — Grade 12 + Class 12A → <b>12A001</b><br>Next Book Number (auto, leave barcode blank): <b>${nextBookNumber()}</b>`;
-  let sHtml=''; SUBJECT_GROUPS.forEach(g=>{ sHtml+=`<optgroup label="${g.label}">${g.items.map(s=>`<option>${s}</option>`).join('')}</optgroup>`; });
-  document.getElementById('bookSubject').innerHTML=sHtml;
-  document.getElementById('issueSubject').innerHTML=sHtml;
-  document.getElementById('filterSubject').innerHTML='<option value="">-- ALL SUBJECTS --</option>'+sHtml;
-  document.getElementById('filterIssuedSubject').innerHTML='<option value="">-- ALL SUBJECTS --</option>'+sHtml;
-  document.getElementById('issueClass').innerHTML=ALL_CLASSES.map(c=>`<option ${c==='4J'?'selected':''}>${c}</option>`).join('');
-  document.getElementById('filterIssuedClass').innerHTML='<option value="">-- ALL CLASSES 4A-12J --</option>'+ALL_CLASSES.map(c=>`<option>${c}</option>`).join('');
-  document.getElementById('bookSubject').addEventListener('change',()=>{ document.getElementById('bookTitle').value=toCaps(document.getElementById('bookSubject').value)+' GRADE '+document.getElementById('bookGrade').value; });
-  document.getElementById('bookGrade').addEventListener('change',()=>{ document.getElementById('bookTitle').value=toCaps(document.getElementById('bookSubject').value)+' GRADE '+document.getElementById('bookGrade').value; });
-  document.getElementById('bookTitle').value=toCaps(document.getElementById('bookSubject').value)+' GRADE '+document.getElementById('bookGrade').value;
-  demoData();
+// ===== RETRIEVAL PERCENTAGE — V1.0 — LIBRARIAN =====
+async function loadRetrieval(){
+  let info=document.getElementById('retrievalInfo'); let bar=document.getElementById('retrievalBar'); let kpiRet=document.getElementById('kpiRetrieval'); let kpiRetCount=document.getElementById('kpiReturned'); let stillEl=document.getElementById('stillOutList');
+  if(!user){ if(info) info.innerHTML='🔒 Login to see Retrieval %.'; return; }
+  let sid=user.schoolId||'WHS';
   try{
-    rtdb.ref('stock/'+mySchoolId).once('value').then(s=>{ if(s.val()) books=Object.values(s.val()).map(b=>({...b,subject:toCaps(b.subject),title:toCaps(b.title),grade:String(b.grade)})); renderAll(); }).catch(()=>{});
-    rtdb.ref('learners/'+mySchoolId).once('value').then(s=>{ if(s.val()) learners=Object.values(s.val()); renderAll(); }).catch(()=>{});
-    rtdb.ref('issues/'+mySchoolId).once('value').then(s=>{ if(s.val()) issues=Object.values(s.val()); renderAll(); }).catch(()=>{});
-  }catch(e){}
-  renderAll();
+    let snap=await rtdb.ref('issues/'+sid).once('value'); let all=snap.val()||{}; let list=Object.values(all);
+    let total=list.length; let returned=list.filter(x=>String(x.status||'').toUpperCase()==='RETURNED').length; let lost=list.filter(x=>String(x.status||'').toUpperCase()==='LOST').length; let stillOut=total-returned;
+    let pct=total>0?Math.round((returned/total)*100):0; let lostPct=total>0?Math.round((lost/total)*100):0;
+    let color=pct>=95?'#22c55e':pct>=85?'#f59e0b':'#ef4444';
+    let msg=pct>=95?'✅ EXCELLENT — Almost all books back.':pct>=85?'⚠️ WARNING — Follow up learners who did not return.':'🚨 BAD — Many books not returned — Librarian must chase Still Out every Friday.';
+    if(kpiRet) kpiRet.textContent=pct+'%'; if(kpiRetCount) kpiRetCount.textContent=returned;
+    if(bar){ bar.style.width=pct+'%'; bar.style.background=color; bar.textContent=pct+'%'; }
+    if(info) info.innerHTML=`📕 Total Issued: <b>${total}</b> — ✅ Returned: <b>${returned}</b> — 📕 Still Out: <b>${stillOut}</b> — ❌ Lost: <b>${lost}</b><br>♻️ Retrieval %: <b style="color:${color}">${pct}%</b> — Lost %: <b>${lostPct}%</b><br>${msg}<br>🏫 School: <b>${String(user.schoolName||'').toUpperCase()}</b> (${sid})`;
+    if(stillEl){
+      let out=list.filter(x=>String(x.status||'').toUpperCase()!=='RETURNED').slice(0,20);
+      if(!out.length){ stillEl.innerHTML='<div class="ok">✅ No books still out — All returned!</div>'; }
+      else { let html='<div style="overflow-x:auto"><table><thead><tr><th>Learner</th><th>Class</th><th>Book</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+        out.forEach(x=>{ html+=`<tr><td><b>${String(x.learnerName||x.learnerId||'').toUpperCase()}</b><br>${x.learnerId||''}</td><td>${x.className||x.class||''}</td><td>${String(x.bookTitle||x.bookId||'').toUpperCase()}</td><td>${String(x.status||'ISSUED').toUpperCase()}</td><td><button class="btn btn-teal" onclick="quickReturn('${x.id}')">✅ RETURN</button></td></tr>`; });
+        html+='</tbody></table></div>'; stillEl.innerHTML=html; }
+    }
+  }catch(e){ if(info) info.innerHTML='Load failed: '+e.message; }
 }
-function renderAll(){ loadClassLearners(); loadAvailableBooks(); renderStock(); renderIssued(); }
-function loadClassLearners(){
-  let cls=document.getElementById('issueClass').value; let g=cls.replace(/[^0-9]/g,'');
-  document.getElementById('issueGrade').value=g;
-  let list=learners.filter(l=>toCaps(l.className)===toCaps(cls));
-  document.getElementById('issueLearner').innerHTML=list.length?list.map(l=>`<option value="${l.learnerId}">${toCaps(l.name)} — ${l.learnerId}</option>`).join(''):`<option value="">-- No learners in ${cls} --</option>`;
-  if(list.length){ document.getElementById('issueLearnerId').value=list[0].learnerId; }
-  loadAvailableBooks();
+async function loadRetrievalByClass(){
+  let el=document.getElementById('retrievalByClass'); if(!el||!user) return; let sid=user.schoolId||'WHS';
+  try{ let snap=await rtdb.ref('issues/'+sid).once('value'); let list=Object.values(snap.val()||{}); let byClass={};
+    list.forEach(x=>{ let c=String(x.className||x.class||'NO CLASS').toUpperCase(); if(!byClass[c]) byClass[c]={total:0,ret:0}; byClass[c].total++; if(String(x.status||'').toUpperCase()==='RETURNED') byClass[c].ret++; });
+    if(!Object.keys(byClass).length){ el.innerHTML='<div class="info">No issues yet — No retrieval data.</div>'; return; }
+    let html='<div style="overflow-x:auto"><table><thead><tr><th>Class</th><th>Issued</th><th>Returned</th><th>Still Out</th><th>Retrieval %</th></tr></thead><tbody>';
+    Object.keys(byClass).sort().forEach(c=>{ let d=byClass[c]; let pct=d.total>0?Math.round((d.ret/d.total)*100):0; let col=pct>=95?'#22c55e':pct>=85?'#f59e0b':'#ef4444'; html+=`<tr><td><b>${c}</b></td><td>${d.total}</td><td>${d.ret}</td><td>${d.total-d.ret}</td><td><b style="color:${col}">${pct}%</b></td></tr>`; });
+    html+='</tbody></table></div>'; el.innerHTML=html;
+  }catch(e){ el.innerHTML='Load failed: '+e.message; }
 }
-function syncLearnerFromId(){
-  let id=toCaps(document.getElementById('issueLearnerId').value);
-  let l=learners.find(x=>toCaps(x.learnerId)===id);
-  if(l){ document.getElementById('issueClass').value=toCaps(l.className); document.getElementById('issueGrade').value=l.grade; document.getElementById('issueLearner').value=l.learnerId; document.getElementById('issueMsg').innerHTML=`<div class="ok">✅ Learner found: <b>${toCaps(l.name)}</b> — ${l.learnerId} — ${toCaps(l.className)} — Grade ${l.grade}</div>`; }
+// ===== ISSUE / RETURN / LOST =====
+async function findLearner(){
+  let id=toCaps(document.getElementById('iLearnerId').value); if(!id) return;
+  let sid=user.schoolId||'WHS';
+  try{ let snap=await rtdb.ref('learners/'+sid+'/'+id).once('value'); let l=snap.val();
+    if(l){ document.getElementById('iLearnerName').value=toCaps(l.name||l.learnerName||''); document.getElementById('iClass').value=toCaps(l.className||l.class||''); document.getElementById('issueMsg').innerHTML='<div class="ok">✅ Found Learner: <b>'+toCaps(l.name||'')+'</b> — '+toCaps(l.className||l.class||'')+'</div>'; }
+    else { document.getElementById('issueMsg').innerHTML='<div class="warn">Learner '+id+' not found — Check ID or add learner in Teacher / Bulk Learners.</div>'; }
+  }catch(e){ document.getElementById('issueMsg').innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
-function loadAvailableBooks(){
-  let sub=document.getElementById('issueSubject').value; let gr=document.getElementById('issueGrade').value;
-  let list=books.filter(b=>toCaps(b.subject)===sub && String(b.grade)===String(gr) && toCaps(b.status)==='AVAILABLE');
-  document.getElementById('issueBook').innerHTML=list.length?list.map(b=>`<option value="${b.barcode}">${toCaps(b.title)} — ${b.barcode}</option>`).join(''):`<option value="">-- No AVAILABLE ${sub} Grade ${gr} --</option>`;
-  if(list.length){ document.getElementById('issueBarcode').value=list[0].barcode; }
-}
-function syncBookFromBarcode(){
-  let code=toCaps(document.getElementById('issueBarcode').value);
-  let b=books.find(x=>toCaps(x.barcode)===code);
-  if(b){ document.getElementById('issueSubject').value=toCaps(b.subject); document.getElementById('issueGrade').value=b.grade; document.getElementById('issueBook').value=b.barcode; document.getElementById('issueMsg').innerHTML=`<div class="ok">✅ Book found: <b>${toCaps(b.title)}</b> — ${b.barcode} — ${toCaps(b.status)}</div>`; }
-}
-function clearBookForm(){ document.getElementById('bookBarcode').value=''; document.getElementById('bookQty').value=1; }
-function clearIssueForm(){ document.getElementById('issueLearnerId').value=''; document.getElementById('issueBarcode').value=''; document.getElementById('quickSearch').value=''; }
-async function addBook(){
-  let subject=toCaps(document.getElementById('bookSubject').value); let grade=document.getElementById('bookGrade').value; let title=toCaps(document.getElementById('bookTitle').value||(subject+' GRADE '+grade)); let qty=parseInt(document.getElementById('bookQty').value||'1',10); let barcode=toCaps(document.getElementById('bookBarcode').value||''); let condition=toCaps(document.getElementById('bookCondition').value||'GOOD');
-  let msg=document.getElementById('addBookMsg');
-  if(!title){ msg.innerHTML='<div class="warn">⛔ Title missing.</div>'; return; }
-  if(barcode){
-    let prefix=schoolPrefix(mySchoolName);
-    if(!barcode.startsWith(prefix)) if(!confirm('⚠️ Typed barcode '+barcode+' does NOT start with school prefix '+prefix+'.\n\nExpected: '+prefix+'000001.\n\nTap OK to keep '+barcode+', or Cancel to fix.')) return;
-  }
-  let added=[];
-  for(let i=0;i<qty;i++){
-    let code=barcode && qty===1 ? barcode : nextBookNumber();
-    // If qty>1 and barcode typed, ignore typed — Auto each one to avoid duplicates
-    if(qty>1) code=nextBookNumber();
-    let b={barcode:code,title:title,subject:subject,grade:String(grade),status:'AVAILABLE',condition:condition,schoolId:mySchoolId};
-    // Avoid duplicate barcode
-    if(books.some(x=>toCaps(x.barcode)===code)){ msg.innerHTML='<div class="warn">⛔ Barcode '+code+' already exists — Skipped.</div>'; continue; }
-    books.push(b); added.push(code); lastAddedCode=code;
-    try{ await rtdb.ref('stock/'+mySchoolId+'/'+code).set(b); }catch(e){}
-  }
-  if(added.length) msg.innerHTML=`<div class="ok">✅ ADDED ${added.length}x — <b>${title}</b> — Barcodes: <b>${added.join(', ')}</b> — Next Book Number: <b>${nextBookNumber()}</b></div>`;
-  document.getElementById('formatBox').innerHTML=`<b>📖 BOOK NUMBER:</b> First Letter Of Each Word In School Name + 6-Digit<br>Your school: <b>${toCaps(mySchoolName)}</b> → Prefix: <b>${schoolPrefix(mySchoolName)}</b> → Next Book Number: <b>${nextBookNumber()}</b><br><b>👤 LEARNER ID:</b> Grade + Class Letter + 3-Digit — 4J001, 10J001, 12A001`;
-  renderStock(); loadAvailableBooks();
-}
-function addBookAndPrint(){ addBook().then(()=>{ if(lastAddedCode) printBarcode(lastAddedCode,'BOOK',toCaps(document.getElementById('bookTitle').value),document.getElementById('bookGrade').value); }); }
-async function markBook(barcode, status){
-  let b=books.find(x=>toCaps(x.barcode)===toCaps(barcode)); if(!b) return;
-  if(status==='LOST'||status==='DAMAGED') if(!confirm('Mark '+barcode+' as '+status+'?')) return;
-  b.status=status;
-  if(status==='AVAILABLE') b.issuedTo='';
-  try{ await rtdb.ref('stock/'+mySchoolId+'/'+barcode).update({status:status,issuedTo:b.issuedTo||''}); }catch(e){}
-  renderStock(); renderIssued();
-}
-async function deleteBook(barcode){
-  if(!confirm('Delete book '+barcode+'? This cannot be undone.')) return;
-  books=books.filter(x=>toCaps(x.barcode)!==toCaps(barcode));
-  try{ await rtdb.ref('stock/'+mySchoolId+'/'+barcode).remove(); }catch(e){}
-  renderStock();
+async function findBook(){
+  let id=toCaps(document.getElementById('iBookId').value); if(!id) return;
+  let sid=user.schoolId||'WHS';
+  try{ let snap=await rtdb.ref('stock/'+sid+'/'+id).once('value'); let b=snap.val();
+    if(b){ document.getElementById('iBookTitle').value=toCaps(b.title||b.bookTitle||''); document.getElementById('issueMsg').innerHTML='<div class="ok">✅ Found Book: <b>'+toCaps(b.title||'')+'</b> — Qty: '+(b.qty||b.quantity||1)+'</div>'; }
+    else { document.getElementById('issueMsg').innerHTML='<div class="warn">Book '+id+' not found in Stock — Add Stock first.</div>'; }
+  }catch(e){ document.getElementById('issueMsg').innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
 async function issueBook(){
-  let learnerId=toCaps(document.getElementById('issueLearnerId').value||document.getElementById('issueLearner').value);
-  let barcode=toCaps(document.getElementById('issueBarcode').value||document.getElementById('issueBook').value);
-  let msg=document.getElementById('issueMsg');
-  let l=learners.find(x=>toCaps(x.learnerId)===learnerId);
-  let b=books.find(x=>toCaps(x.barcode)===barcode);
-  // 5 Checks
-  let checks=[];
-  checks.push(l?`✅ 1. Learner found: ${toCaps(l.name)} — ${l.learnerId} — ${toCaps(l.className)} — Grade ${l.grade}`:`⛔ 1. Learner NOT found: ${learnerId} — Add learner first.`);
-  checks.push(b?`✅ 2. Book found: ${toCaps(b.title)} — ${b.barcode} — ${toCaps(b.status)}`:`⛔ 2. Book NOT found: ${barcode}`);
-  if(l&&b) checks.push(String(l.grade)===String(b.grade)?`✅ 3. Grade Match: Learner Grade ${l.grade} = Book Grade ${b.grade}`:`⛔ 3. Grade Match FAIL: Learner ${l.grade} vs Book ${b.grade} — Cannot issue.`);
-  if(b) checks.push(toCaps(b.status)==='AVAILABLE'?`✅ 4. Book Available: ${b.barcode}`:`⛔ 4. Book NOT Available: ${b.barcode} — Status ${toCaps(b.status)}`);
-  if(l&&b) checks.push(!issues.some(i=>toCaps(i.learnerId)===learnerId && toCaps(i.subject)===toCaps(b.subject) && String(i.grade)===String(b.grade))?`✅ 5. No Duplicate: ${toCaps(l.name)} has no ${toCaps(b.subject)} Grade ${b.grade} yet`:`⛔ 5. Duplicate: ${toCaps(l.name)} already has ${toCaps(b.subject)} Grade ${b.grade}`);
-  if(checks.some(c=>c.startsWith('⛔'))){ msg.innerHTML=`<div class="warn">${checks.join('<br>')}</div>`; return; }
-  let issue={id:'I'+Date.now(),learnerName:toCaps(l.name),learnerId:l.learnerId,learnerClass:toCaps(l.className),learnerGrade:String(l.grade),title:toCaps(b.title),subject:toCaps(b.subject),grade:String(b.grade),bookBarcode:b.barcode,barcode:b.barcode,teacher:toCaps(user?.name||'LIBRARIAN'),date:new Date().toISOString().slice(0,10),status:'APPROVED'};
-  issues.push(issue); b.status='ISSUED'; b.issuedTo=l.learnerId+' — '+toCaps(l.name);
-  try{ await rtdb.ref('issues/'+mySchoolId+'/'+issue.id).set(issue); await rtdb.ref('stock/'+mySchoolId+'/'+b.barcode).update({status:'ISSUED',issuedTo:b.issuedTo}); }catch(e){}
-  msg.innerHTML=`<div class="ok">${checks.join('<br>')}<br><b>✅ ISSUED — ${toCaps(l.name)} (${l.learnerId}) → ${toCaps(b.title)} (${b.barcode})</b></div>`;
-  renderStock(); renderIssued(); loadAvailableBooks();
+  let sid=user.schoolId||'WHS';
+  let lid=toCaps(document.getElementById('iLearnerId').value); let lname=toCaps(document.getElementById('iLearnerName').value); let cls=toCaps(document.getElementById('iClass').value); let bid=toCaps(document.getElementById('iBookId').value); let btitle=toCaps(document.getElementById('iBookTitle').value);
+  if(!lid||!bid){ document.getElementById('issueMsg').innerHTML='<div class="warn">Fill Learner ID + Book ID.</div>'; return; }
+  let id='ISS-'+Date.now();
+  let data={id:id,learnerId:lid,learnerName:lname,className:cls,class:cls,bookId:bid,bookTitle:btitle,status:'ISSUED',dateIssued:Date.now(),createdAt:Date.now(),issuedBy:user?user.name:'',schoolId:sid};
+  try{ await rtdb.ref('issues/'+sid+'/'+id).set(data); document.getElementById('issueMsg').innerHTML='<div class="ok">✅ Issued: <b>'+btitle+'</b> ('+bid+') → <b>'+lname+'</b> ('+lid+') — '+cls+' — Issue ID: '+id+'</div>'; loadIssues(); loadRetrieval(); loadRetrievalByClass(); }catch(e){ document.getElementById('issueMsg').innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
-async function returnByBarcode(barcode){
-  let b=books.find(x=>toCaps(x.barcode)===toCaps(barcode)); if(!b) return;
-  let issue=issues.find(i=>toCaps(i.bookBarcode)===toCaps(barcode));
-  if(issue) issues=issues.filter(i=>i.id!==issue.id);
-  b.status='AVAILABLE'; b.issuedTo='';
-  try{ if(issue) await rtdb.ref('issues/'+mySchoolId+'/'+issue.id).remove(); await rtdb.ref('stock/'+mySchoolId+'/'+barcode).update({status:'AVAILABLE',issuedTo:''}); }catch(e){}
-  renderStock(); renderIssued(); loadAvailableBooks();
-}
-async function returnById(id){
-  let issue=issues.find(i=>i.id===id); if(!issue) return;
-  let b=books.find(x=>toCaps(x.barcode)===toCaps(issue.bookBarcode));
-  if(b){ b.status='AVAILABLE'; b.issuedTo=''; try{ await rtdb.ref('stock/'+mySchoolId+'/'+b.barcode).update({status:'AVAILABLE',issuedTo:''}); }catch(e){} }
-  issues=issues.filter(i=>i.id!==id);
-  try{ await rtdb.ref('issues/'+mySchoolId+'/'+id).remove(); }catch(e){}
-  renderStock(); renderIssued(); loadAvailableBooks();
-}
-function returnByIdInput(){
-  let barcode=toCaps(document.getElementById('issueBarcode').value||document.getElementById('quickSearch').value);
-  if(!barcode){ alert('Type / scan book barcode in Book Barcode box first.'); return; }
-  returnByBarcode(barcode);
-}
-function renderStock(){
-  let fSub=document.getElementById('filterSubject').value; let fGrade=document.getElementById('filterGrade').value; let fStatus=document.getElementById('filterStatus').value; let q=toCaps(document.getElementById('quickSearch').value||'');
-  let list=books.filter(b=>{
-    if(fSub && toCaps(b.subject)!==fSub) return false;
-    if(fGrade && String(b.grade)!==fGrade) return false;
-    if(fStatus && toCaps(b.status)!==fStatus) return false;
-    if(selectedPhase && phaseOfGrade(b.grade)!==selectedPhase) return false;
-    if(q && !(toCaps(b.title)+' '+toCaps(b.barcode)+' '+toCaps(b.subject)).includes(q)) return false;
-    return true;
-  });
-  document.getElementById('kpiTotal').textContent=books.length;
-  document.getElementById('kpiAvail').textContent=books.filter(b=>toCaps(b.status)==='AVAILABLE').length;
-  document.getElementById('kpiIssued').textContent=books.filter(b=>toCaps(b.status)==='ISSUED').length;
-  document.getElementById('kpiLost').textContent=books.filter(b=>['LOST','DAMAGED'].includes(toCaps(b.status))).length;
-  document.getElementById('stockInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${books.length}</b> books — Next Book Number: <b>${nextBookNumber()}</b> — Tap 🖨️ BARCODE to print 1 label.`;
-  document.getElementById('stockTable').innerHTML=list.length?list.map(b=>{
-    let pill=toCaps(b.status)==='AVAILABLE'?'pill-available':toCaps(b.status)==='ISSUED'?'pill-issued':toCaps(b.status)==='LOST'?'pill-lost':'pill-damaged';
-    return `<tr><td><b>${b.barcode}</b></td><td><b>${toCaps(b.title)}</b></td><td>${toCaps(b.subject)}</td><td>${b.grade}</td><td><span class="pill ${pill}">${toCaps(b.status)}</span></td><td>${b.issuedTo||'—'}</td><td><button class="btn btn-purple" onclick="printBarcode('${b.barcode}','BOOK','${encodeURIComponent(toCaps(b.title))}','${b.grade}')">🖨️ BARCODE</button> ${toCaps(b.status)==='AVAILABLE'?`<button class="btn btn-orange" onclick="markBook('${b.barcode}','LOST')">❌ LOST</button> <button class="btn btn-gold" onclick="markBook('${b.barcode}','DAMAGED')">⚠️ DAMAGED</button> <button class="btn btn-red" onclick="deleteBook('${b.barcode}')">🗑️ DELETE</button>`:toCaps(b.status)==='ISSUED'?`<button class="btn btn-teal" onclick="returnByBarcode('${b.barcode}')">↩️ RETURN</button>`:`<button class="btn btn-teal" onclick="markBook('${b.barcode}','AVAILABLE')">✅ RESTORE</button> <button class="btn btn-red" onclick="deleteBook('${b.barcode}')">🗑️ DELETE</button>`}</td></tr>`;
-  }).join(''):`<tr><td colspan="7" style="text-align:center;padding:20px">No books for this filter.</td></tr>`;
-}
-function renderIssued(){
-  let fClass=document.getElementById('filterIssuedClass').value; let fSub=document.getElementById('filterIssuedSubject').value; let fGrade=document.getElementById('filterIssuedGrade').value; let q=toCaps(document.getElementById('quickSearch').value||'');
-  let list=issues.filter(i=>{
-    if(fClass && toCaps(i.learnerClass)!==fClass) return false;
-    if(fSub && toCaps(i.subject)!==fSub) return false;
-    if(fGrade && String(i.grade)!==fGrade) return false;
-    if(selectedPhase && phaseOfGrade(i.grade)!==selectedPhase) return false;
-    if(q && !(toCaps(i.learnerName)+' '+toCaps(i.learnerId)+' '+toCaps(i.title)+' '+toCaps(i.bookBarcode)).includes(q)) return false;
-    return true;
-  });
-  document.getElementById('issuedInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${issues.length}</b> issued — Classes 4A-12J — Tap 👤 to print learner barcode, 🖨️ to print book barcode.`;
-  document.getElementById('issuedTable').innerHTML=list.length?list.map(x=>`<tr><td><b>${toCaps(x.learnerName)}</b><br>${x.learnerId} — ${toCaps(x.learnerClass)} — Grade ${x.learnerGrade}<br><button class="btn btn-purple" onclick="printBarcode('${x.learnerId}','LEARNER','${encodeURIComponent(toCaps(x.learnerName))}','${x.learnerGrade}')">👤 LEARNER BARCODE</button></td><td><b>${toCaps(x.title)}</b><br>${x.bookBarcode}<br><button class="btn btn-purple" onclick="printBarcode('${x.bookBarcode}','BOOK','${encodeURIComponent(toCaps(x.title))}','${x.grade}')">🖨️ BOOK BARCODE</button></td><td>${toCaps(x.subject)} — Grade ${x.grade}</td><td>${x.date||''}</td><td><button class="btn btn-teal" onclick="returnById('${x.id}')">↩️ RETURN</button></td></tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px">No issued books for this filter.</td></tr>`;
-}
-async function startScan(mode){
-  scanMode=mode;
-  document.getElementById('scanBox').style.display='block';
+async function quickReturn(issueId){ document.getElementById('rIssueId').value=issueId; returnBook(); }
+async function returnBook(){
+  let sid=user.schoolId||'WHS'; let iid=String(document.getElementById('rIssueId').value||'').trim(); let lid=toCaps(document.getElementById('rLearnerId').value); let bid=toCaps(document.getElementById('rBookId').value);
   try{
-    let s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); scanStream=s;
-    let v=document.getElementById('scanVideo'); v.srcObject=s; v.play();
-    if('BarcodeDetector' in window){
-      let d=new BarcodeDetector({formats:['code_128','code_39','ean_13','qr_code']});
-      let loop=async()=>{ if(!scanStream) return; try{ let c=await d.detect(v); if(c.length){ let val=toCaps(c[0].rawValue); if(scanMode==='book'){ document.getElementById('issueBarcode').value=val; document.getElementById('bookBarcode').value=val; syncBookFromBarcode(); } else { document.getElementById('issueLearnerId').value=val; syncLearnerFromId(); } document.getElementById('scanMsg').innerHTML=`<div class="ok">✅ Scanned: <b>${val}</b></div>`; stopScan(); return; } }catch(e){} if(scanStream) requestAnimationFrame(loop); };
-      loop();
-    } else { document.getElementById('scanMsg').innerHTML='⚠️ This browser has no BarcodeDetector — Type / use phone camera to scan.'; }
-  }catch(e){ document.getElementById('scanMsg').innerHTML='⚠️ Camera blocked — Type barcode / learner ID manually.'; }
+    if(iid && iid.startsWith('ISS-')){ await rtdb.ref('issues/'+sid+'/'+iid).update({status:'RETURNED',dateReturned:Date.now(),returnedBy:user?user.name:''}); document.getElementById('returnMsg').innerHTML='<div class="ok">✅ Returned Issue: '+iid+'</div>'; }
+    else if(lid && bid){
+      let snap=await rtdb.ref('issues/'+sid).once('value'); let all=snap.val()||{}; let found=null;
+      Object.values(all).forEach(x=>{ if(toCaps(x.learnerId)===lid && toCaps(x.bookId)===bid && String(x.status||'').toUpperCase()==='ISSUED') found=x; });
+      if(!found){ document.getElementById('returnMsg').innerHTML='<div class="warn">No ISSUED record for '+lid+' + '+bid+' — Check Issues Table.</div>'; return; }
+      await rtdb.ref('issues/'+sid+'/'+found.id).update({status:'RETURNED',dateReturned:Date.now(),returnedBy:user?user.name:''}); document.getElementById('returnMsg').innerHTML='<div class="ok">✅ Returned: <b>'+found.bookTitle+'</b> → <b>'+found.learnerName+'</b></div>';
+    } else { document.getElementById('returnMsg').innerHTML='<div class="warn">Fill Issue ID OR Learner ID + Book ID.</div>'; return; }
+    loadIssues(); loadRetrieval(); loadRetrievalByClass();
+  }catch(e){ document.getElementById('returnMsg').innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
-function stopScan(){ if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; } document.getElementById('scanBox').style.display='none'; }
-loadAll();
+async function markLost(){
+  let sid=user.schoolId||'WHS'; let iid=String(document.getElementById('rIssueId').value||'').trim();
+  if(!iid){ document.getElementById('returnMsg').innerHTML='<div class="warn">Fill Issue ID to mark LOST.</div>'; return; }
+  if(!confirm('Mark '+iid+' as LOST? Retrieval % will drop.')) return;
+  try{ await rtdb.ref('issues/'+sid+'/'+iid).update({status:'LOST',dateLost:Date.now()}); document.getElementById('returnMsg').innerHTML='<div class="ok">✅ Marked LOST: '+iid+'</div>'; loadIssues(); loadRetrieval(); loadRetrievalByClass(); }catch(e){ document.getElementById('returnMsg').innerHTML='<div class="warn">'+e.message+'</div>'; }
+}
+async function loadIssues(){
+  let el=document.getElementById('issuesBody'); if(!el||!user) return; let sid=user.schoolId||'WHS';
+  let q=toCaps(document.getElementById('searchIssue')?document.getElementById('searchIssue').value:''); let f=document.getElementById('filterStatus')?document.getElementById('filterStatus').value:'ALL';
+  try{ let snap=await rtdb.ref('issues/'+sid).once('value'); let list=Object.values(snap.val()||{}).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    let filtered=list.filter(x=>{
+      if(f!=='ALL' && String(x.status||'').toUpperCase()!==f) return false;
+      if(q && !(toCaps(x.learnerName).includes(q)||toCaps(x.learnerId).includes(q)||toCaps(x.bookTitle).includes(q)||toCaps(x.bookId).includes(q)||toCaps(x.className).includes(q)||toCaps(x.class).includes(q))) return false;
+      return true;
+    });
+    if(!filtered.length){ el.innerHTML='<tr><td colspan="7" style="text-align:center;padding:14px">No issues — Issue a book above.</td></tr>'; return; }
+    el.innerHTML='';
+    filtered.slice(0,100).forEach(x=>{
+      let tr=document.createElement('tr');
+      let col=String(x.status||'').toUpperCase()==='RETURNED'?'#22c55e':String(x.status||'').toUpperCase()==='LOST'?'#ef4444':'#f59e0b';
+      tr.innerHTML=`<td>${x.id}</td><td><b>${toCaps(x.learnerName)}</b><br>${x.learnerId}</td><td>${x.className||x.class||''}</td><td><b>${toCaps(x.bookTitle)}</b><br>${x.bookId}</td><td><b style="color:${col}">${String(x.status||'').toUpperCase()}</b></td><td>${x.dateIssued?new Date(x.dateIssued).toDateString():'—'}</td><td><button class="btn btn-teal" onclick="quickReturn('${x.id}')">✅ RETURN</button></td>`;
+      el.appendChild(tr);
+    });
+  }catch(e){ el.innerHTML='<tr><td colspan="7">Load failed: '+e.message+'</td></tr>'; }
+}
+// ===== STOCK =====
+async function addStock(){
+  let sid=user.schoolId||'WHS'; let bid=toCaps(document.getElementById('sBookId').value); let title=toCaps(document.getElementById('sTitle').value);
+  if(!bid||!title){ document.getElementById('stockMsg').innerHTML='<div class="warn">Fill Book ID + Title.</div>'; return; }
+  let data={bookId:bid,title:title,bookTitle:title,subject:toCaps(document.getElementById('sSubject').value),grade:document.getElementById('sGrade').value,qty:parseInt(document.getElementById('sQty').value||'1'),quantity:parseInt(document.getElementById('sQty').value||'1'),schoolId:sid,createdAt:Date.now()};
+  try{ await rtdb.ref('stock/'+sid+'/'+bid).set(data); document.getElementById('stockMsg').innerHTML='<div class="ok">✅ Added Stock: <b>'+title+'</b> ('+bid+') — Qty '+data.qty+'</div>'; loadStock(); }catch(e){ document.getElementById('stockMsg').innerHTML='<div class="warn">'+e.message+'</div>'; }
+}
+async function loadStock(){
+  let el=document.getElementById('stockBody'); if(!el||!user) return; let sid=user.schoolId||'WHS';
+  try{ let snap=await rtdb.ref('stock/'+sid).once('value'); let list=Object.values(snap.val()||{});
+    if(!list.length){ el.innerHTML='<tr><td colspan="5" style="text-align:center">No stock — Add Stock above.</td></tr>'; return; }
+    el.innerHTML=''; list.forEach(b=>{ let tr=document.createElement('tr'); tr.innerHTML=`<td><b>${b.bookId}</b></td><td>${toCaps(b.title||b.bookTitle)}</td><td>${toCaps(b.subject||'')}</td><td>${b.grade||''}</td><td>${b.qty||b.quantity||1}</td>`; el.appendChild(tr); });
+  }catch(e){ el.innerHTML='<tr><td colspan="5">'+e.message+'</td></tr>'; }
+}
+// ===== SUBSCRIPTION — READ ONLY =====
+function loadMySub(){
+  let el=document.getElementById('mySub'); if(!el||!user) return; let sid=user.schoolId||'WHS';
+  rtdb.ref('subscriptions/'+sid).once('value').then(snap=>{
+    let s=snap.val();
+    if(!s){ el.innerHTML='🆓 <b>NO SUBSCRIPTION YET — DEMO AVAILABLE</b> — Tap REQUEST DEMO → WhatsApp 078 023 3263.'; return; }
+    let days=Math.ceil(((s.endDate||0)-Date.now())/86400000);
+    el.innerHTML=`🏫 <b>${toCaps(s.schoolName)}</b> (${s.schoolId})<br>📦 Package: <b>${String(s.package||'').toUpperCase()}</b> — Status: <b>${String(s.status||'').toUpperCase()}</b> — Paid: <b>${s.paid?'✅ YES':'❌ NO'}</b><br>💰 Setup: <b>R${s.setup||0}</b> — Monthly: <b>R${s.monthly||0}</b> — Once-Off: <b>R${s.yearly||s.priceYear||0}</b> — Billing: <b>${s.billing||''}</b><br>📅 End: ${s.endDate?new Date(s.endDate).toDateString():'—'} — ${days>0?('Expires in <b>'+days+' days</b>'):('<b style="color:#ef4444">EXPIRED — Contact Super Admin 078 023 3263</b>')}`;
+  }).catch(e=>{ el.innerHTML='Load failed: '+e.message; });
+}
+function loadAll(){
+  if(!user) return;
+  document.getElementById('roleInfo').innerHTML=`👤 <b>${toCaps(user.name)}</b> — LIBRARIAN — RANK ${user.rank||''} — School: <b>${toCaps(user.schoolName)}</b> (${user.schoolId})<br>✅ <b>You are Librarian — You issue + return + stock + barcode — You see Retrieval % for your school only.</b>`;
+  let sid=user.schoolId||'WHS';
+  Promise.all([rtdb.ref('users').once('value'),rtdb.ref('learners/'+sid).once('value'),rtdb.ref('stock/'+sid).once('value'),rtdb.ref('issues/'+sid).once('value')]).then(([us,ls,bs,is])=>{
+    document.getElementById('kpiUsers').textContent=us.val()?Object.keys(us.val()).length:0;
+    document.getElementById('kpiLearners').textContent=ls.val()?Object.keys(ls.val()).length:0;
+    document.getElementById('kpiBooks').textContent=bs.val()?Object.keys(bs.val()).length:0;
+    document.getElementById('kpiIssues').textContent=is.val()?Object.keys(is.val()).length:0;
+  });
+  loadMySub(); loadIssues(); loadStock();
+}
+loadAll(); loadRetrieval(); loadRetrievalByClass();
 </script></body></html>
