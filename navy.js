@@ -1,10 +1,11 @@
 // ============================================
-// MAKHANANI LTSM 2.0 — NAV.JS V2.13 — FINAL
-// Guard + Taskbar + Logout — All 13 Files
+// MAKHANANI LTSM 2.0 — NAV.JS V2.15 — FINAL
+// Guard + Navy Taskbar + Back + Logout — All 14 Files
+// Super Admin Rank 6 — Manuals NOT Public — Back Button
 // No Demo — Real Users Only — Firebase Login V2.13
 // ============================================
 
-// ===== ALL PAGES — 13 FILES =====
+// ===== ALL PAGES — 14 FILES =====
 const NAV_PAGES = [
   { page: 'index.html', label: '🏠 HOME', rank: 0, show: 'all' },
   { page: 'teacher.html', label: '👩‍🏫 TEACHER', rank: 1, show: 'all' },
@@ -18,11 +19,13 @@ const NAV_PAGES = [
   { page: 'bulk_upload.html', label: '📥 BULK LEARNERS', rank: 1, show: 'all' },
   { page: 'bulk_book_upload.html', label: '📥 BULK BOOKS', rank: 1, show: 'all' },
   { page: 'cleanup.html', label: '🧹 CLEANUP', rank: 5, show: 'admin' },
+  { page: 'superadmin.html', label: '👑 SUPER ADMIN', rank: 6, show: 'superadmin' },
   { page: 'login.html', label: '🔐 LOGIN', rank: 0, show: 'all' },
 ];
 
 // Pages that can be opened WITHOUT login
-const PUBLIC_PAGES = ['login.html', 'manuals.html'];
+// MANUALS IS NOT PUBLIC — V1.3 — Must login to read manuals — Rank decides which sections you see
+const PUBLIC_PAGES = ['login.html'];
 
 // ===== HELPERS =====
 function navToCaps(s){ return String(s||'').trim().toUpperCase(); }
@@ -48,6 +51,25 @@ function navSchoolPrefix(schoolName){
   return words.map(w=>w.replace(/[^A-Z]/g,'')[0]).join('').slice(0,4);
 }
 
+// ===== BACK — 1 Tap Back — If no history, go Home =====
+// Manuals override: if in a section (#sec-2), Back goes to TOC top first
+function navBack(){
+  let hash = window.location.hash || '';
+  if(hash && hash.startsWith('#sec-')){
+    window.location.hash = '';
+    window.scrollTo({top:0, behavior:'smooth'});
+    return;
+  }
+  if(window.history.length > 1){
+    window.history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+// For pages that call back() / goBack() directly
+function goBack(){ navBack(); }
+function back(){ navBack(); }
+
 // ===== LOGOUT — Clears session + Firebase Auth =====
 async function navLogout(){
   try{
@@ -65,20 +87,17 @@ async function navLogout(){
 function logout(){ navLogout(); }
 
 // ===== GUARD — Call at top of every page: guardPage(minRank, pageName) =====
-// minRank: 0 = any logged in user, 1 = Teacher+, 2 = Librarian+, 3 = HOD+, 4 = Principal+, 5 = Admin only
-// pageName: for alert message, e.g. 'Users', 'Cleanup', 'Teacher'
+// minRank: 0 = any logged in user, 1 = Teacher+, 5 = Admin only, 6 = Super Admin only
 function guardPage(minRank, pageName){
   let user = navGetUser();
   let cur = navGetCurrentPage();
 
   // 1. Not logged in?
   if(!user){
-    // Public pages can be opened without login
     if(navIsPublicPage()){
       renderTaskbar(null);
       return;
     }
-    // Not public + not logged in -> Go to login
     if(cur !== 'login.html'){
       window.location.href = 'login.html';
     }
@@ -88,7 +107,6 @@ function guardPage(minRank, pageName){
   // 2. Logged in but rank too low?
   let rank = user.rank || 0;
   if(minRank && rank < minRank){
-    // If already on Home, don't loop
     if(cur !== 'index.html'){
       alert('⛔ Access denied for ' + navToCaps(user.role||'GUEST') + ' — Rank ' + rank + ' < Required Rank ' + minRank + ' — For ' + (pageName||cur) + ' — Going to Home.');
       window.location.href = 'index.html';
@@ -96,20 +114,23 @@ function guardPage(minRank, pageName){
     return;
   }
 
-  // 3. OK — Show taskbar
+  // 3. OK — Show navy taskbar
   renderTaskbar(user);
 }
 
-// ===== TASKBAR — Shows on every page in <div id="taskbar"> =====
+// ===== NAVY TASKBAR — Shows on every page in <div id="taskbar"> =====
 function renderTaskbar(user){
   let tb = document.getElementById('taskbar');
   if(!tb) return;
 
+  // Navy taskbar style
+  tb.style.cssText = 'background:#0a1f4d;border:2px solid #d4af37;border-radius:10px;padding:10px;margin-top:10px';
+
   if(!user){
-    tb.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px;font-size:12px">
-      <a href="login.html" style="color:#fff;font-weight:900">🔐 LOGIN</a>
-      <a href="manuals.html" style="color:#d4af37;font-weight:900">📖 MANUALS</a>
-      <a href="index.html" style="color:#fff;font-weight:900">🏠 HOME</a>
+    tb.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:12px;align-items:center">
+      <a href="#" onclick="navBack();return false;" style="background:#d4af37;color:#0a1f4d;padding:6px 12px;border-radius:20px;font-weight:900;text-decoration:none">⬅️ BACK</a>
+      <span style="background:#d4af37;color:#0a1f4d;padding:6px 12px;border-radius:20px;font-weight:900">🔒 NOT LOGGED IN — LOGIN TO USE MAKHANANI</span>
+      <a href="login.html" style="color:#fff;font-weight:900;text-decoration:none;padding:6px 10px;background:#2563eb;border-radius:20px">🔐 LOGIN →</a>
     </div>`;
     return;
   }
@@ -121,17 +142,20 @@ function renderTaskbar(user){
   let prefix = navSchoolPrefix(schoolName);
   let myClasses = (user.teachingClasses||user.classes||user.myClasses||[]).map(c=>navToCaps(c)).filter(Boolean);
   let mySubjects = (user.subjects||user.teachingSubjects||[]).map(s=>navToCaps(s)).filter(Boolean);
+  let isSuperAdmin = (role==='SUPER_ADMIN' && rank>=6);
+  let isAdmin = (role==='ADMIN' && rank>=5);
 
-  // Build links — Admin sees Users + Cleanup, others do not
+  // Build links — Admin sees Users + Cleanup, Super Admin sees Super Admin, others do not
   let links = NAV_PAGES.filter(p=>{
-    if(p.show==='admin' && !(role==='ADMIN' && rank>=5)) return false;
-    if(p.page==='login.html') return false; // Logout handled separately
+    if(p.show==='admin' && !isAdmin && !isSuperAdmin) return false;
+    if(p.show==='superadmin' && !isSuperAdmin) return false;
+    if(p.page==='login.html') return false;
     return true;
   }).map(p=>{
     let isCur = (navGetCurrentPage() === p.page);
     let style = isCur
       ? 'background:#d4af37;color:#0a1f4d;padding:6px 10px;border-radius:20px;font-weight:900;text-decoration:none'
-      : 'color:#fff;font-weight:900;text-decoration:none;padding:6px 10px';
+      : 'color:#fff;font-weight:900;text-decoration:none;padding:6px 10px;background:rgba(255,255,255,.08);border-radius:20px';
     return `<a href="${p.page}" style="${style}">${p.label}</a>`;
   }).join('');
 
@@ -150,38 +174,49 @@ function renderTaskbar(user){
   } else if(role==='HOD'){
     if(mySubjects.length){
       classInfo = `<span style="background:#7c3aed;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">📖 HOD: ${mySubjects.join(', ')}</span>`;
+    } else {
+      classInfo = `<span style="background:#ef4444;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">⛔ NO SUBJECTS — ASK ADMIN</span>`;
     }
   } else if(role==='LIBRARIAN'){
     classInfo = `<span style="background:#0d9488;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">📚 ALL CLASSES 4A-12J — ALL SUBJECTS</span>`;
   } else if(role==='PRINCIPAL'){
     classInfo = `<span style="background:#d4af37;color:#0a1f4d;padding:6px 10px;border-radius:20px;font-weight:900">👑 ALL — GRADES 4-12 — CLASSES 4A-12J</span>`;
   } else if(role==='ADMIN'){
-    classInfo = `<span style="background:#dc2626;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">⚙️ ADMIN — ALL — CAN DO EVERYTHING</span>`;
+    classInfo = `<span style="background:#dc2626;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">⚙️ ADMIN — ALL — EXCEPT SUPER ADMIN</span>`;
+  } else if(isSuperAdmin){
+    classInfo = `<span style="background:#7c3aed;color:#fff;padding:6px 10px;border-radius:20px;font-weight:900">👑 SUPER ADMIN — ALL + FOUNDER / MARKETING / FINANCIAL / EMPLOYMENT</span>`;
   }
 
-  tb.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px;font-size:12px;align-items:center">
+  tb.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:12px;align-items:center">
+    <a href="#" onclick="navBack();return false;" style="background:#d4af37;color:#0a1f4d;padding:6px 12px;border-radius:20px;font-weight:900;text-decoration:none">⬅️ BACK</a>
     <span style="background:#d4af37;color:#0a1f4d;padding:6px 10px;border-radius:20px;font-weight:900">👤 ${navToCaps(user.name||'GUEST')} — ${role} — RANK ${rank}</span>
     <span style="background:#fff;color:#0a1f4d;padding:6px 10px;border-radius:20px;font-weight:900">🏫 ${navToCaps(schoolName)} (${navToCaps(schoolId)}) — Prefix ${prefix}</span>
     ${classInfo}
     ${links}
-    <a href="#" onclick="navLogout();return false;" style="color:#fca5a5;font-weight:900;text-decoration:none;padding:6px 10px">🚪 LOGOUT</a>
+    <a href="#" onclick="navLogout();return false;" style="color:#fca5a5;font-weight:900;text-decoration:none;padding:6px 10px;background:#7f1d1d;border-radius:20px">🚪 LOGOUT</a>
   </div>`;
 }
 
 // ===== GO — Helper for buttons: go('teacher.html') =====
 function go(page){ window.location.href = page; }
 
-// ===== CHECK — Is user Admin? — Use in any page =====
+// ===== CHECK — Is user Admin? =====
 function isAdminUser(){
   let u = navGetUser();
   return u && navToCaps(u.role)==='ADMIN' && (u.rank||0)>=5;
 }
 
-// ===== CHECK — Is user Teacher with class? — Use in teacher.html / bulk_upload.html =====
+// ===== CHECK — Is user Super Admin? =====
+function isSuperAdminUser(){
+  let u = navGetUser();
+  return u && navToCaps(u.role)==='SUPER_ADMIN' && (u.rank||0)>=6;
+}
+
+// ===== CHECK — Is user Teacher with class? =====
 function teacherHasClass(className){
   let u = navGetUser();
   if(!u) return false;
-  if(navToCaps(u.role)==='ADMIN' || navToCaps(u.role)==='LIBRARIAN' || navToCaps(u.role)==='PRINCIPAL') return true;
+  if(navToCaps(u.role)==='ADMIN' || navToCaps(u.role)==='SUPER_ADMIN' || navToCaps(u.role)==='LIBRARIAN' || navToCaps(u.role)==='PRINCIPAL') return true;
   let classes = (u.teachingClasses||u.classes||u.myClasses||[]).map(c=>navToCaps(c));
   return classes.indexOf(navToCaps(className)) !== -1;
 }
@@ -189,7 +224,7 @@ function teacherHasClass(className){
 function teacherHasSubject(subject){
   let u = navGetUser();
   if(!u) return false;
-  if(navToCaps(u.role)==='ADMIN' || navToCaps(u.role)==='LIBRARIAN' || navToCaps(u.role)==='PRINCIPAL') return true;
+  if(navToCaps(u.role)==='ADMIN' || navToCaps(u.role)==='SUPER_ADMIN' || navToCaps(u.role)==='LIBRARIAN' || navToCaps(u.role)==='PRINCIPAL') return true;
   let subs = (u.subjects||u.teachingSubjects||[]).map(s=>navToCaps(s));
   return subs.indexOf(navToCaps(subject)) !== -1;
 }
