@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Teacher - Makhanani LTSM 2.0 - V2.30.2 Cancel + Reject Reason</title>
+<title>Teacher - Makhanani LTSM 2.0 - V2.30.3 Book Numbers</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -24,13 +24,13 @@ select,input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-red{background:#ef4444}.pill-teal{background:#0d9488}.pill-grey{background:#64748b}.pill-purple{background:#7c3aed}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-red{background:#ef4444}.pill-teal{background:#0d9488}.pill-grey{background:#64748b}.pill-purple{background:#7c3aed}.pill-book{background:#0a1f4d;font-size:13px;padding:5px 10px}
 table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
-.cancel-btn{background:#ef4444;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%;margin-bottom:6px}.resubmit-btn{background:#16a34a;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%}.edit-btn{background:#0a1f4d;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%;margin-bottom:6px}
+.cancel-btn{background:#ef4444;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%;margin-bottom:6px}.resubmit-btn{background:#16a34a;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%}.edit-btn{background:#0a1f4d;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%;margin-bottom:6px}.return-btn{background:#ea580c;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%;margin-bottom:6px}.copy-btn{background:#e2e8f0;color:#0a1f4d;border:none;border-radius:6px;padding:4px 8px;font-weight:900;cursor:pointer;font-size:11px}
 @media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1 id="teachTitle">👩‍🏫 TEACHER — MAKHANANI LTSM 2.0 — V2.30.2</h1><p id="teachSub">Loading...</p><div id="taskbar"></div><script src="nav.js"></script></header>
+<header><h1 id="teachTitle">👩‍🏫 TEACHER — MAKHANANI LTSM 2.0 — V2.30.3</h1><p id="teachSub">Loading...</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
 <div class="card"><h2>👤 Who Am I — Teacher</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
 
@@ -43,8 +43,10 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 <div class="info" id="editNote" style="display:none"></div>
 <div class="info">Teacher: 1 CAPS Subject only. Class dropdown shows ONLY classes ticked for you in Users — With correct Phase label. <b>You can CANCEL your own PENDING request. You CANNOT cancel APPROVED / ISSUED — Ask HOD.</b></div></div>
 
-<div class="card"><h2>📋 My Requests — ❌ Cancel PENDING / ↩️ Re-Submit Rejected</h2>
-<div class="row"><button type="button" class="btn btn-grey" onclick="setFilter('PENDING')">⏳ PENDING ONLY</button><button type="button" class="btn btn-grey" onclick="setFilter('REJECTED')">❌ REJECTED ONLY</button><button type="button" class="btn btn-grey" onclick="setFilter('')">📋 ALL</button></div>
+<div class="card"><h2>📖 My Books — Issued To Me — Book Numbers From Librarian</h2><div class="info" id="myBooksSummary">Loading...</div><div id="myBooksList"></div><div class="info">These are the exact copies Librarian scanned / typed for you. Keep these numbers safe. If a book is lost, tell Librarian the Book Number e.g. <b>BK-001</b>.</div></div>
+
+<div class="card"><h2>📋 My Requests — ❌ Cancel PENDING / ↩️ Re-Submit Rejected / 📖 See Book Numbers</h2>
+<div class="row"><button type="button" class="btn btn-grey" onclick="setFilter('PENDING')">⏳ PENDING ONLY</button><button type="button" class="btn btn-grey" onclick="setFilter('ISSUED')">📖 ISSUED ONLY — See Book Numbers</button><button type="button" class="btn btn-grey" onclick="setFilter('REJECTED')">❌ REJECTED ONLY</button><button type="button" class="btn btn-grey" onclick="setFilter('')">📋 ALL</button></div>
 <div class="info" id="counts">Loading...</div>
 <div id="myReqList"></div><div class="row"><button class="btn btn-grey" onclick="loadMyReq()">🔄 REFRESH</button></div></div>
 
@@ -57,6 +59,7 @@ async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhan
 var _u=null; var _myReq=[]; var _filter=''; var _editId='';
 function setFilter(s){ _filter=s; renderMyReq(); }
 function clearReqForm(){ _editId=''; document.getElementById('reqBook').value=''; document.getElementById('reqQty').value='1'; document.getElementById('editNote').style.display='none'; document.getElementById('submitBtn').textContent='📤 SUBMIT REQUEST'; }
+function copyNums(txt){ try{ navigator.clipboard.writeText(txt).then(function(){ alert('📋 Copied: '+txt); }); }catch(e){ prompt('Copy Book Numbers:', txt); } }
 async function init(){
   try{
     _u = await getCurrentUser();
@@ -65,7 +68,7 @@ async function init(){
     if(classes.length===1 && classes[0]==='ALL'){ classes=[]; ['4','5','6','7','8','9','10','11','12'].forEach(function(g){ ['A','B','C','D','E','F','G','H','I','J'].forEach(function(l){ classes.push(g+l); }); }); }
     var phases=[...new Set(grades.map(function(g){return getPhase(g);}))].filter(function(x){return x;});
     document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' Rank '+_u.rank+' — '+String(_u.schoolName||'')+'<br>CAPS Subject: '+subjects.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+'<br>Grades: '+grades.join(', ')+' — Phases: <b>'+phases.join(' • ')+'</b><br>Classes: '+classes.join(', ');
-    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+_u.email+' — Phases: '+phases.join(', ');
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+_u.email+' — Phases: '+phases.join(', ')+' — V2.30.3 Book Numbers';
     document.getElementById('teachTitle').textContent='👩‍🏫 TEACHER — '+subjects.join(' + ')+' — MAKHANANI LTSM 2.0';
     document.getElementById('teachSub').textContent='Teacher: '+String(_u.name||'').toUpperCase()+' • CAPS: '+subjects.join(' • ')+' • Phases: '+phases.join(' • ')+' • Grades: '+grades.join(', ');
     var ss=document.getElementById('reqSubject'); ss.innerHTML=''; subjects.forEach(function(s){ var o=document.createElement('option'); o.value=s; o.textContent=s; ss.appendChild(o); });
@@ -83,7 +86,6 @@ async function saveReq(){
   try{
     var grade=cls.replace(/[A-J]$/,''); var phase=getPhase(grade);
     if(_editId){
-      // Re-submit / Edit a REJECTED / CANCELLED request — back to PENDING
       await db.ref('requests/'+_editId).update({ subject:subj, subjects:[subj], class:cls, className:cls, grade:grade, grades:[grade], phase:phase, phases:[phase], bookTitle:book, item:book, title:book, qty:Number(qty), quantity:Number(qty), status:'PENDING', rejectReason:'', cancelledReason:'', cancelledBy:'', resubmittedAt:Date.now() });
       msg.innerHTML='<div class="ok">✅ Re-Submitted: <b>'+book+'</b> — '+subj+' — GRADE '+grade+' '+cls+' — '+phase+' — Now PENDING again.</div>';
     } else {
@@ -97,8 +99,22 @@ async function loadMyReq(){
   try{
     var snap=await db.ref('requests').orderByChild('teacherUid').equalTo(_u.uid).once('value'); _myReq=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _myReq.push(v); });
     _myReq.forEach(function(r){ if(!r.phase) r.phase=getPhase(r.grade||String(r.className||'').replace(/[A-J]$/,'')); });
-    renderMyReq();
+    renderMyReq(); renderMyBooks();
   }catch(e){ document.getElementById('myReqList').innerHTML='<div class="warn">'+e.message+'</div>'; }
+}
+function renderMyBooks(){
+  var issued=_myReq.filter(function(r){ return r.status==='ISSUED'; });
+  var allNums=[]; issued.forEach(function(r){ toArray(r.bookNumbers).forEach(function(n){ allNums.push({num:n, req:r}); }); });
+  document.getElementById('myBooksSummary').innerHTML='Books Issued To You: <b>'+issued.length+' requests</b> • Total Copies: <b>'+allNums.length+'</b> • <span class="pill pill-teal">ISSUED</span>';
+  if(!issued.length){ document.getElementById('myBooksList').innerHTML='<div class="info">No books issued yet. When Librarian issues, your Book Numbers will appear here.</div>'; return; }
+  var h='<table><tr><th>Book / Subject</th><th>Grade / Class / Phase</th><th>Book Numbers Issued To You</th><th>Issued By / Date</th><th>Action</th></tr>';
+  issued.slice().reverse().forEach(function(r){
+    var nums=toArray(r.bookNumbers);
+    var numsHtml=nums.length?nums.map(function(n){return '<span class="pill pill-book">'+n+'</span>';}).join(' '):'<span style="color:#64748b">No Book Numbers — Librarian issued without scanning</span>';
+    var copyBtn=nums.length?'<button class="copy-btn" onclick="copyNums(\''+nums.join(', ')+'\')">📋 COPY NUMBERS</button>':'';
+    h+='<tr><td>'+(r.bookTitle||'')+'<br><small>'+(r.subject||'')+'</small></td><td>GRADE '+(r.grade||'')+' '+(r.className||'')+'<br><small>'+(r.phase||'')+'</small></td><td>'+numsHtml+'<br>'+copyBtn+'</td><td>'+(r.issuedBy||'')+'<br><small>'+(r.issuedAt?new Date(r.issuedAt).toLocaleString():'')+'</small></td><td><button class="return-btn" onclick="requestReturn(\''+r.id+'\')">↩️ REQUEST RETURN</button></td></tr>';
+  });
+  h+='</table>'; document.getElementById('myBooksList').innerHTML=h;
 }
 function renderMyReq(){
   var list=_myReq.filter(function(r){ return !_filter || (r.status||'PENDING')===_filter; });
@@ -107,29 +123,30 @@ function renderMyReq(){
   var rej=_myReq.filter(function(r){return r.status==='REJECTED';}).length;
   var iss=_myReq.filter(function(r){return r.status==='ISSUED';}).length;
   var canc=_myReq.filter(function(r){return r.status==='CANCELLED';}).length;
-  document.getElementById('counts').innerHTML='My Total: <b>'+_myReq.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+appr+'</b> • ISSUED: <b>'+iss+'</b> • REJECTED: <b>'+rej+'</b> • CANCELLED: <b>'+canc+'</b> — Filter: <b>'+(_filter||'ALL')+'</b>';
+  var totalCopies=0; _myReq.forEach(function(r){ totalCopies+=toArray(r.bookNumbers).length; });
+  document.getElementById('counts').innerHTML='My Total: <b>'+_myReq.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+appr+'</b> • ISSUED: <b>'+iss+'</b> • REJECTED: <b>'+rej+'</b> • CANCELLED: <b>'+canc+'</b> • Book Copies Issued: <b>'+totalCopies+'</b> — Filter: <b>'+(_filter||'ALL')+'</b>';
   if(!list.length){ document.getElementById('myReqList').innerHTML='<div class="info">No requests in this filter.</div>'; return; }
-  var h='<table><tr><th>Subject</th><th>Grade / Class / Phase</th><th>Book</th><th>Qty</th><th>Status / HOD Reason</th><th>My Action</th></tr>';
+  var h='<table><tr><th>Subject</th><th>Grade / Class / Phase</th><th>Book</th><th>Qty</th><th>Status / Reason / Book Numbers</th><th>My Action</th></tr>';
   list.slice().reverse().forEach(function(r){
     var st=r.status||'PENDING';
     var pillClass=st==='APPROVED'?'pill-green':st==='ISSUED'?'pill-teal':st==='REJECTED'?'pill-red':st==='CANCELLED'?'pill-grey':st==='PENDING'?'pill':'pill-grey';
     var reasonHtml='';
-    if(st==='REJECTED' && r.rejectReason) reasonHtml='<br><span style="color:#991b1b;font-size:11px"><b>HOD Reason:</b> '+r.rejectReason+'</span><br><small>By '+ (r.rejectedBy||r.hodName||'HOD') +'</small>';
-    if(st==='APPROVED' && r.approvedBy) reasonHtml='<br><small>Approved by <b>'+r.approvedBy+'</b></small>';
-    if(st==='ISSUED' && r.issuedBy) reasonHtml='<br><small>Issued by <b>'+r.issuedBy+'</b> — Qty Issued: <b>'+(r.qtyIssued||'')+'</b></small>';
-    if(st==='CANCELLED' && r.cancelledReason) reasonHtml='<br><span style="font-size:11px">You cancelled: '+r.cancelledReason+'</span>';
-    var btn='';
-    if(st==='PENDING'){
-      btn='<button class="edit-btn" onclick="editReq(\''+r.id+'\')">✏️ EDIT</button><button class="cancel-btn" onclick="cancelReq(\''+r.id+'\')">❌ CANCEL</button>';
-    } else if(st==='REJECTED'){
-      btn='<button class="resubmit-btn" onclick="editReq(\''+r.id+'\')">↩️ FIX + RE-SUBMIT</button>';
-    } else if(st==='CANCELLED'){
-      btn='<button class="resubmit-btn" onclick="editReq(\''+r.id+'\')">↩️ RE-SUBMIT</button>';
-    } else if(st==='APPROVED'){
-      btn='<span style="font-size:11px;color:#16a34a">✅ Approved<br>Cannot cancel<br>Ask HOD to Reject</span>';
-    } else if(st==='ISSUED'){
-      btn='<span style="font-size:11px;color:#0d9488">✅ Already Issued<br>Cannot cancel</span>';
+    if(st==='REJECTED' && r.rejectReason) reasonHtml+='<br><span style="color:#991b1b;font-size:11px"><b>HOD Reason:</b> '+r.rejectReason+'</span><br><small>By '+ (r.rejectedBy||r.hodName||'HOD') +'</small>';
+    if(st==='APPROVED' && r.approvedBy) reasonHtml+='<br><small>Approved by <b>'+r.approvedBy+'</b></small>';
+    if(st==='ISSUED'){
+      var nums=toArray(r.bookNumbers);
+      reasonHtml+='<br><small>Issued by <b>'+(r.issuedBy||'')+'</b> — Qty Issued: <b>'+(r.qtyIssued||'')+'</b> — '+(r.issuedAt?new Date(r.issuedAt).toLocaleDateString():'')+'</small>';
+      if(nums.length) reasonHtml+='<br><b>📖 My Book Numbers:</b><br>'+nums.map(function(n){return '<span class="pill pill-book">'+n+'</span>';}).join(' ')+'<br><button class="copy-btn" onclick="copyNums(\''+nums.join(', ')+'\')">📋 COPY</button>';
+      else reasonHtml+='<br><span style="color:#64748b">No Book Numbers recorded — Librarian issued without scanning.</span>';
     }
+    if(st==='CANCELLED' && r.cancelledReason) reasonHtml+='<br><span style="font-size:11px">You cancelled: '+r.cancelledReason+'</span>';
+    if(r.returnRequested) reasonHtml+='<br><span style="color:#ea580c;font-size:11px"><b>↩️ Return Requested:</b> '+(r.returnReason||'')+' — Waiting Librarian</span>';
+    var btn='';
+    if(st==='PENDING'){ btn='<button class="edit-btn" onclick="editReq(\''+r.id+'\')">✏️ EDIT</button><button class="cancel-btn" onclick="cancelReq(\''+r.id+'\')">❌ CANCEL</button>'; }
+    else if(st==='REJECTED'){ btn='<button class="resubmit-btn" onclick="editReq(\''+r.id+'\')">↩️ FIX + RE-SUBMIT</button>'; }
+    else if(st==='CANCELLED'){ btn='<button class="resubmit-btn" onclick="editReq(\''+r.id+'\')">↩️ RE-SUBMIT</button>'; }
+    else if(st==='APPROVED'){ btn='<span style="font-size:11px;color:#16a34a">✅ Approved<br>Cannot cancel<br>Ask HOD to Reject</span>'; }
+    else if(st==='ISSUED'){ btn='<span style="font-size:11px;color:#0d9488">✅ Issued<br>'+toArray(r.bookNumbers).length+' copies</span><br><button class="return-btn" onclick="requestReturn(\''+r.id+'\')">↩️ REQUEST RETURN</button>'; }
     h+='<tr><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||r.class||'')+'<br><small>'+(r.phase||getPhase(r.grade||''))+'</small></td><td>'+(r.bookTitle||'')+'</td><td>'+(r.qty||'')+'</td><td><span class="pill '+pillClass+'">'+st+'</span>'+reasonHtml+'</td><td>'+btn+'</td></tr>';
   });
   h+='</table>'; document.getElementById('myReqList').innerHTML=h;
@@ -156,6 +173,18 @@ async function cancelReq(id){
   try{
     await db.ref('requests/'+id).update({ status:'CANCELLED', cancelledBy:_u.name, cancelledByEmail:_u.email, cancelledReason:reason, cancelledAt:Date.now() });
     alert('❌ Cancelled — You can Re-Submit it later if needed.');
+    loadMyReq();
+  }catch(e){ alert('❌ '+e.message); }
+}
+async function requestReturn(id){
+  var r=_myReq.find(function(x){return x.id===id;}); if(!r) return;
+  var nums=toArray(r.bookNumbers);
+  var reason=prompt('REQUEST RETURN to Librarian?\n\nBook: '+r.bookTitle+'\nBook Numbers: '+(nums.length?nums.join(', '):'None recorded')+'\n\nType reason — e.g. Learners returned, Term ended, Wrong books', 'Term ended — Returning books');
+  if(reason===null) return;
+  if(!confirm('Send Return Request to Librarian?\n\n'+r.bookTitle+' — '+nums.join(', ')+'\nReason: '+reason+'\n\nLibrarian will see this in Librarian page and can accept return.')) return;
+  try{
+    await db.ref('requests/'+id).update({ returnRequested:true, returnReason:reason, returnRequestedBy:_u.name, returnRequestedAt:Date.now() });
+    alert('↩️ Return Requested — Librarian will see it. Bring books: '+nums.join(', '));
     loadMyReq();
   }catch(e){ alert('❌ '+e.message); }
 }
