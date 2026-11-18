@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Home - Makhanani LTSM 2.0 - CAPS Grade 4-12 - FIXED V2.29</title>
+<title>Home - Makhanani LTSM 2.0 - CAPS Phases Fixed V2.30</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -18,34 +18,23 @@
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.database();
-  // FIX: Convert String -> Array for classes / subjects / grades
-  function toArray(v){
-    if(!v) return [];
-    if(Array.isArray(v)) return v;
-    if(typeof v === 'string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;});
-    return [];
+  function toArray(v){ if(!v) return []; if(Array.isArray(v)) return v; if(typeof v==='string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;}); return []; }
+  function getPhase(grade){
+    var g=Number(grade);
+    if(g>=4 && g<=6) return 'INTERMEDIATE PHASE';
+    if(g>=7 && g<=9) return 'SENIOR PHASE';
+    if(g>=10 && g<=12) return 'FET PHASE';
+    return '';
   }
   function getCurrentUser(){
     return new Promise(function(res){
       auth.onAuthStateChanged(function(u){
         if(!u) return res(null);
         db.ref('users/'+u.uid).once('value').then(function(s){
-          var d = s.val() || {}; d.uid = u.uid; d.email = u.email;
-          // NORMALIZE ALL - String or Array both work now
-          d.classes = toArray(d.classes || d.className || d.class);
-          d.subjects = toArray(d.subjects || d.subject);
-          d.grades = toArray(d.grades || d.grade);
-          // If classes = ["ALL"] -> expand to Grade 4-12 A-J
-          if(d.classes.length===1 && d.classes[0]==='ALL'){
-            d.classes=[]; ['4','5','6','7','8','9','10','11','12'].forEach(function(g){ ['A','B','C','D','E','F','G','H','I','J'].forEach(function(l){ d.classes.push(g+l); }); });
-            d.grades=['4','5','6','7','8','9','10','11','12'];
-            if(!d.subjects.length || d.subjects.includes('ALL')) d.subjects=['ALL'];
-          }
-          // Auto grades from classes if missing
-          if(!d.grades.length && d.classes.length){
-            var gs=[]; d.classes.forEach(function(c){ var gr=c.replace(/[A-J]$/,''); if(!gs.includes(gr)) gs.push(gr); });
-            d.grades=gs.sort(function(a,b){return Number(a)-Number(b);});
-          }
+          var d=s.val()||{}; d.uid=u.uid; d.email=u.email;
+          d.classes=toArray(d.classes||d.className||d.class); d.subjects=toArray(d.subjects||d.subject); d.grades=toArray(d.grades||d.grade);
+          if(d.classes.length===1 && d.classes[0]==='ALL'){ d.classes=[]; ['4','5','6','7','8','9','10','11','12'].forEach(function(g){ ['A','B','C','D','E','F','G','H','I','J'].forEach(function(l){ d.classes.push(g+l); }); }); d.grades=['4','5','6','7','8','9','10','11','12']; }
+          if(!d.grades.length && d.classes.length){ var gs=[]; d.classes.forEach(function(c){ var gr=c.replace(/[A-J]$/,''); if(!gs.includes(gr)) gs.push(gr); }); d.grades=gs.sort(function(a,b){return Number(a)-Number(b);}); }
           res(d);
         }).catch(function(){ res({uid:u.uid, email:u.email, classes:[], subjects:[], grades:[]}); });
       });
@@ -55,7 +44,7 @@
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:18px 12px;text-align:center;border-bottom:4px solid #d4af37}
-header h1{margin:0;font-size:22px;line-height:1.3}header p{margin:6px 0 0;font-size:12px;color:#d4af37}
+header h1{margin:0;font-size:22px}header p{margin:6px 0 0;font-size:12px;color:#d4af37}
 .wrap{max-width:980px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
 h2{margin:0 0 10px;font-size:16px}
 .btn{border:none;border-radius:10px;padding:16px 12px;font-weight:900;cursor:pointer;font-size:14px;width:100%;text-align:left}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-orange{background:#ea580c;color:#fff}
@@ -64,24 +53,27 @@ h2{margin:0 0 10px;font-size:16px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid .btn{font-size:13px;padding:14px}
-.pill{display:inline-block;background:#ea580c;color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:900;margin:2px}.pill-blue{background:#0a1f4d}.pill-green{background:#16a34a}
-.phase{background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:10px;font-size:12px;line-height:1.7}
-.phase b{font-size:13px}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:900;margin:2px}.pill-green{background:#16a34a}.pill-blue{background:#0a1f4d}
+.phase{border-radius:10px;padding:12px;font-size:12px;line-height:1.7;border:2px solid #e2e8f0}
+.phase-int{background:#dcfce7;border-color:#22c55e}.phase-sen{background:#dbeafe;border-color:#3b82f6}.phase-fet{background:#ffedd5;border-color:#ea580c}
+.phase b{font-size:14px}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
 @media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>🏫 MAKHANANI LTSM 2.0 — WORDSWORTH HIGH SCHOOL</h1><p>CAPS — GRADE 4 TO 12 — FIREBASE V2.29 FIXED — ALL CAPS SUBJECTS — HOME</p><div id="taskbar"></div><script src="nav.js"></script></header>
+<header><h1>🏫 MAKHANANI LTSM 2.0 — WORDSWORTH HIGH SCHOOL</h1><p>CAPS — 4-6 INTERMEDIATE • 7-9 SENIOR PHASE • 10-12 FET — FIREBASE V2.30 — HOME</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
-<div class="card"><h2>👤 Welcome — Who Am I</h2><div class="info" id="whoAmI">Loading from Firebase...</div><div class="ok" id="debug">DEBUG: Connecting...</div><div class="warn" id="notLogged" style="display:none"></div></div>
-<div class="card"><h2>🚀 My Dashboard — Tap Your Role</h2><div class="grid" id="menuGrid"></div><div class="info" id="roleHint"></div></div>
-<div class="card"><h2>📚 CAPS — GRADE 4 TO 12 — Phases</h2>
+<div class="card"><h2>👤 Welcome — Who Am I</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
+<div class="card"><h2>🚀 My Dashboard</h2><div class="grid" id="menuGrid"></div><div class="info" id="roleHint"></div></div>
+<div class="card"><h2>📚 CAPS PHASES — CORRECT — 4-6 / 7-9 / 10-12</h2>
 <div class="row">
-<div class="phase"><b>📗 INTERMEDIATE PHASE</b><br>GRADE 4 • GRADE 5 • GRADE 6<br>Classes: 4A-4J, 5A-5J, 6A-6J<br>Subjects: ENGLISH HOME LANGUAGE, AFRIKAANS FIRST ADDITIONAL LANGUAGE, MATHEMATICS GRADE 4-6, NATURAL SCIENCES AND TECHNOLOGY, SOCIAL SCIENCES, LIFE SKILLS</div>
-<div class="phase"><b>📘 SENIOR PHASE</b><br>GRADE 7 • GRADE 8 • GRADE 9<br>Classes: 7A-7J, 8A-8J, 9A-9J<br>Subjects: ENGLISH, AFRIKAANS, MATHEMATICS, NATURAL SCIENCES, SOCIAL SCIENCES, TECHNOLOGY, ECONOMIC AND MANAGEMENT SCIENCES, LIFE ORIENTATION, CREATIVE ARTS</div>
-<div class="phase"><b>📙 FET PHASE</b><br>GRADE 10 • GRADE 11 • GRADE 12<br>Classes: 10A-10J, 11A-11J, 12A-12J<br>Subjects: MATHEMATICS, MATHEMATICAL LITERACY, PHYSICAL SCIENCES, LIFE SCIENCES, ACCOUNTING, BUSINESS STUDIES, GEOGRAPHY, HISTORY, etc. — ALL CAPS</div>
-</div></div>
-<div class="card"><h2>📊 Live Counts — Firebase</h2><div id="counts"></div><div class="row"><button class="btn btn-grey" onclick="loadCounts()">🔄 REFRESH COUNTS</button></div></div>
+<div class="phase phase-int"><b>📗 INTERMEDIATE PHASE — GRADES 4 - 6</b><br><b>Grades:</b> 4, 5, 6<br><b>Classes:</b> 4A-4J, 5A-5J, 6A-6J — 30 Classes<br><b>CAPS Subjects:</b><br>• ENGLISH HOME LANGUAGE<br>• AFRIKAANS FIRST ADDITIONAL LANGUAGE<br>• MATHEMATICS GRADE 4-6<br>• NATURAL SCIENCES AND TECHNOLOGY<br>• SOCIAL SCIENCES<br>• LIFE SKILLS</div>
+<div class="phase phase-sen"><b>📘 SENIOR PHASE — GRADES 7 - 9</b><br><b>Grades:</b> 7, 8, 9<br><b>Classes:</b> 7A-7J, 8A-8J, 9A-9J — 30 Classes<br><b>CAPS Subjects:</b><br>• ENGLISH HOME / FIRST ADDITIONAL LANGUAGE<br>• AFRIKAANS HOME / FIRST ADDITIONAL LANGUAGE<br>• MATHEMATICS<br>• NATURAL SCIENCES<br>• SOCIAL SCIENCES<br>• TECHNOLOGY<br>• ECONOMIC AND MANAGEMENT SCIENCES<br>• LIFE ORIENTATION<br>• CREATIVE ARTS</div>
+<div class="phase phase-fet"><b>📙 FET PHASE — GRADES 10 - 12</b><br><b>Grades:</b> 10, 11, 12<br><b>Classes:</b> 10A-10J, 11A-11J, 12A-12J — 30 Classes<br><b>CAPS Subjects:</b><br>• MATHEMATICS / MATHEMATICAL LITERACY<br>• PHYSICAL SCIENCES<br>• LIFE SCIENCES<br>• ACCOUNTING<br>• BUSINESS STUDIES<br>• ECONOMICS<br>• GEOGRAPHY / HISTORY<br>• LIFE ORIENTATION<br>• + ALL OTHER CAPS FET SUBJECTS</div>
+</div>
+<div class="info"><b>Total:</b> 9 Grades (4 to 12) = <b>90 Classes</b> (A-J) — Intermediate 30 + Senior 30 + FET 30</div>
+</div>
+<div class="card"><h2>📊 Live Counts</h2><div id="counts"></div><div class="row"><button class="btn btn-grey" onclick="loadCounts()">🔄 REFRESH</button></div></div>
 <div class="card"><h2>📋 My Recent Requests</h2><div id="recentReq"></div></div>
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="go('login.html')">🔐 LOGIN</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
@@ -93,49 +85,25 @@ async function init(){
   try{
     _u = await getCurrentUser();
     var grid=document.getElementById('menuGrid'); var hint=document.getElementById('roleHint');
-    if(!_u || !_u.email){
-      document.getElementById('whoAmI').innerHTML='❌ Not logged in';
-      document.getElementById('notLogged').style.display='block'; document.getElementById('notLogged').innerHTML='👉 Tap LOGIN below.';
-      document.getElementById('debug').innerHTML='DEBUG: ❌ Not logged in';
-      grid.innerHTML='<button class="btn btn-green" onclick="go(\'login.html\')">🔐 LOGIN →</button><button class="btn btn-gold" onclick="go(\'teacher.html\')">👩‍🏫 TEACHER →</button><button class="btn btn-orange" onclick="go(\'hod.html\')">📚 HOD →</button>';
-      hint.innerHTML='Not logged in — Login first.';
-      loadCounts(); return;
-    }
-    var subjects = toArray(_u.subjects); var classes = toArray(_u.classes); var grades = toArray(_u.grades);
-    document.getElementById('whoAmI').innerHTML='✅ Welcome <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+' — '+_u.email+'<br>CAPS Subjects: '+subjects.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+'<br>Grades: <b>'+grades.join(', ')+'</b> — Classes: <b>'+classes.join(', ')+'</b>';
-    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+_u.email+' — UID: '+_u.uid+' — Classes fixed: Array('+classes.length+') ✅';
+    if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in'; document.getElementById('debug').innerHTML='DEBUG: ❌ Not logged in'; grid.innerHTML='<button class="btn btn-green" onclick="go(\'login.html\')">🔐 LOGIN →</button>'; loadCounts(); return; }
+    var subjects=toArray(_u.subjects); var classes=toArray(_u.classes); var grades=toArray(_u.grades);
+    var phases=[...new Set(grades.map(function(g){return getPhase(g);}))].filter(function(x){return x;});
+    document.getElementById('whoAmI').innerHTML='✅ Welcome <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+'<br>CAPS Subjects: '+subjects.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+'<br>Grades: <b>'+grades.join(', ')+'</b> — Phases: <b>'+phases.join(' • ')+'</b> — Classes: <b>'+classes.join(', ')+'</b>';
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+_u.email+' — Phases: '+phases.join(', ');
     var btns='';
     if(_u.role==='TEACHER') btns+='<button class="btn btn-green" onclick="go(\'teacher.html\')">👩‍🏫 TEACHER — NEW REQUEST →</button>';
     if(_u.role==='HOD') btns+='<button class="btn btn-orange" onclick="go(\'hod.html\')">📚 HOD — '+subjects.join(' + ')+' →</button>';
     if(_u.role==='LIBRARIAN') btns+='<button class="btn btn-teal" onclick="go(\'librarian.html\')">📖 LIBRARIAN →</button>';
     if(_u.role==='PRINCIPAL') btns+='<button class="btn btn-purple" onclick="go(\'principal.html\')">🏫 PRINCIPAL →</button>';
     if(_u.role==='SUPER_ADMIN') btns+='<button class="btn btn-gold" onclick="go(\'users.html\')">👥 USERS — ADD / EDIT →</button>';
-    btns+='<button class="btn btn-green" onclick="go(\'teacher.html\')">👩‍🏫 TEACHER →</button><button class="btn btn-orange" onclick="go(\'hod.html\')">📚 HOD →</button><button class="btn btn-teal" onclick="go(\'librarian.html\')">📖 LIBRARIAN →</button>';
-    if(['PRINCIPAL','SUPER_ADMIN'].includes(_u.role)) btns+='<button class="btn btn-purple" onclick="go(\'principal.html\')">🏫 PRINCIPAL →</button><button class="btn btn-gold" onclick="go(\'users.html\')">👥 USERS →</button><button class="btn btn-grey" onclick="go(\'admin.html\')">⚙️ ADMIN →</button>';
+    btns+='<button class="btn btn-green" onclick="go(\'teacher.html\')">👩‍🏫 TEACHER →</button><button class="btn btn-orange" onclick="go(\'hod.html\')">📚 HOD →</button><button class="btn btn-teal" onclick="go(\'librarian.html\')">📖 LIBRARIAN →</button><button class="btn btn-grey" onclick="go(\'manuals.html\')">📖 MANUALS →</button>';
+    if(['PRINCIPAL','SUPER_ADMIN'].includes(_u.role)) btns+='<button class="btn btn-purple" onclick="go(\'principal.html\')">🏫 PRINCIPAL →</button><button class="btn btn-gold" onclick="go(\'users.html\')">👥 USERS →</button>';
     grid.innerHTML=btns;
-    if(_u.role==='TEACHER') hint.innerHTML='Teacher — Your CAPS Subject: <b>'+subjects.join(', ')+'</b> — Your Classes: <b>'+classes.join(', ')+'</b>';
-    if(_u.role==='HOD') hint.innerHTML='HOD — Your CAPS Subjects: <b>'+subjects.join(' + ')+'</b> — Your Grades: <b>'+grades.join(', ')+'</b>';
-    if(_u.role==='SUPER_ADMIN') hint.innerHTML='Super Admin Rank 6 — ALL Grades 4-12 + ALL CAPS Subjects — Tap USERS to add HOD / Teacher.';
-    if(_u.role==='PRINCIPAL') hint.innerHTML='Principal Rank 5 — ALL Grades 4-12 + ALL CAPS Subjects.';
+    hint.innerHTML='Your Phases: <b>'+phases.join(' • ')+'</b> — Your Grades: <b>'+grades.join(', ')+'</b>';
     loadCounts(); loadRecent();
   }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
 }
-async function loadCounts(){
-  try{
-    var uSnap=await db.ref('users').once('value'); var uCount=0; uSnap.forEach(function(){uCount++;});
-    var rSnap=await db.ref('requests').once('value'); var rCount=0; var pend=0; rSnap.forEach(function(c){ rCount++; if((c.val().status||'PENDING')==='PENDING') pend++; });
-    document.getElementById('counts').innerHTML='<table><tr><th>Total Users</th><th>Total Requests</th><th>Pending</th></tr><tr><td><b>'+uCount+'</b> — Grade 4-12</td><td><b>'+rCount+'</b></td><td><b>'+pend+'</b></td></tr></table>';
-  }catch(e){ document.getElementById('counts').innerHTML='<div class="warn">'+e.message+'</div>'; }
-}
-async function loadRecent(){
-  try{
-    if(!_u) return;
-    var snap=await db.ref('requests').orderByChild('teacherUid').equalTo(_u.uid).limitToLast(5).once('value'); var arr=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; arr.push(v); });
-    if(!arr.length){ document.getElementById('recentReq').innerHTML='<div class="info">No requests yet — Tap TEACHER / HOD above.</div>'; return; }
-    var h='<table><tr><th>Subject</th><th>Class</th><th>Book</th><th>Status</th></tr>';
-    arr.reverse().forEach(function(r){ h+='<tr><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||r.class||'')+'</td><td>'+(r.bookTitle||'')+'</td><td>'+(r.status||'')+'</td></tr>'; });
-    h+='</table>'; document.getElementById('recentReq').innerHTML=h;
-  }catch(e){ document.getElementById('recentReq').innerHTML=''; }
-}
+async function loadCounts(){ try{ var uSnap=await db.ref('users').once('value'); var uc=0; uSnap.forEach(function(){uc++;}); var rSnap=await db.ref('requests').once('value'); var rc=0; var pend=0; rSnap.forEach(function(c){ rc++; if((c.val().status||'PENDING')==='PENDING') pend++; }); document.getElementById('counts').innerHTML='<table><tr><th>Total Users</th><th>Total Requests</th><th>Pending</th></tr><tr><td><b>'+uc+'</b></td><td><b>'+rc+'</b></td><td><b>'+pend+'</b></td></tr></table>'; }catch(e){ document.getElementById('counts').innerHTML='<div class="warn">'+e.message+'</div>'; } }
+async function loadRecent(){ try{ if(!_u) return; var snap=await db.ref('requests').orderByChild('teacherUid').equalTo(_u.uid).limitToLast(5).once('value'); var arr=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; arr.push(v); }); if(!arr.length){ document.getElementById('recentReq').innerHTML='<div class="info">No requests yet.</div>'; return; } var h='<table><tr><th>Subject</th><th>Class</th><th>Book</th><th>Status</th></tr>'; arr.reverse().forEach(function(r){ h+='<tr><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||r.class||'')+' — '+getPhase(r.grade||'')+'</td><td>'+(r.bookTitle||'')+'</td><td>'+(r.status||'')+'</td></tr>'; }); h+='</table>'; document.getElementById('recentReq').innerHTML=h; }catch(e){} }
 init();
 </script></body></html>
