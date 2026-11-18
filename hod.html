@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HOD - Makhanani LTSM 2.0 - Multi Subject</title>
+<title>HOD - Makhanani LTSM 2.0 - CAPS Grade 4-12</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -26,7 +26,7 @@
           var d = s.val() || {}; d.uid = u.uid; d.email = u.email;
           if(!d.classes && d.className) d.classes = d.className.split(',').map(function(x){return x.trim();});
           if(!d.subjects && d.subject) d.subjects = d.subject.split(',').map(function(x){return x.trim();});
-          if(!d.grades && d.classes) d.grades = [...new Set(d.classes.map(function(c){return c.replace(/[A-J]$/,'');}))].sort();
+          if(!d.grades && d.classes) d.grades = [...new Set(d.classes.map(function(c){return c.replace(/[A-J]$/,'');}))].sort(function(a,b){return Number(a)-Number(b);});
           res(d);
         }).catch(function(){ res({uid:u.uid, email:u.email}); });
       });
@@ -37,7 +37,7 @@
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
 header h1{margin:0;font-size:20px;line-height:1.3}header p{margin:6px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:950px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
+.wrap{max-width:980px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 select,input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
 .btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}
@@ -45,64 +45,44 @@ select,input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.chk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}.chk{display:flex;align-items:center;gap:6px;background:#fff7ed;border:2px solid #fdba74;border-radius:8px;padding:10px;font-weight:900;font-size:13px;cursor:pointer}.chk input{width:auto;padding:0}.chk.on{background:#ffedd5;border-color:#ea580c}
+.chk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}.chk{display:flex;align-items:center;gap:6px;background:#fff7ed;border:2px solid #fdba74;border-radius:8px;padding:10px;font-weight:900;font-size:12px;cursor:pointer}.chk input{width:auto;padding:0}.chk.on{background:#ffedd5;border-color:#ea580c}
 .chk-class{background:#f8fafc;border-color:#e2e8f0}.chk-class.on{background:#eef2ff;border-color:#0a1f4d}
-.pill{display:inline-block;background:#ea580c;color:#fff;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:900;margin:2px}
-.pill-blue{background:#0a1f4d}.pill-green{background:#16a34a}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:900;margin:2px}.pill-blue{background:#0a1f4d}.pill-green{background:#16a34a}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
+.subj-title{font-weight:900;font-size:13px;margin:14px 0 6px;background:#ea580c;color:#fff;padding:8px;border-radius:8px}
 @media(max-width:700px){.row{flex-direction:column}.chk-grid{grid-template-columns:repeat(2,1fr)}}
 </style></head>
 <body>
-<header>
-<h1 id="hodTitle">📚 HOD — MAKHANANI LTSM 2.0 — FIREBASE V2.26</h1>
-<p id="hodSub">Loading HOD Subjects...</p>
-<div id="taskbar"></div><script src="nav.js"></script>
-</header>
+<header><h1 id="hodTitle">📚 HOD — MAKHANANI LTSM 2.0 — CAPS V2.28</h1><p id="hodSub">Loading HOD CAPS Subjects...</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I — HOD</h2><div class="info" id="whoAmI">Loading from Firebase...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
-
-<div class="card"><h2>✅ 1. SELECT SUBJECTS — Tick 1 or MORE — HOD Heading Updates Live</h2>
-<div class="row"><button type="button" class="btn btn-grey" onclick="selectAllSubj(true)">✅ ALL MY SUBJECTS</button><button type="button" class="btn btn-grey" onclick="selectAllSubj(false)">❌ CLEAR</button><button type="button" class="btn btn-gold" onclick="applyFilters()">🔍 APPLY FILTER →</button></div>
-<div id="subjGrid" class="chk-grid"></div>
-<div class="info" id="subjInfo">Subjects Selected: None</div>
-</div>
-
-<div class="card"><h2>✅ 2. SELECT GRADES / CLASSES — Tick 1 or MORE</h2>
-<div class="row"><button type="button" class="btn btn-grey" onclick="selectAllClasses(true)">✅ ALL MY CLASSES</button><button type="button" class="btn btn-grey" onclick="selectAllClasses(false)">❌ CLEAR</button></div>
-<div id="classGrid" class="chk-grid"></div>
-<div class="info" id="classInfo">Classes Selected: None</div>
-</div>
-
-<div class="card"><h2>📋 3. Requests — Filtered By YOUR Selected Subjects + Classes</h2>
-<div class="info" id="filterInfo">Showing: All</div>
-<div id="reqList"></div>
-<div class="row"><button class="btn btn-grey" onclick="loadRequests()">🔄 REFRESH REQUESTS</button></div>
-</div>
-
+<div class="card"><h2>👤 Who Am I — HOD</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
+<div class="card"><h2>✅ 1. SELECT CAPS SUBJECTS — Tick 1 or MORE — Heading Updates Live</h2>
+<div class="row"><button type="button" class="btn btn-grey" onclick="selectAllSubj(true)">✅ ALL MY SUBJECTS</button><button type="button" class="btn btn-grey" onclick="selectAllSubj(false)">❌ CLEAR</button><button type="button" class="btn btn-gold" onclick="applyFilters()">🔍 APPLY →</button></div>
+<div id="subjGrid"></div><div class="info" id="subjInfo">Subjects: None</div></div>
+<div class="card"><h2>✅ 2. SELECT GRADES 4-12 / CLASSES A-J — Tick 1 or MORE</h2>
+<div class="row"><button type="button" class="btn btn-grey" onclick="selectPhase('4-6',true)">Grades 4-6 ✅</button><button type="button" class="btn btn-grey" onclick="selectPhase('7-9',true)">Grades 7-9 ✅</button><button type="button" class="btn btn-grey" onclick="selectPhase('10-12',true)">Grades 10-12 ✅</button><button type="button" class="btn btn-grey" onclick="selectAllClasses(true)">✅ ALL MY CLASSES</button><button type="button" class="btn btn-grey" onclick="selectAllClasses(false)">❌ CLEAR</button></div>
+<div id="classGrid" class="chk-grid"></div><div class="info" id="classInfo">Classes: None</div></div>
+<div class="card"><h2>📋 3. Requests — Filtered By YOUR Selected CAPS Subjects + Grades 4-12 Classes</h2><div class="info" id="filterInfo">Showing: All</div><div id="reqList"></div><div class="row"><button class="btn btn-grey" onclick="loadRequests()">🔄 REFRESH</button></div></div>
 <div class="card"><h2>📊 My HOD Summary</h2><div id="summary"></div></div>
-
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
 <script>
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
 async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
-var _u=null; var _allReq=[];
+var _u=null; var _allReq=[]; var _myClasses=[];
 function getSelSubj(){ var a=[]; document.querySelectorAll('#subjGrid input:checked').forEach(function(i){a.push(i.value);}); return a; }
 function getSelClasses(){ var a=[]; document.querySelectorAll('#classGrid input:checked').forEach(function(i){a.push(i.value);}); return a; }
 function selectAllSubj(on){ document.querySelectorAll('#subjGrid input').forEach(function(i){i.checked=on;}); updateHeads(); }
 function selectAllClasses(on){ document.querySelectorAll('#classGrid input').forEach(function(i){i.checked=on;}); updateHeads(); }
+function selectPhase(p,on){ var gs=p==='4-6'?['4','5','6']:p==='7-9'?['7','8','9']:['10','11','12']; document.querySelectorAll('#classGrid input').forEach(function(i){ var g=i.value.replace(/[A-J]$/,''); if(gs.includes(g)) i.checked=on; }); updateHeads(); }
 function updateHeads(){
   var s=getSelSubj(); var c=getSelClasses();
-  document.getElementById('subjInfo').innerHTML='Subjects Selected: <b>'+(s.length?s.join(' • '):'None')+'</b> — Count: '+s.length;
-  document.getElementById('classInfo').innerHTML='Classes Selected: <b>'+(c.length?c.join(', '):'None')+'</b> — Count: '+c.length;
+  document.getElementById('subjInfo').innerHTML='Subjects: <b>'+(s.length?s.join(' • '):'None')+'</b> — '+s.length;
+  document.getElementById('classInfo').innerHTML='Classes: <b>'+(c.length?c.join(', '):'None')+'</b> — '+c.length;
   document.querySelectorAll('#subjGrid .chk').forEach(function(el){ el.classList.toggle('on', el.querySelector('input').checked); });
   document.querySelectorAll('#classGrid .chk').forEach(function(el){ el.classList.toggle('on', el.querySelector('input').checked); });
-  if(_u){
-    var title = s.length ? '📚 HOD — ' + s.join(' + ') : '📚 HOD — ' + (_u.subjects?_u.subjects.join(' + '):_u.subject);
-    document.getElementById('hodTitle').textContent = title + ' — MAKHANANI LTSM 2.0';
-    document.getElementById('hodSub').innerHTML = 'HOD: <b>'+String(_u.name||'').toUpperCase()+'</b> • Subjects: <b>'+s.join(' • ')+'</b> • Classes: <b>'+c.join(', ')+'</b>';
-  }
+  if(_u){ document.getElementById('hodTitle').textContent = '📚 HOD — ' + (s.length?s.join(' + '):(_u.subjects?_u.subjects.join(' + '):_u.subject)) + ' — MAKHANANI LTSM 2.0'; document.getElementById('hodSub').innerHTML='HOD: <b>'+String(_u.name||'').toUpperCase()+'</b> • Subjects: <b>'+s.join(' • ')+'</b> • Grades: <b>'+(_u.grades?_u.grades.join(', '):'')+'</b> • Classes: <b>'+c.join(', ')+'</b>'; }
   renderReq();
 }
 function applyFilters(){ updateHeads(); document.getElementById('filterInfo').innerHTML='Showing: Subjects <b>'+getSelSubj().join(' • ')+'</b> — Classes <b>'+getSelClasses().join(', ')+'</b>'; }
@@ -110,36 +90,28 @@ async function init(){
   try{
     _u = await getCurrentUser();
     if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; return; }
-    if(_u.role!=='HOD' && _u.role!=='SUPER_ADMIN' && _u.role!=='PRINCIPAL'){ document.getElementById('whoAmI').innerHTML='⛔ This page is for HOD / PRINCIPAL / SUPER_ADMIN only. Your role: '+_u.role; return; }
+    if(!['HOD','PRINCIPAL','SUPER_ADMIN'].includes(_u.role)){ document.getElementById('whoAmI').innerHTML='⛔ HOD / PRINCIPAL / SUPER_ADMIN only. Your role: '+_u.role; return; }
     var subjects = _u.subjects && _u.subjects.length ? _u.subjects : [ _u.subject ];
     var classes = _u.classes && _u.classes.length ? _u.classes : [];
-    if(classes.includes('ALL')){ classes=[]; ['8','9','10','11','12'].forEach(function(g){ ['A','B','C','D','E','F','G','H','I','J'].forEach(function(l){ classes.push(g+l); }); }); }
+    if(classes.includes('ALL')){ classes=[]; ['4','5','6','7','8','9','10','11','12'].forEach(function(g){ ['A','B','C','D','E','F','G','H','I','J'].forEach(function(l){ classes.push(g+l); }); }); }
+    _myClasses=classes;
     document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' Rank '+_u.rank+' — '+String(_u.schoolName||'')+'<br>Subjects: '+subjects.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+'<br>Grades: '+( _u.grades?_u.grades.join(', '):'')+'<br>Classes: '+classes.join(', ');
     document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — HOD: '+_u.email+' — Subjects: '+subjects.join(', ')+' — Classes: '+classes.length;
     var sg=document.getElementById('subjGrid'); sg.innerHTML='';
-    subjects.forEach(function(s){ var l=document.createElement('label'); l.className='chk'; l.innerHTML='<input type="checkbox" value="'+s+'" checked onchange="updateHeads()"> '+s; sg.appendChild(l); });
+    var groups=[{t:'🗣️ LANGUAGES — CAPS', s:subjects.filter(function(x){return x.includes('LANGUAGE');})},{t:'🔢 MATHEMATICS / SCIENCES — CAPS', s:subjects.filter(function(x){return x.includes('MATH')||x.includes('SCIENCE')||x.includes('NATURAL');})},{t:'📚 OTHER CAPS SUBJECTS', s:subjects.filter(function(x){return !x.includes('LANGUAGE')&&!x.includes('MATH')&&!x.includes('SCIENCE')&&!x.includes('NATURAL');})}];
+    groups.forEach(function(g){ if(!g.s.length) return; var tt=document.createElement('div'); tt.className='subj-title'; tt.textContent=g.t; sg.appendChild(tt); var w=document.createElement('div'); w.className='chk-grid'; g.s.forEach(function(s){ var l=document.createElement('label'); l.className='chk'; l.innerHTML='<input type="checkbox" value="'+s+'" checked onchange="updateHeads()"> '+s; w.appendChild(l); }); sg.appendChild(w); });
+    if(!sg.innerHTML){ subjects.forEach(function(s){ var l=document.createElement('label'); l.className='chk'; l.innerHTML='<input type="checkbox" value="'+s+'" checked onchange="updateHeads()"> '+s; sg.appendChild(l); }); }
     var cg=document.getElementById('classGrid'); cg.innerHTML='';
     classes.forEach(function(c){ var l=document.createElement('label'); l.className='chk chk-class'; l.innerHTML='<input type="checkbox" value="'+c+'" checked onchange="updateHeads()"> '+c; cg.appendChild(l); });
     updateHeads(); loadRequests();
   }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
 }
-async function loadRequests(){
-  try{
-    var snap = await db.ref('requests').once('value'); _allReq=[];
-    snap.forEach(function(ch){ var v=ch.val(); v.id=ch.key; _allReq.push(v); });
-    renderReq();
-  }catch(e){ document.getElementById('reqList').innerHTML='<div class="warn">Firebase Error: '+e.message+'</div>'; }
-}
+async function loadRequests(){ try{ var snap = await db.ref('requests').once('value'); _allReq=[]; snap.forEach(function(ch){ var v=ch.val(); v.id=ch.key; _allReq.push(v); }); renderReq(); }catch(e){ document.getElementById('reqList').innerHTML='<div class="warn">Firebase Error: '+e.message+'</div>'; } }
 function renderReq(){
   var sels=getSelSubj(); var selc=getSelClasses();
-  var filtered=_allReq.filter(function(r){
-    var rs = String(r.subject||'').toUpperCase(); var rc = String(r.className||r.class||'').toUpperCase();
-    var okS = !sels.length || sels.some(function(s){ return rs.includes(s); });
-    var okC = !selc.length || selc.some(function(c){ return rc.includes(c); });
-    return okS && okC;
-  });
-  document.getElementById('summary').innerHTML='Total Requests in System: <b>'+_allReq.length+'</b> — Showing for YOUR Subjects + Classes: <b>'+filtered.length+'</b>';
-  if(!filtered.length){ document.getElementById('reqList').innerHTML='<div class="info">No requests for selected Subjects + Classes yet. Tick more subjects/classes above.</div>'; return; }
+  var filtered=_allReq.filter(function(r){ var rs=String(r.subject||'').toUpperCase(); var rc=String(r.className||r.class||'').toUpperCase(); var okS=!sels.length||sels.some(function(s){ return rs.includes(s); }); var okC=!selc.length||selc.some(function(c){ return rc.includes(c); }); return okS&&okC; });
+  document.getElementById('summary').innerHTML='Total Requests: <b>'+_allReq.length+'</b> — Showing for YOUR Subjects + Classes: <b>'+filtered.length+'</b>';
+  if(!filtered.length){ document.getElementById('reqList').innerHTML='<div class="info">No requests for selected Subjects + Classes yet.</div>'; return; }
   var h='<table><tr><th>Teacher</th><th>Subject</th><th>Class</th><th>Book / Item</th><th>Qty</th><th>Status</th></tr>';
   filtered.forEach(function(r){ h+='<tr><td>'+(r.teacherName||r.teacher||'')+'</td><td><span class="pill">'+(r.subject||'')+'</span></td><td>'+(r.className||r.class||'')+'</td><td>'+(r.bookTitle||r.item||r.title||'')+'</td><td>'+(r.qty||r.quantity||'')+'</td><td>'+(r.status||'PENDING')+'</td></tr>'; });
   h+='</table>'; document.getElementById('reqList').innerHTML=h;
