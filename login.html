@@ -1,129 +1,21 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Login - Makhanani LTSM 2.0</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
-header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
-header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:700px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
-.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}
-.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
-.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-@media(max-width:700px){.row{flex-direction:column}}
-</style></head>
-<body>
-<header><h1>🔐 LOGIN — MAKHANANI LTSM 2.0 — V2.21</h1><p>EVERY BOOK TRACKED — EVERY LEARNER BY ID — RETRIEVAL % SHOWS WHO DID NOT RETURN</p>
-<div id="taskbar"></div>
-</header>
-<div class="wrap">
-<div class="card"><h2>🔐 Login — Email + Password</h2>
-<div class="info" id="alreadyInfo">Checking if you are already logged in...</div>
-<div class="info" id="debugBox" style="background:#e0e7ff">🔍 DEBUG: Page loading... If this stays, JS is blocked.</div>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login - Makhanani LTSM</title><script src="firebase.js"></script>
+<style>body{margin:0;font-family:Arial;background:#0f172a;color:#0a1f4d}.card{max-width:420px;margin:40px auto;background:#fff;border-radius:12px;padding:20px}input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;margin-top:12px;font-size:16px;font-weight:700}button{width:100%;padding:14px;border:none;border-radius:8px;background:#0a1f4d;color:#fff;font-weight:900;margin-top:14px;cursor:pointer}.ok{background:#dcfce7;padding:10px;border-radius:8px;margin-top:10px}.warn{background:#fee2e2;padding:10px;border-radius:8px;margin-top:10px}</style>
+</head><body><div class="card"><h2>🔐 MAKHANANI LTSM — LOGIN — FIREBASE</h2>
+<input id="email" placeholder="Email"><input id="pass" type="password" placeholder="Password">
+<div id="msg"></div><button onclick="doLogin()">LOGIN →</button></div>
 <script>
-// ===== V2.21 EARLY SCRIPT — NO FIREBASE — ALWAYS RUNS =====
-try{
-  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ JS WORKING — Early script ran. Firebase is loading in background — EMERGENCY + DEMO work NOW.';
-  document.getElementById('alreadyInfo').innerHTML='👤 <b>JS Working ✅</b> — Tap EMERGENCY to enter now, or wait for Firebase.';
-}catch(e){}
-function toCapsEarly(s){return String(s||'').trim().toUpperCase();}
-function emergencyLogin(){
+async function doLogin(){
+  var email=document.getElementById('email').value.trim().toLowerCase(); var pass=document.getElementById('pass').value; var msg=document.getElementById('msg');
+  if(!email||!pass){ msg.innerHTML='<div class="warn">Fill Email + Password</div>'; return; }
   try{
-    var emailEl=document.getElementById('loginEmail');
-    var email=(emailEl&&emailEl.value?emailEl.value:'vusichauke3037@gmail.com').trim().toLowerCase()||'vusichauke3037@gmail.com';
-    var name=email.split('@')[0].toUpperCase()||'VUSI CHAUKE';
-    document.getElementById('loginMsg').innerHTML='<div class="ok">🆘 EMERGENCY CLICKED ✅ — Going to Super Admin as '+name+'...</div>';
-    var u={id:'EMERG-001',name:name,email:email,role:'SUPER_ADMIN',rank:6,schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',status:'ACTIVE'};
-    localStorage.setItem('makhanani_user', JSON.stringify(u));
-    setTimeout(function(){ window.location.href='superadmin.html'; }, 500);
-  }catch(e){ alert('Emergency error: '+e.message); }
+    var cred = await auth.signInWithEmailAndPassword(email, pass);
+    var snap = await db.ref('users/'+cred.user.uid).once('value'); var u = snap.val();
+    if(!u){ msg.innerHTML='<div class="warn">❌ No profile in Firebase Database for this user — Ask Super Admin to create user in Users page.</div>'; return; }
+    u.uid = cred.user.uid; u.email = email; localStorage.setItem('makhanani_user', JSON.stringify(u));
+    msg.innerHTML='<div class="ok">✅ Welcome '+u.name+' — '+u.role+' Rank '+u.rank+'</div>';
+    var map = {TEACHER:'teacher.html', LIBRARIAN:'librarian.html', HOD:'hod.html', PRINCIPAL:'principal.html', SUPER_ADMIN:'index.html'};
+    setTimeout(function(){ window.location.href = map[u.role] || 'index.html'; }, 800);
+  }catch(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
 }
-function demoLoginEarly(){
-  try{
-    document.getElementById('loginMsg').innerHTML='<div class="ok">🆓 DEMO CLICKED ✅ — Going to Teacher...</div>';
-    var demo={id:'DEMO-001',name:'DEMO TEACHER',email:'demo@makhanani.co.za',role:'TEACHER',rank:2,schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',className:'4A',subject:'MATHS',status:'ACTIVE'};
-    localStorage.setItem('makhanani_user', JSON.stringify(demo));
-    setTimeout(function(){ window.location.href='teacher.html'; }, 500);
-  }catch(e){ alert('Demo error: '+e.message); }
-}
-// Make them global immediately
-window.emergencyLogin=emergencyLogin; window.demoLogin=demoLoginEarly;
-</script>
-<label>Email</label><input id="loginEmail" type="email" placeholder="vusichauke3037@gmail.com" autocomplete="email" value="vusichauke3037@gmail.com">
-<label>Password — Min 6 chars</label><input id="loginPass" type="password" placeholder="••••••" autocomplete="current-password">
-<div class="row"><button class="btn btn-green" id="loginBtn" type="button" onclick="doLogin()">🔐 LOGIN →</button><button class="btn btn-gold" type="button" onclick="window.location.href='index.html'">🏠 HOME →</button></div>
-<div class="row"><button class="btn btn-grey" id="forgotBtn" type="button" onclick="forgotPass()">🔑 FORGOT PASSWORD?</button><button class="btn btn-teal" id="demoBtn" type="button" onclick="demoLoginEarly()">🆓 DEMO LOGIN</button></div>
-<div class="row"><button class="btn btn-red" id="emergencyBtn" type="button" onclick="emergencyLogin()">🆘 EMERGENCY LOGIN — No Firebase — Enter As SUPER_ADMIN</button></div>
-<div id="loginMsg"></div>
-<div class="info">🆘 <b>EMERGENCY LOGIN</b> works even if Firebase / school WiFi blocks login. It saves you locally as SUPER_ADMIN / WHS.<br>🔐 <b>Real LOGIN</b> needs Firebase — If it says Firebase blocked, use Phone Data, not school WiFi, or use EMERGENCY.<br>WhatsApp: <b>078 023 3263</b></div></div>
-<div class="card"><h2>♻️ Retrieval % — Preview</h2><div class="info"><b>Formula:</b> Retrieval % = (Returned / Issued) x 100 — Example: Issued 200 — Returned 180 = <b>90%</b> — Target 100%</div></div>
-<div class="card"><h2>💰 Price List</h2><div class="info">DEMO FREE — STARTER Setup R3 000 / R350 pm / R4 500 yr — STANDARD Setup R4 500 / R500 pm / R7 500 yr — PREMIUM Setup R5 500 / R600 pm / R9 000 yr — WhatsApp <b>078 023 3263</b></div></div>
-<div class="card"><div class="row"><button class="btn btn-grey" type="button" onclick="window.history.back()">⬅️ BACK</button><button class="btn btn-green" type="button" onclick="window.location.href='index.html'">🏠 HOME →</button></div></div>
-</div>
-<!-- Firebase loaded LAST, with timeout — Never blocks login -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script>
-// ===== V2.21 MAIN SCRIPT — FIREBASE ONLY, IN TRY/CATCH =====
-try{
-  var dbg=document.getElementById('debugBox');
-  if(typeof firebase==='undefined'){
-    if(dbg) dbg.innerHTML='🔍 DEBUG: ✅ JS Working — ❌ Firebase BLOCKED by WiFi / Browser — Use EMERGENCY LOGIN. Switch to Phone Data for real login.';
-  } else {
-    var firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
-    if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    window._rtdb=firebase.database(); window._auth=firebase.auth();
-    if(dbg) dbg.innerHTML='🔍 DEBUG: ✅ JS Working — ✅ Firebase Loaded — Real LOGIN should now work.';
-  }
-}catch(e){
-  var d2=document.getElementById('debugBox');
-  if(d2) d2.innerHTML='🔍 DEBUG: ✅ JS Working — ❌ Firebase Error: '+e.message+' — Use EMERGENCY LOGIN.';
-}
-function doLogin(){
-  var msg=document.getElementById('loginMsg');
-  msg.innerHTML='<div class="info">🔐 LOGIN CLICKED ✅ — Checking Firebase...</div>';
-  var email=String(document.getElementById('loginEmail').value||'').trim().toLowerCase();
-  var pass=document.getElementById('loginPass').value;
-  if(!email||!pass){ msg.innerHTML='<div class="warn">Fill Email + Password.</div>'; return; }
-  if(typeof firebase==='undefined' || !window._auth){ msg.innerHTML='<div class="warn">❌ Firebase is blocked on this WiFi — Tap 🆘 EMERGENCY LOGIN below, or switch to Phone Data.</div>'; return; }
-  msg.innerHTML='<div class="info">🔐 Connecting to Firebase for '+email+'...</div>';
-  window._auth.signInWithEmailAndPassword(email, pass).then(function(cred){
-    var uid=cred.user.uid;
-    return window._rtdb.ref('users').once('value').then(function(snap){
-      var all=snap.val()||{}; var found=null;
-      Object.values(all).forEach(function(u){ if(String(u.email||'').toLowerCase()===email || u.uid===uid) found=u; });
-      if(!found){ found={id:'U-'+uid.slice(0,6),name:email.split('@')[0].toUpperCase(),email:email,role:'TEACHER',rank:2,schoolId:'WHS',schoolName:'WORDSWORTH HIGH SCHOOL',status:'ACTIVE',uid:uid}; }
-      if(String(found.status||'ACTIVE').toUpperCase()==='DISABLED'){ msg.innerHTML='<div class="warn">⛔ Account DISABLED — WhatsApp 078 023 3263.</div>'; return; }
-      localStorage.setItem('makhanani_user', JSON.stringify(found)); localStorage.setItem('makhanani_uid', uid);
-      var pages={PRINCIPAL:'principal.html',TEACHER:'teacher.html',LIBRARIAN:'librarian.html',HOD:'hod.html',ADMIN:'users.html',SUPER_ADMIN:'superadmin.html'};
-      msg.innerHTML='<div class="ok">✅ Welcome <b>'+String(found.name||'').toUpperCase()+'</b> — '+String(found.role||'').toUpperCase()+' — Going...</div>';
-      setTimeout(function(){ window.location.href=pages[String(found.role||'').toUpperCase()]||'index.html'; }, 800);
-    });
-  }).catch(function(e){
-    var m=e.message||'Login failed';
-    if(e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential') m='Wrong Email or Password — Or tap FORGOT PASSWORD.';
-    if(e.code==='auth/network-request-failed') m='No Internet / Firebase blocked — Use EMERGENCY LOGIN or Phone Data.';
-    msg.innerHTML='<div class="warn">❌ '+m+'<br><small>Code: '+(e.code||'')+'</small></div>';
-  });
-}
-function forgotPass(){
-  var email=String(document.getElementById('loginEmail').value||'').trim().toLowerCase();
-  var msg=document.getElementById('loginMsg'); msg.innerHTML='<div class="info">🔑 FORGOT CLICKED ✅ — Sending...</div>';
-  if(!email){ msg.innerHTML='<div class="warn">Type Email first.</div>'; return; }
-  if(!window._auth){ msg.innerHTML='<div class="warn">❌ Firebase blocked — Cannot send reset on this WiFi. Use Phone Data.</div>'; return; }
-  window._auth.sendPasswordResetEmail(email).then(function(){ msg.innerHTML='<div class="ok">✅ Reset sent to <b>'+email+'</b> — Check inbox + spam.</div>'; }).catch(function(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; });
-}
-// Re-attach demo to early version
-window.demoLogin=window.demoLoginEarly;
-try{
-  var u2=JSON.parse(localStorage.getItem('makhanani_user')||'null');
-  var el=document.getElementById('alreadyInfo');
-  if(u2 && u2.email){ el.innerHTML='✅ Already logged in as <b>'+String(u2.name||'').toUpperCase()+'</b> — '+String(u2.role||'').toUpperCase(); document.getElementById('loginEmail').value=u2.email; }
-  else { el.innerHTML='👤 <b>Not logged in</b> — Tap EMERGENCY to enter now.'; }
-}catch(e){}
-window.doLogin=doLogin; window.forgotPass=forgotPass;
 </script></body></html>
