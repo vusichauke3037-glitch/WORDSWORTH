@@ -1,7 +1,36 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Users - Makhanani LTSM 2.0</title>
-<script src="firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+    authDomain: "makhanani-ltsm.firebaseapp.com",
+    databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+    projectId: "makhanani-ltsm",
+    storageBucket: "makhanani-ltsm.firebasestorage.app",
+    messagingSenderId: "247180363183",
+    appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+    measurementId: "G-PEST1XFCR8"
+  };
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+  function getCurrentUser(){
+    return new Promise(function(res){
+      auth.onAuthStateChanged(function(u){
+        if(!u) return res(null);
+        db.ref('users/'+u.uid).once('value').then(function(s){
+          var d = s.val() || {}; d.uid = u.uid; d.email = u.email;
+          if(!d.classes && d.className) d.classes = d.className.split(',').map(function(x){return x.trim();});
+          res(d);
+        }).catch(function(){ res({uid:u.uid, email:u.email}); });
+      });
+    });
+  }
+</script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
@@ -20,14 +49,14 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 @media(max-width:700px){.row{flex-direction:column}.chk-grid{grid-template-columns:repeat(3,1fr)}}
 </style></head>
 <body>
-<header><h1>👥 USERS — MAKHANANI LTSM 2.0 — FIREBASE V2.24</h1><p>ADD USER — FIREBASE AUTH + DATABASE — MULTIPLE CLASSES A TO J</p>
+<header><h1>👥 USERS — MAKHANANI LTSM 2.0 — FIREBASE V2.25 SELF-CONTAINED</h1><p>ADD USER — FIREBASE AUTH + DATABASE — MULTIPLE CLASSES A TO J — NO firebase.js NEEDED</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 </header>
 <div class="wrap">
 <div class="card"><h2>👤 Who Am I</h2><div class="info" id="whoAmI">Loading from Firebase...</div><div class="warn" id="blockMsg" style="display:none"></div><div class="ok" id="debug">DEBUG: Connecting to Firebase...</div></div>
 <div id="adminOnly" style="display:none">
 <div class="card"><h2>➕ Add / Edit User — Firebase</h2>
-<div class="warn">⚠️ IMPORTANT: After you Save a new user, you will be logged out of YOUR account and logged in as the NEW user — Because Firebase Auth switches user. Just login again as YOU — Super Admin — After each save. This is normal Firebase behaviour.</div>
+<div class="warn">⚠️ After you Save a new user, Firebase will switch you to the NEW user. Just login again as YOU — Super Admin — After each save. This is normal Firebase behaviour.</div>
 <label>Full Name *</label><input id="uName" placeholder="e.g. MRS NKAMBULE">
 <label>Email *</label><input id="uEmail" placeholder="e.g. nkambule@wordsworth.co.za">
 <label>Password (6+ chars) *</label><input id="uPass" type="password" placeholder="Min 6 characters">
@@ -43,7 +72,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 <div class="info" id="selInfo">Selected: None</div>
 <div id="uMsg"></div>
 <div class="row"><button class="btn btn-green" id="saveBtn" onclick="saveUser()">💾 SAVE USER — FIREBASE</button></div>
-<div class="info">Rule: TEACHER / EDUCATOR=2, LIBRARIAN=3, HOD=4, PRINCIPAL=5, SUPER_ADMIN=6. Teacher dropdown in teacher.html shows ONLY ticked classes here.</div>
+<div class="info">Rule: TEACHER=2, LIBRARIAN=3, HOD=4, PRINCIPAL=5, SUPER_ADMIN=6. Teacher dropdown in teacher.html shows ONLY ticked classes here.</div>
 </div>
 <div class="card"><h2>📋 All Users — Firebase Live</h2><div id="userList"></div><div class="row"><button class="btn btn-grey" onclick="renderUsers()">🔄 REFRESH</button></div></div>
 </div>
@@ -71,10 +100,10 @@ function autoRank(){ var r=document.getElementById('uRole').value; var m={TEACHE
 async function init(){
   try{
     _u = await getCurrentUser();
-    if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; return; }
+    if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; document.getElementById('debug').innerHTML='DEBUG: ❌ Not logged in — Go to login.html'; return; }
     _adminEmail = _u.email;
     document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+' — <span style="color:#16a34a">FIREBASE LIVE ✅</span>';
-    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — Admin: '+_u.email;
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — Admin: '+_u.email+' — UID: '+_u.uid;
     var _allowed = (_u.role==='SUPER_ADMIN' && _u.rank===6) || (_u.role==='PRINCIPAL' && _u.rank===5);
     if(!_allowed){ document.getElementById('blockMsg').style.display='block'; document.getElementById('blockMsg').innerHTML='⛔ ADMIN ONLY — Only Principal Rank 5 + Super Admin Rank 6 can add Users.'; }
     else document.getElementById('adminOnly').style.display='block';
@@ -87,27 +116,19 @@ async function saveUser(){
   var msg=document.getElementById('uMsg');
   if(!name||!email||!pass||pass.length<6||!role||!rank||!subj||!code||!school){ msg.innerHTML='<div class="warn">❌ Fill Name + Email + Password 6+ + Role + Subject + School.</div>'; return; }
   if(!classes.length){ msg.innerHTML='<div class="warn">❌ Tick at least ONE Class — Or tick ALL.</div>'; return; }
-  // Save admin creds to re-login after — Prompt once
-  if(!_adminPass){ _adminPass = prompt('Enter YOUR password (Super Admin) to stay logged in after creating this user — Needed because Firebase switches user:'); if(!_adminPass) return; }
+  if(!_adminPass){ _adminPass = prompt('Enter YOUR password (Super Admin) to stay logged in after creating this user:'); if(!_adminPass) return; }
   document.getElementById('saveBtn').disabled=true; document.getElementById('saveBtn').textContent='SAVING TO FIREBASE...';
   try{
-    // Create Auth user — This switches auth to new user
     var cred = await auth.createUserWithEmailAndPassword(email, pass);
     var obj={ name:name, email:email, role:role, rank:Number(rank), subject:subj, schoolCode:code, schoolName:school, classes:classes, className:classes.join(', '), class:classes[0] };
-    // Write profile — Use new uid — Rules allow because we are creating it, but if blocked, admin re-login handles it
     await db.ref('users/'+cred.user.uid).set(obj);
-    msg.innerHTML='<div class="ok">✅ Saved to Firebase: <b>'+name+'</b> — '+role+' Rank '+rank+' — Classes: <b>'+classes.join(', ')+'</b> — Re-logging you back in as Admin...</div>';
-    // Re-login as admin
+    msg.innerHTML='<div class="ok">✅ Saved to Firebase: <b>'+name+'</b> — '+role+' Rank '+rank+' — Classes: <b>'+classes.join(', ')+'</b> — UID: '+cred.user.uid+' — Re-logging you back in as Admin...</div>';
     await auth.signOut();
     await auth.signInWithEmailAndPassword(_adminEmail, _adminPass);
     renderUsers();
   }catch(e){
-    // If user already exists in Auth, update profile only
-    if(e.code==='auth/email-already-in-use'){
-      msg.innerHTML='<div class="warn">⚠️ Email already exists in Firebase Auth — User already created before. Ask that user to login, or delete them in Firebase Console → Authentication, then try again. Profile NOT overwritten.</div>';
-    } else {
-      msg.innerHTML='<div class="warn">❌ Firebase Error: '+e.message+'</div>';
-    }
+    if(e.code==='auth/email-already-in-use'){ msg.innerHTML='<div class="warn">⚠️ Email already exists in Firebase Auth — Delete them in Firebase Console → Authentication, then try again.</div>'; }
+    else { msg.innerHTML='<div class="warn">❌ Firebase Error: '+e.message+'</div>'; }
   }
   document.getElementById('saveBtn').disabled=false; document.getElementById('saveBtn').textContent='💾 SAVE USER — FIREBASE';
 }
