@@ -13,12 +13,13 @@ input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.chk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}.chk{display:flex;align-items:center;gap:6px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:8px;padding:10px;font-weight:900;font-size:13px;cursor:pointer}.chk input{width:auto;padding:0}.chk.on{border-color:#0a1f4d;background:#eef2ff}
+.chk-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}.chk{display:flex;align-items:center;gap:6px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:8px;padding:10px;font-weight:900;font-size:13px;cursor:pointer}.chk input{width:auto;padding:0}.chk.on{border-color:#0a1f4d;background:#eef2ff}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
-@media(max-width:700px){.row{flex-direction:column}.chk-grid{grid-template-columns:repeat(2,1fr)}}
+.grade-title{font-weight:900;font-size:14px;margin:16px 0 6px;background:#0a1f4d;color:#fff;padding:8px;border-radius:8px}
+@media(max-width:700px){.row{flex-direction:column}.chk-grid{grid-template-columns:repeat(3,1fr)}}
 </style></head>
 <body>
-<header><h1>👥 USERS — MAKHANANI LTSM 2.0 — V2.23</h1><p>ADD USER — MULTIPLE CLASSES / GRADES — ROLE + RANK MUST MATCH</p>
+<header><h1>👥 USERS — MAKHANANI LTSM 2.0 — V2.23</h1><p>ADD USER — MULTIPLE CLASSES / GRADES A TO J — ROLE + RANK MUST MATCH</p>
 <div id="taskbar"></div><script src="nav.js"></script>
 </header>
 <div class="wrap">
@@ -33,13 +34,14 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 <label>Subject *</label><select id="uSubject"><option value="">-- Pick Subject --</option><option>ALL</option><option>MATHS</option><option>ENGLISH</option><option>AFRIKAANS</option><option>PHYSICAL SCIENCES</option><option>LIFE SCIENCES</option><option>ACCOUNTING</option><option>BUSINESS STUDIES</option><option>GEOGRAPHY</option><option>HISTORY</option><option>LIFE ORIENTATION</option></select>
 <label>School Code *</label><input id="uSchoolCode" value="WHS">
 <label>School Name *</label><input id="uSchool" value="WORDSWORTH HIGH SCHOOL">
-<label>✅ Classes / Grades — Tick MULTIPLE — e.g. Teacher teaches 10A + 10B + 11A *</label>
-<div class="chk-grid" id="classGrid"></div>
-<div class="row"><button class="btn btn-grey" onclick="selectAllClasses(true)">✅ SELECT ALL</button><button class="btn btn-grey" onclick="selectAllClasses(false)">❌ CLEAR ALL</button></div>
+<label>✅ Classes / Grades — Tick MULTIPLE — A to J *</label>
+<div class="row"><button class="btn btn-grey" onclick="selectGrade('8',true)">Grade 8 A-J ✅</button><button class="btn btn-grey" onclick="selectGrade('9',true)">Grade 9 A-J ✅</button><button class="btn btn-grey" onclick="selectGrade('10',true)">Grade 10 A-J ✅</button><button class="btn btn-grey" onclick="selectGrade('11',true)">Grade 11 A-J ✅</button><button class="btn btn-grey" onclick="selectGrade('12',true)">Grade 12 A-J ✅</button></div>
+<div class="row"><button class="btn btn-grey" onclick="selectAllClasses(true)">✅ SELECT ALL 50</button><button class="btn btn-grey" onclick="selectAllClasses(false)">❌ CLEAR ALL</button></div>
+<div id="classGrid"></div>
 <div class="info" id="selInfo">Selected: None</div>
 <div id="uMsg"></div>
 <div class="row"><button class="btn btn-green" onclick="saveUser()">💾 SAVE USER</button></div>
-<div class="info">Rule: TEACHER=2, LIBRARIAN=3, HOD=4, PRINCIPAL=5, SUPER_ADMIN=6. Librarian / Principal / Super Admin: Tick ALL or leave ALL.</div>
+<div class="info">Rule: TEACHER / EDUCATOR=2, LIBRARIAN=3, HOD=4, PRINCIPAL=5, SUPER_ADMIN=6. Librarian / Principal / Super Admin: Tick ALL or SELECT ALL 50.</div>
 </div>
 <div class="card"><h2>📋 All Users</h2><div id="userList"></div></div>
 </div>
@@ -55,19 +57,31 @@ if(_u && _u.email) document.getElementById('whoAmI').innerHTML='✅ <b>'+String(
 else document.getElementById('whoAmI').innerHTML='❌ Not logged in';
 if(!_allowed){ document.getElementById('blockMsg').style.display='block'; document.getElementById('blockMsg').innerHTML='⛔ ADMIN ONLY — Only Principal Rank 5 + Super Admin Rank 6 can add Users.'; }
 else document.getElementById('adminOnly').style.display='block';
-var CLASSES=['ALL','8A','8B','8C','9A','9B','9C','10A','10B','10C','11A','11B','11C','12A','12B','12C'];
+// CLASSES A TO J — Grade 8 to 12
+var LETTERS=['A','B','C','D','E','F','G','H','I','J'];
+var GRADES=['8','9','10','11','12'];
+var CLASSES=['ALL'];
+GRADES.forEach(function(g){ LETTERS.forEach(function(l){ CLASSES.push(g+l); }); });
 var grid=document.getElementById('classGrid');
-CLASSES.forEach(function(c){
-  var d=document.createElement('label'); d.className='chk'; d.innerHTML='<input type="checkbox" value="'+c+'" onchange="updateSel()"> '+c;
-  grid.appendChild(d);
+grid.innerHTML='<label class="chk" style="background:#fef3c7"><input type="checkbox" value="ALL" onchange="updateSel()"> ALL — All Grades A-J</label>';
+GRADES.forEach(function(g){
+  var t=document.createElement('div'); t.className='grade-title'; t.textContent='GRADE '+g+' — A to J'; grid.appendChild(t);
+  var wrap=document.createElement('div'); wrap.className='chk-grid';
+  LETTERS.forEach(function(l){
+    var c=g+l;
+    var d=document.createElement('label'); d.className='chk'; d.innerHTML='<input type="checkbox" value="'+c+'" onchange="updateSel()"> '+c;
+    wrap.appendChild(d);
+  });
+  grid.appendChild(wrap);
 });
 function updateSel(){
   var sel=getSelectedClasses();
-  document.getElementById('selInfo').innerHTML='Selected: <b>'+(sel.length?sel.join(', '):'None')+'</b>';
+  document.getElementById('selInfo').innerHTML='Selected: <b>'+(sel.length?sel.join(', '):'None')+'</b> — Count: '+sel.length;
   document.querySelectorAll('.chk').forEach(function(el){ el.classList.toggle('on', el.querySelector('input').checked); });
 }
 function getSelectedClasses(){ var a=[]; document.querySelectorAll('#classGrid input:checked').forEach(function(i){ a.push(i.value); }); return a; }
 function selectAllClasses(on){ document.querySelectorAll('#classGrid input').forEach(function(i){ i.checked=on; }); updateSel(); }
+function selectGrade(g,on){ document.querySelectorAll('#classGrid input').forEach(function(i){ if(i.value.startsWith(g) && i.value!=='ALL') i.checked=on; }); updateSel(); }
 function autoRank(){ var r=document.getElementById('uRole').value; var m={TEACHER:2,LIBRARIAN:3,HOD:4,PRINCIPAL:5,SUPER_ADMIN:6}; document.getElementById('uRank').value=m[r]||''; if(r==='LIBRARIAN'||r==='PRINCIPAL'||r==='SUPER_ADMIN') selectAllClasses(true); }
 function getUsers(){ try{ return JSON.parse(localStorage.getItem('makhanani_users')||'[]'); }catch(e){ return []; } }
 function saveUser(){
@@ -81,7 +95,6 @@ function saveUser(){
   var obj={ name:name, email:email, password:pass, role:role, rank:Number(rank), subject:subj, schoolCode:code, schoolName:school, classes:classes, className:classes.join(', '), class:classes[0] };
   if(idx>=0) all[idx]=obj; else all.push(obj);
   localStorage.setItem('makhanani_users', JSON.stringify(all));
-  // Also update current logged-in user if it's them, so Teacher dropdown updates instantly
   if(_u && _u.email===email){ _u.classes=classes; _u.className=classes.join(', '); localStorage.setItem('makhanani_user', JSON.stringify(_u)); }
   msg.innerHTML='<div class="ok">✅ Saved: <b>'+name+'</b> — '+role+' Rank '+rank+' — Classes: <b>'+classes.join(', ')+'</b> — Subject: '+subj+'</div>';
   renderUsers();
