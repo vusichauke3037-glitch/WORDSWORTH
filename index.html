@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Home - Makhanani LTSM 2.0 - CAPS Grade 4-12</title>
+<title>Home - Makhanani LTSM 2.0 - CAPS Grade 4-12 - FIXED V2.29</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -18,16 +18,36 @@
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.database();
+  // FIX: Convert String -> Array for classes / subjects / grades
+  function toArray(v){
+    if(!v) return [];
+    if(Array.isArray(v)) return v;
+    if(typeof v === 'string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;});
+    return [];
+  }
   function getCurrentUser(){
     return new Promise(function(res){
       auth.onAuthStateChanged(function(u){
         if(!u) return res(null);
         db.ref('users/'+u.uid).once('value').then(function(s){
           var d = s.val() || {}; d.uid = u.uid; d.email = u.email;
-          if(!d.classes && d.className) d.classes = d.className.split(',').map(function(x){return x.trim();});
-          if(!d.subjects && d.subject) d.subjects = d.subject.split(',').map(function(x){return x.trim();});
+          // NORMALIZE ALL - String or Array both work now
+          d.classes = toArray(d.classes || d.className || d.class);
+          d.subjects = toArray(d.subjects || d.subject);
+          d.grades = toArray(d.grades || d.grade);
+          // If classes = ["ALL"] -> expand to Grade 4-12 A-J
+          if(d.classes.length===1 && d.classes[0]==='ALL'){
+            d.classes=[]; ['4','5','6','7','8','9','10','11','12'].forEach(function(g){ ['A','B','C','D','E','F','G','H','I','J'].forEach(function(l){ d.classes.push(g+l); }); });
+            d.grades=['4','5','6','7','8','9','10','11','12'];
+            if(!d.subjects.length || d.subjects.includes('ALL')) d.subjects=['ALL'];
+          }
+          // Auto grades from classes if missing
+          if(!d.grades.length && d.classes.length){
+            var gs=[]; d.classes.forEach(function(c){ var gr=c.replace(/[A-J]$/,''); if(!gs.includes(gr)) gs.push(gr); });
+            d.grades=gs.sort(function(a,b){return Number(a)-Number(b);});
+          }
           res(d);
-        }).catch(function(){ res({uid:u.uid, email:u.email}); });
+        }).catch(function(){ res({uid:u.uid, email:u.email, classes:[], subjects:[], grades:[]}); });
       });
     });
   }
@@ -51,23 +71,18 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 @media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>🏫 MAKHANANI LTSM 2.0 — WORDSWORTH HIGH SCHOOL</h1><p>CAPS — GRADE 4 TO 12 — FIREBASE V2.28 — ALL CAPS SUBJECTS — HOME</p><div id="taskbar"></div><script src="nav.js"></script></header>
+<header><h1>🏫 MAKHANANI LTSM 2.0 — WORDSWORTH HIGH SCHOOL</h1><p>CAPS — GRADE 4 TO 12 — FIREBASE V2.29 FIXED — ALL CAPS SUBJECTS — HOME</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
 <div class="card"><h2>👤 Welcome — Who Am I</h2><div class="info" id="whoAmI">Loading from Firebase...</div><div class="ok" id="debug">DEBUG: Connecting...</div><div class="warn" id="notLogged" style="display:none"></div></div>
-
 <div class="card"><h2>🚀 My Dashboard — Tap Your Role</h2><div class="grid" id="menuGrid"></div><div class="info" id="roleHint"></div></div>
-
 <div class="card"><h2>📚 CAPS — GRADE 4 TO 12 — Phases</h2>
 <div class="row">
 <div class="phase"><b>📗 INTERMEDIATE PHASE</b><br>GRADE 4 • GRADE 5 • GRADE 6<br>Classes: 4A-4J, 5A-5J, 6A-6J<br>Subjects: ENGLISH HOME LANGUAGE, AFRIKAANS FIRST ADDITIONAL LANGUAGE, MATHEMATICS GRADE 4-6, NATURAL SCIENCES AND TECHNOLOGY, SOCIAL SCIENCES, LIFE SKILLS</div>
 <div class="phase"><b>📘 SENIOR PHASE</b><br>GRADE 7 • GRADE 8 • GRADE 9<br>Classes: 7A-7J, 8A-8J, 9A-9J<br>Subjects: ENGLISH, AFRIKAANS, MATHEMATICS, NATURAL SCIENCES, SOCIAL SCIENCES, TECHNOLOGY, ECONOMIC AND MANAGEMENT SCIENCES, LIFE ORIENTATION, CREATIVE ARTS</div>
 <div class="phase"><b>📙 FET PHASE</b><br>GRADE 10 • GRADE 11 • GRADE 12<br>Classes: 10A-10J, 11A-11J, 12A-12J<br>Subjects: MATHEMATICS, MATHEMATICAL LITERACY, PHYSICAL SCIENCES, LIFE SCIENCES, ACCOUNTING, BUSINESS STUDIES, GEOGRAPHY, HISTORY, etc. — ALL CAPS</div>
 </div></div>
-
 <div class="card"><h2>📊 Live Counts — Firebase</h2><div id="counts"></div><div class="row"><button class="btn btn-grey" onclick="loadCounts()">🔄 REFRESH COUNTS</button></div></div>
-
 <div class="card"><h2>📋 My Recent Requests</h2><div id="recentReq"></div></div>
-
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="go('login.html')">🔐 LOGIN</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
 <script>
@@ -80,16 +95,15 @@ async function init(){
     var grid=document.getElementById('menuGrid'); var hint=document.getElementById('roleHint');
     if(!_u || !_u.email){
       document.getElementById('whoAmI').innerHTML='❌ Not logged in';
-      document.getElementById('notLogged').style.display='block'; document.getElementById('notLogged').innerHTML='👉 Tap LOGIN below to continue. If you are new, ask Super Admin to create you in Users page.';
+      document.getElementById('notLogged').style.display='block'; document.getElementById('notLogged').innerHTML='👉 Tap LOGIN below.';
       document.getElementById('debug').innerHTML='DEBUG: ❌ Not logged in';
       grid.innerHTML='<button class="btn btn-green" onclick="go(\'login.html\')">🔐 LOGIN →</button><button class="btn btn-gold" onclick="go(\'teacher.html\')">👩‍🏫 TEACHER →</button><button class="btn btn-orange" onclick="go(\'hod.html\')">📚 HOD →</button>';
-      hint.innerHTML='Not logged in — Login first, then HOME will show YOUR CAPS Subjects + YOUR Grade 4-12 Classes.';
+      hint.innerHTML='Not logged in — Login first.';
       loadCounts(); return;
     }
-    var subjects = _u.subjects && _u.subjects.length ? _u.subjects : [ _u.subject ];
-    var classes = _u.classes && _u.classes.length ? _u.classes : [];
-    document.getElementById('whoAmI').innerHTML='✅ Welcome <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+' — '+_u.email+'<br>CAPS Subjects: '+subjects.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+'<br>Grades: <b>'+(_u.grades?_u.grades.join(', '):'')+'</b> — Classes: <b>'+classes.join(', ')+'</b>';
-    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+_u.email+' — UID: '+_u.uid;
+    var subjects = toArray(_u.subjects); var classes = toArray(_u.classes); var grades = toArray(_u.grades);
+    document.getElementById('whoAmI').innerHTML='✅ Welcome <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+' — '+_u.email+'<br>CAPS Subjects: '+subjects.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+'<br>Grades: <b>'+grades.join(', ')+'</b> — Classes: <b>'+classes.join(', ')+'</b>';
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+_u.email+' — UID: '+_u.uid+' — Classes fixed: Array('+classes.length+') ✅';
     var btns='';
     if(_u.role==='TEACHER') btns+='<button class="btn btn-green" onclick="go(\'teacher.html\')">👩‍🏫 TEACHER — NEW REQUEST →</button>';
     if(_u.role==='HOD') btns+='<button class="btn btn-orange" onclick="go(\'hod.html\')">📚 HOD — '+subjects.join(' + ')+' →</button>';
@@ -99,10 +113,10 @@ async function init(){
     btns+='<button class="btn btn-green" onclick="go(\'teacher.html\')">👩‍🏫 TEACHER →</button><button class="btn btn-orange" onclick="go(\'hod.html\')">📚 HOD →</button><button class="btn btn-teal" onclick="go(\'librarian.html\')">📖 LIBRARIAN →</button>';
     if(['PRINCIPAL','SUPER_ADMIN'].includes(_u.role)) btns+='<button class="btn btn-purple" onclick="go(\'principal.html\')">🏫 PRINCIPAL →</button><button class="btn btn-gold" onclick="go(\'users.html\')">👥 USERS →</button><button class="btn btn-grey" onclick="go(\'admin.html\')">⚙️ ADMIN →</button>';
     grid.innerHTML=btns;
-    if(_u.role==='TEACHER') hint.innerHTML='Teacher — Your CAPS Subject: <b>'+subjects.join(', ')+'</b> — Your Classes: <b>'+classes.join(', ')+'</b> — Tap TEACHER to request LTSM.';
-    if(_u.role==='HOD') hint.innerHTML='HOD — Your CAPS Subjects: <b>'+subjects.join(' + ')+'</b> — Your Grades: <b>'+(_u.grades?_u.grades.join(', '):'')+'</b> — Tap HOD to approve requests for YOUR subjects + classes only.';
-    if(_u.role==='SUPER_ADMIN') hint.innerHTML='Super Admin Rank 6 — You can see ALL Grades 4-12 + ALL CAPS Subjects — Tap USERS to add HOD / Teacher.';
-    if(_u.role==='PRINCIPAL') hint.innerHTML='Principal Rank 5 — You can see ALL Grades 4-12 + ALL CAPS Subjects.';
+    if(_u.role==='TEACHER') hint.innerHTML='Teacher — Your CAPS Subject: <b>'+subjects.join(', ')+'</b> — Your Classes: <b>'+classes.join(', ')+'</b>';
+    if(_u.role==='HOD') hint.innerHTML='HOD — Your CAPS Subjects: <b>'+subjects.join(' + ')+'</b> — Your Grades: <b>'+grades.join(', ')+'</b>';
+    if(_u.role==='SUPER_ADMIN') hint.innerHTML='Super Admin Rank 6 — ALL Grades 4-12 + ALL CAPS Subjects — Tap USERS to add HOD / Teacher.';
+    if(_u.role==='PRINCIPAL') hint.innerHTML='Principal Rank 5 — ALL Grades 4-12 + ALL CAPS Subjects.';
     loadCounts(); loadRecent();
   }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
 }
