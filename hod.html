@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HOD - Makhanani LTSM 2.0 - V2.30 Phases Fixed</title>
+<title>HOD - Makhanani LTSM 2.0 - V2.30.1 Approve Reject</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -9,7 +9,7 @@
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth(); const db = firebase.database();
   function toArray(v){ if(!v) return []; if(Array.isArray(v)) return v; if(typeof v==='string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;}); return []; }
-  function getPhase(g){ g=Number(g); if(g>=4&&g<=6) return 'INTERMEDIATE PHASE'; if(g>=7&&g<=9) return 'SENIOR PHASE'; if(g>=10&&g<=12) return 'FET PHASE'; return ''; }
+  function getPhase(g){ g=Number(String(g||'').replace(/[^0-9]/g,'')); if(g>=4&&g<=6) return 'INTERMEDIATE PHASE'; if(g>=7&&g<=9) return 'SENIOR PHASE'; if(g>=10&&g<=12) return 'FET PHASE'; return ''; }
   function getCurrentUser(){ return new Promise(function(res){ auth.onAuthStateChanged(function(u){ if(!u) return res(null); db.ref('users/'+u.uid).once('value').then(function(s){ var d=s.val()||{}; d.uid=u.uid; d.email=u.email; d.classes=toArray(d.classes||d.className||d.class); d.subjects=toArray(d.subjects||d.subject); d.grades=toArray(d.grades||d.grade); d.phases=toArray(d.phases||d.phase); res(d); }).catch(function(){ res({uid:u.uid, email:u.email, classes:[], subjects:[], grades:[], phases:[]}); }); }); }); }
 </script>
 <style>
@@ -19,24 +19,35 @@ header h1{margin:0;font-size:20px}header p{margin:6px 0 0;font-size:12px;color:#
 .wrap{max-width:980px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 select,input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
-.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}
+.btn{border:none;border-radius:8px;padding:10px 10px;font-weight:900;cursor:pointer;font-size:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
 .chk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}.chk{display:flex;align-items:center;gap:6px;background:#fff7ed;border:2px solid #fdba74;border-radius:8px;padding:10px;font-weight:900;font-size:12px;cursor:pointer}.chk input{width:auto;padding:0}.chk.on{background:#ffedd5;border-color:#ea580c}
 .chk-class{background:#f8fafc;border-color:#e2e8f0}.chk-class.on{background:#eef2ff;border-color:#0a1f4d}
-.pill{display:inline-block;background:#ea580c;color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:900;margin:2px}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-red{background:#ef4444}.pill-teal{background:#0d9488}.pill-grey{background:#64748b}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
+.approve-btn{background:#16a34a;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%;margin-bottom:6px}.reject-btn{background:#ef4444;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%}
 @media(max-width:700px){.row{flex-direction:column}.chk-grid{grid-template-columns:repeat(2,1fr)}}
 </style></head>
 <body>
-<header><h1 id="hodTitle">📚 HOD — MAKHANANI LTSM 2.0 — V2.30</h1><p id="hodSub">Loading...</p><div id="taskbar"></div><script src="nav.js"></script></header>
+<header><h1 id="hodTitle">📚 HOD — MAKHANANI LTSM 2.0 — V2.30.1</h1><p id="hodSub">Loading...</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
 <div class="card"><h2>👤 Who Am I — HOD</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
+
 <div class="card"><h2>✅ 1. SELECT CAPS SUBJECTS — Tick 1 or MORE — Heading Updates Live</h2><div class="row"><button type="button" class="btn btn-grey" onclick="selectAllSubj(true)">✅ ALL MY SUBJECTS</button><button type="button" class="btn btn-grey" onclick="selectAllSubj(false)">❌ CLEAR</button><button type="button" class="btn btn-gold" onclick="applyFilters()">🔍 APPLY →</button></div><div id="subjGrid" class="chk-grid"></div><div class="info" id="subjInfo">Subjects: None</div></div>
+
 <div class="card"><h2>✅ 2. SELECT PHASES / GRADES / CLASSES — Tick 1 or MORE</h2><div class="row"><button type="button" class="btn btn-grey" onclick="selectPhase('4-6',true)">4-6 INTERMEDIATE ✅</button><button type="button" class="btn btn-grey" onclick="selectPhase('7-9',true)">7-9 SENIOR PHASE ✅</button><button type="button" class="btn btn-grey" onclick="selectPhase('10-12',true)">10-12 FET ✅</button><button type="button" class="btn btn-grey" onclick="selectAllClasses(true)">✅ ALL MY CLASSES</button><button type="button" class="btn btn-grey" onclick="selectAllClasses(false)">❌ CLEAR</button></div><div id="classGrid" class="chk-grid"></div><div class="info" id="classInfo">Classes: None</div><div class="info" id="phaseInfo">Phases: None</div></div>
-<div class="card"><h2>📋 3. Requests — Filtered By YOUR Subjects + Phases + Classes</h2><div class="info" id="filterInfo">Showing: All</div><div id="reqList"></div><div class="row"><button class="btn btn-grey" onclick="loadRequests()">🔄 REFRESH</button></div></div>
+
+<div class="card"><h2>📋 3. Requests — ✅ APPROVE / ❌ REJECT — Only YOUR Subjects + Phases + Classes</h2>
+<div class="info" id="filterInfo">Showing: All</div>
+<div class="row"><button type="button" class="btn btn-grey" onclick="setStatusFilter('PENDING')">⏳ PENDING ONLY</button><button type="button" class="btn btn-grey" onclick="setStatusFilter('APPROVED')">✅ APPROVED ONLY</button><button type="button" class="btn btn-grey" onclick="setStatusFilter('')">📋 ALL STATUS</button></div>
+<div class="row"><input id="searchBox" placeholder="🔍 Search Teacher / Book / Class..." oninput="renderReq()"></div>
+<div class="info" id="counts">Total: 0 • PENDING: 0 • APPROVED: 0 • REJECTED: 0 • ISSUED: 0</div>
+<div id="reqList"></div><div class="row"><button class="btn btn-grey" onclick="loadRequests()">🔄 REFRESH</button><button class="btn btn-green" onclick="approveAllPending()">✅ APPROVE ALL PENDING (Filtered)</button></div>
+<div class="info"><b>HOD Rule:</b> You see ONLY your CAPS Subjects + YOUR Classes. <b>APPROVE</b> → Librarian can Issue. <b>REJECT</b> → Teacher sees REJECTED + Your reason. You can <b>RE-APPROVE</b> a Rejected one.</div></div>
+
 <div class="card"><h2>📊 My HOD Summary</h2><div id="summary"></div></div>
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
@@ -44,12 +55,13 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
 async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
-var _u=null; var _allReq=[];
+var _u=null; var _allReq=[]; var _statusFilter='';
 function getSelSubj(){ var a=[]; document.querySelectorAll('#subjGrid input:checked').forEach(function(i){a.push(i.value);}); return a; }
 function getSelClasses(){ var a=[]; document.querySelectorAll('#classGrid input:checked').forEach(function(i){a.push(i.value);}); return a; }
 function selectAllSubj(on){ document.querySelectorAll('#subjGrid input').forEach(function(i){i.checked=on;}); updateHeads(); }
 function selectAllClasses(on){ document.querySelectorAll('#classGrid input').forEach(function(i){i.checked=on;}); updateHeads(); }
 function selectPhase(p,on){ var gs=p==='4-6'?['4','5','6']:p==='7-9'?['7','8','9']:['10','11','12']; document.querySelectorAll('#classGrid input').forEach(function(i){ var g=i.value.replace(/[A-J]$/,''); if(gs.includes(g)) i.checked=on; }); updateHeads(); }
+function setStatusFilter(s){ _statusFilter=s; renderReq(); }
 function updateHeads(){
   var s=getSelSubj(); var c=getSelClasses(); var gs=[...new Set(c.map(function(x){return x.replace(/[A-J]$/,'');}))]; var ph=[...new Set(gs.map(function(g){return getPhase(g);}))].filter(function(x){return x;});
   document.getElementById('subjInfo').innerHTML='Subjects: <b>'+(s.length?s.join(' • '):'None')+'</b> — '+s.length;
@@ -60,7 +72,7 @@ function updateHeads(){
   if(_u){ document.getElementById('hodTitle').textContent='📚 HOD — '+(s.length?s.join(' + '):toArray(_u.subjects).join(' + '))+' — MAKHANANI LTSM 2.0'; document.getElementById('hodSub').innerHTML='HOD: <b>'+String(_u.name||'').toUpperCase()+'</b> • Subjects: <b>'+s.join(' • ')+'</b> • Phases: <b>'+ph.join(' • ')+'</b> • Classes: <b>'+c.join(', ')+'</b>'; }
   renderReq();
 }
-function applyFilters(){ updateHeads(); document.getElementById('filterInfo').innerHTML='Showing: Subjects <b>'+getSelSubj().join(' • ')+'</b> — Phases <b>'+[...new Set(getSelClasses().map(function(x){return getPhase(x.replace(/[A-J]$/,''));}))].join(' • ')+'</b> — Classes <b>'+getSelClasses().join(', ')+'</b>'; }
+function applyFilters(){ updateHeads(); document.getElementById('filterInfo').innerHTML='Showing: Subjects <b>'+getSelSubj().join(' • ')+'</b> — Phases <b>'+[...new Set(getSelClasses().map(function(x){return getPhase(x.replace(/[A-J]$/,''));}))].join(' • ')+'</b> — Classes <b>'+getSelClasses().join(', ')+'</b> — Status: <b>'+(_statusFilter||'ALL')+'</b>'; }
 async function init(){
   try{
     _u = await getCurrentUser();
@@ -76,15 +88,75 @@ async function init(){
     updateHeads(); loadRequests();
   }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
 }
-async function loadRequests(){ try{ var snap=await db.ref('requests').once('value'); _allReq=[]; snap.forEach(function(ch){ var v=ch.val(); v.id=ch.key; _allReq.push(v); }); renderReq(); }catch(e){ document.getElementById('reqList').innerHTML='<div class="warn">'+e.message+'</div>'; } }
+async function loadRequests(){ try{ var snap=await db.ref('requests').once('value'); _allReq=[]; snap.forEach(function(ch){ var v=ch.val(); v.id=ch.key; _allReq.push(v); }); _allReq.forEach(function(r){ if(!r.phase) r.phase=getPhase(r.grade||String(r.className||'').replace(/[A-J]$/,'')); }); renderReq(); }catch(e){ document.getElementById('reqList').innerHTML='<div class="warn">'+e.message+'</div>'; } }
+function getFiltered(){
+  var sels=getSelSubj(); var selc=getSelClasses(); var q=(document.getElementById('searchBox').value||'').toLowerCase();
+  return _allReq.filter(function(r){
+    var rs=String(r.subject||'').toUpperCase(); var rc=String(r.className||r.class||'').toUpperCase();
+    var okS=!sels.length||sels.some(function(s){ return rs.includes(s); });
+    var okC=!selc.length||selc.some(function(c){ return rc.includes(c); });
+    var okSt=!_statusFilter||(r.status||'PENDING')===_statusFilter;
+    var hay=(r.teacherName+' '+r.subject+' '+r.bookTitle+' '+r.className+' '+r.phase).toLowerCase();
+    var okQ=!q||hay.includes(q);
+    return okS&&okC&&okSt&&okQ;
+  });
+}
 function renderReq(){
-  var sels=getSelSubj(); var selc=getSelClasses();
-  var filtered=_allReq.filter(function(r){ var rs=String(r.subject||'').toUpperCase(); var rc=String(r.className||r.class||'').toUpperCase(); var okS=!sels.length||sels.some(function(s){ return rs.includes(s); }); var okC=!selc.length||selc.some(function(c){ return rc.includes(c); }); return okS&&okC; });
-  document.getElementById('summary').innerHTML='Total: <b>'+_allReq.length+'</b> — Showing for YOUR Subjects + Phases + Classes: <b>'+filtered.length+'</b>';
-  if(!filtered.length){ document.getElementById('reqList').innerHTML='<div class="info">No requests for selected Subjects + Classes yet.</div>'; return; }
-  var h='<table><tr><th>Teacher</th><th>Subject</th><th>Grade / Class / Phase</th><th>Book</th><th>Qty</th><th>Status</th></tr>';
-  filtered.forEach(function(r){ var gr=r.grade||String(r.className||'').replace(/[A-J]$/,''); h+='<tr><td>'+(r.teacherName||'')+'</td><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+gr+' '+(r.className||r.class||'')+'<br><small>'+(r.phase||getPhase(gr))+'</small></td><td>'+(r.bookTitle||'')+'</td><td>'+(r.qty||'')+'</td><td>'+(r.status||'')+'</td></tr>'; });
+  var filtered=getFiltered();
+  var pend=_allReq.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length;
+  var appr=_allReq.filter(function(r){return r.status==='APPROVED';}).length;
+  var rej=_allReq.filter(function(r){return r.status==='REJECTED';}).length;
+  var iss=_allReq.filter(function(r){return r.status==='ISSUED';}).length;
+  document.getElementById('counts').innerHTML='Total in Firebase: <b>'+_allReq.length+'</b> • Showing for YOUR Subjects + Phases + Classes: <b>'+filtered.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+appr+'</b> • REJECTED: <b>'+rej+'</b> • ISSUED: <b>'+iss+'</b>';
+  document.getElementById('summary').innerHTML='Total: <b>'+_allReq.length+'</b> — Showing for YOUR Subjects + Phases + Classes: <b>'+filtered.length+'</b> — Status Filter: <b>'+(_statusFilter||'ALL')+'</b>';
+  if(!filtered.length){ document.getElementById('reqList').innerHTML='<div class="info">No requests for selected Subjects + Classes + Status yet. Try CLEAR filters or ALL STATUS.</div>'; return; }
+  var h='<table><tr><th>Teacher</th><th>Subject</th><th>Grade / Class / Phase</th><th>Book</th><th>Qty</th><th>Status</th><th>✅ APPROVE / ❌ REJECT</th></tr>';
+  filtered.slice().reverse().forEach(function(r){
+    var st=r.status||'PENDING';
+    var pillClass=st==='APPROVED'?'pill-green':st==='ISSUED'?'pill-teal':st==='REJECTED'?'pill-red':st==='PENDING'?'pill':'pill-grey';
+    var btn='';
+    if(st==='PENDING'){
+      btn='<button class="approve-btn" onclick="setStatus(\''+r.id+'\',\'APPROVED\')">✅ APPROVE</button><button class="reject-btn" onclick="rejectWithReason(\''+r.id+'\')">❌ REJECT</button>';
+    } else if(st==='APPROVED'){
+      btn='<span style="font-size:11px;color:#16a34a">✅ Approved by<br><b>'+(r.approvedBy||r.hodName||'HOD')+'</b><br>Wait Librarian</span><br><br><button class="reject-btn" onclick="rejectWithReason(\''+r.id+'\')">❌ REJECT NOW</button>';
+    } else if(st==='REJECTED'){
+      btn='<span style="font-size:11px;color:#ef4444">❌ Rejected<br>'+(r.rejectReason||'')+'</span><br><br><button class="approve-btn" onclick="setStatus(\''+r.id+'\',\'APPROVED\')">↩️ RE-APPROVE</button>';
+    } else if(st==='ISSUED'){
+      btn='<span style="font-size:11px;color:#0d9488">✅ Issued by<br><b>'+(r.issuedBy||'Librarian')+'</b></span>';
+    }
+    h+='<tr><td><b>'+(r.teacherName||'')+'</b><br><small>'+(r.teacherEmail||'')+'</small></td><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||r.class||'')+'<br><small><b>'+(r.phase||getPhase(r.grade||''))+'</b></small></td><td>'+(r.bookTitle||'')+'</td><td><b>'+(r.qty||r.quantity||'')+'</b></td><td><span class="pill '+pillClass+'">'+st+'</span></td><td>'+btn+'</td></tr>';
+  });
   h+='</table>'; document.getElementById('reqList').innerHTML=h;
+}
+async function setStatus(id,status){
+  if(!confirm('HOD: Set this request to '+status+'?')) return;
+  try{
+    await db.ref('requests/'+id).update({ status:status, approvedBy:_u.name, approvedByEmail:_u.email, hodName:_u.name, hodAction:status, approvedAt:Date.now(), rejectReason: status==='APPROVED' ? '' : undefined });
+    alert('✅ HOD: '+status+' — Librarian can now Issue if APPROVED.');
+    loadRequests();
+  }catch(e){ alert('❌ '+e.message); }
+}
+async function rejectWithReason(id){
+  var reason=prompt('HOD — Why are you REJECTING? (Teacher will see this)\n\nE.g. Wrong book, No stock, Wrong grade, Already issued', 'Wrong book / No stock');
+  if(reason===null) return;
+  if(!confirm('HOD: REJECT this request?\nReason: '+reason)) return;
+  try{
+    await db.ref('requests/'+id).update({ status:'REJECTED', rejectedBy:_u.name, rejectedByEmail:_u.email, hodName:_u.name, hodAction:'REJECTED', rejectReason:reason, approvedAt:Date.now() });
+    alert('❌ REJECTED — Reason saved: '+reason);
+    loadRequests();
+  }catch(e){ alert('❌ '+e.message); }
+}
+async function approveAllPending(){
+  var list=getFiltered().filter(function(r){return (r.status||'PENDING')==='PENDING';});
+  if(!list.length){ alert('No PENDING in current filter.'); return; }
+  if(!confirm('HOD: APPROVE ALL '+list.length+' PENDING requests in current filter?\nSubjects: '+getSelSubj().join(' • '))) return;
+  try{
+    var updates={};
+    list.forEach(function(r){ updates[r.id+'/status']='APPROVED'; updates[r.id+'/approvedBy']=_u.name; updates[r.id+'/hodName']=_u.name; updates[r.id+'/approvedAt']=Date.now(); });
+    await db.ref('requests').update(updates);
+    alert('✅ APPROVED '+list.length+' requests.');
+    loadRequests();
+  }catch(e){ alert('❌ '+e.message); }
 }
 init();
 </script></body></html>
