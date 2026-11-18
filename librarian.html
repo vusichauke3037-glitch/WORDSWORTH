@@ -1,127 +1,151 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Librarian - Makhanani LTSM 2.0</title>
+<title>Librarian - Makhanani LTSM 2.0 - V2.30 Phases Fixed</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth(); const db = firebase.database();
+  function toArray(v){ if(!v) return []; if(Array.isArray(v)) return v; if(typeof v==='string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;}); return []; }
+  function getPhase(g){ g=Number(String(g||'').replace(/[^0-9]/g,'')); if(g>=4&&g<=6) return 'INTERMEDIATE PHASE'; if(g>=7&&g<=9) return 'SENIOR PHASE'; if(g>=10&&g<=12) return 'FET PHASE'; return ''; }
+  function getCurrentUser(){ return new Promise(function(res){ auth.onAuthStateChanged(function(u){ if(!u) return res(null); db.ref('users/'+u.uid).once('value').then(function(s){ var d=s.val()||{}; d.uid=u.uid; d.email=u.email; d.classes=toArray(d.classes||d.className||d.class); d.subjects=toArray(d.subjects||d.subject); d.grades=toArray(d.grades||d.grade); d.phases=toArray(d.phases||d.phase); res(d); }).catch(function(){ res({uid:u.uid, email:u.email, classes:[], subjects:[], grades:[], phases:[]}); }); }); }); }
+</script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
-header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:900px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+header h1{margin:0;font-size:20px}header p{margin:6px 0 0;font-size:12px;color:#d4af37}
+.wrap{max-width:980px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
-.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
+select,input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
+.btn{border:none;border-radius:8px;padding:10px 10px;font-weight:900;cursor:pointer;font-size:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.kpi{background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}.kpi b{font-size:28px;display:block}.kpi span{font-size:12px;color:#64748b}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
-@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.row{flex-direction:column}}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-blue{background:#0a1f4d}.pill-teal{background:#0d9488}.pill-purple{background:#7c3aed}.pill-red{background:#ef4444}.pill-grey{background:#64748b}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
+.phase-box{border-radius:10px;padding:10px;font-size:12px;line-height:1.7;border:2px solid #e2e8f0;text-align:center;font-weight:900}.phase-int{background:#dcfce7;border-color:#22c55e}.phase-sen{background:#dbeafe;border-color:#3b82f6}.phase-fet{background:#ffedd5;border-color:#ea580c}
+@media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>📚 LIBRARIAN DASHBOARD — MAKHANANI LTSM 2.0 — V2.22</h1><p>LIBRARIAN ONLY — RANK 3 — ISSUE + RETURN + STOCK — MY SCHOOL ONLY — WHATSAPP 078 023 3263</p>
-<div id="taskbar"></div><script src="nav.js"></script>
-</header>
+<header><h1>📖 LIBRARIAN — MAKHANANI LTSM 2.0 — V2.30</h1><p>ALL PHASES — 4-6 INTERMEDIATE • 7-9 SENIOR PHASE • 10-12 FET • ALL CAPS SUBJECTS • ALL 90 CLASSES</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I — Librarian Only</h2>
-<div class="info" id="whoAmI">Loading...</div>
-<script>
-try{
-  var _u=null; try{_u=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-  if(_u && _u.email){
-    var _rank=_u.rank; var _role=String(_u.role||'').toUpperCase();
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_role+' — RANK '+_rank+' — School: <b>'+String(_u.schoolName||'').toUpperCase()+'</b> — Email: '+String(_u.email||'')+' — <span style="color:#16a34a">LOGGED IN ✅</span>';
-    if(_role==='LIBRARIAN' && _u.rank!=3){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#dc2626">⚠️ Your Rank in Users is '+_u.rank+' — Should be 3 for LIBRARIAN — Ask Super Admin to fix in Users.</span>'; }
-    if(_role!=='LIBRARIAN'){ document.getElementById('whoAmI').innerHTML+='<br><span style="color:#d97706">👀 VIEW-ONLY MODE — You are '+_role+' — Only a real LIBRARIAN can Issue / Return. Login as Librarian to Issue.</span>'; }
-  } else { document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; setTimeout(function(){ window.location.href='login.html'; },1500); }
-}catch(e){ document.getElementById('whoAmI').innerHTML='Error: '+e.message; }
-</script>
-<div class="info" id="debugBox" style="background:#e0e7ff">🔍 DEBUG: Checking Firebase...</div>
-<div class="row"><button class="btn btn-purple" onclick="go('manuals.html')">📖 OPEN MANUALS → LIBRARIAN MANUAL</button></div>
-<div class="row"><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-gold" onclick="go('subscriptions.html')">💰 SUBSCRIPTIONS →</button></div></div>
+<div class="card"><h2>👤 Who Am I — Librarian</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
 
-<div class="grid">
-<div class="kpi"><b id="kpiBooks">-</b><span>BOOKS — MY SCHOOL</span></div>
-<div class="kpi"><b id="kpiIssued">-</b><span>ISSUED</span></div>
-<div class="kpi"><b id="kpiReturned">-</b><span>RETURNED</span></div>
-<div class="kpi"><b id="kpiOut">-</b><span>STILL OUT</span></div>
-<div class="kpi"><b id="kpiLearners">-</b><span>LEARNERS</span></div>
-<div class="kpi"><b id="kpiRetrieval" style="color:#f59e0b">-</b><span>RETRIEVAL %</span></div>
+<div class="card"><h2>📊 Librarian Dashboard — Counts By Phase</h2>
+<div class="row">
+<div class="phase-box phase-int">📗 INTERMEDIATE<br>GRADES 4-6<br><span id="cInt" style="font-size:22px">0</span><br>Requests</div>
+<div class="phase-box phase-sen">📘 SENIOR PHASE<br>GRADES 7-9<br><span id="cSen" style="font-size:22px">0</span><br>Requests</div>
+<div class="phase-box phase-fet">📙 FET<br>GRADES 10-12<br><span id="cFet" style="font-size:22px">0</span><br>Requests</div>
 </div>
+<div class="info" id="counts">Total: 0 • PENDING: 0 • APPROVED: 0 • ISSUED: 0 • REJECTED: 0</div></div>
 
-<div class="card"><h2>♻️ Retrieval % — My School</h2>
-<div class="info"><b>Formula:</b> Retrieval % = (Returned / Issued) x 100 — Target 100%</div>
-<div class="info" style="background:#e2e8f0;padding:4px;border-radius:8px"><div id="retrievalBar" style="background:#f59e0b;height:22px;border-radius:6px;width:0%;text-align:center;color:#fff;font-weight:900;font-size:12px;line-height:22px">Loading...</div></div>
-<div id="retrievalMsg" class="info">Loading...</div></div>
-
-<div class="card"><h2>📖 Issue Book — Learner Takes Book</h2>
-<div class="info">Pick Learner + Book → Tap ISSUE → Book moves to ISSUED + Still Out +1. If Learner / Book not in list, add them in Books / Learners first.</div>
-<label>Learner *</label><select id="issueLearner"><option value="">-- Pick Learner --</option></select>
-<label>Class</label><input id="issueClass" placeholder="Auto from learner — e.g. 10A">
-<label>Book *</label><select id="issueBook"><option value="">-- Pick Book --</option></select>
-<div id="issueMsg"></div>
-<div class="row"><button class="btn btn-green" onclick="issueBook()">📖 ISSUE BOOK →</button></div></div>
-
-<div class="card"><h2>↩️ Return Book — Learner Returns Book</h2>
-<div class="info">Only books with status ISSUED show here. Pick one → Tap RETURN → Status becomes RETURNED + Retrieval % goes up.</div>
-<label>Issued Book — Still Out *</label><select id="returnIssue"><option value="">-- Pick Issued Book To Return --</option></select>
-<div id="returnMsg"></div>
-<div class="row"><button class="btn btn-teal" onclick="returnBook()">↩️ RETURN BOOK →</button></div></div>
-
-<div class="card"><h2>📚 All Issues — My School</h2><div style="overflow-x:auto"><table><thead><tr><th>Learner</th><th>Class</th><th>Book</th><th>Status</th><th>Date</th></tr></thead><tbody id="issuesBody"><tr><td colspan="5">Loading...</td></tr></tbody></table></div></div>
-<div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button></div></div>
+<div class="card"><h2>🔍 Filter — Phase / Grade / Status / Subject</h2>
+<div class="row">
+<select id="fPhase" onchange="renderReq()"><option value="">ALL PHASES</option><option>INTERMEDIATE PHASE</option><option>SENIOR PHASE</option><option>FET PHASE</option></select>
+<select id="fGrade" onchange="renderReq()"><option value="">ALL GRADES 4-12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select>
+<select id="fStatus" onchange="renderReq()"><option value="">ALL STATUS</option><option>PENDING</option><option>APPROVED</option><option>ISSUED</option><option>REJECTED</option></select>
 </div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<div class="row"><input id="fSearch" placeholder="🔍 Search Teacher / Book / Subject / Class..." oninput="renderReq()"></div>
+<div class="row">
+<button type="button" class="btn btn-grey" onclick="setPhaseFilter('INTERMEDIATE PHASE')">📗 4-6 INTERMEDIATE</button>
+<button type="button" class="btn btn-grey" onclick="setPhaseFilter('SENIOR PHASE')">📘 7-9 SENIOR PHASE</button>
+<button type="button" class="btn btn-grey" onclick="setPhaseFilter('FET PHASE')">📙 10-12 FET</button>
+<button type="button" class="btn btn-grey" onclick="clearFilters()">❌ CLEAR FILTERS</button>
+</div></div>
+
+<div class="card"><h2>📚 Requests — Issue Books Here</h2><div class="info" id="filterInfo">Showing: All</div><div id="reqList"></div><div class="row"><button class="btn btn-grey" onclick="loadReq()">🔄 REFRESH</button><button class="btn btn-green" onclick="window.print()">🖨️ PRINT LIST</button></div>
+<div class="info"><b>Librarian Rule:</b> You see ALL Phases + ALL Subjects + ALL Classes. Only ISSUE when Status = <b>APPROVED</b>. If PENDING, wait for HOD. If ISSUED, already given out.</div></div>
+
+<div class="card"><h2>📦 Stock Quick Check — By Book Title</h2><div class="row"><input id="stockSearch" placeholder="e.g. MATHEMATICS GRADE 10"><button class="btn btn-teal" onclick="checkStock()">🔍 CHECK STOCK</button></div><div id="stockResult"></div></div>
+
+<div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
+</div>
 <script>
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
-var user=null; try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-// V2.22 FIX — Librarian + Super Admin + Admin + Principal can VIEW. Only Librarian can Issue/Return.
-var _ROLE = String(user && user.role || '').toUpperCase();
-if(!user || ['LIBRARIAN','SUPER_ADMIN','ADMIN','PRINCIPAL'].indexOf(_ROLE)===-1){ alert('⛔ Librarian only.'); window.location.href='login.html'; }
-window._IS_VIEW_ONLY = (_ROLE !== 'LIBRARIAN');
-var rtdb=null, firebaseOK=false, learners={}, books={}, issues={};
-try{ if(typeof firebase!=='undefined'){ var cfg={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"}; if(!firebase.apps.length) firebase.initializeApp(cfg); rtdb=firebase.database(); firebaseOK=true; } }catch(e){ firebaseOK=false; }
-function setKPI(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
-function fillSelects(){
-  var ls=document.getElementById('issueLearner'); var curL=ls.value; ls.innerHTML='<option value="">-- Pick Learner --</option>';
-  Object.keys(learners).forEach(function(k){ var l=learners[k]; var o=document.createElement('option'); o.value=k; o.textContent=String(l.name||l.learnerName||'').toUpperCase()+' — '+(l.className||''); o.dataset.cls=l.className||''; ls.appendChild(o); }); ls.value=curL;
-  var bs=document.getElementById('issueBook'); var curB=bs.value; bs.innerHTML='<option value="">-- Pick Book --</option>';
-  Object.keys(books).forEach(function(k){ var b=books[k]; var o=document.createElement('option'); o.value=k; o.textContent=String(b.title||b.bookTitle||'').toUpperCase()+' — '+(b.subject||''); bs.appendChild(o); }); bs.value=curB;
-  var rs=document.getElementById('returnIssue'); rs.innerHTML='<option value="">-- Pick Issued Book To Return --</option>';
-  Object.keys(issues).forEach(function(k){ var i=issues[k]; if(String(i.status||'').toUpperCase()==='ISSUED'){ var o=document.createElement('option'); o.value=k; o.textContent=String(i.learnerName||'').toUpperCase()+' — '+String(i.bookTitle||'').toUpperCase()+' — '+(i.className||''); rs.appendChild(o); } });
+async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
+var _u=null; var _allReq=[];
+function setPhaseFilter(p){ document.getElementById('fPhase').value=p; renderReq(); }
+function clearFilters(){ document.getElementById('fPhase').value=''; document.getElementById('fGrade').value=''; document.getElementById('fStatus').value=''; document.getElementById('fSearch').value=''; renderReq(); }
+async function init(){
+  try{
+    _u = await getCurrentUser();
+    if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; return; }
+    if(!['LIBRARIAN','HOD','PRINCIPAL','SUPER_ADMIN'].includes(_u.role)){ document.getElementById('whoAmI').innerHTML='⛔ Librarian / HOD / Principal / Super Admin only. Your role: '+_u.role+' — Teachers use TEACHER page.'; return; }
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+' — '+_u.email+'<br>Access: <b>ALL PHASES</b> — INTERMEDIATE PHASE (4-6) • SENIOR PHASE (7-9) • FET PHASE (10-12) — ALL CAPS Subjects — ALL 90 Classes (4A-12J)';
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — Librarian: '+_u.email;
+    loadReq();
+  }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
 }
-function render(){
-  var issuesArr=Object.values(issues); var issued=issuesArr.length; var returned=issuesArr.filter(function(i){ return String(i.status||'').toUpperCase()==='RETURNED'; }).length; var ret=issued>0?Math.round(returned/issued*100):100;
-  setKPI('kpiBooks', Object.keys(books).length); setKPI('kpiIssued', issued); setKPI('kpiReturned', returned); setKPI('kpiOut', issued-returned); setKPI('kpiLearners', Object.keys(learners).length); setKPI('kpiRetrieval', ret+'%');
-  var bar=document.getElementById('retrievalBar'); bar.style.width=ret+'%'; bar.textContent=ret+'% — Retrieval'; bar.style.background=ret>=95?'#22c55e':ret>=85?'#f59e0b':'#ef4444';
-  document.getElementById('retrievalMsg').innerHTML='✅ Issued <b>'+issued+'</b> — Returned <b>'+returned+'</b> — Still Out <b>'+(issued-returned)+'</b> — Retrieval % <b>'+ret+'%</b>';
-  fillSelects();
-  document.getElementById('issuesBody').innerHTML=issuesArr.length?issuesArr.slice().reverse().map(function(i){ return '<tr><td>'+String(i.learnerName||'').toUpperCase()+'</td><td>'+String(i.className||'').toUpperCase()+'</td><td>'+String(i.bookTitle||'').toUpperCase()+'</td><td>'+(String(i.status||'').toUpperCase()==='RETURNED'?'✅ RETURNED':'🚨 ISSUED — STILL OUT')+'</td><td>'+new Date(i.createdAt||Date.now()).toLocaleDateString()+'</td></tr>'; }).join(''):'<tr><td colspan="5">No issues yet — Issue first book above.</td></tr>';
-  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Firebase Live Data Loaded ✅';
+async function loadReq(){
+  try{
+    var snap=await db.ref('requests').once('value'); _allReq=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _allReq.push(v); });
+    // Fix old requests with no phase - calculate from grade
+    _allReq.forEach(function(r){ if(!r.phase) r.phase=getPhase(r.grade||String(r.className||'').replace(/[A-J]$/,'')); });
+    renderReq();
+  }catch(e){ document.getElementById('reqList').innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
-document.getElementById('issueLearner').addEventListener('change', function(){ var o=this.options[this.selectedIndex]; if(o) document.getElementById('issueClass').value=o.dataset.cls||''; });
-async function issueBook(){
-  var msg=document.getElementById('issueMsg');
-  if(window._IS_VIEW_ONLY){ msg.innerHTML='<div class="warn">⛔ View-Only — Login as LIBRARIAN to Issue.</div>'; return; }
-  var lid=document.getElementById('issueLearner').value; var bid=document.getElementById('issueBook').value; var cls=document.getElementById('issueClass').value.trim().toUpperCase();
-  if(!lid||!bid){ msg.innerHTML='<div class="warn">❌ Pick Learner + Book.</div>'; return; }
-  var l=learners[lid]; var b=books[bid];
-  try{ await rtdb.ref('issues').push().set({learnerId:lid,learnerName:l.name||l.learnerName||'',className:cls||l.className||'',bookId:bid,bookTitle:b.title||b.bookTitle||'',subject:b.subject||'',schoolId:user.schoolId||'WHS',schoolName:user.schoolName||'',status:'ISSUED',createdAt:Date.now(),issuedBy:user.email}); msg.innerHTML='<div class="ok">✅ Issued: <b>'+String(l.name||'').toUpperCase()+'</b> took <b>'+String(b.title||'').toUpperCase()+'</b></div>'; }catch(e){ msg.innerHTML='<div class="warn">❌ Issue failed: '+e.message+'</div>'; }
+function renderReq(){
+  var fp=document.getElementById('fPhase').value, fg=document.getElementById('fGrade').value, fs=document.getElementById('fStatus').value, q=(document.getElementById('fSearch').value||'').toLowerCase();
+  // Counts by phase - always on ALL
+  var ci=_allReq.filter(function(r){return r.phase==='INTERMEDIATE PHASE';}).length;
+  var cs=_allReq.filter(function(r){return r.phase==='SENIOR PHASE';}).length;
+  var cf=_allReq.filter(function(r){return r.phase==='FET PHASE';}).length;
+  document.getElementById('cInt').textContent=ci; document.getElementById('cSen').textContent=cs; document.getElementById('cFet').textContent=cf;
+  var pend=_allReq.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length;
+  var appr=_allReq.filter(function(r){return r.status==='APPROVED';}).length;
+  var iss=_allReq.filter(function(r){return r.status==='ISSUED';}).length;
+  var rej=_allReq.filter(function(r){return r.status==='REJECTED';}).length;
+  document.getElementById('counts').innerHTML='Total: <b>'+_allReq.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+appr+'</b> • ISSUED: <b>'+iss+'</b> • REJECTED: <b>'+rej+'</b>';
+  var list=_allReq.filter(function(r){
+    var okP=!fp||r.phase===fp;
+    var okG=!fg||String(r.grade)===fg;
+    var okS=!fs||(r.status||'PENDING')===fs;
+    var hay=(r.teacherName+' '+r.subject+' '+r.bookTitle+' '+r.className+' '+r.phase).toLowerCase();
+    var okQ=!q||hay.includes(q);
+    return okP&&okG&&okS&&okQ;
+  });
+  document.getElementById('filterInfo').innerHTML='Showing: <b>'+list.length+'</b> / '+_allReq.length+' — Phase: <b>'+(fp||'ALL')+'</b> — Grade: <b>'+(fg||'ALL')+'</b> — Status: <b>'+(fs||'ALL')+'</b>';
+  if(!list.length){ document.getElementById('reqList').innerHTML='<div class="info">No requests match filter.</div>'; return; }
+  var h='<table><tr><th>Teacher</th><th>Subject</th><th>Grade / Class / Phase</th><th>Book / Item</th><th>Qty Req</th><th>Status</th><th>Action</th></tr>';
+  list.slice().reverse().forEach(function(r){
+    var st=r.status||'PENDING';
+    var pillClass=st==='APPROVED'?'pill-green':st==='ISSUED'?'pill-teal':st==='REJECTED'?'pill-red':st==='PENDING'?'pill':'pill-grey';
+    var btn='';
+    if(st==='APPROVED') btn='<button class="btn btn-teal" onclick="issueBook(\''+r.id+'\')">📖 ISSUE →</button>';
+    else if(st==='PENDING') btn='<span style="font-size:11px;color:#92400e">⏳ Wait HOD</span>';
+    else if(st==='ISSUED') btn='<span style="font-size:11px;color:#0d9488">✅ Issued</span>';
+    else btn='<span style="font-size:11px;color:#ef4444">❌ Rejected</span>';
+    h+='<tr><td><b>'+(r.teacherName||'')+'</b><br><small>'+(r.teacherEmail||'')+'</small></td><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||r.class||'')+'<br><small><b>'+(r.phase||'')+'</b></small></td><td>'+(r.bookTitle||r.item||'')+'</td><td><b>'+(r.qty||r.quantity||'')+'</b></td><td><span class="pill '+pillClass+'">'+st+'</span></td><td>'+btn+'</td></tr>';
+  });
+  h+='</table>'; document.getElementById('reqList').innerHTML=h;
 }
-async function returnBook(){
-  var msg=document.getElementById('returnMsg');
-  if(window._IS_VIEW_ONLY){ msg.innerHTML='<div class="warn">⛔ View-Only — Login as LIBRARIAN to Return.</div>'; return; }
-  var id=document.getElementById('returnIssue').value;
-  if(!id){ msg.innerHTML='<div class="warn">❌ Pick an Issued Book.</div>'; return; }
-  try{ await rtdb.ref('issues/'+id).update({status:'RETURNED',returnedAt:Date.now(),returnedBy:user.email}); msg.innerHTML='<div class="ok">✅ Book returned — Retrieval % up!</div>'; }catch(e){ msg.innerHTML='<div class="warn">❌ Return failed: '+e.message+'</div>'; }
+async function issueBook(id){
+  var qty = prompt('How many books are you ISSUING? (Qty Issued)', '1');
+  if(qty===null) return;
+  qty=Number(qty); if(!qty||qty<1){ alert('Enter Qty 1+'); return; }
+  if(!confirm('Confirm ISSUE this request? Status will become ISSUED.')) return;
+  try{
+    await db.ref('requests/'+id).update({ status:'ISSUED', qtyIssued:qty, issuedBy:_u.name, issuedByEmail:_u.email, issuedAt:Date.now() });
+    alert('✅ ISSUED — Qty '+qty);
+    loadReq();
+  }catch(e){ alert('❌ '+e.message); }
 }
-if(!firebaseOK){ document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Logged in — ❌ Firebase BLOCKED — Turn OFF WiFi, use Phone Data, reload.'; }
-else {
-  document.getElementById('debugBox').innerHTML='🔍 DEBUG: ✅ Firebase Loaded — Loading...';
-  rtdb.ref('learners').on('value', function(s){ learners=s.val()||{}; render(); });
-  rtdb.ref('books').on('value', function(s){ books=s.val()||{}; render(); });
-  rtdb.ref('issues').on('value', function(s){ issues=s.val()||{}; render(); });
+async function checkStock(){
+  var q=(document.getElementById('stockSearch').value||'').trim().toUpperCase();
+  var el=document.getElementById('stockResult');
+  if(!q){ el.innerHTML='<div class="warn">Type a book title first.</div>'; return; }
+  try{
+    var snap=await db.ref('books').once('value'); var found=[];
+    snap.forEach(function(c){ var v=c.val(); var title=String(v.title||v.bookTitle||'').toUpperCase(); if(title.includes(q)) found.push(v); });
+    if(!found.length){ el.innerHTML='<div class="warn">No stock record found for <b>'+q+'</b> — Check spelling or add book in Admin.</div>'; return; }
+    var h='<table><tr><th>Book</th><th>Grade</th><th>Phase</th><th>Stock</th></tr>';
+    found.forEach(function(b){ h+='<tr><td>'+(b.title||b.bookTitle||'')+'</td><td>'+(b.grade||'')+'</td><td>'+getPhase(b.grade||'')+'</td><td><b>'+(b.stock||b.qty||0)+'</b></td></tr>'; });
+    h+='</table>'; el.innerHTML=h;
+  }catch(e){ el.innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
+init();
 </script></body></html>
