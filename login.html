@@ -1,19 +1,40 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Login - Makhanani LTSM</title><script src="firebase.js"></script>
+<title>Login - Makhanani LTSM</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+    authDomain: "makhanani-ltsm.firebaseapp.com",
+    databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+    projectId: "makhanani-ltsm",
+    storageBucket: "makhanani-ltsm.firebasestorage.app",
+    messagingSenderId: "247180363183",
+    appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+    measurementId: "G-PEST1XFCR8"
+  };
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+</script>
 <style>body{margin:0;font-family:Arial;background:#0f172a;color:#0a1f4d}.card{max-width:420px;margin:40px auto;background:#fff;border-radius:12px;padding:20px}input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;margin-top:12px;font-size:16px;font-weight:700}button{width:100%;padding:14px;border:none;border-radius:8px;background:#0a1f4d;color:#fff;font-weight:900;margin-top:14px;cursor:pointer}.ok{background:#dcfce7;padding:10px;border-radius:8px;margin-top:10px}.warn{background:#fee2e2;padding:10px;border-radius:8px;margin-top:10px}</style>
 </head><body><div class="card"><h2>🔐 MAKHANANI LTSM — LOGIN — FIREBASE</h2>
-<input id="email" placeholder="Email"><input id="pass" type="password" placeholder="Password">
+<div id="status" style="font-size:12px;background:#fef3c7;padding:8px;border-radius:6px">Checking Firebase...</div>
+<input id="email" placeholder="Email — Use vusichauke3037@gmail.com">
+<input id="pass" type="password" placeholder="Password">
 <div id="msg"></div><button onclick="doLogin()">LOGIN →</button></div>
 <script>
+document.getElementById('status').innerHTML = (typeof auth !== 'undefined' ? '✅ Firebase Loaded — auth OK' : '❌ Firebase NOT loaded — Check internet');
 async function doLogin(){
   var email=document.getElementById('email').value.trim().toLowerCase(); var pass=document.getElementById('pass').value; var msg=document.getElementById('msg');
   if(!email||!pass){ msg.innerHTML='<div class="warn">Fill Email + Password</div>'; return; }
   try{
     var cred = await auth.signInWithEmailAndPassword(email, pass);
     var snap = await db.ref('users/'+cred.user.uid).once('value'); var u = snap.val();
-    if(!u){ msg.innerHTML='<div class="warn">❌ No profile in Firebase Database for this user — Ask Super Admin to create user in Users page.</div>'; return; }
+    if(!u){ msg.innerHTML='<div class="warn">❌ Logged in to Auth, but NO profile in Database for UID: '+cred.user.uid+' — Add this UID to Database users node.</div>'; return; }
     u.uid = cred.user.uid; u.email = email; localStorage.setItem('makhanani_user', JSON.stringify(u));
-    msg.innerHTML='<div class="ok">✅ Welcome '+u.name+' — '+u.role+' Rank '+u.rank+'</div>';
+    msg.innerHTML='<div class="ok">✅ Welcome '+u.name+' — '+u.role+' Rank '+u.rank+' — UID: '+u.uid+'</div>';
     var map = {TEACHER:'teacher.html', LIBRARIAN:'librarian.html', HOD:'hod.html', PRINCIPAL:'principal.html', SUPER_ADMIN:'index.html'};
     setTimeout(function(){ window.location.href = map[u.role] || 'index.html'; }, 800);
   }catch(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
