@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Teacher - Makhanani LTSM 2.0 - V2.30 Phases Fixed</title>
+<title>Teacher - Makhanani LTSM 2.0 - V2.30.2 Cancel + Reject Reason</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -9,7 +9,7 @@
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth(); const db = firebase.database();
   function toArray(v){ if(!v) return []; if(Array.isArray(v)) return v; if(typeof v==='string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;}); return []; }
-  function getPhase(g){ g=Number(g); if(g>=4&&g<=6) return 'INTERMEDIATE PHASE'; if(g>=7&&g<=9) return 'SENIOR PHASE'; if(g>=10&&g<=12) return 'FET PHASE'; return ''; }
+  function getPhase(g){ g=Number(String(g||'').replace(/[^0-9]/g,'')); if(g>=4&&g<=6) return 'INTERMEDIATE PHASE'; if(g>=7&&g<=9) return 'SENIOR PHASE'; if(g>=10&&g<=12) return 'FET PHASE'; return ''; }
   function getCurrentUser(){ return new Promise(function(res){ auth.onAuthStateChanged(function(u){ if(!u) return res(null); db.ref('users/'+u.uid).once('value').then(function(s){ var d=s.val()||{}; d.uid=u.uid; d.email=u.email; d.classes=toArray(d.classes||d.className||d.class); d.subjects=toArray(d.subjects||d.subject); d.grades=toArray(d.grades||d.grade); d.phases=toArray(d.phases||d.phase); res(d); }).catch(function(){ res({uid:u.uid, email:u.email, classes:[], subjects:[], grades:[], phases:[]}); }); }); }); }
 </script>
 <style>
@@ -19,34 +19,44 @@ header h1{margin:0;font-size:20px}header p{margin:6px 0 0;font-size:12px;color:#
 .wrap{max-width:900px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
 h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 select,input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
-.btn{border:none;border-radius:8px;padding:12px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}
+.btn{border:none;border-radius:8px;padding:10px 10px;font-weight:900;cursor:pointer;font-size:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-orange{background:#ea580c;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.pill{display:inline-block;background:#ea580c;color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:900;margin:2px}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-red{background:#ef4444}.pill-teal{background:#0d9488}.pill-grey{background:#64748b}.pill-purple{background:#7c3aed}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
+.cancel-btn{background:#ef4444;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%;margin-bottom:6px}.resubmit-btn{background:#16a34a;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%}.edit-btn{background:#0a1f4d;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer;font-size:11px;width:100%;margin-bottom:6px}
 @media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1 id="teachTitle">👩‍🏫 TEACHER — MAKHANANI LTSM 2.0 — V2.30</h1><p id="teachSub">Loading...</p><div id="taskbar"></div><script src="nav.js"></script></header>
+<header><h1 id="teachTitle">👩‍🏫 TEACHER — MAKHANANI LTSM 2.0 — V2.30.2</h1><p id="teachSub">Loading...</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
 <div class="card"><h2>👤 Who Am I — Teacher</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
+
 <div class="card"><h2>📝 New Request — CAPS — Only YOUR Subject + YOUR Classes</h2>
 <label>CAPS Subject — Locked To YOUR Subject *</label><select id="reqSubject"></select>
 <label>Grade / Class — Only YOUR Classes (4-6 INTERMEDIATE / 7-9 SENIOR PHASE / 10-12 FET) *</label><select id="reqClass"></select><div class="info" id="classInfo"></div>
 <label>Book / LTSM Item *</label><input id="reqBook" placeholder="e.g. MATHEMATICS GRADE 10 LEARNER BOOK">
 <label>Quantity *</label><input id="reqQty" type="number" value="1" min="1"><div id="reqMsg"></div>
-<div class="row"><button class="btn btn-green" onclick="saveReq()">📤 SUBMIT REQUEST</button></div>
-<div class="info">Teacher: 1 CAPS Subject only. Class dropdown shows ONLY classes ticked for you in Users — With correct Phase label.</div></div>
-<div class="card"><h2>📋 My Requests</h2><div id="myReqList"></div><div class="row"><button class="btn btn-grey" onclick="loadMyReq()">🔄 REFRESH</button></div></div>
+<div class="row"><button class="btn btn-green" id="submitBtn" onclick="saveReq()">📤 SUBMIT REQUEST</button><button class="btn btn-grey" onclick="clearReqForm()">🧹 CLEAR</button></div>
+<div class="info" id="editNote" style="display:none"></div>
+<div class="info">Teacher: 1 CAPS Subject only. Class dropdown shows ONLY classes ticked for you in Users — With correct Phase label. <b>You can CANCEL your own PENDING request. You CANNOT cancel APPROVED / ISSUED — Ask HOD.</b></div></div>
+
+<div class="card"><h2>📋 My Requests — ❌ Cancel PENDING / ↩️ Re-Submit Rejected</h2>
+<div class="row"><button type="button" class="btn btn-grey" onclick="setFilter('PENDING')">⏳ PENDING ONLY</button><button type="button" class="btn btn-grey" onclick="setFilter('REJECTED')">❌ REJECTED ONLY</button><button type="button" class="btn btn-grey" onclick="setFilter('')">📋 ALL</button></div>
+<div class="info" id="counts">Loading...</div>
+<div id="myReqList"></div><div class="row"><button class="btn btn-grey" onclick="loadMyReq()">🔄 REFRESH</button></div></div>
+
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
 <script>
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
 async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
-var _u=null;
+var _u=null; var _myReq=[]; var _filter=''; var _editId='';
+function setFilter(s){ _filter=s; renderMyReq(); }
+function clearReqForm(){ _editId=''; document.getElementById('reqBook').value=''; document.getElementById('reqQty').value='1'; document.getElementById('editNote').style.display='none'; document.getElementById('submitBtn').textContent='📤 SUBMIT REQUEST'; }
 async function init(){
   try{
     _u = await getCurrentUser();
@@ -72,19 +82,82 @@ async function saveReq(){
   if(!subj||!cls||!book||!qty){ msg.innerHTML='<div class="warn">❌ Fill Subject + Class + Book + Qty.</div>'; return; }
   try{
     var grade=cls.replace(/[A-J]$/,''); var phase=getPhase(grade);
-    await db.ref('requests').push({ teacherName:_u.name, teacherEmail:_u.email, teacherUid:_u.uid, subject:subj, subjects:[subj], class:cls, className:cls, grade:grade, grades:[grade], phase:phase, phases:[phase], bookTitle:book, item:book, title:book, qty:Number(qty), quantity:Number(qty), status:'PENDING', schoolCode:_u.schoolCode, schoolName:_u.schoolName, createdAt:Date.now() });
-    msg.innerHTML='<div class="ok">✅ Saved: <b>'+book+'</b> — '+subj+' — GRADE '+grade+' '+cls+' — '+phase+' — Qty '+qty+'</div>';
-    document.getElementById('reqBook').value=''; loadMyReq();
+    if(_editId){
+      // Re-submit / Edit a REJECTED / CANCELLED request — back to PENDING
+      await db.ref('requests/'+_editId).update({ subject:subj, subjects:[subj], class:cls, className:cls, grade:grade, grades:[grade], phase:phase, phases:[phase], bookTitle:book, item:book, title:book, qty:Number(qty), quantity:Number(qty), status:'PENDING', rejectReason:'', cancelledReason:'', cancelledBy:'', resubmittedAt:Date.now() });
+      msg.innerHTML='<div class="ok">✅ Re-Submitted: <b>'+book+'</b> — '+subj+' — GRADE '+grade+' '+cls+' — '+phase+' — Now PENDING again.</div>';
+    } else {
+      await db.ref('requests').push({ teacherName:_u.name, teacherEmail:_u.email, teacherUid:_u.uid, subject:subj, subjects:[subj], class:cls, className:cls, grade:grade, grades:[grade], phase:phase, phases:[phase], bookTitle:book, item:book, title:book, qty:Number(qty), quantity:Number(qty), status:'PENDING', schoolCode:_u.schoolCode, schoolName:_u.schoolName, createdAt:Date.now() });
+      msg.innerHTML='<div class="ok">✅ Saved: <b>'+book+'</b> — '+subj+' — GRADE '+grade+' '+cls+' — '+phase+' — Qty '+qty+'</div>';
+    }
+    clearReqForm(); loadMyReq();
   }catch(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
 }
 async function loadMyReq(){
   try{
-    var snap=await db.ref('requests').orderByChild('teacherUid').equalTo(_u.uid).once('value'); var arr=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; arr.push(v); });
-    if(!arr.length){ document.getElementById('myReqList').innerHTML='<div class="info">No requests yet.</div>'; return; }
-    var h='<table><tr><th>Subject</th><th>Grade / Class / Phase</th><th>Book</th><th>Qty</th><th>Status</th></tr>';
-    arr.reverse().forEach(function(r){ h+='<tr><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||r.class||'')+'<br><small>'+(r.phase||getPhase(r.grade||''))+'</small></td><td>'+(r.bookTitle||'')+'</td><td>'+(r.qty||'')+'</td><td>'+(r.status||'')+'</td></tr>'; });
-    h+='</table>'; document.getElementById('myReqList').innerHTML=h;
+    var snap=await db.ref('requests').orderByChild('teacherUid').equalTo(_u.uid).once('value'); _myReq=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _myReq.push(v); });
+    _myReq.forEach(function(r){ if(!r.phase) r.phase=getPhase(r.grade||String(r.className||'').replace(/[A-J]$/,'')); });
+    renderMyReq();
   }catch(e){ document.getElementById('myReqList').innerHTML='<div class="warn">'+e.message+'</div>'; }
+}
+function renderMyReq(){
+  var list=_myReq.filter(function(r){ return !_filter || (r.status||'PENDING')===_filter; });
+  var pend=_myReq.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length;
+  var appr=_myReq.filter(function(r){return r.status==='APPROVED';}).length;
+  var rej=_myReq.filter(function(r){return r.status==='REJECTED';}).length;
+  var iss=_myReq.filter(function(r){return r.status==='ISSUED';}).length;
+  var canc=_myReq.filter(function(r){return r.status==='CANCELLED';}).length;
+  document.getElementById('counts').innerHTML='My Total: <b>'+_myReq.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+appr+'</b> • ISSUED: <b>'+iss+'</b> • REJECTED: <b>'+rej+'</b> • CANCELLED: <b>'+canc+'</b> — Filter: <b>'+(_filter||'ALL')+'</b>';
+  if(!list.length){ document.getElementById('myReqList').innerHTML='<div class="info">No requests in this filter.</div>'; return; }
+  var h='<table><tr><th>Subject</th><th>Grade / Class / Phase</th><th>Book</th><th>Qty</th><th>Status / HOD Reason</th><th>My Action</th></tr>';
+  list.slice().reverse().forEach(function(r){
+    var st=r.status||'PENDING';
+    var pillClass=st==='APPROVED'?'pill-green':st==='ISSUED'?'pill-teal':st==='REJECTED'?'pill-red':st==='CANCELLED'?'pill-grey':st==='PENDING'?'pill':'pill-grey';
+    var reasonHtml='';
+    if(st==='REJECTED' && r.rejectReason) reasonHtml='<br><span style="color:#991b1b;font-size:11px"><b>HOD Reason:</b> '+r.rejectReason+'</span><br><small>By '+ (r.rejectedBy||r.hodName||'HOD') +'</small>';
+    if(st==='APPROVED' && r.approvedBy) reasonHtml='<br><small>Approved by <b>'+r.approvedBy+'</b></small>';
+    if(st==='ISSUED' && r.issuedBy) reasonHtml='<br><small>Issued by <b>'+r.issuedBy+'</b> — Qty Issued: <b>'+(r.qtyIssued||'')+'</b></small>';
+    if(st==='CANCELLED' && r.cancelledReason) reasonHtml='<br><span style="font-size:11px">You cancelled: '+r.cancelledReason+'</span>';
+    var btn='';
+    if(st==='PENDING'){
+      btn='<button class="edit-btn" onclick="editReq(\''+r.id+'\')">✏️ EDIT</button><button class="cancel-btn" onclick="cancelReq(\''+r.id+'\')">❌ CANCEL</button>';
+    } else if(st==='REJECTED'){
+      btn='<button class="resubmit-btn" onclick="editReq(\''+r.id+'\')">↩️ FIX + RE-SUBMIT</button>';
+    } else if(st==='CANCELLED'){
+      btn='<button class="resubmit-btn" onclick="editReq(\''+r.id+'\')">↩️ RE-SUBMIT</button>';
+    } else if(st==='APPROVED'){
+      btn='<span style="font-size:11px;color:#16a34a">✅ Approved<br>Cannot cancel<br>Ask HOD to Reject</span>';
+    } else if(st==='ISSUED'){
+      btn='<span style="font-size:11px;color:#0d9488">✅ Already Issued<br>Cannot cancel</span>';
+    }
+    h+='<tr><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||r.class||'')+'<br><small>'+(r.phase||getPhase(r.grade||''))+'</small></td><td>'+(r.bookTitle||'')+'</td><td>'+(r.qty||'')+'</td><td><span class="pill '+pillClass+'">'+st+'</span>'+reasonHtml+'</td><td>'+btn+'</td></tr>';
+  });
+  h+='</table>'; document.getElementById('myReqList').innerHTML=h;
+}
+function editReq(id){
+  var r=_myReq.find(function(x){return x.id===id;}); if(!r) return;
+  if(r.status==='APPROVED'||r.status==='ISSUED'){ alert('Cannot edit APPROVED / ISSUED — Ask HOD to Reject first.'); return; }
+  _editId=id;
+  document.getElementById('reqSubject').value=r.subject||'';
+  document.getElementById('reqClass').value=r.className||r.class||'';
+  document.getElementById('reqBook').value=r.bookTitle||'';
+  document.getElementById('reqQty').value=r.qty||1;
+  document.getElementById('editNote').style.display='block';
+  document.getElementById('editNote').innerHTML='✏️ EDITING / RE-SUBMITTING: <b>'+(r.bookTitle||'')+'</b> — Was: <b>'+(r.status||'')+'</b>'+(r.rejectReason?' — HOD Reason: <b>'+r.rejectReason+'</b>':'')+' — Fix book / qty / class above, then tap <b>↩️ RE-SUBMIT</b>. It will go back to PENDING.';
+  document.getElementById('submitBtn').textContent='↩️ RE-SUBMIT → PENDING';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function cancelReq(id){
+  var r=_myReq.find(function(x){return x.id===id;}); if(!r) return;
+  if((r.status||'PENDING')!=='PENDING'){ alert('Only PENDING can be cancelled. This is '+r.status); return; }
+  var reason=prompt('Why are you cancelling this request?\n\nE.g. Wrong book, Wrong class, Duplicated, No longer needed', 'Wrong book');
+  if(reason===null) return;
+  if(!confirm('Cancel this request?\n\n'+r.bookTitle+' — GRADE '+r.grade+' '+(r.className||'')+'\nReason: '+reason)) return;
+  try{
+    await db.ref('requests/'+id).update({ status:'CANCELLED', cancelledBy:_u.name, cancelledByEmail:_u.email, cancelledReason:reason, cancelledAt:Date.now() });
+    alert('❌ Cancelled — You can Re-Submit it later if needed.');
+    loadMyReq();
+  }catch(e){ alert('❌ '+e.message); }
 }
 init();
 </script></body></html>
