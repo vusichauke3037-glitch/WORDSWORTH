@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Principal - Makhanani LTSM 2.0 - V2.30 Phases Fixed</title>
+<title>Principal - Makhanani LTSM 2.0 - V2.32 Principal Overview</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -11,56 +11,60 @@
   function toArray(v){ if(!v) return []; if(Array.isArray(v)) return v; if(typeof v==='string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;}); return []; }
   function getPhase(g){ g=Number(String(g||'').replace(/[^0-9]/g,'')); if(g>=4&&g<=6) return 'INTERMEDIATE PHASE'; if(g>=7&&g<=9) return 'SENIOR PHASE'; if(g>=10&&g<=12) return 'FET PHASE'; return ''; }
   function getCurrentUser(){ return new Promise(function(res){ auth.onAuthStateChanged(function(u){ if(!u) return res(null); db.ref('users/'+u.uid).once('value').then(function(s){ var d=s.val()||{}; d.uid=u.uid; d.email=u.email; d.classes=toArray(d.classes||d.className||d.class); d.subjects=toArray(d.subjects||d.subject); d.grades=toArray(d.grades||d.grade); d.phases=toArray(d.phases||d.phase); res(d); }).catch(function(){ res({uid:u.uid, email:u.email, classes:[], subjects:[], grades:[], phases:[]}); }); }); }); }
+  function getDueDate(issuedAt){ var d=new Date(issuedAt||Date.now()); var y=d.getFullYear(); var due=new Date(y,10,30); if(d>due) due=new Date(y+1,10,30); return due; }
+  function dueInfo(issuedAt){ var due=getDueDate(issuedAt); var today=new Date(); today.setHours(0,0,0,0); var dd=new Date(due); dd.setHours(0,0,0,0); var days=Math.ceil((dd-today)/86400000); var status=days<0?'OVERDUE':days<=14?'DUE SOON':'ON TIME'; return {due:due, days:days, status:status, dueStr:due.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}; }
+  function fmtDue(issuedAt){ var i=dueInfo(issuedAt); if(i.status==='OVERDUE') return '📅 Due: <b>'+i.dueStr+'</b> — <span style="color:#dc2626"><b>⛔ OVERDUE by '+Math.abs(i.days)+' days</b></span>'; if(i.status==='DUE SOON') return '📅 Due: <b>'+i.dueStr+'</b> — <span style="color:#ea580c"><b>⚠️ '+i.days+' days left</b></span>'; return '📅 Due: <b>'+i.dueStr+'</b> — <span style="color:#16a34a"><b>✅ '+i.days+' days left</b></span>'; }
+  function requestedQtyOf(r){ return Number(r.qtyRequested||r.requestedQty||r.qty||r.quantity||0); }
+  function approvedQtyOf(r){ var a=Number(r.qtyApproved||r.approvedQty||0); if(a>0) return a; if(r.status==='APPROVED'||r.status==='ISSUED'||r.status==='RETURNED') return Number(r.qty||0); return 0; }
+  function groupForSubject(s){ s=String(s||'').toUpperCase(); if(s.includes('ENGLISH')||s.includes('AFRIKAANS')||s.includes('ISIZULU')||s.includes('SEPEDI')||s.includes('XITSONGA')||s.includes('LANGUAGE')) return 'LANGUAGES'; if(s.includes('MATHEMATICS')||s.includes('MATHS')||s.includes('MATHEMATICAL')) return 'MATHEMATICS'; if(s.includes('PHYSICAL')||s.includes('LIFE SCIENCES')||s.includes('NATURAL SCIENCES')||s.includes('AGRICULTURAL')) return 'SCIENCES'; if(s.includes('ACCOUNTING')||s.includes('BUSINESS')||s.includes('ECONOMICS')||s.includes('MANAGEMENT SCIENCES')) return 'COMMERCE'; if(s.includes('GEOGRAPHY')||s.includes('HISTORY')||s.includes('SOCIAL SCIENCES')) return 'HUMANITIES'; if(s.includes('LIFE ORIENTATION')||s.includes('LIFE SKILLS')) return 'LIFE SKILLS'; if(s.includes('TECHNOLOGY')||s.includes('COMPUTER')||s.includes('ENGINEERING')) return 'TECHNOLOGY'; return 'OTHER'; }
+  function groupEmoji(g){ if(g==='LANGUAGES') return '🗣️'; if(g==='MATHEMATICS') return '🔢'; if(g==='SCIENCES') return '🔬'; if(g==='COMMERCE') return '💼'; if(g==='HUMANITIES') return '🌍'; if(g==='LIFE SKILLS') return '❤️'; if(g==='TECHNOLOGY') return '💻'; return '📦'; }
+  function groupColor(g){ if(g==='LANGUAGES') return '#7c3aed'; if(g==='MATHEMATICS') return '#0a1f4d'; if(g==='SCIENCES') return '#16a34a'; if(g==='COMMERCE') return '#ea580c'; if(g==='HUMANITIES') return '#0284c7'; if(g==='LIFE SKILLS') return '#db2777'; if(g==='TECHNOLOGY') return '#0d9488'; return '#64748b'; }
+  function schoolPrefix(schoolName){ var name=String(schoolName||'Makhanani').trim(); var words=name.split(/[\s\-]+/).filter(function(w){return w.length>0;}); var skip=['THE','OF','AND','&']; var letters=words.filter(function(w){return skip.indexOf(w.toUpperCase())===-1;}).map(function(w){return w.charAt(0).toUpperCase();}); if(!letters.length) letters=['M']; return letters.join(''); }
+  function pad6(n){ var s=String(n); while(s.length<6) s='0'+s; return s; }
+  function formatBookNo(prefix, seq){ return prefix + pad6(seq); }
 </script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
 header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
 header h1{margin:0;font-size:20px}header p{margin:6px 0 0;font-size:12px;color:#d4af37}
 .wrap{max-width:980px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
-h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
+h2{margin:0 0 10px;font-size:16px}h3{margin:14px 0 6px;font-size:14px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 select,input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
 .btn{border:none;border-radius:8px;padding:10px 10px;font-weight:900;cursor:pointer;font-size:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.orange-box{background:#ffedd5;border:2px solid #ea580c;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
+.green-box{background:#dcfce7;border:2px solid #16a34a;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
+.red-box{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-blue{background:#0a1f4d}.pill-teal{background:#0d9488}.pill-purple{background:#7c3aed}.pill-red{background:#ef4444}.pill-grey{background:#64748b}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-red{background:#ef4444}.pill-teal{background:#0d9488}.pill-grey{background:#64748b}.pill-purple{background:#7c3aed}.pill-book{background:#0a1f4d;font-size:13px;padding:5px 10px}.pill-cut{background:#ea580c;font-size:12px;padding:5px 10px}.pill-full{background:#16a34a;font-size:12px;padding:5px 10px}
 table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
-.phase-box{border-radius:10px;padding:12px;font-size:12px;line-height:1.7;border:2px solid #e2e8f0;text-align:center;font-weight:900}.phase-int{background:#dcfce7;border-color:#22c55e}.phase-sen{background:#dbeafe;border-color:#3b82f6}.phase-fet{background:#ffedd5;border-color:#ea580c}
+.phase-box{border-radius:10px;padding:10px;font-size:12px;line-height:1.7;border:2px solid #e2e8f0;text-align:center;font-weight:900}.phase-int{background:#dcfce7;border-color:#22c55e}.phase-sen{background:#dbeafe;border-color:#3b82f6}.phase-fet{background:#ffedd5;border-color:#ea580c}
+.group-card{border-radius:12px;padding:12px;margin-bottom:12px;border:3px solid #e2e8f0;background:#fff}.group-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.group-title{font-size:15px;font-weight:900}.grade-block{border:2px solid #e2e8f0;border-radius:10px;padding:10px;margin-top:10px;background:#f8fafc}.grade-title{font-weight:900;font-size:13px}
+.kpi{border:3px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center;background:#fff}.kpi-num{font-size:28px;font-weight:900}.kpi-label{font-size:11px;font-weight:900;color:#64748b}
 @media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>🏫 PRINCIPAL — MAKHANANI LTSM 2.0 — V2.30</h1><p>ALL PHASES — 4-6 INTERMEDIATE • 7-9 SENIOR PHASE • 10-12 FET • ALL CAPS SUBJECTS • ALL 90 CLASSES • RANK 5</p><div id="taskbar"></div><script src="nav.js"></script></header>
+<header><h1>🏫 PRINCIPAL — MAKHANANI LTSM 2.0 — V2.32 PRINCIPAL OVERVIEW</h1><p>REQUESTED vs APPROVED vs CUT • STOCK BY GROUP → GRADE → SUBJECT • AUTO NUMBERS • DUE 30 NOV</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I — Principal</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
+<div class="card"><h2>👤 Who Am I — Principal</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div><div class="green-box" id="prefixBanner">Prefix: Loading...</div><div class="red-box" id="dueBanner" style="display:none"></div></div>
 
-<div class="card"><h2>📊 Principal Dashboard — Whole School — Grade 4-12</h2>
-<div class="row">
-<div class="phase-box phase-int">📗 INTERMEDIATE<br>GRADES 4-6<br><span id="cInt" style="font-size:22px">0</span><br>Requests<br><small id="cIntPend"></small></div>
-<div class="phase-box phase-sen">📘 SENIOR PHASE<br>GRADES 7-9<br><span id="cSen" style="font-size:22px">0</span><br>Requests<br><small id="cSenPend"></small></div>
-<div class="phase-box phase-fet">📙 FET<br>GRADES 10-12<br><span id="cFet" style="font-size:22px">0</span><br>Requests<br><small id="cFetPend"></small></div>
-</div>
-<div class="info" id="counts">Total Users: 0 • Total Requests: 0 • PENDING: 0 • APPROVED: 0 • ISSUED: 0 • REJECTED: 0</div>
-<div class="row"><button class="btn btn-purple" onclick="go('users.html')">👥 USERS — ADD / EDIT →</button><button class="btn btn-orange" onclick="go('hod.html')">📚 HOD →</button><button class="btn btn-teal" onclick="go('librarian.html')">📖 LIBRARIAN →</button><button class="btn btn-green" onclick="go('teacher.html')">👩‍🏫 TEACHER →</button></div></div>
+<div class="card"><h2>📊 School Dashboard — Requested vs Approved vs Cut</h2>
+<div class="row"><div class="kpi"><div class="kpi-num" id="kReq">0</div><div class="kpi-label">TOTAL REQUESTED</div></div><div class="kpi"><div class="kpi-num" style="color:#16a34a" id="kAppr">0</div><div class="kpi-label">TOTAL APPROVED BY HODs</div></div><div class="kpi"><div class="kpi-num" style="color:#ea580c" id="kCut">0</div><div class="kpi-label">✂️ TOTAL CUT</div></div><div class="kpi"><div class="kpi-num" style="color:#0d9488" id="kIss">0</div><div class="kpi-label">TOTAL ISSUED</div></div></div>
+<div class="row"><div class="kpi"><div class="kpi-num" id="kPend">0</div><div class="kpi-label">⏳ PENDING HOD</div></div><div class="kpi"><div class="kpi-num" style="color:#ef4444" id="kOver">0</div><div class="kpi-label">🔴 OVERDUE PAST 30 NOV</div></div><div class="kpi"><div class="kpi-num" id="kStock">0</div><div class="kpi-label">📦 STOCK IN LIBRARY</div></div><div class="kpi"><div class="kpi-num" id="kTitles">0</div><div class="kpi-label">📚 TITLES</div></div></div>
+<div class="info" id="counts"></div><div class="info" id="cutInfo"></div>
+<div class="row"><div class="phase-box phase-int">📗 INTERMEDIATE<br>GRADES 4-6<br><span id="cInt" style="font-size:22px">0</span><br><small id="cIntCut"></small></div><div class="phase-box phase-sen">📘 SENIOR PHASE<br>GRADES 7-9<br><span id="cSen" style="font-size:22px">0</span><br><small id="cSenCut"></small></div><div class="phase-box phase-fet">📙 FET<br>GRADES 10-12<br><span id="cFet" style="font-size:22px">0</span><br><small id="cFetCut"></small></div></div></div>
 
-<div class="card"><h2>🔍 Filter — Phase / Grade / Status / HOD / Subject</h2>
-<div class="row">
-<select id="fPhase" onchange="renderReq()"><option value="">ALL PHASES</option><option>INTERMEDIATE PHASE</option><option>SENIOR PHASE</option><option>FET PHASE</option></select>
-<select id="fGrade" onchange="renderReq()"><option value="">ALL GRADES 4-12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select>
-<select id="fStatus" onchange="renderReq()"><option value="">ALL STATUS</option><option>PENDING</option><option>APPROVED</option><option>ISSUED</option><option>REJECTED</option></select>
-</div>
-<div class="row"><input id="fSearch" placeholder="🔍 Search Teacher / Book / Subject / Class..." oninput="renderReq()"></div>
-<div class="row">
-<button type="button" class="btn btn-grey" onclick="setPhaseFilter('INTERMEDIATE PHASE')">📗 4-6 INTERMEDIATE</button>
-<button type="button" class="btn btn-grey" onclick="setPhaseFilter('SENIOR PHASE')">📘 7-9 SENIOR PHASE</button>
-<button type="button" class="btn btn-grey" onclick="setPhaseFilter('FET PHASE')">📙 10-12 FET</button>
-<button type="button" class="btn btn-grey" onclick="clearFilters()">❌ CLEAR</button>
-</div></div>
+<div class="card" style="border:3px solid #ea580c"><h2>✂️ CUT By HOD — Who Cut Most? — Requested vs Approved</h2><div class="info">Each HOD approves for their subject. If HOD approves less than Teacher requested, that is a CUT. Cut = Requested − Approved.</div><div id="hodCutList"></div></div>
 
-<div class="card"><h2>📋 All Requests — Principal Can Approve / Reject ANY Request</h2><div class="info" id="filterInfo">Showing: All</div><div id="reqList"></div><div class="row"><button class="btn btn-grey" onclick="loadAll()">🔄 REFRESH</button><button class="btn btn-green" onclick="window.print()">🖨️ PRINT REPORT</button></div>
-<div class="info"><b>Principal Rule:</b> You see ALL — ALL Phases, ALL Subjects, ALL Grades 4-12, ALL Teachers, ALL HODs. You can Approve ANY PENDING request, even if HOD has not approved yet. You can also Reject.</div></div>
+<div class="card" style="border:3px solid #7c3aed"><h2>📚 CUT By Group / Department + Subject — Where Are We Short?</h2><div class="row"><select id="fGroupCut" onchange="renderCutByGroup()"><option value="">ALL GROUPS</option><option>LANGUAGES</option><option>MATHEMATICS</option><option>SCIENCES</option><option>COMMERCE</option><option>HUMANITIES</option><option>LIFE SKILLS</option><option>TECHNOLOGY</option><option>OTHER</option></select><button class="btn btn-grey" onclick="document.getElementById('fGroupCut').value='';renderCutByGroup()">❌ CLEAR</button></div><div id="groupCutList"></div></div>
 
-<div class="card"><h2>👥 Staff By Phase — Who Teaches What?</h2><div id="staffList"></div><div class="row"><button class="btn btn-grey" onclick="loadStaff()">🔄 REFRESH STAFF</button></div></div>
+<div class="card" style="border:3px solid #16a34a"><h2>📦 STOCK — Group → Grade → Subject — Auto Numbers</h2><div class="info" id="stockSummary">Loading stock...</div><div class="row"><select id="sGroup" onchange="renderStock()"><option value="">ALL GROUPS</option><option>LANGUAGES</option><option>MATHEMATICS</option><option>SCIENCES</option><option>COMMERCE</option><option>HUMANITIES</option><option>LIFE SKILLS</option><option>TECHNOLOGY</option><option>OTHER</option></select><select id="sGrade" onchange="renderStock()"><option value="">ALL GRADES 4-12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="sSubject" onchange="renderStock()"><option value="">ALL SUBJECTS</option></select></div><div class="row"><select id="sStock" onchange="renderStock()"><option value="">ALL STOCK</option><option value="OUT">🔴 OUT — 0</option><option value="LOW">🟠 LOW — 1 to 10</option><option value="OK">🟢 OK — 11+</option></select><input id="sSearch" placeholder="🔍 Search Title / Book No e.g. MPS000001..." oninput="renderStock()"></div><div id="stockList"></div></div>
+
+<div class="card" style="border:3px solid #ef4444"><h2>🔴 OVERDUE — Past 30 November — Who Has Not Returned?</h2><div class="row"><button class="btn btn-red" onclick="setOverdueFilter()">🔴 OVERDUE ONLY</button><button class="btn btn-grey" onclick="setAllFilter()">📋 ALL REQUESTS</button></div><div id="overdueList"></div></div>
+
+<div class="card"><h2>🔍 All Requests — Filter</h2><div class="row"><select id="fPhase" onchange="renderReq()"><option value="">ALL PHASES</option><option>INTERMEDIATE PHASE</option><option>SENIOR PHASE</option><option>FET PHASE</option></select><select id="fGrade" onchange="renderReq()"><option value="">ALL GRADES</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="fStatus" onchange="renderReq()"><option value="">ALL STATUS</option><option>PENDING</option><option>APPROVED</option><option>ISSUED</option><option>RETURNED</option><option>REJECTED</option><option>CANCELLED</option></select></div><div class="row"><input id="fSearch" placeholder="🔍 Search Teacher / HOD / Book / Subject / Book No..." oninput="renderReq()"></div><div class="info" id="filterInfo">Showing: All</div><div id="reqList"></div><div class="row"><button class="btn btn-grey" onclick="loadAll()">🔄 REFRESH</button><button class="btn btn-green" onclick="window.print()">🖨️ PRINT REPORT</button></div></div>
 
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
@@ -68,79 +72,153 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
 async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
-var _u=null; var _allReq=[]; var _allUsers=[];
-function setPhaseFilter(p){ document.getElementById('fPhase').value=p; renderReq(); }
-function clearFilters(){ document.getElementById('fPhase').value=''; document.getElementById('fGrade').value=''; document.getElementById('fStatus').value=''; document.getElementById('fSearch').value=''; renderReq(); }
+var _u=null; var _allReq=[]; var _allBooks=[]; var _issuedLog=[]; var _schoolName='Makhanani'; var _prefix='M'; var _counter=0; var _overdueOnly=false;
+function setOverdueFilter(){ _overdueOnly=true; renderReq(); document.getElementById('reqList').scrollIntoView({behavior:'smooth'}); }
+function setAllFilter(){ _overdueOnly=false; document.getElementById('fStatus').value=''; renderReq(); }
 async function init(){
   try{
-    _u = await getCurrentUser();
-    if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in — Go to login.html'; return; }
-    if(!['PRINCIPAL','SUPER_ADMIN'].includes(_u.role)){ document.getElementById('whoAmI').innerHTML='⛔ PRINCIPAL / SUPER_ADMIN only. Your role: '+_u.role+' — HOD use HOD page, Librarian use LIBRARIAN page.'; return; }
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+' — '+_u.email+'<br>Access: <b>ALL PHASES</b> — INTERMEDIATE PHASE (4-6) • SENIOR PHASE (7-9) • FET PHASE (10-12) — ALL CAPS Subjects — ALL 90 Classes — Can Approve ALL + Add Users';
-    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — Principal: '+_u.email;
-    loadAll(); loadStaff();
+    _u=await getCurrentUser();
+    if(!_u||!_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in'; return; }
+    if(!['PRINCIPAL','SUPER_ADMIN','HOD'].includes(_u.role)){ document.getElementById('whoAmI').innerHTML='⛔ Principal / Super Admin only. Your role: '+_u.role; return; }
+    _schoolName=_u.schoolName||_u.school||'Makhanani';
+    try{ var sSnap=await db.ref('settings/schoolName').once('value'); if(sSnap.val()) _schoolName=sSnap.val(); }catch(e){}
+    _prefix=schoolPrefix(_schoolName);
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — School: <b>'+_schoolName+'</b><br>Full School View • All HODs • All Groups • All Grades 4-12 • Due: <b>30 Nov Every Year</b>';
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+_u.email+' — V2.32 Principal — Prefix: '+_prefix;
+    document.getElementById('prefixBanner').innerHTML='🏫 School: <b>'+_schoolName+'</b> → Prefix: <b>'+_prefix+'</b> → Format: <b>'+_prefix+' + 6 Digits</b> → e.g. <b>'+_prefix+'000001, '+_prefix+'000002</b> • Last Used: <span id="lastNum">Loading...</span>';
+    loadAll();
   }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
 }
 async function loadAll(){
   try{
-    var snap=await db.ref('requests').once('value'); _allReq=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _allReq.push(v); });
-    _allReq.forEach(function(r){ if(!r.phase) r.phase=getPhase(r.grade||String(r.className||'').replace(/[A-J]$/,'')); });
-    var uSnap=await db.ref('users').once('value'); _allUsers=[]; uSnap.forEach(function(c){ var v=c.val(); v.uid=c.key; _allUsers.push(v); });
-    renderReq();
+    var rSnap=await db.ref('requests').once('value'); _allReq=[]; rSnap.forEach(function(c){ var v=c.val(); v.id=c.key; _allReq.push(v); });
+    var bSnap=await db.ref('books').once('value'); _allBooks=[]; bSnap.forEach(function(c){ var v=c.val(); v.id=c.key; _allBooks.push(v); });
+    var lSnap=await db.ref('issuedLog').once('value'); _issuedLog=[]; lSnap.forEach(function(c){ var v=c.val(); v.id=c.key; _issuedLog.push(v); });
+    try{ var cSnap=await db.ref('counters/bookNumber').once('value'); var cv=cSnap.val(); _counter=cv?Number(cv.lastSeq||0):0; }catch(e){}
+    if(!_counter){ var maxSeq=0; _allBooks.forEach(function(b){ toArray(b.bookNumbers).forEach(function(n){ var num=parseInt(String(n).replace(/[^0-9]/g,''),10); if(!isNaN(num)) maxSeq=Math.max(maxSeq,num); }); }); _counter=maxSeq; }
+    var lastEl=document.getElementById('lastNum'); if(lastEl) lastEl.textContent=formatBookNo(_prefix,_counter)+' — Next: '+formatBookNo(_prefix,_counter+1);
+    renderDashboard(); renderCutByHOD(); renderCutByGroup(); renderStock(); renderReq(); renderOverdue();
   }catch(e){ document.getElementById('reqList').innerHTML='<div class="warn">'+e.message+'</div>'; }
+}
+function renderDashboard(){
+  var decided=_allReq.filter(function(r){ return ['APPROVED','ISSUED','RETURNED'].includes(r.status); });
+  var totalReq=0, totalAppr=0; _allReq.forEach(function(r){ if(['APPROVED','ISSUED','RETURNED','PENDING'].includes(r.status)){ totalReq+=requestedQtyOf(r); } }); decided.forEach(function(r){ totalAppr+=approvedQtyOf(r); });
+  // For CUT, only count decided requests where approved < requested
+  var totalCut=0; decided.forEach(function(r){ var req=requestedQtyOf(r); var appr=approvedQtyOf(r); if(appr<req) totalCut+=(req-appr); });
+  var totalIssued=0; _allReq.forEach(function(r){ if(r.status==='ISSUED'||r.status==='RETURNED') totalIssued+=Number(r.qtyIssued||toArray(r.bookNumbers).length||0); });
+  var pend=_allReq.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length;
+  var apprCount=_allReq.filter(function(r){return r.status==='APPROVED';}).length;
+  var issCount=_allReq.filter(function(r){return r.status==='ISSUED';}).length;
+  var rej=_allReq.filter(function(r){return r.status==='REJECTED';}).length;
+  var overdue=_allReq.filter(function(r){ return r.status==='ISSUED' && dueInfo(r.dueDate||r.issuedAt).status==='OVERDUE'; });
+  var stockTotal=0; _allBooks.forEach(function(b){ stockTotal+=Number(b.stock||0); });
+  document.getElementById('kReq').textContent=totalReq;
+  document.getElementById('kAppr').textContent=totalAppr;
+  document.getElementById('kCut').textContent=totalCut;
+  document.getElementById('kIss').textContent=totalIssued;
+  document.getElementById('kPend').textContent=pend;
+  document.getElementById('kOver').textContent=overdue.length;
+  document.getElementById('kStock').textContent=stockTotal;
+  document.getElementById('kTitles').textContent=_allBooks.length;
+  document.getElementById('counts').innerHTML='Requests: <b>'+_allReq.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+apprCount+'</b> • ISSUED: <b>'+issCount+'</b> • REJECTED: <b>'+rej+'</b> • RETURNED: <b>'+_allReq.filter(function(r){return r.status==='RETURNED';}).length+'</b> • Books Requested: <b>'+totalReq+'</b> • Approved: <b>'+totalAppr+'</b> • Cut: <b>'+totalCut+'</b> • Issued Copies: <b>'+totalIssued+'</b> • Stock In Library: <b>'+stockTotal+'</b> • Issued Log: <b>'+_issuedLog.length+'</b>';
+  var cutPct=totalReq?Math.round((totalCut/totalReq)*100):0;
+  document.getElementById('cutInfo').innerHTML='✂️ <b>'+totalCut+' books CUT by HODs</b> — That is <b>'+cutPct+'%</b> of all requested books. If Cut is high, it means <b>stock is low</b> or <b>requests were too high</b> — Check Group table below to see which Department is short.';
+  var ci=_allReq.filter(function(r){return r.phase==='INTERMEDIATE PHASE';}).length, cs=_allReq.filter(function(r){return r.phase==='SENIOR PHASE';}).length, cf=_allReq.filter(function(r){return r.phase==='FET PHASE';}).length;
+  document.getElementById('cInt').textContent=ci; document.getElementById('cSen').textContent=cs; document.getElementById('cFet').textContent=cf;
+  function cutForPhase(ph){ var d=_allReq.filter(function(r){return r.phase===ph && ['APPROVED','ISSUED','RETURNED'].includes(r.status);}); var c=0; d.forEach(function(r){ if(approvedQtyOf(r)<requestedQtyOf(r)) c+=(requestedQtyOf(r)-approvedQtyOf(r)); }); return c; }
+  document.getElementById('cIntCut').textContent='✂️ Cut: '+cutForPhase('INTERMEDIATE PHASE');
+  document.getElementById('cSenCut').textContent='✂️ Cut: '+cutForPhase('SENIOR PHASE');
+  document.getElementById('cFetCut').textContent='✂️ Cut: '+cutForPhase('FET PHASE');
+  if(overdue.length){ document.getElementById('dueBanner').style.display='block'; document.getElementById('dueBanner').innerHTML='🔴 <b>'+overdue.length+' request(s) OVERDUE</b> — Past 30 November — Teachers have not returned books.'; } else { document.getElementById('dueBanner').style.display='none'; }
+}
+function renderCutByHOD(){
+  var map={};
+  _allReq.forEach(function(r){
+    var hod=r.approvedBy||r.hodName||'— Pending / No HOD Yet —';
+    if(!map[hod]) map[hod]={req:0, appr:0, cut:0, count:0, approvedCount:0, rejected:0, subjects:{}};
+    if(['APPROVED','ISSUED','RETURNED','PENDING'].includes(r.status)) map[hod].req+=requestedQtyOf(r);
+    if(['APPROVED','ISSUED','RETURNED'].includes(r.status)){ map[hod].appr+=approvedQtyOf(r); map[hod].approvedCount++; if(approvedQtyOf(r)<requestedQtyOf(r)) map[hod].cut+=(requestedQtyOf(r)-approvedQtyOf(r)); }
+    if(r.status==='REJECTED') map[hod].rejected++;
+    map[hod].count++;
+    if(r.subject) map[hod].subjects[r.subject]=(map[hod].subjects[r.subject]||0)+1;
+  });
+  var keys=Object.keys(map).sort(function(a,b){return map[b].cut-map[a].cut;});
+  if(!keys.length){ document.getElementById('hodCutList').innerHTML='<div class="info">No requests yet.</div>'; return; }
+  var h='<table><tr><th>HOD / Approver</th><th>Requests</th><th>Requested</th><th>Approved</th><th>✂️ Cut</th><th>Cut %</th><th>Rejected</th><th>Subjects</th></tr>';
+  keys.forEach(function(k){
+    var m=map[k]; var pct=m.req?Math.round((m.cut/m.req)*100):0;
+    var cutBadge=m.cut===0?'<span class="pill pill-full">✅ NO CUT</span>':'<span class="pill pill-cut">✂️ CUT '+m.cut+'</span>';
+    h+='<tr><td><b>'+k+'</b></td><td>'+m.count+'</td><td><b>'+m.req+'</b></td><td><b style="color:#16a34a">'+m.appr+'</b></td><td>'+cutBadge+'</td><td><b>'+pct+'%</b></td><td>'+m.rejected+'</td><td>'+Object.keys(m.subjects).map(function(s){return '<span class="pill">'+s+' ('+m.subjects[s]+')</span>';}).join(' ')+'</td></tr>';
+  });
+  h+='</table><div class="info"><b>How to read:</b> HOD with high Cut % is approving much less than Teachers asked for — Usually because <b>stock is low</b> in that Department. Check Stock By Group below.</div>';
+  document.getElementById('hodCutList').innerHTML=h;
+}
+function renderCutByGroup(){
+  var fg=document.getElementById('fGroupCut').value;
+  var map={};
+  _allReq.forEach(function(r){
+    var g=groupForSubject(r.subject||'');
+    if(fg && g!==fg) return;
+    if(!map[g]) map[g]={req:0, appr:0, cut:0, count:0, stock:0, issued:0};
+    if(['APPROVED','ISSUED','RETURNED','PENDING'].includes(r.status)) map[g].req+=requestedQtyOf(r);
+    if(['APPROVED','ISSUED','RETURNED'].includes(r.status)){ map[g].appr+=approvedQtyOf(r); if(approvedQtyOf(r)<requestedQtyOf(r)) map[g].cut+=(requestedQtyOf(r)-approvedQtyOf(r)); }
+    map[g].count++;
+  });
+  // Stock per group
+  _allBooks.forEach(function(b){ var g=groupForSubject(b.subject||''); if(!map[g]) map[g]={req:0,appr:0,cut:0,count:0,stock:0,issued:0}; map[g].stock+=Number(b.stock||0); });
+  _issuedLog.forEach(function(l){ var g=groupForSubject(l.subject||''); if(!map[g]) map[g]={req:0,appr:0,cut:0,count:0,stock:0,issued:0}; map[g].issued++; });
+  var keys=Object.keys(map).sort(function(a,b){return map[b].cut-map[a].cut;});
+  var h='<table><tr><th>Group / Department</th><th>Requests</th><th>Requested</th><th>Approved</th><th>✂️ Cut</th><th>Stock In Library</th><th>Issued Out</th><th>Shortage?</th></tr>';
+  keys.forEach(function(g){
+    var m=map[g]; var shortage=m.stock < m.cut ? '🔴 <b>SHORT — Stock '+m.stock+' < Cut '+m.cut+'</b><br>Need to order more' : m.stock===0 ? '🔴 <b>NO STOCK</b>' : '🟢 Stock covers cut';
+    h+='<tr><td><b>'+groupEmoji(g)+' '+g+'</b></td><td>'+m.count+'</td><td><b>'+m.req+'</b></td><td><b style="color:#16a34a">'+m.appr+'</b></td><td><span class="pill pill-cut">✂️ '+m.cut+'</span></td><td><b>'+m.stock+'</b></td><td><b>'+m.issued+'</b></td><td>'+shortage+'</td></tr>';
+  });
+  h+='</table>';
+  document.getElementById('groupCutList').innerHTML=h;
+}
+function renderStock(){
+  var fg=document.getElementById('sGroup').value, fgr=document.getElementById('sGrade').value, fs=document.getElementById('sSubject').value, fst=document.getElementById('sStock').value, q=(document.getElementById('sSearch').value||'').toLowerCase();
+  var subjSel=document.getElementById('sSubject'); var curSubj=subjSel.value; var allSubjects=[...new Set(_allBooks.map(function(b){return b.subject||'';}).filter(function(x){return x;}))].sort(); subjSel.innerHTML='<option value="">ALL SUBJECTS</option>'+allSubjects.map(function(s){return '<option '+(s===curSubj?'selected':'')+'>'+s+'</option>';}).join('');
+  var totalStock=0, totalTitles=0, outCount=0, lowCount=0; _allBooks.forEach(function(b){ totalStock+=Number(b.stock||0); totalTitles++; if(Number(b.stock||0)===0) outCount++; else if(Number(b.stock||0)<=10) lowCount++; });
+  document.getElementById('stockSummary').innerHTML='📦 Titles: <b>'+totalTitles+'</b> • In Stock: <b>'+totalStock+'</b> • Issued Out: <b>'+_issuedLog.length+'</b> • 🔴 Out: <b>'+outCount+'</b> • 🟠 Low: <b>'+lowCount+'</b> • Prefix: <b>'+_prefix+'</b> • Last: <b>'+formatBookNo(_prefix,_counter)+'</b>';
+  var list=_allBooks.filter(function(b){ var grp=groupForSubject(b.subject||''); var okG=!fg||grp===fg, okGr=!fgr||String(b.grade)===fgr, okS=!fs||(b.subject||'')===fs; var okSt=true; if(fst==='OUT') okSt=Number(b.stock||0)===0; if(fst==='LOW') okSt=Number(b.stock||0)>=1&&Number(b.stock||0)<=10; if(fst==='OK') okSt=Number(b.stock||0)>=11; var hay=(b.title+' '+b.subject+' '+grp+' '+toArray(b.bookNumbers).join(' ')).toLowerCase(); return okG&&okGr&&okS&&okSt&&(!q||hay.includes(q)); });
+  if(!list.length){ document.getElementById('stockList').innerHTML='<div class="info">No stock matches filter.</div>'; return; }
+  var groups={}; list.forEach(function(b){ var g=groupForSubject(b.subject||''); if(!groups[g]) groups[g]={}; var gr=String(b.grade||''); if(!groups[g][gr]) groups[g][gr]=[]; groups[g][gr].push(b); });
+  var order=['LANGUAGES','MATHEMATICS','SCIENCES','COMMERCE','HUMANITIES','LIFE SKILLS','TECHNOLOGY','OTHER']; var html='';
+  order.forEach(function(g){ if(!groups[g]) return; var booksInGroup=[]; Object.keys(groups[g]).forEach(function(gr){ booksInGroup=booksInGroup.concat(groups[g][gr]); }); var stockInGroup=booksInGroup.reduce(function(sum,b){return sum+Number(b.stock||0);},0); html+='<div class="group-card" style="border-color:'+groupColor(g)+'"><div class="group-head"><div class="group-title" style="color:'+groupColor(g)+'">'+groupEmoji(g)+' '+g+'</div><div><span class="pill" style="background:'+groupColor(g)+'">Titles: '+booksInGroup.length+'</span> <span class="pill pill-green">In Stock: '+stockInGroup+'</span></div></div>';
+    Object.keys(groups[g]).sort(function(a,b){return Number(a)-Number(b);}).forEach(function(gr){ var arr=groups[g][gr]; var stockGrade=arr.reduce(function(sum,b){return sum+Number(b.stock||0);},0); html+='<div class="grade-block"><div class="grade-title">📚 GRADE '+gr+' — '+getPhase(gr)+' — Titles: '+arr.length+' • In Stock: '+stockGrade+'</div>';
+      var bySubj={}; arr.forEach(function(b){ var s=b.subject||'OTHER'; if(!bySubj[s]) bySubj[s]=[]; bySubj[s].push(b); });
+      Object.keys(bySubj).sort().forEach(function(s){ var sArr=bySubj[s]; var stockSubj=sArr.reduce(function(sum,b){return sum+Number(b.stock||0);},0); html+='<h3>📖 '+s+' — Titles: '+sArr.length+' • In Stock: <b>'+stockSubj+'</b></h3><table><tr><th>Book Title</th><th>Stock</th><th>Status</th><th>Book Numbers (Auto)</th></tr>'; sArr.forEach(function(b){ var st=Number(b.stock||0); var status=st===0?'<span class="pill pill-red">🔴 OUT</span>':st<=10?'<span class="pill pill-red">🟠 LOW — '+st+'</span>':'<span class="pill pill-green">🟢 OK — '+st+'</span>'; html+='<tr><td><b>'+(b.title||'')+'</b><br><small>GRADE '+b.grade+' • '+b.subject+'</small></td><td><b>'+st+'</b></td><td>'+status+'</td><td>'+toArray(b.bookNumbers).map(function(n){return '<span class="pill pill-book">'+n+'</span>';}).join(' ')+'</td></tr>'; }); html+='</table>'; });
+      html+='</div>'; });
+    html+='</div>'; });
+  document.getElementById('stockList').innerHTML=html;
+}
+function renderOverdue(){
+  var overdue=_allReq.filter(function(r){ return r.status==='ISSUED' && dueInfo(r.dueDate||r.issuedAt).status==='OVERDUE'; });
+  if(!overdue.length){ document.getElementById('overdueList').innerHTML='<div class="ok">✅ No overdue books — All returned or still on time.</div>'; return; }
+  var h='<table><tr><th>Teacher</th><th>Book / Subject</th><th>Grade / Class</th><th>Requested → Approved → Issued</th><th>Book Nos</th><th>Overdue</th></tr>';
+  overdue.slice().reverse().forEach(function(r){ var di=dueInfo(r.dueDate||r.issuedAt); h+='<tr><td><b>'+(r.teacherName||'')+'</b></td><td>'+(r.bookTitle||'')+'<br><small>'+(r.subject||'')+' • '+groupForSubject(r.subject)+'</small></td><td>GRADE '+(r.grade||'')+' '+(r.className||'')+'</td><td>Req: '+requestedQtyOf(r)+' → Appr: '+approvedQtyOf(r)+' → Issued: '+(r.qtyIssued||'')+'</td><td>'+toArray(r.bookNumbers).map(function(n){return '<span class="pill pill-book">'+n+'</span>';}).join(' ')+'</td><td><span class="pill pill-red">🔴 OVERDUE '+Math.abs(di.days)+' days<br>Due '+di.dueStr+'</span></td></tr>'; });
+  h+='</table>'; document.getElementById('overdueList').innerHTML=h;
 }
 function renderReq(){
   var fp=document.getElementById('fPhase').value, fg=document.getElementById('fGrade').value, fs=document.getElementById('fStatus').value, q=(document.getElementById('fSearch').value||'').toLowerCase();
-  var ci=_allReq.filter(function(r){return r.phase==='INTERMEDIATE PHASE';}); var cs=_allReq.filter(function(r){return r.phase==='SENIOR PHASE';}); var cf=_allReq.filter(function(r){return r.phase==='FET PHASE';});
-  document.getElementById('cInt').textContent=ci.length; document.getElementById('cSen').textContent=cs.length; document.getElementById('cFet').textContent=cf.length;
-  document.getElementById('cIntPend').textContent='Pending: '+ci.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length;
-  document.getElementById('cSenPend').textContent='Pending: '+cs.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length;
-  document.getElementById('cFetPend').textContent='Pending: '+cf.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length;
-  var pend=_allReq.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length;
-  var appr=_allReq.filter(function(r){return r.status==='APPROVED';}).length;
-  var iss=_allReq.filter(function(r){return r.status==='ISSUED';}).length;
-  var rej=_allReq.filter(function(r){return r.status==='REJECTED';}).length;
-  document.getElementById('counts').innerHTML='Total Users: <b>'+_allUsers.length+'</b> • Total Requests: <b>'+_allReq.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+appr+'</b> • ISSUED: <b>'+iss+'</b> • REJECTED: <b>'+rej+'</b>';
   var list=_allReq.filter(function(r){
-    var okP=!fp||r.phase===fp; var okG=!fg||String(r.grade)===fg; var okS=!fs||(r.status||'PENDING')===fs;
-    var hay=(r.teacherName+' '+r.subject+' '+r.bookTitle+' '+r.className+' '+r.phase).toLowerCase(); var okQ=!q||hay.includes(q);
-    return okP&&okG&&okS&&okQ;
+    var okP=!fp||r.phase===fp, okG=!fg||String(r.grade)===fg, okS=!fs||(r.status||'PENDING')===fs;
+    if(_overdueOnly){ okS=r.status==='ISSUED' && dueInfo(r.dueDate||r.issuedAt).status==='OVERDUE'; }
+    var hay=(r.teacherName+' '+r.approvedBy+' '+r.subject+' '+r.bookTitle+' '+r.className+' '+toArray(r.bookNumbers).join(' ')).toLowerCase();
+    return okP&&okG&&okS&&(!q||hay.includes(q));
   });
-  document.getElementById('filterInfo').innerHTML='Showing: <b>'+list.length+'</b> / '+_allReq.length+' — Phase: <b>'+(fp||'ALL')+'</b> — Grade: <b>'+(fg||'ALL')+'</b> — Status: <b>'+(fs||'ALL')+'</b>';
-  if(!list.length){ document.getElementById('reqList').innerHTML='<div class="info">No requests match filter.</div>'; return; }
-  var h='<table><tr><th>Teacher</th><th>Subject</th><th>Grade / Class / Phase</th><th>Book</th><th>Qty</th><th>Status</th><th>Principal Action</th></tr>';
+  document.getElementById('filterInfo').innerHTML='Showing: <b>'+list.length+'</b> / '+_allReq.length+(_overdueOnly?' — 🔴 OVERDUE ONLY':'');
+  if(!list.length){ document.getElementById('reqList').innerHTML='<div class="info">No requests in this filter.</div>'; return; }
+  var h='<table><tr><th>Teacher</th><th>HOD Approver</th><th>Subject / Group</th><th>Grade / Class</th><th>Book</th><th>Requested → Approved</th><th>Status / Due</th></tr>';
   list.slice().reverse().forEach(function(r){
-    var st=r.status||'PENDING';
-    var pillClass=st==='APPROVED'?'pill-green':st==='ISSUED'?'pill-teal':st==='REJECTED'?'pill-red':st==='PENDING'?'pill':'pill-grey';
-    var btn='';
-    if(st==='PENDING') btn='<button class="btn btn-green" onclick="setStatus(\''+r.id+'\',\'APPROVED\')">✅ APPROVE</button><br><button class="btn btn-red" onclick="setStatus(\''+r.id+'\',\'REJECTED\')">❌ REJECT</button>';
-    else if(st==='APPROVED') btn='<span style="font-size:11px;color:#16a34a">✅ Approved<br>Wait Librarian</span><br><button class="btn btn-red" onclick="setStatus(\''+r.id+'\',\'REJECTED\')">❌ REJECT</button>';
-    else if(st==='ISSUED') btn='<span style="font-size:11px;color:#0d9488">✅ Issued</span>';
-    else btn='<span style="font-size:11px;color:#ef4444">❌ Rejected</span><br><button class="btn btn-green" onclick="setStatus(\''+r.id+'\',\'APPROVED\')">↩️ RE-APPROVE</button>';
-    h+='<tr><td><b>'+(r.teacherName||'')+'</b><br><small>'+(r.teacherEmail||'')+'</small></td><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||r.class||'')+'<br><small><b>'+(r.phase||'')+'</b></small></td><td>'+(r.bookTitle||'')+'</td><td><b>'+(r.qty||'')+'</b></td><td><span class="pill '+pillClass+'">'+st+'</span></td><td>'+btn+'</td></tr>';
+    var st=r.status||'PENDING'; var pillClass=st==='APPROVED'?'pill-green':st==='ISSUED'?'pill-teal':st==='REJECTED'?'pill-red':st==='CANCELLED'?'pill-grey':st==='RETURNED'?'pill-purple':'pill';
+    var req=requestedQtyOf(r); var appr=approvedQtyOf(r);
+    var qtyHtml=st==='PENDING'?'<b>Req: '+req+'</b><br><small>Waiting HOD</small>':st==='REJECTED'?'<b>Req: '+req+'</b><br><small>'+(r.rejectReason||'')+'</small>':(appr<req?'<b>Req: '+req+'</b><br><b style="color:#ea580c">Appr: '+appr+'</b><br><span class="pill pill-cut">✂️ CUT '+(req-appr)+'</span>':'<b>Req: '+req+'</b><br><b style="color:#16a34a">Appr: '+appr+'</b><br><span class="pill pill-full">✅ FULL</span>')+(r.approveNote?'<br><small>Note: '+r.approveNote+'</small>':'');
+    var extra=''; if(st==='ISSUED'){ var di=dueInfo(r.dueDate||r.issuedAt); extra+='<br>'+toArray(r.bookNumbers).map(function(n){return '<span class="pill pill-book">'+n+'</span>';}).join(' ')+'<br>'+fmtDue(r.dueDate||r.issuedAt); }
+    h+='<tr><td><b>'+(r.teacherName||'')+'</b></td><td>'+(r.approvedBy||'—')+'</td><td><span class="pill">'+(r.subject||'')+'</span><br><small>'+groupEmoji(groupForSubject(r.subject))+' '+groupForSubject(r.subject)+'</small></td><td>GRADE '+(r.grade||'')+' '+(r.className||'')+'</td><td>'+(r.bookTitle||'')+'</td><td>'+qtyHtml+'</td><td><span class="pill '+pillClass+'">'+st+'</span>'+extra+'</td></tr>';
   });
   h+='</table>'; document.getElementById('reqList').innerHTML=h;
-}
-async function setStatus(id,status){
-  if(!confirm('Principal: Set this request to '+status+'?')) return;
-  try{
-    await db.ref('requests/'+id).update({ status:status, approvedBy:_u.name, approvedByEmail:_u.email, approvedAt:Date.now(), principalAction:status });
-    alert('✅ Principal: '+status);
-    loadAll();
-  }catch(e){ alert('❌ '+e.message); }
-}
-async function loadStaff(){
-  try{
-    var snap=await db.ref('users').once('value'); var users=[]; snap.forEach(function(c){ var v=c.val(); v.uid=c.key; users.push(v); });
-    if(!users.length){ document.getElementById('staffList').innerHTML='<div class="info">No staff yet.</div>'; return; }
-    var h='<table><tr><th>Name</th><th>Role</th><th>CAPS Subjects</th><th>Grades</th><th>Phases</th><th>Classes</th></tr>';
-    users.forEach(function(x){
-      var gr=toArray(x.grades); var ph=toArray(x.phases).length?toArray(x.phases):gr.map(function(g){return getPhase(g);});
-      ph=[...new Set(ph)];
-      h+='<tr><td><b>'+(x.name||'')+'</b><br><small>'+(x.email||'')+'</small></td><td>'+(x.role||'')+' / '+(x.rank||'')+'</td><td>'+toArray(x.subjects||x.subject).map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+'</td><td>'+gr.join(', ')+'</td><td>'+ph.join('<br>')+'</td><td>'+toArray(x.classes).join(', ')+'</td></tr>';
-    });
-    h+='</table>'; document.getElementById('staffList').innerHTML=h;
-  }catch(e){ document.getElementById('staffList').innerHTML='<div class="warn">'+e.message+'</div>'; }
 }
 init();
 </script></body></html>
