@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Librarian - Makhanani LTSM 2.0 - V2.31 Stock By Group Grade Subject</title>
+<title>Librarian - Makhanani LTSM 2.0 - V2.32 Auto Book Numbers</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -15,20 +15,29 @@
   function getDueDate(issuedAt){ var d=new Date(issuedAt||Date.now()); var y=d.getFullYear(); var due=new Date(y,10,30); if(d>due) due=new Date(y+1,10,30); return due; }
   function dueInfo(issuedAt){ var due=getDueDate(issuedAt); var today=new Date(); today.setHours(0,0,0,0); var dd=new Date(due); dd.setHours(0,0,0,0); var days=Math.ceil((dd-today)/86400000); var status=days<0?'OVERDUE':days<=14?'DUE SOON':'ON TIME'; return {due:due, days:days, status:status, dueStr:due.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}; }
   function fmtDue(issuedAt){ var i=dueInfo(issuedAt); if(i.status==='OVERDUE') return '📅 Due: <b>'+i.dueStr+'</b> — <span style="color:#dc2626"><b>⛔ OVERDUE by '+Math.abs(i.days)+' days</b></span>'; if(i.status==='DUE SOON') return '📅 Due: <b>'+i.dueStr+'</b> — <span style="color:#ea580c"><b>⚠️ '+i.days+' days left</b></span>'; return '📅 Due: <b>'+i.dueStr+'</b> — <span style="color:#16a34a"><b>✅ '+i.days+' days left</b></span>'; }
-  // --- STOCK GROUP / DEPARTMENT MAP ---
-  function groupForSubject(s){
-    s=String(s||'').toUpperCase();
-    if(s.includes('ENGLISH')||s.includes('AFRIKAANS')||s.includes('ISIZULU')||s.includes('SEPEDI')||s.includes('XITSONGA')||s.includes('LANGUAGE')||s.includes('HOME LANGUAGE')||s.includes('FIRST ADDITIONAL')) return 'LANGUAGES';
-    if(s.includes('MATHEMATICS')||s.includes('MATHS')||s.includes('MATHEMATICAL')) return 'MATHEMATICS';
-    if(s.includes('PHYSICAL')||s.includes('LIFE SCIENCES')||s.includes('NATURAL SCIENCES')||s.includes('AGRICULTURAL')) return 'SCIENCES';
-    if(s.includes('ACCOUNTING')||s.includes('BUSINESS')||s.includes('ECONOMICS')||s.includes('EMS')||s.includes('MANAGEMENT SCIENCES')) return 'COMMERCE';
-    if(s.includes('GEOGRAPHY')||s.includes('HISTORY')||s.includes('SOCIAL SCIENCES')) return 'HUMANITIES';
-    if(s.includes('LIFE ORIENTATION')||s.includes('LIFE SKILLS')) return 'LIFE SKILLS';
-    if(s.includes('TECHNOLOGY')||s.includes('COMPUTER')||s.includes('ENGINEERING')||s.includes('CAT')) return 'TECHNOLOGY';
-    return 'OTHER';
-  }
+  function groupForSubject(s){ s=String(s||'').toUpperCase(); if(s.includes('ENGLISH')||s.includes('AFRIKAANS')||s.includes('ISIZULU')||s.includes('SEPEDI')||s.includes('XITSONGA')||s.includes('LANGUAGE')) return 'LANGUAGES'; if(s.includes('MATHEMATICS')||s.includes('MATHS')||s.includes('MATHEMATICAL')) return 'MATHEMATICS'; if(s.includes('PHYSICAL')||s.includes('LIFE SCIENCES')||s.includes('NATURAL SCIENCES')||s.includes('AGRICULTURAL')) return 'SCIENCES'; if(s.includes('ACCOUNTING')||s.includes('BUSINESS')||s.includes('ECONOMICS')||s.includes('MANAGEMENT SCIENCES')) return 'COMMERCE'; if(s.includes('GEOGRAPHY')||s.includes('HISTORY')||s.includes('SOCIAL SCIENCES')) return 'HUMANITIES'; if(s.includes('LIFE ORIENTATION')||s.includes('LIFE SKILLS')) return 'LIFE SKILLS'; if(s.includes('TECHNOLOGY')||s.includes('COMPUTER')||s.includes('ENGINEERING')) return 'TECHNOLOGY'; return 'OTHER'; }
   function groupEmoji(g){ if(g==='LANGUAGES') return '🗣️'; if(g==='MATHEMATICS') return '🔢'; if(g==='SCIENCES') return '🔬'; if(g==='COMMERCE') return '💼'; if(g==='HUMANITIES') return '🌍'; if(g==='LIFE SKILLS') return '❤️'; if(g==='TECHNOLOGY') return '💻'; return '📦'; }
   function groupColor(g){ if(g==='LANGUAGES') return '#7c3aed'; if(g==='MATHEMATICS') return '#0a1f4d'; if(g==='SCIENCES') return '#16a34a'; if(g==='COMMERCE') return '#ea580c'; if(g==='HUMANITIES') return '#0284c7'; if(g==='LIFE SKILLS') return '#db2777'; if(g==='TECHNOLOGY') return '#0d9488'; return '#64748b'; }
+  // --- AUTO BOOK NUMBER: First Letter Of Each Word + 6 Digits ---
+  function schoolPrefix(schoolName){
+    var name=String(schoolName||'Makhanani').trim();
+    // Remove common words that should NOT be in prefix? Keep all words except empty. Example: "Makhanani Primary School" -> MPS
+    var words=name.split(/[\s\-]+/).filter(function(w){ return w.length>0; });
+    // If name has "THE", "OF", "AND" - skip them for cleaner prefix
+    var skip=['THE','OF','AND','&'];
+    var letters=words.filter(function(w){ return skip.indexOf(w.toUpperCase())===-1; }).map(function(w){ return w.charAt(0).toUpperCase(); });
+    if(!letters.length) letters=['M'];
+    return letters.join('');
+  }
+  function pad6(n){ var s=String(n); while(s.length<6) s='0'+s; return s; }
+  function formatBookNo(prefix, seq){ return prefix + pad6(seq); }
+  function parseSeq(bookNo, prefix){
+    if(!bookNo) return 0;
+    var s=String(bookNo).toUpperCase().trim();
+    if(prefix && s.indexOf(prefix)===0) s=s.substring(prefix.length);
+    var num=parseInt(s.replace(/[^0-9]/g,''),10);
+    return isNaN(num)?0:num;
+  }
 </script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
@@ -38,209 +47,207 @@ header h1{margin:0;font-size:20px}header p{margin:6px 0 0;font-size:12px;color:#
 h2{margin:0 0 10px;font-size:16px}h3{margin:14px 0 6px;font-size:14px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
 select,input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d}
 input.scan-input{font-size:22px;text-align:center;letter-spacing:2px;border:3px solid #0d9488;background:#f0fdfa}
+input.auto-input{font-size:16px;text-align:left;border:3px solid #16a34a;background:#f0fdfa}
 input:disabled{background:#e2e8f0;color:#64748b;cursor:not-allowed}
-.btn{border:none;border-radius:8px;padding:10px 10px;font-weight:900;cursor:pointer;font-size:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-orange{background:#ea580c;color:#fff}
+.btn{border:none;border-radius:8px;padding:10px 10px;font-weight:900;cursor:pointer;font-size:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-purple{background:#7c3aed;color:#fff}
 .btn:disabled{background:#cbd5e1!important;color:#64748b!important;cursor:not-allowed}
 .info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
 .orange-box{background:#ffedd5;border:2px solid #ea580c;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
+.green-box{background:#dcfce7;border:2px solid #16a34a;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .group-card{border-radius:12px;padding:12px;margin-bottom:12px;border:3px solid #e2e8f0;background:#fff}.group-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.group-title{font-size:15px;font-weight:900}.grade-block{border:2px solid #e2e8f0;border-radius:10px;padding:10px;margin-top:10px;background:#f8fafc}.grade-title{font-weight:900;font-size:13px}
 .progress{background:#e2e8f0;border-radius:20px;height:22px;overflow:hidden;margin:8px 0}.progress-bar{background:#16a34a;height:100%;text-align:center;color:#fff;font-size:12px;font-weight:900;line-height:22px}.progress-bar.full{background:#ef4444}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-red{background:#ef4444}.pill-teal{background:#0d9488}.pill-grey{background:#64748b}.pill-purple{background:#7c3aed}.pill-book{background:#0a1f4d;font-size:13px;padding:5px 10px}.pill-return{background:#ea580c;font-size:12px;padding:5px 10px}.pill-overdue{background:#ef4444}.pill-low{background:#ef4444}.pill-ok{background:#16a34a}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-red{background:#ef4444}.pill-teal{background:#0d9488}.pill-grey{background:#64748b}.pill-purple{background:#7c3aed}.pill-book{background:#0a1f4d;font-size:13px;padding:5px 10px}.pill-return{background:#ea580c;font-size:12px;padding:5px 10px}.pill-low{background:#ef4444}.pill-ok{background:#16a34a}.pill-auto{background:#16a34a;font-size:13px;padding:6px 12px}
 table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}
 .phase-box{border-radius:10px;padding:10px;font-size:12px;line-height:1.7;border:2px solid #e2e8f0;text-align:center;font-weight:900}.phase-int{background:#dcfce7;border-color:#22c55e}.phase-sen{background:#dbeafe;border-color:#3b82f6}.phase-fet{background:#ffedd5;border-color:#ea580c}
 #reader{width:100%;max-width:400px;margin:10px auto;border:3px solid #0d9488;border-radius:12px;overflow:hidden;display:none}
 .scan-list{background:#f0fdfa;border:2px solid #0d9488;border-radius:10px;padding:10px;margin-top:10px;min-height:60px}
+.auto-preview{background:#dcfce7;border:3px solid #16a34a;border-radius:10px;padding:12px;font-size:14px;line-height:1.7;margin-top:10px}
 @media(max-width:700px){.row{flex-direction:column}}
 </style></head>
 <body>
-<header><h1>📖 LIBRARIAN — MAKHANANI LTSM 2.0 — V2.31 STOCK BY GROUP</h1><p>STOCK: GROUP / DEPARTMENT → GRADE → SUBJECT • MAX = APPROVED • DUE 30 NOV</p><div id="taskbar"></div><script src="nav.js"></script></header>
+<header><h1>📖 LIBRARIAN — MAKHANANI LTSM 2.0 — V2.32 AUTO BOOK NUMBERS</h1><p>AUTO: SCHOOL INITIALS + 6 DIGITS • STOCK: GROUP → GRADE → SUBJECT • MAX = APPROVED • DUE 30 NOV</p><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
-<div class="card"><h2>👤 Who Am I — Librarian</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div><div class="warn" id="permBanner" style="display:none"></div></div>
+<div class="card"><h2>👤 Who Am I — Librarian</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div><div class="warn" id="permBanner" style="display:none"></div><div class="green-box" id="prefixBanner">Prefix: Loading...</div></div>
 
-<div class="card" style="border:3px solid #0d9488"><h2>📷 SCAN / TYPE — MAX = APPROVED — Due 30 Nov</h2>
-<div id="selectedReqBox" class="warn">⚠️ No request selected — Tap <b>📖 SELECT TO SCAN</b> on APPROVED below.</div>
-<div id="maxBox" style="display:none"><div class="info" id="maxInfo"></div><div class="progress"><div class="progress-bar" id="maxBar" style="width:0%">0 / 0</div></div></div>
-<div class="row"><button class="btn btn-teal" id="scanBtn" onclick="startScan()">📷 START CAMERA SCAN</button><button class="btn btn-red" onclick="stopScan()">⏹️ STOP CAMERA</button></div><div id="reader"></div><div id="scanStatus"></div>
-<label>⌨️ OR Type Book Number * — <span id="typeHint">Select request first</span></label><input id="bookNoInput" class="scan-input" placeholder="e.g. WHS000001" onkeydown="if(event.key==='Enter'){addBookNo();}">
-<div class="row"><button class="btn btn-teal" id="addBtn" onclick="addBookNo()">➕ ADD BOOK NUMBER</button><button class="btn btn-grey" onclick="clearScanList()">🧹 CLEAR LIST</button></div>
-<div class="scan-list" id="scanList"><b>Scanned (0):</b><br><span style="color:#64748b">No books scanned yet.</span></div>
-<div class="row"><label>Approved Qty (MAX — Locked)</label><input id="approvedQty" type="number" value="0" readonly><label>Qty To Issue (Auto = Scanned)</label><input id="scanQty" type="number" value="0" readonly></div><div id="scanMsg"></div>
-<div class="row"><button class="btn btn-green" id="issueScannedBtn" onclick="issueScanned()" disabled>✅ ISSUE SCANNED BOOKS — MAX = APPROVED</button></div></div>
+<div class="card" style="border:3px solid #0d9488"><h2>📷 SCAN / TYPE — MAX = APPROVED</h2><div id="selectedReqBox" class="warn">⚠️ No request selected — Tap <b>📖 SELECT TO SCAN</b> on APPROVED below.</div><div id="maxBox" style="display:none"><div class="info" id="maxInfo"></div><div class="progress"><div class="progress-bar" id="maxBar" style="width:0%">0 / 0</div></div></div><div class="row"><button class="btn btn-teal" id="scanBtn" onclick="startScan()">📷 START CAMERA SCAN</button><button class="btn btn-red" onclick="stopScan()">⏹️ STOP CAMERA</button></div><div id="reader"></div><div id="scanStatus"></div><label>⌨️ OR Type Book Number * — Auto numbers also work here</label><input id="bookNoInput" class="scan-input" placeholder="e.g. MPS000001" onkeydown="if(event.key==='Enter'){addBookNo();}"><div class="row"><button class="btn btn-teal" id="addBtn" onclick="addBookNo()">➕ ADD BOOK NUMBER</button><button class="btn btn-grey" onclick="clearScanList()">🧹 CLEAR LIST</button></div><div class="scan-list" id="scanList"><b>Scanned (0):</b><br><span style="color:#64748b">No books scanned yet.</span></div><div class="row"><label>Approved Qty (MAX)</label><input id="approvedQty" type="number" value="0" readonly><label>Qty To Issue (Auto = Scanned)</label><input id="scanQty" type="number" value="0" readonly></div><div id="scanMsg"></div><div class="row"><button class="btn btn-green" id="issueScannedBtn" onclick="issueScanned()" disabled>✅ ISSUE SCANNED BOOKS</button></div></div>
 
-<div class="card" style="border:3px solid #7c3aed"><h2>📦 STOCK — Organized By Group / Department → Grade → Subject</h2>
-<div class="info" id="stockSummary">Loading stock...</div>
-<div class="row"><select id="sGroup" onchange="renderStock()"><option value="">ALL GROUPS / DEPARTMENTS</option><option>LANGUAGES</option><option>MATHEMATICS</option><option>SCIENCES</option><option>COMMERCE</option><option>HUMANITIES</option><option>LIFE SKILLS</option><option>TECHNOLOGY</option><option>OTHER</option></select><select id="sGrade" onchange="renderStock()"><option value="">ALL GRADES 4-12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="sSubject" onchange="renderStock()"><option value="">ALL SUBJECTS</option></select></div>
-<div class="row"><select id="sStock" onchange="renderStock()"><option value="">ALL STOCK LEVELS</option><option value="OUT">🔴 OUT OF STOCK — 0</option><option value="LOW">🟠 LOW — 1 to 10</option><option value="OK">🟢 OK — 11+</option></select><input id="sSearch" placeholder="🔍 Search Book Title / Book No..." oninput="renderStock()"></div>
-<div class="row"><button class="btn btn-grey" onclick="clearStockFilters()">❌ CLEAR STOCK FILTERS</button><button class="btn btn-green" onclick="window.print()">🖨️ PRINT STOCK BY GROUP</button></div>
-<div id="stockList"></div></div>
-
-<div class="card" style="border:3px solid #16a34a"><h2>➕ Add Stock — Group Auto-Detected From Subject</h2>
+<div class="card" style="border:3px solid #16a34a"><h2>➕ Add Stock — 🔢 Book Numbers AUTO-GENERATED</h2>
+<div class="auto-preview" id="autoPreview">Loading auto numbers...</div>
 <label>Book Title *</label><input id="bTitle" placeholder="e.g. MATHEMATICS GRADE 10 LEARNER BOOK">
 <div class="row"><label>Grade *</label><select id="bGrade"><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option></select><label>Subject *</label><select id="bSubject" onchange="showGroupPreview()"><option>MATHEMATICS</option><option>MATHEMATICAL LITERACY</option><option>ENGLISH HOME LANGUAGE</option><option>AFRIKAANS FIRST ADDITIONAL LANGUAGE</option><option>PHYSICAL SCIENCES</option><option>LIFE SCIENCES</option><option>NATURAL SCIENCES</option><option>ACCOUNTING</option><option>BUSINESS STUDIES</option><option>ECONOMICS</option><option>ECONOMIC AND MANAGEMENT SCIENCES</option><option>GEOGRAPHY</option><option>HISTORY</option><option>SOCIAL SCIENCES</option><option>TECHNOLOGY</option><option>LIFE ORIENTATION</option></select></div>
-<div class="info" id="groupPreview">Group: <b>🔢 MATHEMATICS</b> — Phase: <b>FET PHASE</b></div>
-<div class="row"><label>Stock Qty *</label><input id="bStock" type="number" value="0" min="0"></div>
-<label>Book Numbers — e.g. WHS000001, WHS000002</label><input id="bNumbers" placeholder="WHS000001, WHS000002"><div id="bookMsg"></div>
-<div class="row"><button class="btn btn-teal" onclick="addBook()">📦 ADD TO STOCK — Group + Grade + Subject</button></div></div>
+<div class="info" id="groupPreview"></div>
+<div class="row"><label>Qty To Add * — Book Numbers Will Be Auto-Generated For This Qty</label><input id="bStock" type="number" value="1" min="1" oninput="previewAutoNumbers()"></div>
+<label>🔢 Book Numbers — AUTO-GENERATED — Do NOT Type (Or Tap Generate)</label><input id="bNumbers" class="auto-input" placeholder="Tap 🔢 GENERATE below — e.g. MPS000001, MPS000002" readonly>
+<div class="row"><button class="btn btn-purple" onclick="generateBookNumbers()">🔢 GENERATE BOOK NUMBERS — Auto</button><button class="btn btn-grey" onclick="clearGenerated()">🧹 CLEAR GENERATED</button></div>
+<div class="row"><label>Start From (Optional — Leave Blank For Next Number)</label><input id="bStartSeq" type="number" placeholder="e.g. 100 — Leave blank for auto next"></div>
+<div id="bookMsg"></div>
+<div class="row"><button class="btn btn-teal" onclick="addBook()">📦 ADD TO STOCK — With Auto Numbers</button></div>
+<div class="info"><b>How Auto Works:</b> 1. Type Title + Qty → 2. Tap <b>🔢 GENERATE</b> → System finds last number used (e.g. MPS000045) → Generates next (MPS000046, MPS000047...) → 3. Tap <b>📦 ADD TO STOCK</b> → Numbers are saved + Counter moves forward. Never duplicates, never reuses deleted numbers unless you set Start From manually.</div></div>
+
+<div class="card" style="border:3px solid #7c3aed"><h2>📦 STOCK — Group → Grade → Subject — With Auto Numbers</h2><div class="info" id="stockSummary">Loading stock...</div><div class="row"><select id="sGroup" onchange="renderStock()"><option value="">ALL GROUPS</option><option>LANGUAGES</option><option>MATHEMATICS</option><option>SCIENCES</option><option>COMMERCE</option><option>HUMANITIES</option><option>LIFE SKILLS</option><option>TECHNOLOGY</option><option>OTHER</option></select><select id="sGrade" onchange="renderStock()"><option value="">ALL GRADES 4-12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="sSubject" onchange="renderStock()"><option value="">ALL SUBJECTS</option></select></div><div class="row"><select id="sStock" onchange="renderStock()"><option value="">ALL STOCK</option><option value="OUT">🔴 OUT — 0</option><option value="LOW">🟠 LOW — 1 to 10</option><option value="OK">🟢 OK — 11+</option></select><input id="sSearch" placeholder="🔍 Search Title / Book No e.g. MPS000001..." oninput="renderStock()"></div><div class="row"><button class="btn btn-grey" onclick="clearStockFilters()">❌ CLEAR FILTERS</button><button class="btn btn-green" onclick="window.print()">🖨️ PRINT STOCK</button></div><div id="stockList"></div></div>
 
 <div class="card"><h2>📊 Dashboard — Requests</h2><div class="row"><div class="phase-box phase-int">📗 INTERMEDIATE<br>GRADES 4-6<br><span id="cInt" style="font-size:22px">0</span></div><div class="phase-box phase-sen">📘 SENIOR PHASE<br>GRADES 7-9<br><span id="cSen" style="font-size:22px">0</span></div><div class="phase-box phase-fet">📙 FET<br>GRADES 10-12<br><span id="cFet" style="font-size:22px">0</span></div></div><div class="info" id="counts"></div><div class="info" id="dueBanner"></div></div>
-
-<div class="card"><h2>🔍 Requests Filter</h2><div class="row"><select id="fPhase" onchange="renderReq()"><option value="">ALL PHASES</option><option>INTERMEDIATE PHASE</option><option>SENIOR PHASE</option><option>FET PHASE</option></select><select id="fGrade" onchange="renderReq()"><option value="">ALL GRADES</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="fStatus" onchange="renderReq()"><option value="">ALL STATUS</option><option>PENDING</option><option>APPROVED</option><option>ISSUED</option><option>RETURNED</option><option>REJECTED</option><option>CANCELLED</option></select></div><div class="row"><input id="fSearch" placeholder="🔍 Search Teacher / Book / Subject / Class / Book No..." oninput="renderReq()"></div></div>
-
+<div class="card"><h2>🔍 Requests Filter</h2><div class="row"><select id="fPhase" onchange="renderReq()"><option value="">ALL PHASES</option><option>INTERMEDIATE PHASE</option><option>SENIOR PHASE</option><option>FET PHASE</option></select><select id="fGrade" onchange="renderReq()"><option value="">ALL GRADES</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="fStatus" onchange="renderReq()"><option value="">ALL STATUS</option><option>PENDING</option><option>APPROVED</option><option>ISSUED</option><option>RETURNED</option><option>REJECTED</option><option>CANCELLED</option></select></div><div class="row"><input id="fSearch" placeholder="🔍 Search Teacher / Book / Subject / Book No..." oninput="renderReq()"></div></div>
 <div class="card"><h2>📚 Requests — Max = Approved</h2><div class="info" id="filterInfo">Showing: All</div><div id="reqList"></div><div class="row"><button class="btn btn-grey" onclick="loadReq()">🔄 REFRESH</button></div></div>
-
-<div class="card"><h2>📋 Issued Log</h2><div class="row"><input id="logSearch" placeholder="🔍 Search Book No / Teacher..." oninput="renderLog()"></div><div id="logList"></div></div>
-
+<div class="card"><h2>📋 Issued Log</h2><div class="row"><input id="logSearch" placeholder="🔍 Search Book No..." oninput="renderLog()"></div><div id="logList"></div></div>
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="navBack()">⬅️ BACK</button><button class="btn btn-green" onclick="go('index.html')">🏠 HOME →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
 <script>
 function go(p){ window.location.href=p; }
 function navBack(){ if(window.history.length>1) window.history.back(); else window.location.href='index.html'; }
 async function doLogout(){ stopScan(); await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
-var _u=null; var _allReq=[]; var _allBooks=[]; var _issuedLog=[]; var _selectedId=''; var _scanned=[]; var _html5Qr=null; var _scanning=false;
+var _u=null; var _allReq=[]; var _allBooks=[]; var _issuedLog=[]; var _selectedId=''; var _scanned=[]; var _html5Qr=null; var _scanning=false; var _schoolName='Makhanani'; var _prefix='M'; var _generated=[]; var _counter=0;
 function approvedQty(){ var r=_allReq.find(function(x){return x.id===_selectedId;}); if(!r) return 0; var a=Number(r.qtyApproved||r.approvedQty||0); if(a>0) return a; return Number(r.qty||0); }
-function showPermError(where,err){ var msg=String(err&&err.message?err.message:err); if(msg.includes('PERMISSION_DENIED')){ var b=document.getElementById('permBanner'); b.style.display='block'; b.innerHTML='⛔ <b>PERMISSION_DENIED on '+where+'</b><br>Firebase Console → Realtime Database → Rules → Set <b>.read / .write = auth != null</b> → Publish → Refresh.'; return true; } return false; }
-async function init(){ try{ _u=await getCurrentUser(); if(!_u||!_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in'; return; } if(!['LIBRARIAN','HOD','PRINCIPAL','SUPER_ADMIN'].includes(_u.role)){ document.getElementById('whoAmI').innerHTML='⛔ Librarian only. Role: '+_u.role; return; } document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — '+String(_u.schoolName||'')+'<br>Stock: <b>Group → Grade → Subject</b> • MAX = Approved • Due: <b>30 Nov Every Year</b>'; document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+_u.email+' — V2.31 Stock By Group'; showGroupPreview(); loadReq(); loadBooks(); loadLog(); }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; } }
-function showGroupPreview(){ var s=document.getElementById('bSubject').value; var g=document.getElementById('bGrade').value; document.getElementById('groupPreview').innerHTML='Group / Department: <b>'+groupEmoji(groupForSubject(s))+' '+groupForSubject(s)+'</b> — Grade: <b>'+g+'</b> — Subject: <b>'+s+'</b> — Phase: <b>'+getPhase(g)+'</b>'; }
+function showPermError(where,err){ var msg=String(err&&err.message?err.message:err); if(msg.includes('PERMISSION_DENIED')){ var b=document.getElementById('permBanner'); b.style.display='block'; b.innerHTML='⛔ <b>PERMISSION_DENIED on '+where+'</b><br>Firebase → Realtime Database → Rules → <b>.read / .write = auth != null</b> → Publish → Refresh.'; return true; } return false; }
+async function init(){
+  try{
+    _u=await getCurrentUser();
+    if(!_u||!_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in'; return; }
+    if(!['LIBRARIAN','HOD','PRINCIPAL','SUPER_ADMIN'].includes(_u.role)){ document.getElementById('whoAmI').innerHTML='⛔ Librarian only. Role: '+_u.role; return; }
+    // School Name: from user profile, else settings, else Makhanani
+    _schoolName=_u.schoolName||_u.school||'Makhanani';
+    try{ var sSnap=await db.ref('settings/schoolName').once('value'); if(sSnap.val()) _schoolName=sSnap.val(); }catch(e){}
+    try{ var s2=await db.ref('settings').once('value'); var sv=s2.val()||{}; if(sv.schoolName) _schoolName=sv.schoolName; }catch(e){}
+    _prefix=schoolPrefix(_schoolName);
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — School: <b>'+_schoolName+'</b><br>Book No Prefix: <b>'+_prefix+'</b> • Format: <b>'+_prefix+' + 6 Digits</b> • Stock: Group → Grade → Subject • MAX = Approved • Due: <b>30 Nov Every Year</b>';
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+_u.email+' — V2.32 Auto Book Numbers — Prefix: '+_prefix;
+    document.getElementById('prefixBanner').innerHTML='🏫 School: <b>'+_schoolName+'</b> → First letter of each word = <b>'+_prefix+'</b> → Next Book Numbers: <b>'+_prefix+'000001, '+_prefix+'000002...</b> — Change school name in Settings / User profile to change prefix for NEW books.';
+    showGroupPreview(); loadReq(); loadBooks(); loadLog(); await loadCounter();
+  }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
+}
+function showGroupPreview(){ var s=document.getElementById('bSubject').value; var g=document.getElementById('bGrade').value; document.getElementById('groupPreview').innerHTML='Group: <b>'+groupEmoji(groupForSubject(s))+' '+groupForSubject(s)+'</b> • Grade: <b>'+g+'</b> • Subject: <b>'+s+'</b> • Phase: <b>'+getPhase(g)+'</b>'; }
+// --- COUNTER + AUTO GENERATE ---
+async function loadCounter(){
+  try{
+    var snap=await db.ref('counters/bookNumber').once('value'); var val=snap.val();
+    if(val && typeof val==='object') _counter=Number(val.lastSeq||val.value||0);
+    else if(typeof val==='number') _counter=val;
+    else _counter=0;
+    // If no counter yet, scan existing books + issuedLog for max seq with this prefix
+    if(!_counter){
+      var maxSeq=0;
+      _allBooks.forEach(function(b){ toArray(b.bookNumbers).forEach(function(n){ maxSeq=Math.max(maxSeq, parseSeq(n,_prefix)); }); });
+      _issuedLog.forEach(function(l){ maxSeq=Math.max(maxSeq, parseSeq(l.bookNo,_prefix)); });
+      _counter=maxSeq;
+    }
+    previewAutoNumbers();
+  }catch(e){ previewAutoNumbers(); }
+}
+function previewAutoNumbers(){
+  var qty=Number(document.getElementById('bStock').value||1); if(!qty||qty<1) qty=1;
+  var start=Number(document.getElementById('bStartSeq').value||0);
+  var base=start>0?start:_counter+1;
+  var first=formatBookNo(_prefix, base);
+  var last=formatBookNo(_prefix, base+qty-1);
+  var el=document.getElementById('autoPreview');
+  if(_generated.length){
+    el.innerHTML='✅ <b>Generated ('+_generated.length+'):</b> '+_generated.slice(0,5).join(', ')+(_generated.length>5?' ... + '+( _generated.length-5 )+' more':'')+'<br>Last: <b>'+_generated[_generated.length-1]+'</b> • Next after this batch will be <b>'+formatBookNo(_prefix, parseSeq(_generated[_generated.length-1],_prefix)+1)+'</b>';
+  } else {
+    el.innerHTML='🔢 <b>Next Book Number:</b> <span class="pill pill-auto">'+first+'</span> — If Qty = <b>'+qty+'</b>, numbers will be <b>'+first+'</b> to <b>'+last+'</b><br>School: <b>'+_schoolName+'</b> → Prefix: <b>'+_prefix+'</b> → Last used: <b>'+formatBookNo(_prefix,_counter)+'</b> • Tap <b>🔢 GENERATE</b> to fill them in.';
+  }
+}
+async function generateBookNumbers(){
+  var qty=Number(document.getElementById('bStock').value||1);
+  if(!qty||qty<1){ alert('Set Qty first — e.g. 10'); return; }
+  // Refresh counter from Firebase + existing books to avoid duplicates if 2 librarians generate at same time
+  await loadCounter();
+  var startInput=Number(document.getElementById('bStartSeq').value||0);
+  var base=startInput>0?startInput:_counter+1;
+  // Check for collisions with existing numbers
+  var existing=new Set();
+  _allBooks.forEach(function(b){ toArray(b.bookNumbers).forEach(function(n){ existing.add(String(n).toUpperCase()); }); });
+  _issuedLog.forEach(function(l){ if(l.bookNo) existing.add(String(l.bookNo).toUpperCase()); });
+  _generated=[];
+  var seq=base;
+  while(_generated.length<qty){
+    var num=formatBookNo(_prefix, seq);
+    if(!existing.has(num)){ _generated.push(num); }
+    seq++;
+    if(seq>base+10000) break; // safety
+  }
+  document.getElementById('bNumbers').value=_generated.join(', ');
+  document.getElementById('bookMsg').innerHTML='<div class="ok">✅ Generated <b>'+_generated.length+'</b> numbers: <b>'+_generated[0]+'</b> to <b>'+_generated[_generated.length-1]+'</b><br>Prefix: <b>'+_prefix+'</b> from <b>'+_schoolName+'</b> — Tap <b>📦 ADD TO STOCK</b> to save them.</div>';
+  previewAutoNumbers();
+}
+function clearGenerated(){ _generated=[]; document.getElementById('bNumbers').value=''; document.getElementById('bStartSeq').value=''; document.getElementById('bookMsg').innerHTML='<div class="info">Cleared generated numbers.</div>'; previewAutoNumbers(); }
 // --- STOCK ---
 function clearStockFilters(){ ['sGroup','sGrade','sSubject','sStock','sSearch'].forEach(function(id){document.getElementById(id).value='';}); renderStock(); }
-async function loadBooks(){ try{ var snap=await db.ref('books').once('value'); _allBooks=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _allBooks.push(v); }); _allBooks.forEach(function(b){ if(!b.group) b.group=groupForSubject(b.subject||b.subjects||''); if(!b.phase) b.phase=getPhase(b.grade||''); }); renderStock(); }catch(e){ showPermError('READ books',e); } }
+async function loadBooks(){ try{ var snap=await db.ref('books').once('value'); _allBooks=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _allBooks.push(v); }); renderStock(); }catch(e){ showPermError('READ books',e); } }
 function renderStock(){
   var fg=document.getElementById('sGroup').value, fgr=document.getElementById('sGrade').value, fs=document.getElementById('sSubject').value, fst=document.getElementById('sStock').value, q=(document.getElementById('sSearch').value||'').toLowerCase();
-  // Build subject dropdown from real stock once
-  var subjSel=document.getElementById('sSubject'); var curSubj=subjSel.value;
-  var allSubjects=[...new Set(_allBooks.map(function(b){return b.subject||'';}).filter(function(x){return x;}))].sort();
-  subjSel.innerHTML='<option value="">ALL SUBJECTS</option>'+allSubjects.map(function(s){return '<option '+(s===curSubj?'selected':'')+'>'+s+'</option>';}).join('');
-  var totalStock=0, totalTitles=0, outCount=0, lowCount=0;
-  _allBooks.forEach(function(b){ totalStock+=Number(b.stock||0); totalTitles++; if(Number(b.stock||0)===0) outCount++; else if(Number(b.stock||0)<=10) lowCount++; });
-  var issuedCount=_issuedLog.length;
-  document.getElementById('stockSummary').innerHTML='📦 Total Titles: <b>'+totalTitles+'</b> • Total Copies In Stock: <b>'+totalStock+'</b> • Copies Out (Issued): <b>'+issuedCount+'</b> • 🔴 Out of Stock: <b>'+outCount+'</b> titles • 🟠 Low (1-10): <b>'+lowCount+'</b> titles<br>Filter: Group <b>'+(fg||'ALL')+'</b> • Grade <b>'+(fgr||'ALL')+'</b> • Subject <b>'+(fs||'ALL')+'</b>';
-  var list=_allBooks.filter(function(b){
-    var grp=groupForSubject(b.subject||'');
-    var okG=!fg||grp===fg, okGr=!fgr||String(b.grade)===fgr, okS=!fs||(b.subject||'')===fs;
-    var okSt=true; if(fst==='OUT') okSt=Number(b.stock||0)===0; if(fst==='LOW') okSt=Number(b.stock||0)>=1&&Number(b.stock||0)<=10; if(fst==='OK') okSt=Number(b.stock||0)>=11;
-    var hay=(b.title+' '+b.bookTitle+' '+b.subject+' '+grp+' '+toArray(b.bookNumbers).join(' ')).toLowerCase();
-    return okG&&okGr&&okS&&okSt&&(!q||hay.includes(q));
-  });
-  if(!list.length){ document.getElementById('stockList').innerHTML='<div class="info">No stock matches filter. Try CLEAR STOCK FILTERS.</div>'; return; }
-  // Group by Group -> Grade -> Subject
+  var subjSel=document.getElementById('sSubject'); var curSubj=subjSel.value; var allSubjects=[...new Set(_allBooks.map(function(b){return b.subject||'';}).filter(function(x){return x;}))].sort(); subjSel.innerHTML='<option value="">ALL SUBJECTS</option>'+allSubjects.map(function(s){return '<option '+(s===curSubj?'selected':'')+'>'+s+'</option>';}).join('');
+  var totalStock=0, totalTitles=0, outCount=0, lowCount=0; _allBooks.forEach(function(b){ totalStock+=Number(b.stock||0); totalTitles++; if(Number(b.stock||0)===0) outCount++; else if(Number(b.stock||0)<=10) lowCount++; });
+  document.getElementById('stockSummary').innerHTML='📦 Titles: <b>'+totalTitles+'</b> • In Stock: <b>'+totalStock+'</b> • Issued Out: <b>'+_issuedLog.length+'</b> • 🔴 Out: <b>'+outCount+'</b> • 🟠 Low: <b>'+lowCount+'</b> • Prefix: <b>'+_prefix+'</b> • Last Number: <b>'+formatBookNo(_prefix,_counter)+'</b>';
+  var list=_allBooks.filter(function(b){ var grp=groupForSubject(b.subject||''); var okG=!fg||grp===fg, okGr=!fgr||String(b.grade)===fgr, okS=!fs||(b.subject||'')===fs; var okSt=true; if(fst==='OUT') okSt=Number(b.stock||0)===0; if(fst==='LOW') okSt=Number(b.stock||0)>=1&&Number(b.stock||0)<=10; if(fst==='OK') okSt=Number(b.stock||0)>=11; var hay=(b.title+' '+b.subject+' '+grp+' '+toArray(b.bookNumbers).join(' ')).toLowerCase(); return okG&&okGr&&okS&&okSt&&(!q||hay.includes(q)); });
+  if(!list.length){ document.getElementById('stockList').innerHTML='<div class="info">No stock matches filter.</div>'; return; }
   var groups={}; list.forEach(function(b){ var g=groupForSubject(b.subject||''); if(!groups[g]) groups[g]={}; var gr=String(b.grade||''); if(!groups[g][gr]) groups[g][gr]=[]; groups[g][gr].push(b); });
-  var order=['LANGUAGES','MATHEMATICS','SCIENCES','COMMERCE','HUMANITIES','LIFE SKILLS','TECHNOLOGY','OTHER'];
-  var html='';
-  order.forEach(function(g){
-    if(!groups[g]) return;
-    var booksInGroup=[]; Object.keys(groups[g]).forEach(function(gr){ booksInGroup=booksInGroup.concat(groups[g][gr]); });
-    var stockInGroup=booksInGroup.reduce(function(sum,b){return sum+Number(b.stock||0);},0);
-    var issuedInGroup=_issuedLog.filter(function(l){ return groupForSubject(l.subject||'')===g; }).length;
-    html+='<div class="group-card" style="border-color:'+groupColor(g)+'"><div class="group-head"><div class="group-title" style="color:'+groupColor(g)+'">'+groupEmoji(g)+' '+g+' — '+groupColor(g)+'</div><div><span class="pill" style="background:'+groupColor(g)+'">Titles: '+booksInGroup.length+'</span> <span class="pill pill-green">In Stock: '+stockInGroup+'</span> <span class="pill pill-teal">Issued Out: '+issuedInGroup+'</span></div></div>';
-    Object.keys(groups[g]).sort(function(a,b){return Number(a)-Number(b);}).forEach(function(gr){
-      var arr=groups[g][gr]; var stockGrade=arr.reduce(function(sum,b){return sum+Number(b.stock||0);},0);
-      html+='<div class="grade-block"><div class="grade-title">📚 GRADE '+gr+' — '+getPhase(gr)+' — Titles: '+arr.length+' • In Stock: '+stockGrade+'</div>';
-      // Sub-group by Subject inside Grade
+  var order=['LANGUAGES','MATHEMATICS','SCIENCES','COMMERCE','HUMANITIES','LIFE SKILLS','TECHNOLOGY','OTHER']; var html='';
+  order.forEach(function(g){ if(!groups[g]) return; var booksInGroup=[]; Object.keys(groups[g]).forEach(function(gr){ booksInGroup=booksInGroup.concat(groups[g][gr]); }); var stockInGroup=booksInGroup.reduce(function(sum,b){return sum+Number(b.stock||0);},0); html+='<div class="group-card" style="border-color:'+groupColor(g)+'"><div class="group-head"><div class="group-title" style="color:'+groupColor(g)+'">'+groupEmoji(g)+' '+g+'</div><div><span class="pill" style="background:'+groupColor(g)+'">Titles: '+booksInGroup.length+'</span> <span class="pill pill-green">In Stock: '+stockInGroup+'</span></div></div>';
+    Object.keys(groups[g]).sort(function(a,b){return Number(a)-Number(b);}).forEach(function(gr){ var arr=groups[g][gr]; var stockGrade=arr.reduce(function(sum,b){return sum+Number(b.stock||0);},0); html+='<div class="grade-block"><div class="grade-title">📚 GRADE '+gr+' — '+getPhase(gr)+' — Titles: '+arr.length+' • In Stock: '+stockGrade+'</div>';
       var bySubj={}; arr.forEach(function(b){ var s=b.subject||'OTHER'; if(!bySubj[s]) bySubj[s]=[]; bySubj[s].push(b); });
-      Object.keys(bySubj).sort().forEach(function(s){
-        var sArr=bySubj[s]; var stockSubj=sArr.reduce(function(sum,b){return sum+Number(b.stock||0);},0);
-        var issuedSubj=_issuedLog.filter(function(l){ return (l.subject||'')===s && String(l.grade)===String(gr); }).length;
-        html+='<h3>📖 '+s+' — Titles: '+sArr.length+' • In Stock: <b>'+stockSubj+'</b> • Issued: <b>'+issuedSubj+'</b></h3><table><tr><th>Book Title</th><th>Stock</th><th>Status</th><th>Book Numbers</th><th>Action</th></tr>';
-        sArr.forEach(function(b){
-          var st=Number(b.stock||0); var status=st===0?'<span class="pill pill-low">🔴 OUT</span>':st<=10?'<span class="pill pill-low">🟠 LOW — '+st+'</span>':'<span class="pill pill-ok">🟢 OK — '+st+'</span>';
-          html+='<tr><td><b>'+(b.title||b.bookTitle||'')+'</b><br><small>GRADE '+b.grade+' • '+b.subject+' • '+getPhase(b.grade)+'</small></td><td><b style="font-size:16px">'+st+'</b></td><td>'+status+'</td><td>'+toArray(b.bookNumbers).map(function(n){return '<span class="pill pill-book">'+n+'</span>';}).join(' ')+'</td><td><button class="btn btn-grey" onclick="editStock(\''+b.id+'\')">✏️ EDIT STOCK</button><br><button class="btn btn-red" onclick="deleteBook(\''+b.id+'\')">🗑️ DELETE</button></td></tr>';
-        });
-        html+='</table>';
-      });
-      html+='</div>';
-    });
-    html+='</div>';
-  });
+      Object.keys(bySubj).sort().forEach(function(s){ var sArr=bySubj[s]; var stockSubj=sArr.reduce(function(sum,b){return sum+Number(b.stock||0);},0); html+='<h3>📖 '+s+' — Titles: '+sArr.length+' • In Stock: <b>'+stockSubj+'</b></h3><table><tr><th>Book Title</th><th>Stock</th><th>Status</th><th>Book Numbers (Auto)</th><th>Action</th></tr>';
+        sArr.forEach(function(b){ var st=Number(b.stock||0); var status=st===0?'<span class="pill pill-low">🔴 OUT</span>':st<=10?'<span class="pill pill-low">🟠 LOW — '+st+'</span>':'<span class="pill pill-ok">🟢 OK — '+st+'</span>'; html+='<tr><td><b>'+(b.title||'')+'</b><br><small>GRADE '+b.grade+' • '+b.subject+'</small></td><td><b>'+st+'</b></td><td>'+status+'</td><td>'+toArray(b.bookNumbers).map(function(n){return '<span class="pill pill-book">'+n+'</span>';}).join(' ')+'</td><td><button class="btn btn-grey" onclick="editStock(\''+b.id+'\')">✏️ EDIT</button><br><button class="btn btn-red" onclick="deleteBook(\''+b.id+'\')">🗑️ DELETE</button><br><button class="btn btn-purple" onclick="addMoreAuto(\''+b.id+'\')">🔢 + ADD MORE AUTO</button></td></tr>'; });
+        html+='</table>'; });
+      html+='</div>'; });
+    html+='</div>'; });
   document.getElementById('stockList').innerHTML=html;
 }
 async function addBook(){
-  var t=document.getElementById('bTitle').value.trim().toUpperCase(), g=document.getElementById('bGrade').value, s=document.getElementById('bSubject').value, st=document.getElementById('bStock').value;
-  var nums=document.getElementById('bNumbers').value.split(/[\n,]+/).map(function(x){return x.trim().toUpperCase();}).filter(function(x){return x;});
+  var t=document.getElementById('bTitle').value.trim().toUpperCase(), g=document.getElementById('bGrade').value, s=document.getElementById('bSubject').value, st=Number(document.getElementById('bStock').value||0);
   var msg=document.getElementById('bookMsg');
   if(!t){ msg.innerHTML='<div class="warn">❌ Type Book Title.</div>'; return; }
+  if(!st||st<1){ msg.innerHTML='<div class="warn">❌ Set Qty to 1 or more.</div>'; return; }
+  var nums=toArray(document.getElementById('bNumbers').value);
+  // If librarian forgot to tap GENERATE, auto-generate now
+  if(!nums.length){ await generateBookNumbers(); nums=_generated.slice(); }
+  if(nums.length!==st){ msg.innerHTML='<div class="warn">⚠️ Generated numbers ('+nums.length+') do not match Qty ('+st+'). Tap <b>🔢 GENERATE</b> again, then <b>📦 ADD TO STOCK</b>.</div>'; return; }
+  if(!confirm('📦 ADD TO STOCK?\n\n'+t+'\nGrade '+g+' • '+s+' • Group '+groupForSubject(s)+'\nQty: '+st+'\nBook Numbers: '+nums[0]+' to '+nums[nums.length-1]+'\n\nSave?')) return;
   try{
-    await db.ref('books').push({ title:t, bookTitle:t, grade:g, grades:[g], phase:getPhase(g), subject:s, subjects:[s], group:groupForSubject(s), department:groupForSubject(s), stock:Number(st||nums.length||0), bookNumbers:nums, createdAt:Date.now(), createdBy:_u? _u.name:'' });
-    msg.innerHTML='<div class="ok">✅ Added to Stock: <b>'+t+'</b><br>Group: <b>'+groupForSubject(s)+'</b> • Grade: <b>'+g+'</b> • Subject: <b>'+s+'</b> • Stock: <b>'+(st||nums.length)+'</b></div>';
-    document.getElementById('bTitle').value=''; document.getElementById('bNumbers').value=''; loadBooks();
+    await db.ref('books').push({ title:t, bookTitle:t, grade:g, grades:[g], phase:getPhase(g), subject:s, subjects:[s], group:groupForSubject(s), department:groupForSubject(s), stock:st, bookNumbers:nums, createdAt:Date.now(), createdBy:_u?_u.name:'', prefix:_prefix });
+    // Advance counter to last generated number — use transaction so 2 librarians don't clash
+    var lastSeq=parseSeq(nums[nums.length-1],_prefix);
+    try{ await db.ref('counters/bookNumber').transaction(function(cur){ var curSeq=cur&&cur.lastSeq?Number(cur.lastSeq):0; return { lastSeq:Math.max(curSeq,lastSeq), prefix:_prefix, schoolName:_schoolName, updatedAt:Date.now() }; }); }catch(e){ await db.ref('counters/bookNumber').set({ lastSeq:lastSeq, prefix:_prefix, schoolName:_schoolName, updatedAt:Date.now() }); }
+    _counter=Math.max(_counter,lastSeq); _generated=[]; document.getElementById('bNumbers').value=''; document.getElementById('bStartSeq').value='';
+    msg.innerHTML='<div class="ok">✅ Added: <b>'+t+'</b><br>Group: <b>'+groupForSubject(s)+'</b> • Grade: <b>'+g+'</b> • Subject: <b>'+s+'</b> • Qty: <b>'+st+'</b><br>Book Numbers: <b>'+nums[0]+' to '+nums[nums.length-1]+'</b><br>Next number will be: <b>'+formatBookNo(_prefix,_counter+1)+'</b></div>';
+    document.getElementById('bTitle').value=''; loadBooks(); previewAutoNumbers();
   }catch(e){ if(!showPermError('WRITE books',e)) msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
 }
-async function editStock(id){
+async function addMoreAuto(id){
   var b=_allBooks.find(function(x){return x.id===id;}); if(!b) return;
-  var newStock=prompt('EDIT STOCK\n\n'+(b.title||'')+'\nGrade '+b.grade+' • '+b.subject+' • Group '+groupForSubject(b.subject)+'\n\nCurrent Stock: '+b.stock+'\n\nType NEW Stock Qty:', b.stock);
-  if(newStock===null) return; newStock=Number(newStock); if(isNaN(newStock)||newStock<0){ alert('Stock must be 0 or more.'); return; }
-  try{ await db.ref('books/'+id).update({ stock:newStock, group:groupForSubject(b.subject), department:groupForSubject(b.subject) }); loadBooks(); }catch(e){ alert('❌ '+e.message); }
+  var addQty=Number(prompt('🔢 ADD MORE AUTO NUMBERS\n\n'+(b.title||'')+'\nGrade '+b.grade+' • '+b.subject+'\nCurrent Stock: '+b.stock+'\n\nHow many MORE copies to add?', '10'));
+  if(!addQty||addQty<1) return;
+  await loadCounter();
+  var existing=new Set(); _allBooks.forEach(function(x){ toArray(x.bookNumbers).forEach(function(n){ existing.add(String(n).toUpperCase()); }); }); _issuedLog.forEach(function(l){ if(l.bookNo) existing.add(String(l.bookNo).toUpperCase()); });
+  var newNums=[]; var seq=_counter+1; while(newNums.length<addQty){ var num=formatBookNo(_prefix,seq); if(!existing.has(num)) newNums.push(num); seq++; }
+  if(!confirm('Add '+addQty+' more to this book?\n\nNew numbers: '+newNums[0]+' to '+newNums[newNums.length-1]+'\nStock will go: '+b.stock+' → '+(Number(b.stock||0)+addQty))) return;
+  try{
+    var merged=toArray(b.bookNumbers).concat(newNums);
+    await db.ref('books/'+id).update({ stock:Number(b.stock||0)+addQty, bookNumbers:merged });
+    var lastSeq=parseSeq(newNums[newNums.length-1],_prefix);
+    await db.ref('counters/bookNumber').set({ lastSeq:lastSeq, prefix:_prefix, schoolName:_schoolName, updatedAt:Date.now() });
+    _counter=lastSeq; alert('✅ Added '+addQty+' — New numbers '+newNums[0]+' to '+newNums[newNums.length-1]); loadBooks(); previewAutoNumbers();
+  }catch(e){ alert('❌ '+e.message); }
 }
-async function deleteBook(id){
-  var b=_allBooks.find(function(x){return x.id===id;}); if(!b) return;
-  if(!confirm('🗑️ DELETE this stock?\n\n'+b.title+'\nGrade '+b.grade+' • '+b.subject+' • Stock '+b.stock+'\n\nThis does NOT delete issued books.')) return;
-  try{ await db.ref('books/'+id).remove(); loadBooks(); }catch(e){ alert('❌ '+e.message); }
-}
-// --- SCAN / ISSUE (MAX = APPROVED) ---
-function updateMaxUI(){
-  var max=approvedQty(); var cur=_scanned.length; if(!_selectedId){ document.getElementById('maxBox').style.display='none'; return; }
-  document.getElementById('maxBox').style.display='block'; document.getElementById('approvedQty').value=max; document.getElementById('scanQty').value=cur;
-  var pct=max?Math.round((cur/max)*100):0; var bar=document.getElementById('maxBar'); bar.style.width=Math.min(pct,100)+'%'; bar.textContent=cur+' / '+max; bar.className='progress-bar'+(cur>=max?' full':'');
-  var r=_allReq.find(function(x){return x.id===_selectedId;}); var req=Number(r? r.qtyRequested||r.requestedQty||r.qty||0:0);
-  document.getElementById('maxInfo').innerHTML='Requested: <b>'+req+'</b> → Approved: <b>'+max+'</b> '+(max<req?'✂️ CUT '+(req-max):'✅ FULL')+' • Scanned: <b>'+cur+' / '+max+'</b> • Remaining: <b>'+Math.max(0,max-cur)+'</b>';
-  document.getElementById('typeHint').textContent=cur>=max?'MAX REACHED':'Scan '+(max-cur)+' more';
-  document.getElementById('bookNoInput').disabled=cur>=max; document.getElementById('addBtn').disabled=cur>=max; document.getElementById('scanBtn').disabled=cur>=max; if(cur>=max) stopScan();
-}
-async function startScan(){ if(_scanned.length>=approvedQty()){ alert('⛔ MAX REACHED: '+approvedQty()); return; } try{ document.getElementById('reader').style.display='block'; if(!_html5Qr) _html5Qr=new Html5Qrcode("reader"); _scanning=true; document.getElementById('scanStatus').innerHTML='<div class="ok">📷 Camera ON — Max: '+approvedQty()+'</div>'; await _html5Qr.start({facingMode:"environment"}, {fps:10, qrbox:{width:250,height:150}}, function(d){ onScan(d); }, function(){}); }catch(e){ document.getElementById('scanStatus').innerHTML='<div class="warn">❌ Camera: '+e.message+'</div>'; } }
+async function editStock(id){ var b=_allBooks.find(function(x){return x.id===id;}); if(!b) return; var newStock=prompt('EDIT STOCK\n\n'+(b.title||'')+'\nGrade '+b.grade+' • '+b.subject+'\nCurrent: '+b.stock+'\n\nType NEW Stock Qty:', b.stock); if(newStock===null) return; newStock=Number(newStock); if(isNaN(newStock)||newStock<0){ alert('Stock must be 0 or more.'); return; } try{ await db.ref('books/'+id).update({ stock:newStock }); loadBooks(); }catch(e){ alert('❌ '+e.message); } }
+async function deleteBook(id){ var b=_allBooks.find(function(x){return x.id===id;}); if(!b) return; if(!confirm('🗑️ DELETE?\n\n'+b.title+'\nGrade '+b.grade+' • '+b.subject+' • Stock '+b.stock+'\n\nNumbers '+toArray(b.bookNumbers).join(', ')+' will NOT be reused.')) return; try{ await db.ref('books/'+id).remove(); loadBooks(); }catch(e){ alert('❌ '+e.message); } }
+// --- SCAN / ISSUE ---
+function updateMaxUI(){ var max=approvedQty(); var cur=_scanned.length; if(!_selectedId){ document.getElementById('maxBox').style.display='none'; return; } document.getElementById('maxBox').style.display='block'; document.getElementById('approvedQty').value=max; document.getElementById('scanQty').value=cur; var pct=max?Math.round((cur/max)*100):0; var bar=document.getElementById('maxBar'); bar.style.width=Math.min(pct,100)+'%'; bar.textContent=cur+' / '+max; bar.className='progress-bar'+(cur>=max?' full':''); document.getElementById('typeHint').textContent=cur>=max?'MAX REACHED':'Scan '+(max-cur)+' more'; document.getElementById('bookNoInput').disabled=cur>=max; document.getElementById('addBtn').disabled=cur>=max; document.getElementById('scanBtn').disabled=cur>=max; if(cur>=max) stopScan(); }
+async function startScan(){ if(_scanned.length>=approvedQty()){ alert('⛔ MAX REACHED'); return; } try{ document.getElementById('reader').style.display='block'; if(!_html5Qr) _html5Qr=new Html5Qrcode("reader"); _scanning=true; document.getElementById('scanStatus').innerHTML='<div class="ok">📷 Camera ON — Max: '+approvedQty()+'</div>'; await _html5Qr.start({facingMode:"environment"}, {fps:10, qrbox:{width:250,height:150}}, function(d){ onScan(d); }, function(){}); }catch(e){ document.getElementById('scanStatus').innerHTML='<div class="warn">❌ Camera: '+e.message+'</div>'; } }
 async function stopScan(){ try{ if(_html5Qr && _scanning){ await _html5Qr.stop(); _scanning=false; } }catch(e){} document.getElementById('reader').style.display='none'; }
 function onScan(code){ addScanned(String(code||'').trim().toUpperCase(), true); }
 function addBookNo(){ var v=document.getElementById('bookNoInput').value.trim().toUpperCase(); if(!v){ document.getElementById('scanMsg').innerHTML='<div class="warn">❌ Type a Book Number first.</div>'; return; } addScanned(v,false); document.getElementById('bookNoInput').value=''; document.getElementById('bookNoInput').focus(); }
-function addScanned(code,fromCamera){
-  code=String(code||'').trim().toUpperCase(); if(!code) return;
-  if(!_selectedId){ document.getElementById('scanMsg').innerHTML='<div class="warn">⚠️ Select a Request first.</div>'; return; }
-  var max=approvedQty(); if(_scanned.length>=max){ document.getElementById('scanMsg').innerHTML='<div class="warn">⛔ MAX REACHED — Cannot add '+code+'</div>'; updateMaxUI(); return; }
-  if(_scanned.includes(code)){ document.getElementById('scanMsg').innerHTML='<div class="warn">⚠️ Already scanned: <b>'+code+'</b></div>'; return; }
-  var already=_issuedLog.find(function(l){ return String(l.bookNo||'').toUpperCase()===code; }); if(already){ document.getElementById('scanMsg').innerHTML='<div class="warn">⛔ ALREADY ISSUED: <b>'+code+'</b> to <b>'+(already.teacherName||'')+'</b></div>'; return; }
-  _scanned.push(code); document.getElementById('scanMsg').innerHTML='<div class="ok">✅ Added: <b>'+code+'</b> — '+_scanned.length+' / '+max+' MAX</div>'; renderScanList();
-}
+function addScanned(code,fromCamera){ code=String(code||'').trim().toUpperCase(); if(!code) return; if(!_selectedId){ document.getElementById('scanMsg').innerHTML='<div class="warn">⚠️ Select a Request first.</div>'; return; } var max=approvedQty(); if(_scanned.length>=max){ document.getElementById('scanMsg').innerHTML='<div class="warn">⛔ MAX REACHED</div>'; updateMaxUI(); return; } if(_scanned.includes(code)){ document.getElementById('scanMsg').innerHTML='<div class="warn">⚠️ Already scanned: '+code+'</div>'; return; } var already=_issuedLog.find(function(l){ return String(l.bookNo||'').toUpperCase()===code; }); if(already){ document.getElementById('scanMsg').innerHTML='<div class="warn">⛔ ALREADY ISSUED: '+code+' to '+(already.teacherName||'')+'</div>'; return; } _scanned.push(code); document.getElementById('scanMsg').innerHTML='<div class="ok">✅ Added: <b>'+code+'</b> — '+_scanned.length+' / '+max+' MAX</div>'; renderScanList(); }
 function clearScanList(){ _scanned=[]; renderScanList(); }
 function removeScanned(code){ _scanned=_scanned.filter(function(x){return x!==code;}); renderScanList(); }
 function renderScanList(){ var el=document.getElementById('scanList'); el.innerHTML=!_scanned.length?'<b>Scanned (0):</b><br><span style="color:#64748b">No books scanned yet.</span>':'<b>Scanned ('+_scanned.length+' / '+approvedQty()+' MAX):</b><br>'+_scanned.map(function(c){return '<span class="pill pill-book">'+c+' <span style="cursor:pointer" onclick="removeScanned(\''+c+'\')">✕</span></span>';}).join(' '); document.getElementById('issueScannedBtn').disabled=!(_selectedId && _scanned.length && _scanned.length<=approvedQty()); updateMaxUI(); }
-function selectToScan(id){ var r=_allReq.find(function(x){return x.id===id;}); if(!r) return; if((r.status||'')!=='APPROVED'){ alert('Only APPROVED can be issued. This is '+r.status); return; } _selectedId=id; _scanned=[]; renderScanList(); var due=getDueDate(Date.now()); var req=Number(r.qtyRequested||r.requestedQty||r.qty||0); var appr=Number(r.qtyApproved||r.approvedQty||r.qty||0); document.getElementById('selectedReqBox').className='ok'; document.getElementById('selectedReqBox').innerHTML='✅ SELECTED:<br><b>'+(r.bookTitle||'')+'</b> — GRADE '+(r.grade||'')+' '+(r.className||'')+' — '+r.phase+'<br>Teacher: <b>'+(r.teacherName||'')+'</b> — Requested: <b>'+req+'</b> → Approved: <b>'+appr+'</b> • ⛔ MAX: '+appr+'<br>📅 Due: <b>30 November '+due.getFullYear()+'</b>'; window.scrollTo({top:0,behavior:'smooth'}); document.getElementById('bookNoInput').focus(); }
-async function issueScanned(){
-  if(!_selectedId){ alert('Select a Request first.'); return; } if(!_scanned.length){ alert('Scan at least 1.'); return; }
-  var r=_allReq.find(function(x){return x.id===_selectedId;}); var max=approvedQty(); if(_scanned.length>max){ alert('⛔ BLOCKED — Scanned '+_scanned.length+' > Approved '+max); return; }
-  try{ var fresh=await db.ref('requests/'+_selectedId).once('value'); var live=fresh.val()||{}; var liveMax=Number(live.qtyApproved||live.approvedQty||live.qty||0); if(_scanned.length>liveMax){ alert('⛔ Live Approved = '+liveMax); loadReq(); return; } if((live.status||'')!=='APPROVED'){ alert('⛔ No longer APPROVED'); loadReq(); return; } max=liveMax; }catch(e){ if(showPermError('READ request',e)) return; }
-  var due=getDueDate(Date.now()); if(!confirm('ISSUE '+_scanned.length+' to '+r.teacherName+'?\n'+r.bookTitle+'\nBook Nos: '+_scanned.join(', ')+'\nApproved MAX: '+max+'\n📅 DUE: 30 November '+due.getFullYear())) return;
-  document.getElementById('scanMsg').innerHTML='<div class="info">⏳ Issuing...</div>'; document.getElementById('issueScannedBtn').disabled=true;
-  try{
-    var dueTs=due.getTime();
-    for(var i=0;i<_scanned.length;i++){ await db.ref('issuedLog').push({ bookNo:_scanned[i], bookTitle:r.bookTitle, subject:r.subject, grade:r.grade, className:r.className, phase:r.phase, group:groupForSubject(r.subject), teacherName:r.teacherName, teacherEmail:r.teacherEmail, teacherUid:r.teacherUid, requestId:r.id, issuedBy:_u.name, issuedAt:Date.now(), dueDate:dueTs, dueDateStr:'30 November '+due.getFullYear(), approvedQty:max, issuedQty:_scanned.length }); }
-    await db.ref('requests/'+_selectedId).update({ status:'ISSUED', qtyIssued:_scanned.length, qtyApproved:max, approvedQty:max, bookNumbers:_scanned, bookNos:_scanned.join(', '), issuedBy:_u.name, issuedAt:Date.now(), dueDate:dueTs, dueDateStr:'30 November '+due.getFullYear(), returnRequested:false });
-    // Stock down — try match by Group + Grade + Subject + Title, else by title
-    try{ var snap=await db.ref('books').once('value'); snap.forEach(function(ch){ var b=ch.val(); var t=String(b.title||'').toUpperCase(); var rt=String(r.bookTitle||'').toUpperCase(); if(t && (rt.includes(t.substring(0,12)) || t.includes(rt.substring(0,12)))) db.ref('books/'+ch.key).update({ stock:Math.max(0,Number(b.stock||0)-_scanned.length) }); }); }catch(e){ console.log('Stock update failed',e.message); }
-    document.getElementById('scanMsg').innerHTML='<div class="ok">✅ ISSUED '+_scanned.length+' / '+max+' to <b>'+r.teacherName+'</b> — Due 30 Nov '+due.getFullYear()+'</div>';
-    _selectedId=''; _scanned=[]; renderScanList(); document.getElementById('selectedReqBox').className='warn'; document.getElementById('selectedReqBox').innerHTML='⚠️ No request selected.'; document.getElementById('maxBox').style.display='none'; stopScan(); loadReq(); loadBooks(); loadLog();
-  }catch(e){ if(!showPermError('ISSUE',e)) document.getElementById('scanMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; document.getElementById('issueScannedBtn').disabled=false; }
-}
-async function loadReq(){ try{ var snap=await db.ref('requests').once('value'); _allReq=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _allReq.push(v); }); renderReq(); }catch(e){ document.getElementById('reqList').innerHTML='<div class="warn">'+e.message+'</div>'; showPermError('READ requests',e); } }
-function renderReq(){
-  var fp=document.getElementById('fPhase').value, fg=document.getElementById('fGrade').value, fs=document.getElementById('fStatus').value, q=(document.getElementById('fSearch').value||'').toLowerCase();
-  var ci=_allReq.filter(function(r){return r.phase==='INTERMEDIATE PHASE';}).length, cs=_allReq.filter(function(r){return r.phase==='SENIOR PHASE';}).length, cf=_allReq.filter(function(r){return r.phase==='FET PHASE';}).length;
-  document.getElementById('cInt').textContent=ci; document.getElementById('cSen').textContent=cs; document.getElementById('cFet').textContent=cf;
-  var pend=_allReq.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length, appr=_allReq.filter(function(r){return r.status==='APPROVED';}).length, iss=_allReq.filter(function(r){return r.status==='ISSUED';}).length;
-  document.getElementById('counts').innerHTML='Total: <b>'+_allReq.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+appr+'</b> • ISSUED: <b>'+iss+'</b>';
-  document.getElementById('dueBanner').innerHTML='📅 Due: <b>30 November '+getDueDate(Date.now()).getFullYear()+'</b> • MAX = Approved';
-  var list=_allReq.filter(function(r){ var okP=!fp||r.phase===fp, okG=!fg||String(r.grade)===fg, okS=!fs||(r.status||'PENDING')===fs; var hay=(r.teacherName+' '+r.subject+' '+r.bookTitle+' '+r.className+' '+toArray(r.bookNumbers).join(' ')).toLowerCase(); return okP&&okG&&okS&&(!q||hay.includes(q)); });
-  document.getElementById('filterInfo').innerHTML='Showing: <b>'+list.length+'</b> / '+_allReq.length;
-  if(!list.length){ document.getElementById('reqList').innerHTML='<div class="info">No requests.</div>'; return; }
-  var h='<table><tr><th>Teacher</th><th>Subject</th><th>Grade / Class</th><th>Book</th><th>Requested → Approved</th><th>Status / Due</th><th>Action</th></tr>';
-  list.slice().reverse().forEach(function(r){
-    var st=r.status||'PENDING'; var pillClass=st==='APPROVED'?'pill-green':st==='ISSUED'?'pill-teal':st==='REJECTED'?'pill-red':st==='CANCELLED'?'pill-grey':st==='RETURNED'?'pill-purple':'pill';
-    var req=Number(r.qtyRequested||r.requestedQty||r.qty||0); var appr=Number(r.qtyApproved||r.approvedQty||r.qty||0);
-    var reason=''; if(st==='ISSUED') reason+='<br>'+toArray(r.bookNumbers).map(function(n){return '<span class="pill pill-book">'+n+'</span>';}).join(' ')+'<br>'+fmtDue(r.dueDate||r.issuedAt);
-    var btn=''; if(st==='APPROVED') btn='<button class="btn btn-teal" onclick="selectToScan(\''+r.id+'\')">📖 SELECT TO SCAN →<br><small>MAX '+appr+'</small></button>'; else if(st==='ISSUED') btn='<span>✅ Issued '+(r.qtyIssued||'')+' / '+appr+'</span>'; else btn='<span>'+st+'</span>';
-    h+='<tr><td><b>'+(r.teacherName||'')+'</b></td><td><span class="pill">'+(r.subject||'')+'</span><br><small>'+groupForSubject(r.subject)+'</small></td><td>GRADE '+(r.grade||'')+' '+(r.className||'')+'</td><td>'+(r.bookTitle||'')+'</td><td>Req: '+req+'<br>Appr: <b>'+appr+'</b></td><td><span class="pill '+pillClass+'">'+st+'</span>'+reason+'</td><td>'+btn+'</td></tr>';
-  }); h+='</table>'; document.getElementById('reqList').innerHTML=h;
-}
-async function loadLog(){ try{ var snap=await db.ref('issuedLog').once('value'); _issuedLog=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _issuedLog.push(v); }); renderLog(); }catch(e){ showPermError('READ issuedLog',e); } }
-function renderLog(){ var q=(document.getElementById('logSearch').value||'').toLowerCase(); var list=_issuedLog.filter(function(l){ var hay=(l.bookNo+' '+l.bookTitle+' '+l.teacherName+' '+l.subject).toLowerCase(); return !q||hay.includes(q); }); if(!list.length){ document.getElementById('logList').innerHTML='<div class="info">No issued books yet.</div>'; return; } var h='<table><tr><th>Book No</th><th>Group → Grade → Subject</th><th>Book</th><th>Teacher</th><th>Due</th></tr>'; list.slice().reverse().forEach(function(l){ h+='<tr><td><span class="pill pill-book">'+(l.bookNo||'')+'</span></td><td>'+groupEmoji(groupForSubject(l.subject))+' '+groupForSubject(l.subject)+' → GRADE '+(l.grade||'')+' → '+(l.subject||'')+'</td><td>'+(l.bookTitle||'')+'</td><td><b>'+(l.teacherName||'')+'</b></td><td>'+fmtDue(l.dueDate||l.issuedAt)+'</td></tr>'; }); h+='</table>'; document.getElementById('logList').innerHTML=h; }
+function selectToScan(id){ var r=_allReq.find(function(x){return x.id===id;}); if(!r) return; if((r.status||'')!=='APPROVED'){ alert('Only APPROVED can be issued. This is '+r.status); return; } _selectedId=id; _scanned=[]; renderScanList(); var due=getDueDate(Date.now()); var req=Number(r.qtyRequested||r.requestedQty||r.qty||0); var appr=Number(r.qtyApproved||r.approvedQty||r.qty||0); document.getElementById('selectedReqBox').className='ok'; document.getElementById('selectedReqBox').innerHTML='✅ SELECTED:<br><b>'+(r.bookTitle||'')+'</b> — GRADE '+(r.grade||'')+' '+(r.className||'')+'<br>Teacher: <b>'+(r.teacherName||'')+'</b> — Requested: <b>'+req+'</b> → Approved: <b>'+appr+'</b> • MAX: '+appr+'<br>📅 Due: <b>30 Nov '+due.getFullYear()+'</b>'; window.scrollTo({top:0,behavior:'smooth'}); document.getElementById('bookNoInput').focus(); }
+async function issueScanned(){ if(!_selectedId){ alert('Select a Request first.'); return; } if(!_scanned.length){ alert('Scan at least 1.'); return; } var r=_allReq.find(function(x){return x.id===_selectedId;}); var max=approvedQty(); if(_scanned.length>max){ alert('⛔ BLOCKED — Scanned > Approved'); return; } try{ var fresh=await db.ref('requests/'+_selectedId).once('value'); var live=fresh.val()||{}; var liveMax=Number(live.qtyApproved||live.approvedQty||live.qty||0); if(_scanned.length>liveMax){ alert('⛔ Live Approved = '+liveMax); loadReq(); return; } if((live.status||'')!=='APPROVED'){ alert('⛔ No longer APPROVED'); loadReq(); return; } max=liveMax; }catch(e){ if(showPermError('READ request',e)) return; } var due=getDueDate(Date.now()); if(!confirm('ISSUE '+_scanned.length+' to '+r.teacherName+'?\n'+r.bookTitle+'\n'+_scanned.join(', ')+'\nApproved MAX: '+max+'\n📅 DUE: 30 Nov '+due.getFullYear())) return; document.getElementById('scanMsg').innerHTML='<div class="info">⏳ Issuing...</div>'; document.getElementById('issueScannedBtn').disabled=true; try{ var dueTs=due.getTime(); for(var i=0;i<_scanned.length;i++){ await db.ref('issuedLog').push({ bookNo:_scanned[i], bookTitle:r.bookTitle, subject:r.subject, grade:r.grade, className:r.className, phase:r.phase, group:groupForSubject(r.subject), teacherName:r.teacherName, teacherEmail:r.teacherEmail, teacherUid:r.teacherUid, requestId:r.id, issuedBy:_u.name, issuedAt:Date.now(), dueDate:dueTs, dueDateStr:'30 November '+due.getFullYear(), approvedQty:max, issuedQty:_scanned.length }); } await db.ref('requests/'+_selectedId).update({ status:'ISSUED', qtyIssued:_scanned.length, qtyApproved:max, approvedQty:max, bookNumbers:_scanned, bookNos:_scanned.join(', '), issuedBy:_u.name, issuedAt:Date.now(), dueDate:dueTs, dueDateStr:'30 November '+due.getFullYear(), returnRequested:false }); try{ var snap=await db.ref('books').once('value'); snap.forEach(function(ch){ var b=ch.val(); var t=String(b.title||'').toUpperCase(); var rt=String(r.bookTitle||'').toUpperCase(); if(t && (rt.includes(t.substring(0,12)) || t.includes(rt.substring(0,12)))) db.ref('books/'+ch.key).update({ stock:Math.max(0,Number(b.stock||0)-_scanned.length) }); }); }catch(e){} document.getElementById('scanMsg').innerHTML='<div class="ok">✅ ISSUED '+_scanned.length+' / '+max+' to <b>'+r.teacherName+'</b></div>'; _selectedId=''; _scanned=[]; renderScanList(); document.getElementById('selectedReqBox').className='warn'; document.getElementById('selectedReqBox').innerHTML='⚠️ No request selected.'; document.getElementById('maxBox').style.display='none'; stopScan(); loadReq(); loadBooks(); loadLog(); }catch(e){ if(!showPermError('ISSUE',e)) document.getElementById('scanMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; document.getElementById('issueScannedBtn').disabled=false; } }
+async function loadReq(){ try{ var snap=await db.ref('requests').once('value'); _allReq=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _allReq.push(v); }); renderReq(); }catch(e){ document.getElementById('reqList').innerHTML='<div class="warn">'+e.message+'</div>'; } }
+function renderReq(){ var fp=document.getElementById('fPhase').value, fg=document.getElementById('fGrade').value, fs=document.getElementById('fStatus').value, q=(document.getElementById('fSearch').value||'').toLowerCase(); var ci=_allReq.filter(function(r){return r.phase==='INTERMEDIATE PHASE';}).length, cs=_allReq.filter(function(r){return r.phase==='SENIOR PHASE';}).length, cf=_allReq.filter(function(r){return r.phase==='FET PHASE';}).length; document.getElementById('cInt').textContent=ci; document.getElementById('cSen').textContent=cs; document.getElementById('cFet').textContent=cf; var pend=_allReq.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length, appr=_allReq.filter(function(r){return r.status==='APPROVED';}).length, iss=_allReq.filter(function(r){return r.status==='ISSUED';}).length; document.getElementById('counts').innerHTML='Total: <b>'+_allReq.length+'</b> • PENDING: <b>'+pend+'</b> • APPROVED: <b>'+appr+'</b> • ISSUED: <b>'+iss+'</b>'; document.getElementById('dueBanner').innerHTML='📅 Due: <b>30 Nov '+getDueDate(Date.now()).getFullYear()+'</b> • MAX = Approved'; var list=_allReq.filter(function(r){ var okP=!fp||r.phase===fp, okG=!fg||String(r.grade)===fg, okS=!fs||(r.status||'PENDING')===fs; var hay=(r.teacherName+' '+r.subject+' '+r.bookTitle+' '+r.className+' '+toArray(r.bookNumbers).join(' ')).toLowerCase(); return okP&&okG&&okS&&(!q||hay.includes(q)); }); document.getElementById('filterInfo').innerHTML='Showing: <b>'+list.length+'</b> / '+_allReq.length; if(!list.length){ document.getElementById('reqList').innerHTML='<div class="info">No requests.</div>'; return; } var h='<table><tr><th>Teacher</th><th>Subject</th><th>Grade / Class</th><th>Book</th><th>Requested → Approved</th><th>Status / Due</th><th>Action</th></tr>'; list.slice().reverse().forEach(function(r){ var st=r.status||'PENDING'; var pillClass=st==='APPROVED'?'pill-green':st==='ISSUED'?'pill-teal':st==='REJECTED'?'pill-red':st==='CANCELLED'?'pill-grey':st==='RETURNED'?'pill-purple':'pill'; var req=Number(r.qtyRequested||r.requestedQty||r.qty||0); var appr=Number(r.qtyApproved||r.approvedQty||r.qty||0); var reason=''; if(st==='ISSUED') reason+='<br>'+toArray(r.bookNumbers).map(function(n){return '<span class="pill pill-book">'+n+'</span>';}).join(' ')+'<br>'+fmtDue(r.dueDate||r.issuedAt); var btn=''; if(st==='APPROVED') btn='<button class="btn btn-teal" onclick="selectToScan(\''+r.id+'\')">📖 SELECT TO SCAN →<br><small>MAX '+appr+'</small></button>'; else if(st==='ISSUED') btn='<span>✅ Issued '+(r.qtyIssued||'')+' / '+appr+'</span>'; else btn='<span>'+st+'</span>'; h+='<tr><td><b>'+(r.teacherName||'')+'</b></td><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||'')+'</td><td>'+(r.bookTitle||'')+'</td><td>Req: '+req+'<br>Appr: <b>'+appr+'</b></td><td><span class="pill '+pillClass+'">'+st+'</span>'+reason+'</td><td>'+btn+'</td></tr>'; }); h+='</table>'; document.getElementById('reqList').innerHTML=h; }
+async function loadLog(){ try{ var snap=await db.ref('issuedLog').once('value'); _issuedLog=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; _issuedLog.push(v); }); renderLog(); }catch(e){} }
+function renderLog(){ var q=(document.getElementById('logSearch').value||'').toLowerCase(); var list=_issuedLog.filter(function(l){ var hay=(l.bookNo+' '+l.bookTitle+' '+l.teacherName).toLowerCase(); return !q||hay.includes(q); }); if(!list.length){ document.getElementById('logList').innerHTML='<div class="info">No issued books yet.</div>'; return; } var h='<table><tr><th>Book No (Auto)</th><th>Group → Grade → Subject</th><th>Book</th><th>Teacher</th><th>Due</th></tr>'; list.slice().reverse().forEach(function(l){ h+='<tr><td><span class="pill pill-book">'+(l.bookNo||'')+'</span></td><td>'+groupEmoji(groupForSubject(l.subject))+' '+groupForSubject(l.subject)+' → GRADE '+(l.grade||'')+' → '+(l.subject||'')+'</td><td>'+(l.bookTitle||'')+'</td><td><b>'+(l.teacherName||'')+'</b></td><td>'+fmtDue(l.dueDate||l.issuedAt)+'</td></tr>'; }); h+='</table>'; document.getElementById('logList').innerHTML=h; }
 init();
 </script></body></html>
