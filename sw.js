@@ -1,44 +1,20 @@
-// Makhanani LTSM — Service Worker — PWA
-const CACHE_NAME = 'makhanani-ltsm-v3';
-const CORE = [
-  './',
-  './index.html',
-  './manual.html',
-  './librarian.html',
-  './issue.html',
-  './teachers.html',
-  './principal.html',
-  './stock.html',
-  './barcode.html',
-  './profile.html',
-  './logo.png',
-  './manifest.json'
+const CACHE = 'makhanani-v250';
+const FILES = [
+  '/','/index.html','/login.html','/teacher.html','/hod.html','/librarian.html','/principal.html','/super_admin.html','/manuals.html','/company-profile.html','/issue.html','/stock.html','/barcode.html','/checklist.html','/bulk_upload.html','/nav.html','/manifest.json','/logo.png','/icon-192.png','/icon-512.png'
 ];
-
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE)).then(() => self.skipWaiting())
-  );
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(()=>self.skipWaiting()));
 });
-
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.map((k) => k !== CACHE_NAME ? caches.delete(k) : null))).then(() => self.clients.claim())
-  );
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => k!==CACHE ? caches.delete(k) : null))).then(()=>self.clients.claim()));
 });
-
-self.addEventListener('fetch', (e) => {
-  const url = new URL(e.request.url);
-  // Never cache Firebase / Google / WhatsApp / CDN — Always go to network
-  if (url.hostname.includes('firebase') || url.hostname.includes('googleapis') || url.hostname.includes('gstatic') || url.hostname.includes('unpkg') || url.hostname.includes('wa.me') || url.hostname.includes('cdn')) {
-    return;
-  }
-  // For our own pages: Network first, fallback to cache (so new version shows fast, offline still works)
+self.addEventListener('fetch', e => {
+  if(e.request.method!=='GET') return;
   e.respondWith(
-    fetch(e.request).then((res) => {
+    fetch(e.request).then(res => {
       const copy = res.clone();
-      caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
+      caches.open(CACHE).then(c=>c.put(e.request, copy));
       return res;
-    }).catch(() => caches.match(e.request).then((cached) => cached || caches.match('./index.html')))
+    }).catch(()=>caches.match(e.request).then(m=>m || caches.match('/index.html')))
   );
 });
