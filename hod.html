@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HOD - Makhanani LTSM 2.0 - V2.41 Fixed</title>
+<title>HOD - Makhanani LTSM 2.0 - V2.43</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -8,14 +8,7 @@
   const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth=firebase.auth(); const db=firebase.database();
-  // ===== NEW PRICING FROM PHOTO - SAME IN ALL PAGES =====
-  function planData(plan){
-    plan=String(plan||'DEMO').toUpperCase();
-    if(plan==='STARTER') return {name:'STARTER', tag:'Starter — 1 school', setup:3000, monthly:350, onceOff:4500, schools:1, learners:500, teachers:30, books:2000};
-    if(plan==='STANDARD') return {name:'STANDARD', tag:'Most popular', setup:4500, monthly:500, onceOff:7500, schools:1, learners:2000, teachers:100, books:10000};
-    if(plan==='PREMIUM') return {name:'PREMIUM', tag:'Premium', setup:5500, monthly:600, onceOff:9000, schools:3, learners:999999, teachers:999, books:999999};
-    return {name:'DEMO', tag:'7 days free trial', setup:0, monthly:0, onceOff:0, schools:1, learners:50, teachers:5, books:100};
-  }
+  function planData(plan){ plan=String(plan||'DEMO').toUpperCase(); if(plan==='STARTER') return {name:'STARTER', tag:'Starter — 1 school', setup:3000, monthly:350, onceOff:4500, schools:1, learners:500, teachers:30, books:2000}; if(plan==='STANDARD') return {name:'STANDARD', tag:'Most popular', setup:4500, monthly:500, onceOff:7500, schools:1, learners:2000, teachers:100, books:10000}; if(plan==='PREMIUM') return {name:'PREMIUM', tag:'Premium', setup:5500, monthly:600, onceOff:9000, schools:3, learners:999999, teachers:999, books:999999}; return {name:'DEMO', tag:'7 days free trial', setup:0, monthly:0, onceOff:0, schools:1, learners:50, teachers:5, books:100}; }
   function toArray(v){ if(!v) return []; if(Array.isArray(v)) return v; if(typeof v==='string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;}); return []; }
   function getCurrentUser(){ return new Promise(function(res){ auth.onAuthStateChanged(function(u){ if(!u) return res(null); db.ref('users/'+u.uid).once('value').then(function(s){ var d=s.val()||{}; d.uid=u.uid; d.email=u.email; d.classes=toArray(d.classes||d.className||d.class); d.subjects=toArray(d.subjects||d.subject); d.grades=toArray(d.grades||d.grade); res(d); }).catch(function(){ res({uid:u.uid,email:u.email,classes:[],subjects:[],grades:[]}); }); }); }); }
   function fmtDate(ts){ if(!ts) return '—'; return new Date(ts).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}); }
@@ -25,7 +18,7 @@
   function groupForSubject(s){ s=String(s||'').toUpperCase(); if(s.includes('ENGLISH')||s.includes('LANGUAGE')) return 'LANGUAGES'; if(s.includes('MATHEMATICS')||s.includes('MATHS')) return 'MATHEMATICS'; if(s.includes('PHYSICAL')||s.includes('SCIENCES')) return 'SCIENCES'; if(s.includes('ACCOUNTING')||s.includes('BUSINESS')||s.includes('ECONOMICS')) return 'COMMERCE'; return 'OTHER'; }
   function getDueDate(a){ var d=new Date(a||Date.now()); var y=d.getFullYear(); var due=new Date(y,10,30); if(d>due) due=new Date(y+1,10,30); return due; }
   function dueInfo(a){ var due=getDueDate(a); var t=new Date(); t.setHours(0,0,0,0); var dd=new Date(due); dd.setHours(0,0,0,0); var days=Math.ceil((dd-t)/86400000); return {due:due,days:days,status:days<0?'OVERDUE':'ON TIME',dueStr:due.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}; }
-  function showTab(id){ ['tab-home','tab-approve','tab-decided','tab-learners','tab-report'].forEach(function(t){ var el=document.getElementById(t); if(el) el.style.display=(t===id?'block':'none'); }); document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); }); var btn=document.getElementById('btn-'+id); if(btn) btn.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); if(id==='tab-approve') renderApprove(); if(id==='tab-decided') renderDecided(); if(id==='tab-learners') renderLearners(); }
+  function showTab(id){ ['tab-home','tab-approve','tab-decided','tab-learners','tab-profile','tab-report'].forEach(function(t){ var el=document.getElementById(t); if(el) el.style.display=(t===id?'block':'none'); }); document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); }); var btn=document.getElementById('btn-'+id); if(btn) btn.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); if(id==='tab-approve') renderApprove(); if(id==='tab-decided') renderDecided(); if(id==='tab-learners') renderLearners(); if(id==='tab-profile') loadMyProfile(); }
 </script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
@@ -45,220 +38,70 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 @media(max-width:700px){.row{flex-direction:column}.kpi-grid{grid-template-columns:1fr 1fr}.action-grid{grid-template-columns:1fr}}
 </style></head>
 <body>
-<header><h1>👑 HOD — MAKHANANI LTSM 2.0 — V2.41 FIXED</h1><p>HOME → APPROVE → DECIDED → LEARNERS → REPORT • APPROVE = SET MAX FOR LIBRARIAN • XINTIMANI GROUP</p>
+<header><h1>👑 HOD — MAKHANANI LTSM 2.0 — V2.43</h1><p>HOME → APPROVE → DECIDED → LEARNERS → MY PROFILE → REPORT • XINTIMANI GROUP</p>
 <div class="tabs">
 <button class="tab-btn active" id="btn-tab-home" onclick="showTab('tab-home')">🏠 HOME</button>
 <button class="tab-btn" id="btn-tab-approve" onclick="showTab('tab-approve')">⏳ APPROVE <span id="tabPendingCount"></span></button>
 <button class="tab-btn" id="btn-tab-decided" onclick="showTab('tab-decided')">✅ DECIDED</button>
 <button class="tab-btn" id="btn-tab-learners" onclick="showTab('tab-learners')">🧑‍🎓 LEARNERS</button>
+<button class="tab-btn" id="btn-tab-profile" onclick="showTab('tab-profile')">👤 MY PROFILE</button>
 <button class="tab-btn" id="btn-tab-report" onclick="showTab('tab-report')">🖨️ REPORT</button>
 </div><div id="taskbar"></div><script src="nav.js"></script></header>
 <div class="wrap">
-
-<!-- HOME -->
 <div id="tab-home">
 <div class="card"><h2>👤 HOD — Today</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div><div class="purple-box" id="subBanner">Subscription: Loading...</div><div class="warn" id="roleFixBanner" style="display:none"></div></div>
-<div class="card"><h2>📊 At A Glance — What Needs Your Approval?</h2><div class="kpi-grid"><div class="kpi" onclick="showTab('tab-approve')" style="border-color:#ea580c;background:#ffedd5">⏳<b id="kpiPending">0</b><span>PENDING<br>Needs You Now</span></div><div class="kpi" onclick="showTab('tab-decided')" style="border-color:#16a34a;background:#dcfce7">✅<b id="kpiApproved">0</b><span>APPROVED<br>Sent To Librarian</span></div><div class="kpi" onclick="showTab('tab-decided')" style="border-color:#ef4444;background:#fee2e2">❌<b id="kpiRejected">0</b><span>REJECTED<br>By You</span></div><div class="kpi" onclick="showTab('tab-learners')" style="border-color:#7c3aed;background:#ede9fe">🧑‍🎓<b id="kpiLearners">0</b><span>LEARNERS<br>Your Subject</span></div></div><div class="kpi-grid"><div class="kpi">📚<b id="kpiRequests">0</b><span>REQUESTS</span></div><div class="kpi">📦<b id="kpiStock">0</b><span>IN STOCK</span></div><div class="kpi">🧑‍🎓<b id="kpiNoBook">0</b><span>NO BOOK</span></div><div class="kpi">🔴<b id="kpiOverdue">0</b><span>OVERDUE</span></div></div><div class="info" id="homeSummary"></div></div>
-<div class="card"><h2>⚡ Quick Actions — What Do You Want To Do?</h2><div class="action-grid">
-<div class="action-card" style="border-color:#ea580c;background:#ffedd5" onclick="showTab('tab-approve')"><b>⏳ APPROVE REQUESTS</b><small>Set MAX → Librarian issues up to that</small></div>
-<div class="action-card" style="border-color:#16a34a;background:#dcfce7" onclick="showTab('tab-decided')"><b>✅ DECIDED</b><small>See what you approved / rejected</small></div>
-<div class="action-card" style="border-color:#7c3aed;background:#ede9fe" onclick="showTab('tab-learners')"><b>🧑‍🎓 LEARNERS</b><small>Who has what book</small></div>
-<div class="action-card" style="border-color:#d4af37;background:#fef3c7" onclick="showTab('tab-report')"><b>🖨️ REPORT</b><small>For Principal / SGB</small></div>
-</div><div class="row" style="margin-top:10px"><button class="btn btn-manual" onclick="window.location.href='manuals.html'">📖 MANUALS →</button><button class="btn btn-purple" onclick="window.location.href='teacher.html'">👩‍🏫 TEACHER →</button><button class="btn btn-teal" onclick="window.location.href='librarian.html'">📖 LIBRARIAN →</button></div></div>
+<div class="card"><h2>📊 At A Glance</h2><div class="kpi-grid"><div class="kpi" onclick="showTab('tab-approve')" style="border-color:#ea580c;background:#ffedd5">⏳<b id="kpiPending">0</b><span>PENDING</span></div><div class="kpi" onclick="showTab('tab-decided')" style="border-color:#16a34a;background:#dcfce7">✅<b id="kpiApproved">0</b><span>APPROVED</span></div><div class="kpi" onclick="showTab('tab-decided')" style="border-color:#ef4444;background:#fee2e2">❌<b id="kpiRejected">0</b><span>REJECTED</span></div><div class="kpi" onclick="showTab('tab-learners')" style="border-color:#7c3aed;background:#ede9fe">🧑‍🎓<b id="kpiLearners">0</b><span>LEARNERS</span></div></div><div class="kpi-grid"><div class="kpi">📚<b id="kpiRequests">0</b><span>REQUESTS</span></div><div class="kpi">📦<b id="kpiStock">0</b><span>IN STOCK</span></div><div class="kpi">🧑‍🎓<b id="kpiNoBook">0</b><span>NO BOOK</span></div><div class="kpi">🔴<b id="kpiOverdue">0</b><span>OVERDUE</span></div></div><div class="info" id="homeSummary"></div></div>
+<div class="card"><h2>⚡ Quick Actions</h2><div class="action-grid"><div class="action-card" style="border-color:#ea580c;background:#ffedd5" onclick="showTab('tab-approve')"><b>⏳ APPROVE REQUESTS</b><small>Set MAX → Librarian issues up to that</small></div><div class="action-card" style="border-color:#16a34a;background:#dcfce7" onclick="showTab('tab-decided')"><b>✅ DECIDED</b><small>See what you approved / rejected</small></div><div class="action-card" style="border-color:#7c3aed;background:#ede9fe" onclick="showTab('tab-learners')"><b>🧑‍🎓 LEARNERS</b><small>Who has what book</small></div><div class="action-card" style="border-color:#0d9488;background:#f0fdfa" onclick="showTab('tab-profile')"><b>👤 MY PROFILE</b><small>Edit Grades / Subjects / Classes</small></div></div><div class="row" style="margin-top:10px"><button class="btn btn-manual" onclick="window.location.href='manuals.html'">📖 MANUALS →</button><button class="btn btn-purple" onclick="window.location.href='teacher.html'">👩‍🏫 TEACHER →</button><button class="btn btn-teal" onclick="window.location.href='librarian.html'">📖 LIBRARIAN →</button></div></div>
 </div>
-
-<!-- APPROVE -->
 <div id="tab-approve" style="display:none">
-<div class="card" style="border:3px solid #ea580c"><h2>⏳ Approve — Set MAX For Librarian</h2><div class="info">HOD job = <b>APPROVE = SET MAX</b>. You set the MAX number Librarian can issue. Example: Teacher asks 50, you approve 30 → Librarian can issue MAX 30, not 50. This is the CUT.</div><div class="info" id="approveSummary">Loading...</div><div class="row"><select id="fApproveSubject" onchange="renderApprove()"><option value="">ALL SUBJECTS</option></select><select id="fApproveTeacher" onchange="renderApprove()"><option value="">ALL TEACHERS</option></select><input id="fApproveSearch" placeholder="🔍 Search Book / Teacher..." oninput="renderApprove()"></div><div id="approveList"></div></div>
+<div class="card" style="border:3px solid #ea580c"><h2>⏳ Approve — Set MAX For Librarian</h2><div class="info">HOD job = <b>APPROVE = SET MAX</b>. Teacher asks 50, you approve 30 → Librarian can issue MAX 30.</div><div class="info" id="approveSummary">Loading...</div><div class="row"><select id="fApproveSubject" onchange="renderApprove()"><option value="">ALL SUBJECTS</option></select><select id="fApproveTeacher" onchange="renderApprove()"><option value="">ALL TEACHERS</option></select><input id="fApproveSearch" placeholder="🔍 Search Book / Teacher..." oninput="renderApprove()"></div><div id="approveList"></div></div>
 </div>
-
-<!-- DECIDED -->
 <div id="tab-decided" style="display:none">
 <div class="card"><h2>✅ Decided — Approved / Rejected By You</h2><div class="info" id="decidedSummary">Loading...</div><div class="row"><select id="fDecidedStatus" onchange="renderDecided()"><option value="">ALL DECIDED</option><option>APPROVED</option><option>ISSUED</option><option>REJECTED</option><option>RETURNED</option></select><input id="fDecidedSearch" placeholder="🔍 Search..." oninput="renderDecided()"></div><div id="decidedList"></div></div>
 </div>
-
-<!-- LEARNERS -->
 <div id="tab-learners" style="display:none">
 <div class="card" style="border:3px solid #7c3aed"><h2>🧑‍🎓 Learners — Your Subject / Grades</h2><div class="info" id="learnerSummary">Loading...</div><div class="row"><select id="linkClass" onchange="renderLearners()"><option value="">ALL CLASSES</option></select><select id="linkStatus" onchange="renderLearners()"><option value="">ALL</option><option value="WITH_BOOK">WITH BOOK</option><option value="NO_BOOK">NO BOOK YET</option><option value="OVERDUE">OVERDUE</option></select><input id="linkSearch" placeholder="🔍 Search Learner / Teacher / Book..." oninput="renderLearners()"></div><div id="learnerList"></div></div>
 </div>
-
-<!-- REPORT -->
+<div id="tab-profile" style="display:none">
+<div class="card" style="border:3px solid #7c3aed"><h2>👤 My Profile — HOD — Edit Your Own Grades / Subjects / Classes</h2><div class="info">HOD: Tick <b>ALL</b> Grades + Subjects you oversee. Example Mrs Nkambule: Grades 10, 11, 12 + ACCOUNTING. Role cannot be changed here — only Super Admin can change Role.</div><div class="row"><label>Full Name</label><input id="myName" placeholder="Your Name"><label>Email (cannot change)</label><input id="myEmail" disabled></div><div class="row"><label>Role</label><input id="myRole" disabled><label>School</label><input id="mySchool" disabled></div><div class="info"><b>✅ GRADES — Tick all you oversee</b><div id="myGradeChecks" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div></div><div class="info"><b>✅ SUBJECTS — Tick all you oversee</b><div id="mySubjectChecks" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div><div class="row" style="margin-top:8px"><input id="myCustomSubject" placeholder="➕ Other subject e.g. TOURISM"><button class="btn btn-teal" onclick="addMyCustomSubject()">➕ ADD SUBJECT</button></div></div><div class="info"><b>✅ CLASSES — Tick all you oversee</b><div class="row"><button class="btn btn-grey" onclick="selectAllMyClasses()">✅ SELECT ALL</button><button class="btn btn-grey" onclick="clearAllMyClasses()">🧹 CLEAR</button></div><div id="myClassChecks" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div><div class="row" style="margin-top:8px"><input id="myCustomClass" placeholder="➕ Other class e.g. 10D"><button class="btn btn-teal" onclick="addMyCustomClass()">➕ ADD CLASS</button></div></div><div class="info" id="myPreview" style="background:#dcfce7;border-color:#16a34a">Selected: —</div><div id="myProfileMsg"></div><div class="row"><button class="btn btn-green" onclick="saveMyProfile()">💾 SAVE MY PROFILE</button><button class="btn btn-grey" onclick="loadMyProfile()">🔄 RELOAD MY PROFILE</button></div></div>
+</div>
 <div id="tab-report" style="display:none">
 <div class="card" style="border:3px solid #d4af37"><h2>🖨️ HOD Report — For Principal / SGB</h2><div class="row"><button class="btn btn-gold" onclick="openReport()">📄 OPEN REPORT</button><button class="btn btn-green" onclick="window.print()">🖨️ PRINT / PDF</button></div><div id="printReport"></div></div>
 <div class="card"><h2>📖 Manuals</h2><div class="row"><button class="btn btn-manual" onclick="window.location.href='manuals.html'">📖 OPEN MANUALS → HOD</button></div></div>
 </div>
-
 <div class="card"><div class="row"><button class="btn btn-grey" onclick="history.back()">⬅️ BACK</button><button class="btn btn-green" onclick="window.location.href='index.html'">🏠 HOME →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
 <script>
 function doLogout(){ auth.signOut().then(function(){ localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }); }
 var _u=null,_allReq=[],_books=[],_issuedLog=[],_learners=[],_learnerIssues=[],_users=[],_subs=[];
-async function init(){
-  try{
-    _u=await getCurrentUser();
-    if(!_u||!_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in'; return; }
-    // ===== FIX V2.41: FORCE HOD DISPLAY ON HOD PAGE - NEVER SHOW TEACHER / RANK =====
-    // Even if Firebase still says TEACHER, this page is HOD page, so show HOD.
-    var displayRole='HOD';
-    var isWrongRole = String(_u.role||'').toUpperCase()!=='HOD';
-    // Show HOD always, show fix banner if Firebase is wrong
-    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — 👑 <b>HOD</b> — '+_u.email+'<br>School: <b>'+(_u.schoolName||_u.school||'—')+'</b> • Subjects: <b>'+(toArray(_u.subjects).join(', ')||'—')+'</b> • Grades: <b>'+(toArray(_u.grades).join(', ')||'—')+'</b> • Classes: <b>'+(toArray(_u.classes).join(', ')||'—')+'</b>';
-    if(isWrongRole){
-      document.getElementById('roleFixBanner').style.display='block';
-      document.getElementById('roleFixBanner').innerHTML='⚠️ <b>FIX NEEDED IN FIREBASE:</b> Your profile still says <b>'+String(_u.role||'').toUpperCase()+'</b> in Firebase → Ask Super Admin / Principal to change your role to <b>HOD</b> in Super Admin → Users → Change Role. This page is already showing you as HOD, but fix Firebase so all pages agree. <br><button class="btn btn-gold" onclick="fixMyRole()">🔧 FIX MY ROLE TO HOD NOW</button>';
-    }
-    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live — '+_u.email+' — V2.41 Fixed HOD — Role Forced To HOD';
-    // Save correct role to localStorage so nav.js shows HOD, not TEACHER
-    try{ var stored=JSON.parse(localStorage.getItem('makhanani_user')||'{}'); stored.role='HOD'; stored.name=_u.name; stored.email=_u.email; stored.schoolName=_u.schoolName||_u.school; localStorage.setItem('makhanani_user', JSON.stringify(stored)); }catch(e){}
-    loadAll();
-  }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
-}
-async function fixMyRole(){
-  if(!confirm('Fix your role to HOD in Firebase?\n\n'+_u.name+'\nCurrent: '+_u.role+' → New: HOD')) return;
-  try{ await db.ref('users/'+_u.uid).update({role:'HOD'}); alert('✅ Fixed! Your role is now HOD. Please logout + login again.'); location.reload(); }catch(e){ alert('❌ '+e.message+'\nAsk Super Admin to change it in Super Admin → Users.'); }
-}
-async function loadAll(){
-  try{ var a=await db.ref('requests').once('value'); _allReq=[]; a.forEach(function(c){ var v=c.val(); v.id=c.key; _allReq.push(v); }); }catch(e){}
-  try{ var b=await db.ref('books').once('value'); _books=[]; b.forEach(function(c){ var v=c.val(); v.id=c.key; _books.push(v); }); }catch(e){}
-  try{ var c1=await db.ref('issuedLog').once('value'); _issuedLog=[]; c1.forEach(function(x){ var v=x.val(); v.id=x.key; _issuedLog.push(v); }); }catch(e){}
-  try{ var d=await db.ref('learners').once('value'); _learners=[]; d.forEach(function(x){ var v=x.val(); v.id=x.key; _learners.push(v); }); }catch(e){}
-  try{ var e1=await db.ref('learnerIssues').once('value'); _learnerIssues=[]; e1.forEach(function(x){ var v=x.val(); v.id=x.key; _learnerIssues.push(v); }); }catch(e){}
-  try{ var f=await db.ref('users').once('value'); _users=[]; f.forEach(function(x){ var v=x.val(); v.id=x.key; _users.push(v); }); }catch(e){}
-  try{ var g=await db.ref('subscriptions').once('value'); _subs=[]; g.forEach(function(x){ var v=x.val(); v.id=x.key; _subs.push(v); }); }catch(e){}
-  renderSubBanner(); renderApprove(); renderDecided(); renderLearners(); updateKPI();
-}
-function renderSubBanner(){
-  var school=String(_u.schoolName||_u.school||'').toUpperCase();
-  var cur=_subs.slice().reverse().find(function(s){return String(s.schoolName||'').toUpperCase()===school;});
-  if(!cur){ document.getElementById('subBanner').innerHTML='Subscription: <b>⚠️ NONE FOUND</b> — Contact Principal / Super Admin — Xintimani Group'; return; }
-  var dl=daysLeft(cur.endDate); var st=dl<0?'EXPIRED':dl<=14?'EXPIRING SOON':cur.status||'ACTIVE';
-  var d=planData(cur.plan);
-  document.getElementById('subBanner').innerHTML='Subscription: <b>'+cur.plan+'</b> — '+(d.tag||'')+' • <b>'+st+'</b> • Ends '+fmtDate(cur.endDate)+' • '+dl+' days left • Company: <b>Xintimani Group (Pty) Ltd t/a Makhanani LTSM</b>'+(st==='EXPIRED'?' — ⛔ LOCKED':'');
-}
-function booksForLearner(l){
-  var id=String(l.learnerId||'').toUpperCase();
-  var a=_learnerIssues.filter(function(x){return String(x.learnerId||'').toUpperCase()===id && (x.status==='ACTIVE'||!x.status);});
-  var b=_issuedLog.filter(function(x){return String(x.learnerId||'').toUpperCase()===id;});
-  var m={}; a.forEach(function(x){m[String(x.bookNo||'').toUpperCase()]=x;}); b.forEach(function(x){ if(!m[String(x.bookNo||'').toUpperCase()]) m[String(x.bookNo||'').toUpperCase()]=x; });
-  return Object.keys(m).map(function(k){return m[k];});
-}
-function myRequests(){
-  // HOD sees requests for THEIR subjects OR THEIR grades OR THEIR school
-  var mySubs=toArray(_u.subjects).map(function(s){return String(s).toUpperCase();});
-  var myGrades=toArray(_u.grades).map(function(s){return String(s).toUpperCase();});
-  var mySchool=String(_u.schoolName||_u.school||'').toUpperCase();
-  return _allReq.filter(function(r){
-    var sameSchool = !r.schoolName || String(r.schoolName||'').toUpperCase()===mySchool;
-    if(!sameSchool) return false;
-    if(!mySubs.length && !myGrades.length) return true;
-    var subMatch = mySubs.length===0 || mySubs.some(function(s){ return String(r.subject||'').toUpperCase().includes(s) || s.includes(String(r.subject||'').toUpperCase()); });
-    var gradeMatch = myGrades.length===0 || myGrades.some(function(g){ return String(r.grade||'').toUpperCase().includes(g) || String(r.grades||'').toUpperCase().includes(g) || String(r.className||'').toUpperCase().includes(g); });
-    // If HOD has subjects, match subject. If also grades, either is OK.
-    return subMatch || gradeMatch;
-  });
-}
-function updateKPI(){
-  var my=myRequests();
-  var pend=my.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length;
-  var appr=my.filter(function(r){return r.status==='APPROVED';}).length;
-  var rej=my.filter(function(r){return r.status==='REJECTED';}).length;
-  var noBook=_learners.filter(function(l){return booksForLearner(l).length===0;}).length;
-  var over=_learnerIssues.filter(function(x){return dueInfo(x.dueDate||x.issuedAt).status==='OVERDUE';}).length;
-  var stock=0; _books.forEach(function(b){stock+=Number(b.stock||0);});
-  document.getElementById('kpiPending').textContent=pend;
-  document.getElementById('kpiApproved').textContent=appr;
-  document.getElementById('kpiRejected').textContent=rej;
-  document.getElementById('kpiLearners').textContent=_learners.length;
-  document.getElementById('kpiRequests').textContent=my.length;
-  document.getElementById('kpiStock').textContent=stock;
-  document.getElementById('kpiNoBook').textContent=noBook;
-  document.getElementById('kpiOverdue').textContent=over;
-  document.getElementById('tabPendingCount').textContent=pend? '('+pend+')':'';
-  document.getElementById('homeSummary').innerHTML='HOD: <b>'+String(_u.name||'').toUpperCase()+'</b> • Subjects: <b>'+(toArray(_u.subjects).join(', ')||'ALL')+'</b> • Grades: <b>'+(toArray(_u.grades).join(', ')||'ALL')+'</b> • Your Requests: <b>'+my.length+'</b> • Pending: <b>'+pend+'</b> • Approved: <b>'+appr+'</b> • Rejected: <b>'+rej+'</b>';
-}
-function renderApprove(){
-  var my=myRequests().filter(function(r){return (r.status||'PENDING')==='PENDING';});
-  var fs=document.getElementById('fApproveSubject').value, ft=document.getElementById('fApproveTeacher').value, q=(document.getElementById('fApproveSearch').value||'').toLowerCase();
-  var selS=document.getElementById('fApproveSubject'); var curS=selS.value;
-  var subs=[...new Set(my.map(function(r){return r.subject||'';}).filter(function(x){return x;}))].sort();
-  selS.innerHTML='<option value="">ALL SUBJECTS</option>'+subs.map(function(s){return '<option '+(s===curS?'selected':'')+'>'+s+'</option>';}).join('');
-  var selT=document.getElementById('fApproveTeacher'); var curT=selT.value;
-  var teachers=[...new Set(my.map(function(r){return r.teacherName||'';}).filter(function(x){return x;}))].sort();
-  selT.innerHTML='<option value="">ALL TEACHERS</option>'+teachers.map(function(s){return '<option '+(s===curT?'selected':'')+'>'+s+'</option>';}).join('');
-  var list=my.filter(function(r){ var okS=!fs||String(r.subject||'')===fs; var okT=!ft||String(r.teacherName||'')===ft; var hay=(r.teacherName+' '+r.bookTitle+' '+r.subject).toLowerCase(); return okS&&okT&&(!q||hay.includes(q)); });
-  document.getElementById('approveSummary').innerHTML='Pending for you: <b>'+my.length+'</b> • Showing: <b>'+list.length+'</b>';
-  if(!list.length){ document.getElementById('approveList').innerHTML='<div class="ok">✅ No pending requests for your subjects / grades. All done!</div>'; return; }
-  var h='<table><tr><th>Teacher / Book</th><th>Subject / Grade / Class</th><th>Requested</th><th>In Stock</th><th>Approve MAX</th><th>Action</th></tr>';
-  list.slice().reverse().forEach(function(r){
-    var book=_books.find(function(b){return String(b.title||'').toUpperCase()===String(r.bookTitle||'').toUpperCase();});
-    var stock=book?Number(book.stock||0):0;
-    var req=requestedQtyOf(r);
-    h+='<tr><td><b>'+(r.teacherName||'')+'</b><br><small>'+(r.bookTitle||'')+'</small></td><td>'+(r.subject||'')+'<br>GRADE '+(r.grade||'')+' '+(r.className||'')+'</td><td><b>'+req+'</b></td><td><b>'+stock+'</b></td><td><input id="appr-'+r.id+'" type="number" value="'+Math.min(req,stock)+'" min="0" max="'+req+'" style="width:80px;padding:8px"></td><td><button class="btn btn-green" onclick="approveReq(\''+r.id+'\')">✅ APPROVE</button><br><button class="btn btn-red" onclick="rejectReq(\''+r.id+'\')">❌ REJECT</button></td></tr>';
-  });
-  h+='</table>'; document.getElementById('approveList').innerHTML=h;
-}
-async function approveReq(id){
-  var r=_allReq.find(function(x){return x.id===id;}); if(!r) return;
-  var maxVal=Number(document.getElementById('appr-'+id).value||0);
-  var req=requestedQtyOf(r);
-  if(maxVal<0 || maxVal>req){ alert('MAX must be 0 to '+req); return; }
-  if(!confirm('✅ APPROVE?\n\n'+r.teacherName+'\n'+r.bookTitle+'\nRequested: '+req+' → You approve MAX: '+maxVal+'\nLibrarian can issue UP TO '+maxVal+'.')) return;
-  try{ await db.ref('requests/'+id).update({status:'APPROVED', qtyApproved:maxVal, approvedQty:maxVal, approvedBy:_u.name||'', approvedByRole:'HOD', approvedAt:Date.now()}); alert('✅ Approved MAX '+maxVal+' — Sent to Librarian.'); loadAll(); }catch(e){ alert('❌ '+e.message); }
-}
-async function rejectReq(id){
-  var r=_allReq.find(function(x){return x.id===id;}); if(!r) return;
-  var reason=prompt('❌ REJECT?\n\n'+r.teacherName+' — '+r.bookTitle+'\nReason (optional):','Not approved — Check stock / allocation');
-  if(reason===null) return;
-  try{ await db.ref('requests/'+id).update({status:'REJECTED', rejectedBy:_u.name||'', rejectedByRole:'HOD', rejectReason:reason, rejectedAt:Date.now()}); alert('❌ Rejected.'); loadAll(); }catch(e){ alert('❌ '+e.message); }
-}
-function renderDecided(){
-  var my=myRequests().filter(function(r){return ['APPROVED','ISSUED','REJECTED','RETURNED'].includes(r.status);});
-  var fs=document.getElementById('fDecidedStatus').value, q=(document.getElementById('fDecidedSearch').value||'').toLowerCase();
-  var list=my.filter(function(r){ return (!fs||r.status===fs) && (!q||(r.teacherName+' '+r.bookTitle+' '+r.subject).toLowerCase().includes(q)); });
-  document.getElementById('decidedSummary').innerHTML='Decided by you: <b>'+my.length+'</b> • Showing: <b>'+list.length+'</b>';
-  if(!list.length){ document.getElementById('decidedList').innerHTML='<div class="info">No decided requests yet.</div>'; return; }
-  var h='<table><tr><th>Teacher / Book</th><th>Requested → Approved MAX</th><th>Status</th><th>Action</th></tr>';
-  list.slice().reverse().forEach(function(r){
-    h+='<tr><td><b>'+(r.teacherName||'')+'</b><br><small>'+(r.bookTitle||'')+'</small></td><td>'+requestedQtyOf(r)+' → <b>'+approvedQtyOf(r)+'</b></td><td><span class="pill '+(r.status==='APPROVED'?'pill-green':r.status==='ISSUED'?'pill-teal':r.status==='REJECTED'?'pill-red':'pill')+'">'+r.status+'</span></td><td>'+(r.status==='APPROVED'?'<button class="btn btn-gold" onclick="changeMax(\''+r.id+'\')">🔄 CHANGE MAX</button>':'—')+'</td></tr>';
-  });
-  h+='</table>'; document.getElementById('decidedList').innerHTML=h;
-}
-async function changeMax(id){
-  var r=_allReq.find(function(x){return x.id===id;}); if(!r) return;
-  var newMax=Number(prompt('CHANGE MAX for '+r.teacherName+' — '+r.bookTitle+'\nRequested: '+requestedQtyOf(r)+'\nCurrent MAX: '+approvedQtyOf(r)+'\nNew MAX:', approvedQtyOf(r)));
-  if(isNaN(newMax)) return;
-  try{ await db.ref('requests/'+id).update({qtyApproved:newMax, approvedQty:newMax, changedMaxBy:_u.name||'', changedMaxAt:Date.now()}); loadAll(); }catch(e){ alert('❌ '+e.message); }
-}
-function renderLearners(){
-  var fc=document.getElementById('linkClass').value, fs=document.getElementById('linkStatus').value, q=(document.getElementById('linkSearch').value||'').toLowerCase();
-  var sel=document.getElementById('linkClass'); var cur=sel.value;
-  var classes=[...new Set(_learners.map(function(l){return 'GRADE '+l.grade+' '+l.className;}))].sort();
-  sel.innerHTML='<option value="">ALL CLASSES</option>'+classes.map(function(c){return '<option '+(c===cur?'selected':'')+'>'+c+'</option>';}).join('');
-  var withBook=_learners.filter(function(l){return booksForLearner(l).length>0;}).length;
-  document.getElementById('learnerSummary').innerHTML='Learners: <b>'+_learners.length+'</b> • With Book: <b>'+withBook+'</b> • No Book: <b>'+(_learners.length-withBook)+'</b>';
-  var list=_learners.filter(function(l){
-    var b=booksForLearner(l);
-    var isOver=b.some(function(x){return dueInfo(x.dueDate||x.issuedAt).status==='OVERDUE';});
-    var okC=!fc||('GRADE '+l.grade+' '+l.className)===fc;
-    var okS=true; if(fs==='WITH_BOOK') okS=b.length>0; if(fs==='NO_BOOK') okS=b.length===0; if(fs==='OVERDUE') okS=isOver;
-    var hay=(l.name+' '+l.learnerId+' '+b.map(function(x){return x.bookNo;}).join(' ')).toLowerCase();
-    return okC&&okS&&(!q||hay.includes(q));
-  });
-  if(!list.length){ document.getElementById('learnerList').innerHTML='<div class="info">No learners.</div>'; return; }
-  var h='<table><tr><th>Learner</th><th>Grade / Class</th><th>Books</th><th>Due</th></tr>';
-  list.slice(0,200).forEach(function(l){
-    var b=booksForLearner(l);
-    h+='<tr><td><b>'+(l.name||'')+'</b><br><span class="pill pill-learner">'+(l.learnerId||'')+'</span></td><td>GRADE '+(l.grade||'')+' '+(l.className||'')+'</td><td>'+(b.length?b.map(function(x){return '<span class="pill pill-book">'+x.bookNo+'</span>';}).join(' '):'📭 No book')+'</td><td>'+(b.length?dueInfo(b[0].dueDate||b[0].issuedAt).dueStr:'—')+'</td></tr>';
-  });
-  h+='</table>'; document.getElementById('learnerList').innerHTML=h;
-}
-function openReport(){
-  var my=myRequests();
-  var totalReq=0,totalAppr=0; my.forEach(function(r){ totalReq+=requestedQtyOf(r); if(['APPROVED','ISSUED','RETURNED'].includes(r.status)) totalAppr+=approvedQtyOf(r); });
-  var html='<div style="text-align:center;border-bottom:3px solid #0a1f4d"><h2>HOD REPORT — '+String(_u.name||'').toUpperCase()+'</h2><p>Xintimani Group (Pty) Ltd t/a Makhanani LTSM • School: '+String(_u.schoolName||_u.school||'').toUpperCase()+' • Date: '+new Date().toLocaleDateString('en-GB')+'</p></div><table><tr><th>Metric</th><th>Value</th></tr><tr><td>HOD</td><td><b>'+String(_u.name||'').toUpperCase()+'</b></td></tr><tr><td>Subjects</td><td><b>'+(toArray(_u.subjects).join(', ')||'—')+'</b></td></tr><tr><td>Grades</td><td><b>'+(toArray(_u.grades).join(', ')||'—')+'</b></td></tr><tr><td>Requests</td><td><b>'+my.length+'</b></td></tr><tr><td>Requested</td><td><b>'+totalReq+'</b></td></tr><tr><td>Approved MAX</td><td><b>'+totalAppr+'</b></td></tr><tr><td>Cut</td><td><b>'+Math.max(0,totalReq-totalAppr)+'</b></td></tr></table><h3>By Request</h3><table><tr><th>Teacher</th><th>Book</th><th>Requested → Approved</th><th>Status</th></tr>';
-  my.forEach(function(r){ html+='<tr><td>'+(r.teacherName||'')+'</td><td>'+(r.bookTitle||'')+'</td><td>'+requestedQtyOf(r)+' → <b>'+approvedQtyOf(r)+'</b></td><td>'+(r.status||'PENDING')+'</td></tr>'; });
-  html+='</table><div style="display:flex;gap:20px;margin-top:20px"><div style="flex:1;border-top:2px solid #000;padding-top:6px;text-align:center;font-size:11px">HOD<br>Signature: ______________</div><div style="flex:1;border-top:2px solid #000;padding-top:6px;text-align:center;font-size:11px">Principal<br>Signature: ______________</div></div>';
-  document.getElementById('printReport').innerHTML=html;
-}
+async function init(){ try{ _u=await getCurrentUser(); if(!_u||!_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in'; return; } document.getElementById('whoAmI').innerHTML='✅ <b>'+String(_u.name||'').toUpperCase()+'</b> — 👑 <b>HOD</b> — '+_u.email+'<br>School: <b>'+(_u.schoolName||_u.school||'—')+'</b> • Subjects: <b>'+(toArray(_u.subjects).join(', ')||'—')+'</b> • Grades: <b>'+(toArray(_u.grades).join(', ')||'—')+'</b> • Classes: <b>'+(toArray(_u.classes).join(', ')||'—')+'</b>'; var isWrongRole=String(_u.role||'').toUpperCase()!=='HOD'; if(isWrongRole){ document.getElementById('roleFixBanner').style.display='block'; document.getElementById('roleFixBanner').innerHTML='⚠️ <b>FIX NEEDED IN FIREBASE:</b> Your profile still says <b>'+String(_u.role||'').toUpperCase()+'</b> → Tap to fix: <button class="btn btn-gold" onclick="fixMyRole()">🔧 FIX MY ROLE TO HOD NOW</button>'; } document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live — '+_u.email+' — V2.43 HOD Self-Edit Profile'; try{ var s=JSON.parse(localStorage.getItem('makhanani_user')||'{}'); s.role='HOD'; s.name=_u.name; s.email=_u.email; localStorage.setItem('makhanani_user',JSON.stringify(s)); }catch(e){} loadAll(); }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; } }
+async function fixMyRole(){ if(!confirm('Fix your role to HOD?')) return; try{ await db.ref('users/'+_u.uid).update({role:'HOD'}); alert('✅ Fixed! Logout + login again.'); location.reload(); }catch(e){ alert('❌ '+e.message); } }
+async function loadAll(){ try{ var a=await db.ref('requests').once('value'); _allReq=[]; a.forEach(function(c){ var v=c.val(); v.id=c.key; _allReq.push(v); }); }catch(e){} try{ var b=await db.ref('books').once('value'); _books=[]; b.forEach(function(c){ var v=c.val(); v.id=c.key; _books.push(v); }); }catch(e){} try{ var c1=await db.ref('issuedLog').once('value'); _issuedLog=[]; c1.forEach(function(x){ var v=x.val(); v.id=x.key; _issuedLog.push(v); }); }catch(e){} try{ var d=await db.ref('learners').once('value'); _learners=[]; d.forEach(function(x){ var v=x.val(); v.id=x.key; _learners.push(v); }); }catch(e){} try{ var e1=await db.ref('learnerIssues').once('value'); _learnerIssues=[]; e1.forEach(function(x){ var v=x.val(); v.id=x.key; _learnerIssues.push(v); }); }catch(e){} try{ var f=await db.ref('users').once('value'); _users=[]; f.forEach(function(x){ var v=x.val(); v.id=x.key; _users.push(v); }); }catch(e){} try{ var g=await db.ref('subscriptions').once('value'); _subs=[]; g.forEach(function(x){ var v=x.val(); v.id=x.key; _subs.push(v); }); }catch(e){} renderSubBanner(); renderApprove(); renderDecided(); renderLearners(); updateKPI(); loadMyProfile(); }
+function renderSubBanner(){ var school=String(_u.schoolName||_u.school||'').toUpperCase(); var cur=_subs.slice().reverse().find(function(s){return String(s.schoolName||'').toUpperCase()===school;}); if(!cur){ document.getElementById('subBanner').innerHTML='Subscription: <b>⚠️ NONE FOUND</b> — Contact Principal / Super Admin — Xintimani Group'; return; } var dl=daysLeft(cur.endDate); var st=dl<0?'EXPIRED':dl<=14?'EXPIRING SOON':cur.status||'ACTIVE'; document.getElementById('subBanner').innerHTML='Subscription: <b>'+cur.plan+'</b> • <b>'+st+'</b> • Ends '+fmtDate(cur.endDate)+' • '+dl+' days left • Xintimani Group t/a Makhanani LTSM'; }
+function booksForLearner(l){ var id=String(l.learnerId||'').toUpperCase(); var a=_learnerIssues.filter(function(x){return String(x.learnerId||'').toUpperCase()===id && (x.status==='ACTIVE'||!x.status);}); var b=_issuedLog.filter(function(x){return String(x.learnerId||'').toUpperCase()===id;}); var m={}; a.forEach(function(x){m[String(x.bookNo||'').toUpperCase()]=x;}); b.forEach(function(x){ if(!m[String(x.bookNo||'').toUpperCase()]) m[String(x.bookNo||'').toUpperCase()]=x; }); return Object.keys(m).map(function(k){return m[k];}); }
+function myRequests(){ var mySubs=toArray(_u.subjects).map(function(s){return String(s).toUpperCase();}); var myGrades=toArray(_u.grades).map(function(s){return String(s).toUpperCase();}); var mySchool=String(_u.schoolName||_u.school||'').toUpperCase(); return _allReq.filter(function(r){ var sameSchool=!r.schoolName || String(r.schoolName||'').toUpperCase()===mySchool; if(!sameSchool) return false; if(!mySubs.length && !myGrades.length) return true; var subMatch=mySubs.length===0 || mySubs.some(function(s){ return String(r.subject||'').toUpperCase().includes(s) || s.includes(String(r.subject||'').toUpperCase()); }); var gradeMatch=myGrades.length===0 || myGrades.some(function(g){ return String(r.grade||'').toUpperCase().includes(g) || String(r.grades||'').toUpperCase().includes(g) || String(r.className||'').toUpperCase().includes(g); }); return subMatch || gradeMatch; }); }
+function updateKPI(){ var my=myRequests(); var pend=my.filter(function(r){return (r.status||'PENDING')==='PENDING';}).length; var appr=my.filter(function(r){return r.status==='APPROVED';}).length; var rej=my.filter(function(r){return r.status==='REJECTED';}).length; var noBook=_learners.filter(function(l){return booksForLearner(l).length===0;}).length; var over=_learnerIssues.filter(function(x){return dueInfo(x.dueDate||x.issuedAt).status==='OVERDUE';}).length; var stock=0; _books.forEach(function(b){stock+=Number(b.stock||0);}); document.getElementById('kpiPending').textContent=pend; document.getElementById('kpiApproved').textContent=appr; document.getElementById('kpiRejected').textContent=rej; document.getElementById('kpiLearners').textContent=_learners.length; document.getElementById('kpiRequests').textContent=my.length; document.getElementById('kpiStock').textContent=stock; document.getElementById('kpiNoBook').textContent=noBook; document.getElementById('kpiOverdue').textContent=over; document.getElementById('tabPendingCount').textContent=pend? '('+pend+')':''; document.getElementById('homeSummary').innerHTML='HOD: <b>'+String(_u.name||'').toUpperCase()+'</b> • Subjects: <b>'+(toArray(_u.subjects).join(', ')||'ALL')+'</b> • Grades: <b>'+(toArray(_u.grades).join(', ')||'ALL')+'</b> • Your Requests: <b>'+my.length+'</b> • Pending: <b>'+pend+'</b>'; }
+function renderApprove(){ var my=myRequests().filter(function(r){return (r.status||'PENDING')==='PENDING';}); var fs=document.getElementById('fApproveSubject').value, ft=document.getElementById('fApproveTeacher').value, q=(document.getElementById('fApproveSearch').value||'').toLowerCase(); var selS=document.getElementById('fApproveSubject'); var curS=selS.value; var subs=[...new Set(my.map(function(r){return r.subject||'';}).filter(function(x){return x;}))].sort(); selS.innerHTML='<option value="">ALL SUBJECTS</option>'+subs.map(function(s){return '<option '+(s===curS?'selected':'')+'>'+s+'</option>';}).join(''); var selT=document.getElementById('fApproveTeacher'); var curT=selT.value; var teachers=[...new Set(my.map(function(r){return r.teacherName||'';}).filter(function(x){return x;}))].sort(); selT.innerHTML='<option value="">ALL TEACHERS</option>'+teachers.map(function(s){return '<option '+(s===curT?'selected':'')+'>'+s+'</option>';}).join(''); var list=my.filter(function(r){ var okS=!fs||String(r.subject||'')===fs; var okT=!ft||String(r.teacherName||'')===ft; var hay=(r.teacherName+' '+r.bookTitle+' '+r.subject).toLowerCase(); return okS&&okT&&(!q||hay.includes(q)); }); document.getElementById('approveSummary').innerHTML='Pending for you: <b>'+my.length+'</b> • Showing: <b>'+list.length+'</b>'; if(!list.length){ document.getElementById('approveList').innerHTML='<div class="ok">✅ No pending requests for your subjects / grades.</div>'; return; } var h='<table><tr><th>Teacher / Book</th><th>Subject / Grade / Class</th><th>Requested</th><th>In Stock</th><th>Approve MAX</th><th>Action</th></tr>'; list.slice().reverse().forEach(function(r){ var book=_books.find(function(b){return String(b.title||'').toUpperCase()===String(r.bookTitle||'').toUpperCase();}); var stock=book?Number(book.stock||0):0; var req=requestedQtyOf(r); h+='<tr><td><b>'+(r.teacherName||'')+'</b><br><small>'+(r.bookTitle||'')+'</small></td><td>'+(r.subject||'')+'<br>GRADE '+(r.grade||'')+' '+(r.className||'')+'</td><td><b>'+req+'</b></td><td><b>'+stock+'</b></td><td><input id="appr-'+r.id+'" type="number" value="'+Math.min(req,stock)+'" min="0" max="'+req+'" style="width:80px;padding:8px"></td><td><button class="btn btn-green" onclick="approveReq(\''+r.id+'\')">✅ APPROVE</button><br><button class="btn btn-red" onclick="rejectReq(\''+r.id+'\')">❌ REJECT</button></td></tr>'; }); h+='</table>'; document.getElementById('approveList').innerHTML=h; }
+async function approveReq(id){ var r=_allReq.find(function(x){return x.id===id;}); if(!r) return; var maxVal=Number(document.getElementById('appr-'+id).value||0); var req=requestedQtyOf(r); if(maxVal<0||maxVal>req){ alert('MAX must be 0 to '+req); return; } if(!confirm('✅ APPROVE?\n\n'+r.teacherName+'\n'+r.bookTitle+'\nRequested: '+req+' → MAX: '+maxVal)) return; try{ await db.ref('requests/'+id).update({status:'APPROVED', qtyApproved:maxVal, approvedQty:maxVal, approvedBy:_u.name||'', approvedByRole:'HOD', approvedAt:Date.now()}); alert('✅ Approved MAX '+maxVal+' — Sent to Librarian.'); loadAll(); }catch(e){ alert('❌ '+e.message); } }
+async function rejectReq(id){ var r=_allReq.find(function(x){return x.id===id;}); if(!r) return; var reason=prompt('❌ REJECT?\n\n'+r.teacherName+' — '+r.bookTitle+'\nReason:','Not approved — Check stock / allocation'); if(reason===null) return; try{ await db.ref('requests/'+id).update({status:'REJECTED', rejectedBy:_u.name||'', rejectedByRole:'HOD', rejectReason:reason, rejectedAt:Date.now()}); alert('❌ Rejected.'); loadAll(); }catch(e){ alert('❌ '+e.message); } }
+function renderDecided(){ var my=myRequests().filter(function(r){return ['APPROVED','ISSUED','REJECTED','RETURNED'].includes(r.status);}); var fs=document.getElementById('fDecidedStatus').value, q=(document.getElementById('fDecidedSearch').value||'').toLowerCase(); var list=my.filter(function(r){ return (!fs||r.status===fs) && (!q||(r.teacherName+' '+r.bookTitle+' '+r.subject).toLowerCase().includes(q)); }); document.getElementById('decidedSummary').innerHTML='Decided: <b>'+my.length+'</b> • Showing: <b>'+list.length+'</b>'; if(!list.length){ document.getElementById('decidedList').innerHTML='<div class="info">No decided requests yet.</div>'; return; } var h='<table><tr><th>Teacher / Book</th><th>Requested → Approved MAX</th><th>Status</th><th>Action</th></tr>'; list.slice().reverse().forEach(function(r){ h+='<tr><td><b>'+(r.teacherName||'')+'</b><br><small>'+(r.bookTitle||'')+'</small></td><td>'+requestedQtyOf(r)+' → <b>'+approvedQtyOf(r)+'</b></td><td><span class="pill '+(r.status==='APPROVED'?'pill-green':r.status==='ISSUED'?'pill-teal':r.status==='REJECTED'?'pill-red':'pill')+'">'+r.status+'</span></td><td>'+(r.status==='APPROVED'?'<button class="btn btn-gold" onclick="changeMax(\''+r.id+'\')">🔄 CHANGE MAX</button>':'—')+'</td></tr>'; }); h+='</table>'; document.getElementById('decidedList').innerHTML=h; }
+async function changeMax(id){ var r=_allReq.find(function(x){return x.id===id;}); if(!r) return; var newMax=Number(prompt('CHANGE MAX for '+r.teacherName+' — '+r.bookTitle+'\nRequested: '+requestedQtyOf(r)+'\nCurrent MAX: '+approvedQtyOf(r)+'\nNew MAX:', approvedQtyOf(r))); if(isNaN(newMax)) return; try{ await db.ref('requests/'+id).update({qtyApproved:newMax, approvedQty:newMax, changedMaxBy:_u.name||'', changedMaxAt:Date.now()}); loadAll(); }catch(e){ alert('❌ '+e.message); } }
+function renderLearners(){ var fc=document.getElementById('linkClass').value, fs=document.getElementById('linkStatus').value, q=(document.getElementById('linkSearch').value||'').toLowerCase(); var sel=document.getElementById('linkClass'); var cur=sel.value; var classes=[...new Set(_learners.map(function(l){return 'GRADE '+l.grade+' '+l.className;}))].sort(); sel.innerHTML='<option value="">ALL CLASSES</option>'+classes.map(function(c){return '<option '+(c===cur?'selected':'')+'>'+c+'</option>';}).join(''); var withBook=_learners.filter(function(l){return booksForLearner(l).length>0;}).length; document.getElementById('learnerSummary').innerHTML='Learners: <b>'+_learners.length+'</b> • With Book: <b>'+withBook+'</b> • No Book: <b>'+(_learners.length-withBook)+'</b>'; var list=_learners.filter(function(l){ var b=booksForLearner(l); var isOver=b.some(function(x){return dueInfo(x.dueDate||x.issuedAt).status==='OVERDUE';}); var okC=!fc||('GRADE '+l.grade+' '+l.className)===fc; var okS=true; if(fs==='WITH_BOOK') okS=b.length>0; if(fs==='NO_BOOK') okS=b.length===0; if(fs==='OVERDUE') okS=isOver; var hay=(l.name+' '+l.learnerId+' '+b.map(function(x){return x.bookNo;}).join(' ')).toLowerCase(); return okC&&okS&&(!q||hay.includes(q)); }); if(!list.length){ document.getElementById('learnerList').innerHTML='<div class="info">No learners.</div>'; return; } var h='<table><tr><th>Learner</th><th>Grade / Class</th><th>Books</th><th>Due</th></tr>'; list.slice(0,200).forEach(function(l){ var b=booksForLearner(l); h+='<tr><td><b>'+(l.name||'')+'</b><br><span class="pill pill-learner">'+(l.learnerId||'')+'</span></td><td>GRADE '+(l.grade||'')+' '+(l.className||'')+'</td><td>'+(b.length?b.map(function(x){return '<span class="pill pill-book">'+x.bookNo+'</span>';}).join(' '):'📭 No book')+'</td><td>'+(b.length?dueInfo(b[0].dueDate||b[0].issuedAt).dueStr:'—')+'</td></tr>'; }); h+='</table>'; document.getElementById('learnerList').innerHTML=h; }
+function openReport(){ var my=myRequests(); var totalReq=0,totalAppr=0; my.forEach(function(r){ totalReq+=requestedQtyOf(r); if(['APPROVED','ISSUED','RETURNED'].includes(r.status)) totalAppr+=approvedQtyOf(r); }); var html='<div style="text-align:center;border-bottom:3px solid #0a1f4d"><h2>HOD REPORT — '+String(_u.name||'').toUpperCase()+'</h2><p>Xintimani Group t/a Makhanani LTSM • '+String(_u.schoolName||'').toUpperCase()+' • '+new Date().toLocaleDateString('en-GB')+'</p></div><table><tr><th>Metric</th><th>Value</th></tr><tr><td>Requests</td><td><b>'+my.length+'</b></td></tr><tr><td>Requested</td><td><b>'+totalReq+'</b></td></tr><tr><td>Approved MAX</td><td><b>'+totalAppr+'</b></td></tr><tr><td>Cut</td><td><b>'+Math.max(0,totalReq-totalAppr)+'</b></td></tr></table>'; document.getElementById('printReport').innerHTML=html; }
+// ===== V2.43 HOD SELF-EDIT PROFILE - SAME AS TEACHER =====
+var MY_GRADES=['1','2','3','4','5','6','7','8','9','10','11','12'];
+var MY_SUBJECTS=['ENGLISH','AFRIKAANS','MATHEMATICS','MATHEMATICAL LITERACY','ACCOUNTING','BUSINESS STUDIES','ECONOMICS','PHYSICAL SCIENCES','LIFE SCIENCES','GEOGRAPHY','HISTORY','LIFE ORIENTATION','TOURISM','CAT','IT','TECHNOLOGY','EMS','NATURAL SCIENCES','SOCIAL SCIENCES','SEPEDI','ZULU','XHOSA','FRENCH','ART','MUSIC','AGRICULTURE'];
+var MY_CLASSES=[]; MY_GRADES.forEach(function(g){ ['A','B','C','D'].forEach(function(l){ MY_CLASSES.push(g+l); }); });
+function myChip(name,val,checked){ return '<label style="display:flex;align-items:center;gap:6px;background:'+(checked?'#0a1f4d':'#fff')+';color:'+(checked?'#fff':'#0a1f4d')+';border:2px solid #0a1f4d;border-radius:20px;padding:8px 10px;font-size:12px;font-weight:900;cursor:pointer;margin:0"><input type="checkbox" name="'+name+'" value="'+val+'" '+(checked?'checked':'')+' onchange="updateMyPreview()" style="width:16px;height:16px;margin:0"> '+val+'</label>'; }
+function myGet(name){ var o=[]; document.querySelectorAll('input[name="'+name+'"]:checked').forEach(function(e){o.push(e.value);}); return o; }
+function updateMyPreview(){ document.querySelectorAll('#tab-profile input[type="checkbox"]').forEach(function(el){ var l=el.parentElement; if(el.checked){l.style.background='#0a1f4d';l.style.color='#fff';} else {l.style.background='#fff';l.style.color='#0a1f4d';} }); document.getElementById('myPreview').innerHTML='Selected: <b>Grades:</b> '+(myGet('myGrade').join(', ')||'—')+'<br><b>Subjects:</b> '+(myGet('mySubject').join(', ')||'—')+'<br><b>Classes:</b> '+(myGet('myClass').join(', ')||'—'); }
+function selectAllMyClasses(){ document.querySelectorAll('input[name="myClass"]').forEach(function(e){e.checked=true;}); updateMyPreview(); }
+function clearAllMyClasses(){ document.querySelectorAll('input[name="myClass"]').forEach(function(e){e.checked=false;}); updateMyPreview(); }
+function addMyCustomSubject(){ var v=document.getElementById('myCustomSubject').value.trim().toUpperCase(); if(!v) return; if(MY_SUBJECTS.indexOf(v)===-1) MY_SUBJECTS.push(v); loadMyProfileKeep(); document.getElementById('myCustomSubject').value=''; }
+function addMyCustomClass(){ var v=document.getElementById('myCustomClass').value.trim().toUpperCase(); if(!v) return; if(MY_CLASSES.indexOf(v)===-1) MY_CLASSES.push(v); loadMyProfileKeep(); document.getElementById('myCustomClass').value=''; }
+function loadMyProfileKeep(){ var g=myGet('myGrade'), s=myGet('mySubject'), c=myGet('myClass'); renderMyChecks(g,s,c); }
+function renderMyChecks(g,s,c){ g=g||[]; s=s||[]; c=c||[]; document.getElementById('myGradeChecks').innerHTML=MY_GRADES.map(function(x){ return myChip('myGrade','GRADE '+x, g.some(function(y){return String(y).toUpperCase().replace('GRADE ','')===x;})); }).join(''); document.getElementById('mySubjectChecks').innerHTML=MY_SUBJECTS.map(function(x){ return myChip('mySubject',x, s.some(function(y){return String(y).toUpperCase()===x;})); }).join(''); document.getElementById('myClassChecks').innerHTML=MY_CLASSES.map(function(x){ return myChip('myClass',x, c.some(function(y){return String(y).toUpperCase()===x;})); }).join(''); updateMyPreview(); }
+function loadMyProfile(){ if(!_u) return; document.getElementById('myName').value=_u.name||''; document.getElementById('myEmail').value=_u.email||''; document.getElementById('myRole').value='HOD'; document.getElementById('mySchool').value=_u.schoolName||_u.school||''; var g=toArray(_u.grades||_u.grade).map(function(x){return String(x).toUpperCase();}); var s=toArray(_u.subjects||_u.subject).map(function(x){return String(x).toUpperCase();}); var cl=toArray(_u.classes||_u.className||_u.class).map(function(x){return String(x).toUpperCase();}); s.forEach(function(x){ if(MY_SUBJECTS.indexOf(x)===-1) MY_SUBJECTS.push(x); }); cl.forEach(function(x){ if(MY_CLASSES.indexOf(x)===-1) MY_CLASSES.push(x); }); renderMyChecks(g,s,cl); }
+async function saveMyProfile(){ var name=document.getElementById('myName').value.trim(); var grades=myGet('myGrade'); var subjects=myGet('mySubject'); var classes=myGet('myClass'); var gradeNums=grades.map(function(g){return String(g).replace('GRADE ','').trim();}); if(!name){ document.getElementById('myProfileMsg').innerHTML='<div class="warn">❌ Type your name.</div>'; return; } if(!subjects.length||!grades.length){ if(!confirm('⚠️ You ticked NO subject / grade.\n\nSave anyway?')) return; } if(!confirm('💾 SAVE MY PROFILE?\n\n'+name+'\nGrades: '+(grades.join(', ')||'—')+'\nSubjects: '+(subjects.join(', ')||'—')+'\nClasses: '+(classes.join(', ')||'—'))) return; try{ await db.ref('users/'+_u.uid).update({ name:name, grades:gradeNums, grade:gradeNums, gradesFull:grades, subjects:subjects, subject:subjects, classes:classes, className:classes, class:classes, updatedAt:Date.now(), updatedBy:'SELF' }); _u.name=name; _u.grades=gradeNums; _u.subjects=subjects; _u.classes=classes; document.getElementById('myProfileMsg').innerHTML='<div class="ok">✅ Saved! Grades: <b>'+grades.join(', ')+'</b><br>Subjects: <b>'+subjects.join(', ')+'</b><br>Classes: <b>'+classes.join(', ')+'</b></div>'; loadAll(); }catch(e){ document.getElementById('myProfileMsg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; } }
 init();
 </script></body></html>
