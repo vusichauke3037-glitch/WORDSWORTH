@@ -1,109 +1,119 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Home - Makhanani LTSM 2.0 - CAPS Phases Fixed V2.30</title>
+<title>Makhanani LTSM 2.0 - Xintimani Group</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
-    authDomain: "makhanani-ltsm.firebaseapp.com",
-    databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
-    projectId: "makhanani-ltsm",
-    storageBucket: "makhanani-ltsm.firebasestorage.app",
-    messagingSenderId: "247180363183",
-    appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
-    measurementId: "G-PEST1XFCR8"
-  };
+  const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
+  const auth=firebase.auth(); const db=firebase.database();
   function toArray(v){ if(!v) return []; if(Array.isArray(v)) return v; if(typeof v==='string') return v.split(',').map(function(x){return x.trim();}).filter(function(x){return x;}); return []; }
-  function getPhase(grade){
-    var g=Number(grade);
-    if(g>=4 && g<=6) return 'INTERMEDIATE PHASE';
-    if(g>=7 && g<=9) return 'SENIOR PHASE';
-    if(g>=10 && g<=12) return 'FET PHASE';
-    return '';
-  }
-  function getCurrentUser(){
-    return new Promise(function(res){
-      auth.onAuthStateChanged(function(u){
-        if(!u) return res(null);
-        db.ref('users/'+u.uid).once('value').then(function(s){
-          var d=s.val()||{}; d.uid=u.uid; d.email=u.email;
-          d.classes=toArray(d.classes||d.className||d.class); d.subjects=toArray(d.subjects||d.subject); d.grades=toArray(d.grades||d.grade);
-          if(d.classes.length===1 && d.classes[0]==='ALL'){ d.classes=[]; ['4','5','6','7','8','9','10','11','12'].forEach(function(g){ ['A','B','C','D','E','F','G','H','I','J'].forEach(function(l){ d.classes.push(g+l); }); }); d.grades=['4','5','6','7','8','9','10','11','12']; }
-          if(!d.grades.length && d.classes.length){ var gs=[]; d.classes.forEach(function(c){ var gr=c.replace(/[A-J]$/,''); if(!gs.includes(gr)) gs.push(gr); }); d.grades=gs.sort(function(a,b){return Number(a)-Number(b);}); }
-          res(d);
-        }).catch(function(){ res({uid:u.uid, email:u.email, classes:[], subjects:[], grades:[]}); });
-      });
-    });
-  }
+  function fmtDate(ts){ if(!ts) return '—'; return new Date(ts).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}); }
+  function daysLeft(endTs){ if(!endTs) return 0; var t=new Date(); t.setHours(0,0,0,0); var e=new Date(endTs); e.setHours(0,0,0,0); return Math.ceil((e-t)/86400000); }
 </script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
-header{background:#0a1f4d;color:#fff;padding:18px 12px;text-align:center;border-bottom:4px solid #d4af37}
-header h1{margin:0;font-size:22px}header p{margin:6px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:980px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
-h2{margin:0 0 10px;font-size:16px}
-.btn{border:none;border-radius:10px;padding:16px 12px;font-weight:900;cursor:pointer;font-size:14px;width:100%;text-align:left}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-orange{background:#ea580c;color:#fff}
-.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
-.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.hero{background:#0a1f4d;color:#fff;text-align:center;padding:22px 12px 18px;border-bottom:5px solid #d4af37}
+.logo-wrap{width:110px;height:110px;margin:0 auto 10px;background:#fff;border:4px solid #d4af37;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.logo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.logo-fallback{font-size:42px;font-weight:900;color:#0a1f4d;line-height:1}
+.hero h1{margin:6px 0 4px;font-size:22px;letter-spacing:.5px}.hero p{margin:4px 0;color:#d4af37;font-size:12px;font-weight:900}
+.hero .sub{color:#fff;font-size:12px;opacity:.9}
+.wrap{max-width:980px;margin:0 auto;padding:12px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
+h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
+select,input{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:15px;font-weight:700;background:#fff;color:#0a1f4d}
+.btn{border:none;border-radius:8px;padding:12px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-manual{background:#d4af37;color:#0a1f4d}.btn-orange{background:#ea580c;color:#fff}
+.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.purple-box{background:#ede9fe;border:2px solid #7c3aed;border-radius:8px;padding:10px;font-size:13px;line-height:1.7;margin-top:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid .btn{font-size:13px;padding:14px}
-.pill{display:inline-block;background:#ea580c;color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:900;margin:2px}.pill-green{background:#16a34a}.pill-blue{background:#0a1f4d}
-.phase{border-radius:10px;padding:12px;font-size:12px;line-height:1.7;border:2px solid #e2e8f0}
-.phase-int{background:#dcfce7;border-color:#22c55e}.phase-sen{background:#dbeafe;border-color:#3b82f6}.phase-fet{background:#ffedd5;border-color:#ea580c}
-.phase b{font-size:14px}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}
-@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}}
+.pill{display:inline-block;background:#ea580c;color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:900;margin:1px}.pill-green{background:#16a34a}.pill-red{background:#ef4444}.pill-teal{background:#0d9488}.pill-gold{background:#d4af37;color:#0a1f4d}.pill-purple{background:#7c3aed}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}.kpi{border:2px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center;background:#f8fafc;cursor:pointer}.kpi b{font-size:22px;display:block}.kpi span{font-size:11px;font-weight:900}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.action-card{border:3px solid #e2e8f0;border-radius:12px;padding:14px;cursor:pointer;text-align:center}.action-card b{font-size:14px;display:block}
+.plan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}.plan{border:3px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center;background:#f8fafc}.plan b{font-size:15px;display:block}.plan .price{font-size:20px;font-weight:900;color:#0a1f4d;margin:6px 0}
+.footer{text-align:center;color:#cbd5e1;font-size:11px;padding:14px;line-height:1.7}
+@media(max-width:700px){.row{flex-direction:column}.kpi-grid{grid-template-columns:1fr 1fr}.plan-grid{grid-template-columns:1fr 1fr}.action-grid{grid-template-columns:1fr}}
 </style></head>
 <body>
-<header><h1>🏫 MAKHANANI LTSM 2.0 — WORDSWORTH HIGH SCHOOL</h1><p>CAPS — 4-6 INTERMEDIATE • 7-9 SENIOR PHASE • 10-12 FET — FIREBASE V2.30 — HOME</p><div id="taskbar"></div><script src="nav.js"></script></header>
+<div class="hero">
+  <!-- LOGO.PNG — Put logo.png in SAME folder as index.html -->
+  <div class="logo-wrap">
+    <img src="logo.png" alt="Makhanani LTSM Logo" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block';">
+    <div id="logoFallback" class="logo-fallback" style="display:none">M</div>
+  </div>
+  <h1>MAKHANANI LTSM 2.0</h1>
+  <p>XINTIMANI GROUP (Pty) Ltd t/a MAKHANANI LTSM</p>
+  <div class="sub">Books • Learners • Teachers • HOD • Librarian • Principal • Super Admin<br>One System — No Paper — No Lost Books</div>
+</div>
+
 <div class="wrap">
-<div class="card"><h2>👤 Welcome — Who Am I</h2><div class="info" id="whoAmI">Loading...</div><div class="ok" id="debug">DEBUG: Connecting...</div></div>
-<div class="card"><h2>🚀 My Dashboard</h2><div class="grid" id="menuGrid"></div><div class="info" id="roleHint"></div></div>
-<div class="card"><h2>📚 CAPS PHASES — CORRECT — 4-6 / 7-9 / 10-12</h2>
-<div class="row">
-<div class="phase phase-int"><b>📗 INTERMEDIATE PHASE — GRADES 4 - 6</b><br><b>Grades:</b> 4, 5, 6<br><b>Classes:</b> 4A-4J, 5A-5J, 6A-6J — 30 Classes<br><b>CAPS Subjects:</b><br>• ENGLISH HOME LANGUAGE<br>• AFRIKAANS FIRST ADDITIONAL LANGUAGE<br>• MATHEMATICS GRADE 4-6<br>• NATURAL SCIENCES AND TECHNOLOGY<br>• SOCIAL SCIENCES<br>• LIFE SKILLS</div>
-<div class="phase phase-sen"><b>📘 SENIOR PHASE — GRADES 7 - 9</b><br><b>Grades:</b> 7, 8, 9<br><b>Classes:</b> 7A-7J, 8A-8J, 9A-9J — 30 Classes<br><b>CAPS Subjects:</b><br>• ENGLISH HOME / FIRST ADDITIONAL LANGUAGE<br>• AFRIKAANS HOME / FIRST ADDITIONAL LANGUAGE<br>• MATHEMATICS<br>• NATURAL SCIENCES<br>• SOCIAL SCIENCES<br>• TECHNOLOGY<br>• ECONOMIC AND MANAGEMENT SCIENCES<br>• LIFE ORIENTATION<br>• CREATIVE ARTS</div>
-<div class="phase phase-fet"><b>📙 FET PHASE — GRADES 10 - 12</b><br><b>Grades:</b> 10, 11, 12<br><b>Classes:</b> 10A-10J, 11A-11J, 12A-12J — 30 Classes<br><b>CAPS Subjects:</b><br>• MATHEMATICS / MATHEMATICAL LITERACY<br>• PHYSICAL SCIENCES<br>• LIFE SCIENCES<br>• ACCOUNTING<br>• BUSINESS STUDIES<br>• ECONOMICS<br>• GEOGRAPHY / HISTORY<br>• LIFE ORIENTATION<br>• + ALL OTHER CAPS FET SUBJECTS</div>
+<div class="card" id="notLogged" style="display:none"><h2>👋 Welcome — Please Login</h2><div class="info">You are not logged in. Login to see your dashboard.</div><div class="row" style="margin-top:10px"><button class="btn btn-green" onclick="window.location.href='login.html'">🔑 LOGIN →</button><button class="btn btn-gold" onclick="window.location.href='subscriptions.html'">💳 VIEW PLANS →</button><button class="btn btn-manual" onclick="window.location.href='manuals.html'">📖 MANUALS →</button></div></div>
+
+<div class="card" id="loggedCard" style="display:none"><h2>👤 You Are Logged In</h2><div class="info" id="whoAmI">Loading...</div><div class="purple-box" id="subBanner">Subscription: Loading...</div><div id="debug" class="ok">DEBUG: Connecting...</div><div class="row" style="margin-top:10px"><button class="btn btn-green" id="goDashboardBtn" onclick="goDashboard()">➡️ GO TO MY DASHBOARD →</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
+
+<div class="card"><h2>⚡ My Dashboard — Choose Your Role</h2><div class="action-grid">
+<div class="action-card" style="border-color:#0d9488;background:#f0fdfa" onclick="window.location.href='teacher.html'"><b>👩‍🏫 TEACHER</b><small>Request books → HOD</small></div>
+<div class="action-card" style="border-color:#7c3aed;background:#ede9fe" onclick="window.location.href='hod.html'"><b>👑 HOD</b><small>Approve MAX → Librarian</small></div>
+<div class="action-card" style="border-color:#0a1f4d;background:#eef2ff" onclick="window.location.href='librarian.html'"><b>📖 LIBRARIAN</b><small>Issue / Return books</small></div>
+<div class="action-card" style="border-color:#d4af37;background:#fef3c7" onclick="window.location.href='principal.html'"><b>🏫 PRINCIPAL</b><small>Whole school view</small></div>
+</div><div class="row" style="margin-top:10px"><button class="btn btn-purple" onclick="window.location.href='super_admin.html'">👑 SUPER ADMIN →</button><button class="btn btn-gold" onclick="window.location.href='subscriptions.html'">💳 SUBSCRIPTIONS →</button><button class="btn btn-manual" onclick="window.location.href='manuals.html'">📖 MANUALS →</button></div></div>
+
+<div class="card"><h2>📊 Quick Numbers</h2><div class="kpi-grid"><div class="kpi">👥<b id="kpiUsers">—</b><span>USERS</span></div><div class="kpi">📚<b id="kpiBooks">—</b><span>BOOK TITLES</span></div><div class="kpi">🧑‍🎓<b id="kpiLearners">—</b><span>LEARNERS</span></div><div class="kpi">⏳<b id="kpiPending">—</b><span>PENDING</span></div></div><div class="info" id="homeSummary">Login to see your school numbers.</div></div>
+
+<div class="card"><h2>💳 Plans — Xintimani Group t/a Makhanani LTSM</h2><div class="plan-grid">
+<div class="plan" style="border-color:#64748b"><b>🆓 DEMO</b><div class="price">R0</div><small>7 days free trial<br>1 school • 50 learners<br>5 teachers • 100 books</small><br><button class="btn btn-grey" onclick="window.location.href='subscriptions.html'">TRY DEMO →</button></div>
+<div class="plan" style="border-color:#0d9488"><b>🌱 STARTER</b><div class="price">R3,000 + R350/mo</div><small>Once-off R4,500<br>1 school • 500 learners<br>30 teachers • 2,000 books</small><br><button class="btn btn-teal" onclick="window.location.href='subscriptions.html'">STARTER →</button></div>
+<div class="plan" style="border-color:#d4af37;background:#fef3c7"><b>⭐ STANDARD</b><div class="price">R4,500 + R500/mo</div><small>Most popular • Once-off R7,500<br>1 school • 2,000 learners<br>100 teachers • 10,000 books</small><br><button class="btn btn-gold" onclick="window.location.href='subscriptions.html'">STANDARD →</button></div>
+<div class="plan" style="border-color:#7c3aed;background:#ede9fe"><b>👑 PREMIUM</b><div class="price">R5,500 + R600/mo</div><small>Once-off R9,000<br>3 schools • Unlimited<br>999 teachers • Unlimited books</small><br><button class="btn btn-purple" onclick="window.location.href='subscriptions.html'">PREMIUM →</button></div>
+</div></div>
+
+<div class="card"><h2>📖 How It Works — 4 Steps</h2><div class="info"><b>1. TEACHER</b> requests books → <b>2. HOD</b> approves MAX → <b>3. LIBRARIAN</b> issues up to MAX to learners → <b>4. PRINCIPAL</b> sees whole school report.<br>No paper. No lost books. Every book has a Book No + Due Date (30 Nov).</div></div>
+
+<div class="card"><div class="row"><button class="btn btn-green" onclick="window.location.href='login.html'">🔑 LOGIN →</button><button class="btn btn-manual" onclick="window.location.href='manuals.html'">📖 MANUALS →</button><button class="btn btn-gold" onclick="window.location.href='subscriptions.html'">💳 PLANS →</button></div></div>
 </div>
-<div class="info"><b>Total:</b> 9 Grades (4 to 12) = <b>90 Classes</b> (A-J) — Intermediate 30 + Senior 30 + FET 30</div>
-</div>
-<div class="card"><h2>📊 Live Counts</h2><div id="counts"></div><div class="row"><button class="btn btn-grey" onclick="loadCounts()">🔄 REFRESH</button></div></div>
-<div class="card"><h2>📋 My Recent Requests</h2><div id="recentReq"></div></div>
-<div class="card"><div class="row"><button class="btn btn-grey" onclick="go('login.html')">🔐 LOGIN</button><button class="btn btn-red" onclick="doLogout()">🚪 LOGOUT</button></div></div>
-</div>
+<div class="footer">MAKHANANI LTSM 2.0 — V2.44<br>Xintimani Group (Pty) Ltd t/a Makhanani LTSM<br>Teacher • HOD • Librarian • Principal • Super Admin<br><span id="year"></span> • All Rights Reserved</div>
 <script>
-function go(p){ window.location.href=p; }
-async function doLogout(){ await auth.signOut(); localStorage.removeItem('makhanani_user'); window.location.href='login.html'; }
-var _u=null;
-async function init(){
-  try{
-    _u = await getCurrentUser();
-    var grid=document.getElementById('menuGrid'); var hint=document.getElementById('roleHint');
-    if(!_u || !_u.email){ document.getElementById('whoAmI').innerHTML='❌ Not logged in'; document.getElementById('debug').innerHTML='DEBUG: ❌ Not logged in'; grid.innerHTML='<button class="btn btn-green" onclick="go(\'login.html\')">🔐 LOGIN →</button>'; loadCounts(); return; }
-    var subjects=toArray(_u.subjects); var classes=toArray(_u.classes); var grades=toArray(_u.grades);
-    var phases=[...new Set(grades.map(function(g){return getPhase(g);}))].filter(function(x){return x;});
-    document.getElementById('whoAmI').innerHTML='✅ Welcome <b>'+String(_u.name||'').toUpperCase()+'</b> — '+_u.role+' — RANK '+_u.rank+' — '+String(_u.schoolName||'')+'<br>CAPS Subjects: '+subjects.map(function(s){return '<span class="pill">'+s+'</span>';}).join(' ')+'<br>Grades: <b>'+grades.join(', ')+'</b> — Phases: <b>'+phases.join(' • ')+'</b> — Classes: <b>'+classes.join(', ')+'</b>';
-    document.getElementById('debug').innerHTML='DEBUG: ✅ Firebase Live ✅ — '+_u.email+' — Phases: '+phases.join(', ');
-    var btns='';
-    if(_u.role==='TEACHER') btns+='<button class="btn btn-green" onclick="go(\'teacher.html\')">👩‍🏫 TEACHER — NEW REQUEST →</button>';
-    if(_u.role==='HOD') btns+='<button class="btn btn-orange" onclick="go(\'hod.html\')">📚 HOD — '+subjects.join(' + ')+' →</button>';
-    if(_u.role==='LIBRARIAN') btns+='<button class="btn btn-teal" onclick="go(\'librarian.html\')">📖 LIBRARIAN →</button>';
-    if(_u.role==='PRINCIPAL') btns+='<button class="btn btn-purple" onclick="go(\'principal.html\')">🏫 PRINCIPAL →</button>';
-    if(_u.role==='SUPER_ADMIN') btns+='<button class="btn btn-gold" onclick="go(\'users.html\')">👥 USERS — ADD / EDIT →</button>';
-    btns+='<button class="btn btn-green" onclick="go(\'teacher.html\')">👩‍🏫 TEACHER →</button><button class="btn btn-orange" onclick="go(\'hod.html\')">📚 HOD →</button><button class="btn btn-teal" onclick="go(\'librarian.html\')">📖 LIBRARIAN →</button><button class="btn btn-grey" onclick="go(\'manuals.html\')">📖 MANUALS →</button>';
-    if(['PRINCIPAL','SUPER_ADMIN'].includes(_u.role)) btns+='<button class="btn btn-purple" onclick="go(\'principal.html\')">🏫 PRINCIPAL →</button><button class="btn btn-gold" onclick="go(\'users.html\')">👥 USERS →</button>';
-    grid.innerHTML=btns;
-    hint.innerHTML='Your Phases: <b>'+phases.join(' • ')+'</b> — Your Grades: <b>'+grades.join(', ')+'</b>';
-    loadCounts(); loadRecent();
-  }catch(e){ document.getElementById('debug').innerHTML='DEBUG: ❌ '+e.message; }
+document.getElementById('year').textContent=new Date().getFullYear();
+var _u=null,_subs=[];
+function goDashboard(){
+  var role=String((_u&&_u.role)||'').toUpperCase();
+  if(role==='TEACHER') window.location.href='teacher.html';
+  else if(role==='HOD') window.location.href='hod.html';
+  else if(role==='PRINCIPAL') window.location.href='principal.html';
+  else if(role==='LIBRARIAN') window.location.href='librarian.html';
+  else if(role==='SUPER_ADMIN') window.location.href='super_admin.html';
+  else window.location.href='login.html';
 }
-async function loadCounts(){ try{ var uSnap=await db.ref('users').once('value'); var uc=0; uSnap.forEach(function(){uc++;}); var rSnap=await db.ref('requests').once('value'); var rc=0; var pend=0; rSnap.forEach(function(c){ rc++; if((c.val().status||'PENDING')==='PENDING') pend++; }); document.getElementById('counts').innerHTML='<table><tr><th>Total Users</th><th>Total Requests</th><th>Pending</th></tr><tr><td><b>'+uc+'</b></td><td><b>'+rc+'</b></td><td><b>'+pend+'</b></td></tr></table>'; }catch(e){ document.getElementById('counts').innerHTML='<div class="warn">'+e.message+'</div>'; } }
-async function loadRecent(){ try{ if(!_u) return; var snap=await db.ref('requests').orderByChild('teacherUid').equalTo(_u.uid).limitToLast(5).once('value'); var arr=[]; snap.forEach(function(c){ var v=c.val(); v.id=c.key; arr.push(v); }); if(!arr.length){ document.getElementById('recentReq').innerHTML='<div class="info">No requests yet.</div>'; return; } var h='<table><tr><th>Subject</th><th>Class</th><th>Book</th><th>Status</th></tr>'; arr.reverse().forEach(function(r){ h+='<tr><td><span class="pill">'+(r.subject||'')+'</span></td><td>GRADE '+(r.grade||'')+' '+(r.className||r.class||'')+' — '+getPhase(r.grade||'')+'</td><td>'+(r.bookTitle||'')+'</td><td>'+(r.status||'')+'</td></tr>'; }); h+='</table>'; document.getElementById('recentReq').innerHTML=h; }catch(e){} }
-init();
+function doLogout(){ auth.signOut().then(function(){ localStorage.removeItem('makhanani_user'); location.reload(); }); }
+auth.onAuthStateChanged(function(u){
+  if(!u){ document.getElementById('notLogged').style.display='block'; document.getElementById('loggedCard').style.display='none'; loadPublicCounts(); return; }
+  db.ref('users/'+u.uid).once('value').then(function(s){
+    var d=s.val()||{}; d.uid=u.uid; d.email=u.email; _u=d;
+    try{ localStorage.setItem('makhanani_user', JSON.stringify({name:d.name,email:d.email,role:d.role,schoolName:d.schoolName||d.school})); }catch(e){}
+    document.getElementById('notLogged').style.display='none';
+    document.getElementById('loggedCard').style.display='block';
+    document.getElementById('whoAmI').innerHTML='✅ <b>'+String(d.name||'').toUpperCase()+'</b> — '+(d.role||'')+' — '+d.email+'<br>School: <b>'+(d.schoolName||d.school||'—')+'</b> • Subjects: <b>'+(toArray(d.subjects||d.subject).join(', ')||'—')+'</b> • Grades: <b>'+(toArray(d.grades||d.grade).join(', ')||'—')+'</b> • Classes: <b>'+(toArray(d.classes||d.className||d.class).join(', ')||'—')+'</b>';
+    document.getElementById('debug').innerHTML='DEBUG: ✅ Logged in — '+d.email+' — V2.44 Index with logo.png';
+    document.getElementById('goDashboardBtn').textContent='➡️ GO TO '+String(d.role||'MY').toUpperCase()+' DASHBOARD →';
+    loadAll();
+  }).catch(function(){ document.getElementById('notLogged').style.display='block'; });
+});
+async function loadPublicCounts(){
+  try{ var a=await db.ref('users').once('value'); document.getElementById('kpiUsers').textContent=a.numChildren(); }catch(e){}
+  try{ var b=await db.ref('books').once('value'); document.getElementById('kpiBooks').textContent=b.numChildren(); }catch(e){}
+  try{ var c=await db.ref('learners').once('value'); document.getElementById('kpiLearners').textContent=c.numChildren(); }catch(e){}
+  try{ var d=await db.ref('requests').once('value'); var pend=0; d.forEach(function(x){ if((x.val().status||'PENDING')==='PENDING') pend++; }); document.getElementById('kpiPending').textContent=pend; }catch(e){}
+}
+async function loadAll(){
+  try{ var a=await db.ref('subscriptions').once('value'); _subs=[]; a.forEach(function(x){ var v=x.val(); v.id=x.key; _subs.push(v); }); }catch(e){}
+  try{ var b=await db.ref('users').once('value'); document.getElementById('kpiUsers').textContent=b.numChildren(); }catch(e){}
+  try{ var c=await db.ref('books').once('value'); document.getElementById('kpiBooks').textContent=c.numChildren(); }catch(e){}
+  try{ var d=await db.ref('learners').once('value'); document.getElementById('kpiLearners').textContent=d.numChildren(); }catch(e){}
+  try{ var e1=await db.ref('requests').once('value'); var pend=0,total=0; e1.forEach(function(x){ total++; if((x.val().status||'PENDING')==='PENDING') pend++; }); document.getElementById('kpiPending').textContent=pend; document.getElementById('homeSummary').innerHTML='Welcome <b>'+String(_u.name||'').toUpperCase()+'</b> • School: <b>'+String(_u.schoolName||_u.school||'').toUpperCase()+'</b> • Total Requests: <b>'+total+'</b> • Pending: <b>'+pend+'</b>'; }catch(e){}
+  var school=String(_u.schoolName||_u.school||'').toUpperCase();
+  var cur=_subs.slice().reverse().find(function(s){return String(s.schoolName||'').toUpperCase()===school;});
+  if(!cur){ document.getElementById('subBanner').innerHTML='Subscription: <b>⚠️ NONE FOUND</b> — Contact Principal / Super Admin'; return; }
+  var dl=daysLeft(cur.endDate); var st=dl<0?'EXPIRED':dl<=14?'EXPIRING SOON':cur.status||'ACTIVE';
+  document.getElementById('subBanner').innerHTML='Subscription: <b>'+cur.plan+'</b> — <b>'+st+'</b> • Ends '+fmtDate(cur.endDate)+' • '+dl+' days left • Xintimani Group t/a Makhanani LTSM';
+}
 </script></body></html>
