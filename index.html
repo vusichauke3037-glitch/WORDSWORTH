@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Makhanani LTSM 2.0 - Xintimani Group Holdings (PTY)Ltd</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0a1f4d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Makhanani LTSM">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="icon" href="/icon-192.png">
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -17,16 +25,25 @@
 <div style="font-size:11px;color:#0a1f4d;margin-top:6px;line-height:1.6">Reg: 2026/934898/07 • Tel: 078 023 3263 • Email: vusichauke3037@gmail.com<br>Directors: Vusi Chauke &amp; Hloniphani Success Masia<br><b>Building Solutions. Empowering Communities.</b></div>
 <h1>📚 MAKHANANI LTSM 2.0</h1>
 <p>Xintimani Group Holdings (PTY)Ltd • V2.50 Final<br>TEACHER → HOD → LIBRARIAN • DUE 30 NOVEMBER EVERY YEAR</p>
+<!-- INSTALL APP -->
+<div id="installBox" style="display:none;background:#0a1f4d;border-radius:10px;padding:12px;margin-top:10px;color:#fff">
+<b>📲 DOWNLOAD APP — FREE</b><br><span style="font-size:12px">Install Makhanani LTSM on your phone — opens like a real app, no Play Store needed.</span><br>
+<button class="btn btn-gold" type="button" id="installBtn" style="margin-top:8px">📲 INSTALL APP NOW →</button>
+<div id="installHelp" style="font-size:11px;margin-top:6px;line-height:1.6"></div>
+</div>
 <div class="info" id="whoAmI">Checking login...</div>
 <div id="msg"></div>
 <div class="row" style="margin-top:12px">
 <button class="btn btn-green" type="button" onclick="goMyPage()">🚀 GO TO MY PAGE →</button>
 <button class="btn btn-gold" type="button" onclick="window.location.href='login.html'">🔑 LOGIN →</button>
 </div>
-<!-- MANUALS BUTTON - HOME -->
 <div class="row" style="margin-top:10px">
 <button class="btn btn-purple" type="button" onclick="window.location.href='manuals.html'">📖 MANUALS — NO LOGIN NEEDED →</button>
 <button class="btn btn-teal" type="button" onclick="window.location.href='manuals.html#quick'">⚡ QUICK START →</button>
+</div>
+<div class="row" style="margin-top:10px">
+<button class="btn btn-grey" type="button" onclick="showInstallHelp()">📲 HOW TO DOWNLOAD APP →</button>
+<button class="btn btn-grey" type="button" onclick="window.location.href='company-profile.html'">🏢 COMPANY PROFILE →</button>
 </div>
 </div>
 
@@ -71,6 +88,27 @@ Makhanani LTSM 2.0 — V2.50 Final • Due: 30 November Every Year</span>
 </div>
 </div>
 <script>
+// --- PWA INSTALL ---
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt=e; document.getElementById('installBox').style.display='block'; });
+document.getElementById('installBtn').addEventListener('click', async ()=>{
+  if(deferredPrompt){ deferredPrompt.prompt(); const r=await deferredPrompt.userChoice; if(r.outcome==='accepted'){ document.getElementById('installBox').style.display='none'; } deferredPrompt=null; }
+  else { showInstallHelp(); }
+});
+function showInstallHelp(){
+  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  var isAndroid=/Android/.test(navigator.userAgent);
+  var help=document.getElementById('installHelp');
+  document.getElementById('installBox').style.display='block';
+  if(isIOS){ help.innerHTML='🍎 <b>iPhone:</b> Tap <b>Share ⬆️</b> at bottom → Tap <b>Add to Home Screen</b> → Tap <b>Add</b>. App icon will appear on your home screen.'; }
+  else if(isAndroid){ help.innerHTML='🤖 <b>Android:</b> Tap <b>⋮ Menu</b> (top right in Chrome) → Tap <b>Add to Home screen / Install app</b> → Tap <b>Install</b>.'; }
+  else { help.innerHTML='💻 <b>Computer:</b> Click <b>Install icon</b> in address bar (right side) → Install. Or Chrome Menu → Install Makhanani LTSM.'; }
+  document.getElementById('installBox').scrollIntoView({behavior:'smooth'});
+}
+if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }); }
+// Show install box if not already installed
+window.addEventListener('load', ()=>{ setTimeout(()=>{ if(!window.matchMedia('(display-mode: standalone)').matches){ document.getElementById('installBox').style.display='block'; } }, 1500); });
+// --- LOGIN LOGIC ---
 async function goMyPage(){
   var msg=document.getElementById('msg');
   try{
