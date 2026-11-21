@@ -1,234 +1,60 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Finance - Makhanani LTSM 2.0 - V3</title>
-<link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#0a1f4d">
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script>
-  const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
-  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const auth=firebase.auth(); const db=firebase.database();
-</script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0a1f4d;color:#0a1f4d}.wrap{max-width:1150px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}.card h1{margin:8px 0 0;font-size:20px;text-align:center}.card h2{margin:14px 0 8px;font-size:16px}label{font-weight:900;font-size:12px;display:block;margin-top:10px}input,select{width:100%;padding:12px;border:2px solid #0a1f4d;border-radius:8px;font-size:14px}.btn{border:none;border-radius:8px;padding:12px 14px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-red{background:#dc2626;color:#fff}.nav{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0}.nav button{border:none;border-radius:20px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:11px;background:#2a4a8a;color:#fff}.nav button.gold{background:#d4af37;color:#0a1f4d}.nav button.green{background:#16a34a;color:#fff}.nav button.purple{background:#7c3aed;color:#fff}.nav button.red{background:#dc2626;color:#fff}.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6}.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px}.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px}.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;text-align:center}.kpi div{background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px}.kpi b{font-size:22px;display:block}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bigbtn{width:100%;padding:16px;font-size:14px}.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.tabs button{border:none;border-radius:20px;padding:10px 14px;font-weight:900;cursor:pointer;background:#e2e8f0;color:#0a1f4d}.tabs button.active{background:#0a1f4d;color:#fff}.tab{display:none}.tab.active{display:block}.plan-badge{padding:4px 8px;border-radius:12px;font-weight:900;font-size:11px}.plan-DEMO{background:#dcfce7;color:#166534}.plan-STARTER{background:#dbeafe;color:#1e40af}.plan-STANDARD{background:#fef3c7;color:#92400e}.plan-PREMIUM{background:#ede9fe;color:#5b21b6}@media(max-width:600px){.kpi{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}@media print{.no-print{display:none!important}.card{box-shadow:none;border:1px solid #000}}</style></head>
-<body><div class="wrap">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Finance - Makhanani LTSM 2.0</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}header img{height:42px;background:#fff;border-radius:8px;padding:2px}.btn{background:#d4af37;color:#000;border:none;padding:10px 14px;border-radius:8px;font-weight:900;cursor:pointer}.wrap{max-width:1100px;margin:0 auto;padding:16px}.card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:14px}.muted{color:#666;font-size:13px}label{font-size:13px;font-weight:700}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-top:6px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}th{background:#0a1f4d;color:#fff}.pill{padding:4px 8px;border-radius:20px;font-size:11px;font-weight:900}.PAID{background:#dcfce7}.PENDING{background:#ffedd5}.DONATION{background:#fef9c3}.kpi{background:#0a1f4d;color:#fff;border-radius:12px;padding:14px}.kpi small{color:#d4af37}.kpi b{font-size:22px;display:block}</style></head>
+<body>
+<header><div style="display:flex;gap:10px;align-items:center"><img src="logo.png"><b>Makhanani LTSM 2.0<br><span style="font-size:11px;font-weight:400">Finance</span></b></div><button class="btn" onclick="location.href='index.html'">🏠 Home</button></header>
+<div class="wrap">
+<div class="card"><h1 style="margin:0">💰 Finance — V5 Prices</h1><p class="muted">Due: <b>30 Nov Every Year</b> • DEMO FREE 7 Days | STARTER R 3,000 + R 500/mo or R 4,500/yr | STANDARD R 4,500 + R 800/mo or R 7,500/yr | PREMIUM R 5,500 + R 950/mo or R 9,000/yr</p>
+<div class="grid" style="grid-template-columns:repeat(4,1fr)"><div class="card kpi" style="margin:0"><small>Total Collected</small><b id="kpiPaid">R 0</b></div><div class="card kpi" style="margin:0"><small>Pending</small><b id="kpiPending">R 0</b></div><div class="card kpi" style="margin:0"><small>Donations (FREE)</small><b id="kpiDonation">R 0</b></div><div class="card kpi" style="margin:0;background:#d4af37;color:#000"><small style="color:#0a1f4d">Total Expected Year 1</small><b id="kpiTotal">R 0</b></div></div></div>
 
-<!-- LOGO.PNG — FINANCE V3 -->
-<div class="card no-print" style="text-align:center;padding-bottom:10px">
-<img src="logo.png" alt="Xintimani Group Holdings (PTY)Ltd" style="max-width:220px;width:90%;height:auto;display:block;margin:0 auto" onerror="this.style.display='none';document.getElementById('logoFallbackFin').style.display='block'">
-<div id="logoFallbackFin" style="display:none;font-size:22px;font-weight:900;color:#0a1f4d">MAKHANANI LTSM 2.0<br><span style="font-size:11px;font-weight:400">XINTIMANI GROUP HOLDINGS (PTY)Ltd</span></div>
-<div style="font-size:11px;line-height:1.6;margin-top:6px">Reg: 2026/934898/07 • Tel: 078 023 3263 • Email: vusichauke3037@gmail.com<br>Directors: Vusi Chauke &amp; Hloniphani Success Masia</div>
-<h1>💰 FINANCE — MAKHANANI LTSM 2.0</h1>
-<p style="color:#64748b;font-size:12px" id="schoolNameLine">Loading...</p>
-<div class="nav">
-<button class="gold" onclick="window.location.href='index.html'">🏠 HOME</button>
-<button class="green" onclick="window.location.href='pricing.html?v=9999'">💳 PRICING →</button>
-<button class="green" onclick="window.location.href='librarian.html?v=9999'">📚 LIBRARIAN →</button>
-<button class="green" onclick="window.location.href='financial_projections.html?v=9999'">📈 PROJECTIONS →</button>
-<button class="green" onclick="window.location.href='marketing.html?v=9999'">📣 MARKETING →</button>
-<button class="green" onclick="window.location.href='hr.html?v=9999'">👥 HR →</button>
-<button class="green" onclick="window.location.href='school_admin.html?v=9999'" id="schoolAdminBtn" style="display:none">🏫 SCHOOL ADMIN →</button>
-<button class="purple" onclick="window.location.href='super_admin.html?v=9999'" id="superAdminBtn" style="display:none">👑 SUPER ADMIN →</button>
-<button class="purple" onclick="window.location.href='manuals.html#finance'">📖 MANUAL →</button>
-<button class="red" onclick="doLogout()">🚪 LOGOUT</button>
-</div>
-<div class="info" id="whoAmI">Checking login...</div>
-<div id="msg"></div>
-</div>
+<div class="card"><h2 style="margin:0">➕ Add Payment / Subscription</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>School Name</label><input id="schoolName" placeholder="George Sonto High School"></div><div><label>School ID</label><input id="schoolId" placeholder="Optional"></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px"><div><label>Package</label><select id="pkg" onchange="autoAmount()"><option value="DEMO">DEMO — FREE 7 Days</option><option value="STARTER">STARTER</option><option value="STANDARD" selected>STANDARD</option><option value="PREMIUM">PREMIUM</option></select></div><div><label>Billing</label><select id="billing" onchange="autoAmount()"><option value="YEARLY" selected>YEARLY</option><option value="MONTHLY">MONTHLY</option></select></div><div><label>Payment Method</label><select id="method"><option value="EFT">EFT</option><option value="CASH">Cash</option><option value="CARD">Card</option><option value="DONATION">Donation — FREE 12 Months</option><option value="DEMO">Demo — FREE 7 Days</option></select></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>Amount (R) — Auto from V5 Prices</label><input type="number" id="amount" value="12000"></div><div><label>Status</label><select id="status"><option value="PENDING">PENDING</option><option value="PAID">PAID</option><option value="DONATION">DONATION</option></select></div></div>
+<p class="muted" id="amountHint">STANDARD (YEARLY): Setup R 4,500 + Yearly R 7,500 = Total Year 1 R 12,000</p>
+<button class="btn" style="width:100%;padding:14px;font-size:16px;margin-top:10px" onclick="addPayment()">✅ ADD PAYMENT</button></div>
 
-<div class="card no-print" id="mainContent" style="display:none"><h2>📊 Finance Dashboard</h2>
-<div class="kpi"><div><b id="kIncome">R 0</b>Total Income</div><div><b id="kExpense">R 0</b>Total Expenses</div><div><b id="kProfit">R 0</b>Profit</div><div><b id="kCount">0</b>Transactions</div></div>
-<div class="kpi" style="margin-top:10px"><div><b id="kPaid">0</b>Schools Paid</div><div><b id="kDue">0</b>Schools Due</div><div><b id="kOverdue">0</b>Schools Overdue</div><div><b id="kDueAmount">R 0</b>Due Amount</div></div>
-<div class="info" style="margin-top:10px"><b>Pricing V3 — From Screenshot:</b><br>🟢 <b>DEMO</b> — 7 days free — Setup FREE — Monthly FREE — Once-off FREE<br>🔵 <b>STARTER</b> — 1 school — Setup R 3,000 — Monthly R 350 — Once-off R 4,500 / year<br>⭐ <b>STANDARD</b> — Most popular — Setup R 4,500 — Monthly R 500 — Once-off R 7,500 / year<br>👑 <b>PREMIUM</b> — Premium — Setup R 5,500 — Monthly R 600 — Once-off R 9,000 / year<br><b>Due Date:</b> <b>30 Nov Every Year</b> • <b>How Due Works:</b> If school has a payment Category = <code>School Subscription</code> in current year → <b>PAID</b>. Else if today ≤ 30 Nov → <b>DUE</b>. Else → <b>OVERDUE</b>.</div>
-<div class="tabs"><button class="active" onclick="showTab('tabSubs',this)">📅 SUBSCRIPTIONS — DUE TRACKER BY PLAN</button><button onclick="showTab('tabTrans',this)">💰 TRANSACTIONS</button><button onclick="showTab('tabAdd',this)">➕ ADD TRANSACTION</button></div>
-
-<div id="tabSubs" class="tab active">
-<h2>📅 School Subscriptions — By Plan — Due 30 Nov</h2>
-<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-purple" onclick="printDueList()">🖨️ PRINT DUE LIST →</button> <button class="btn btn-teal" onclick="exportDueList()">📤 EXPORT DUE LIST →</button> <button class="btn btn-grey" onclick="loadAll()">🔄 REFRESH</button></div>
-<div class="row"><div><label>Filter Status</label><select id="subFilter" onchange="renderAll()"><option value="">ALL SCHOOLS</option><option>PAID</option><option>DUE</option><option>OVERDUE</option></select></div><div><label>Filter Plan</label><select id="planFilter" onchange="renderAll()"><option value="">ALL PLANS</option><option>DEMO</option><option>STARTER</option><option>STANDARD</option><option>PREMIUM</option></select></div></div>
-<div id="subsList" style="margin-top:10px">Loading...</div>
-<div class="info" style="margin-top:10px"><b>To Mark Paid:</b> Click <b>MARK PAID</b> on a school → Goes to ADD TRANSACTION → Pick Plan → Amount auto-fills (e.g. STANDARD = R 7,500) → ADD → Status becomes PAID for that year.<br><b>To Change Plan:</b> In table, change Plan dropdown → Click SAVE PLAN → Due amount updates instantly.</div>
-</div>
-
-<div id="tabTrans" class="tab">
-<h2>💰 Transactions — All Income / Expenses</h2>
-<div class="row"><div><label>Search</label><input id="finQ" placeholder="Search note / category / school..." oninput="renderAll()"></div><div><label>Filter Type</label><select id="finTypeFilter" onchange="renderAll()"><option value="">ALL</option><option>INCOME</option><option>EXPENSE</option></select></div></div>
-<div style="margin-top:10px"><button class="btn btn-purple" onclick="printFinance()">🖨️ PRINT FINANCE REPORT →</button> <button class="btn btn-teal" onclick="exportFinance()">📤 EXPORT TO EXCEL →</button></div>
-<div id="finList" style="margin-top:10px">Loading...</div>
-</div>
-
-<div id="tabAdd" class="tab">
-<h2>➕ Add Transaction — Income / Expense / Subscription / Setup</h2>
-<div class="row"><div><label>Type *</label><select id="finType"><option>INCOME</option><option>EXPENSE</option></select></div><div><label>Category *</label><select id="finCat" onchange="onCatChange()"><option>School Subscription</option><option>Setup Fee</option><option>Monthly Fee</option><option>Book Sales</option><option>Printing / Stickers</option><option>Salary</option><option>Transport</option><option>Marketing</option><option>Hosting / Firebase</option><option>Other</option></select></div></div>
-<div class="row"><div><label>School *</label><select id="finSchool" onchange="onSchoolChange()"><option value="">— Pick School —</option></select></div><div><label>Plan *</label><select id="finPlan" onchange="onPlanChange()"><option>DEMO</option><option>STARTER</option><option selected>STANDARD</option><option>PREMIUM</option></select></div></div>
-<div class="row"><div><label>Amount (R) * — Auto-fills by Plan + Category</label><input id="finAmount" type="number" min="0" step="0.01" placeholder="e.g. 7500"></div><div><label>Date *</label><input id="finDate" type="date"></div></div>
-<div class="row"><div><label>Year (For Subscription)</label><select id="finYear"><option>2026</option><option>2027</option><option>2028</option><option>2029</option></select></div><div><label>Month (For Monthly Fee)</label><select id="finMonth"><option value="">— Pick Month —</option><option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option><option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option></select></div></div>
-<label>Note / Description</label><input id="finNote" placeholder="e.g. Makhanani Primary — STANDARD — Annual Subscription 2026">
-<div class="info" id="subHint" style="margin-top:10px">💡 Tip: Pick School → Plan auto-loads from school → Pick Category → Amount auto-fills. STANDARD Subscription = R 7,500, Setup = R 4,500, Monthly = R 500.</div>
-<button class="btn btn-green bigbtn" style="margin-top:10px" onclick="addFinance()">➕ ADD TRANSACTION →</button>
-<div id="finMsg"></div>
-</div>
-</div>
-
-<div class="card no-print" style="text-align:center"><div style="border-top:3px solid #d4af37;padding:12px 8px;background:#f8fafc;border-radius:8px"><b>XINTIMANI GROUP HOLDINGS (PTY)Ltd</b><br><span style="font-size:11px">Reg: 2026/934898/07 • Directors: Vusi Chauke &amp; Hloniphani Success Masia<br>Tel: 078 023 3263 • Email: vusichauke3037@gmail.com<br>Makhanani LTSM 2.0 — V2.51 Final • Due: 30 Nov Every Year</span></div><div style="margin-top:10px"><button class="btn btn-grey" onclick="clearCache()">🧹 CLEAR CACHE</button> <button class="btn btn-grey" onclick="doLogout()">🚪 LOGOUT</button></div></div>
+<div class="card"><h2 style="margin:0">🧾 All Payments</h2><div style="overflow:auto"><table><thead><tr><th>School</th><th>Package</th><th>Billing</th><th>Method</th><th>Amount</th><th>Status</th><th>Due</th><th>Action</th></tr></thead><tbody id="rows"><tr><td colspan="8">Loading...</td></tr></tbody></table></div></div>
 </div>
 <script>
-if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }); }
-function clearCache(){ localStorage.clear(); location.href='finance.html?v='+Date.now(); }
-function doLogout(){ sessionStorage.setItem('makhanani_just_logged_out','1'); sessionStorage.removeItem('makhanani_impersonate'); auth.signOut().then(function(){ localStorage.removeItem('makhanani_user'); window.location.href='login.html?v=9999'; }); }
-function showTab(id,btn){ document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); }); document.getElementById(id).classList.add('active'); document.querySelectorAll('.tabs button').forEach(function(b){ b.classList.remove('active'); }); if(btn) btn.classList.add('active'); }
-function getPageForRole(role){
-  role=(role||'').toUpperCase();
-  if(role==='LIBRARIAN') return 'librarian.html?v=9999';
-  if(role==='TEACHER') return 'teacher.html?v=9999';
-  if(role==='HOD') return 'hod.html?v=9999';
-  if(role==='PRINCIPAL') return 'principal.html?v=9999';
-  if(role==='SCHOOL_ADMIN') return 'school_admin.html?v=9999';
-  if(role==='SUPER_ADMIN') return 'super_admin.html?v=9999';
-  return 'index.html?v=9999';
+const firebaseConfig={apiKey:"AIzaSyB8jS2Jjjf7r5m8ZxXxXxXxXxXxXxXxXx",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abcdef"};
+firebase.initializeApp(firebaseConfig); const db=firebase.database(); const auth=firebase.auth();
+// NEW PRICES V5
+const PACKAGES={
+ DEMO:{name:"DEMO",setup:0,monthly:0,yearly:0},
+ STARTER:{name:"STARTER",setup:3000,monthly:500,yearly:4500},
+ STANDARD:{name:"STANDARD",setup:4500,monthly:800,yearly:7500},
+ PREMIUM:{name:"PREMIUM",setup:5500,monthly:950,yearly:9000}
+};
+function rand(n){return "R "+(+n||0).toLocaleString("en-ZA")}
+function totalYear1(pkg,billing){const p=PACKAGES[pkg]; return p.setup + (billing==="YEARLY"? p.yearly : p.monthly*12);}
+function autoAmount(){
+  const pkg=document.getElementById("pkg").value; const billing=document.getElementById("billing").value; const p=PACKAGES[pkg];
+  const amt = pkg==="DEMO"?0:totalYear1(pkg,billing);
+  document.getElementById("amount").value=amt;
+  const fee = billing==="YEARLY"? p.yearly : p.monthly;
+  document.getElementById("amountHint").textContent = `${pkg} (${billing}): Setup ${p.setup===0?"FREE":rand(p.setup)} + ${billing==="YEARLY"?"Yearly "+rand(p.yearly):"Monthly "+rand(p.monthly)+" x 12 = "+rand(p.monthly*12)} = Total Year 1 ${rand(amt)} • Due 30 Nov Every Year`;
 }
-// ===== PRICING V3 — FROM SCREENSHOT — SINGLE SOURCE OF TRUTH =====
-function getPricing(plan){
-  plan=(plan||'STANDARD').toUpperCase();
-  if(plan==='DEMO') return { plan:'DEMO', setup:0, monthly:0, onceOff:0, label:'DEMO — 7 days free trial' };
-  if(plan==='STARTER') return { plan:'STARTER', setup:3000, monthly:350, onceOff:4500, label:'STARTER — 1 school' };
-  if(plan==='STANDARD') return { plan:'STANDARD', setup:4500, monthly:500, onceOff:7500, label:'STANDARD — Most popular' };
-  if(plan==='PREMIUM') return { plan:'PREMIUM', setup:5500, monthly:600, onceOff:9000, label:'PREMIUM — Premium' };
-  return { plan:'STANDARD', setup:4500, monthly:500, onceOff:7500, label:'STANDARD — Most popular' };
+autoAmount();
+async function addPayment(){
+  const school=document.getElementById("schoolName").value.trim(); const schoolId=document.getElementById("schoolId").value.trim();
+  const pkg=document.getElementById("pkg").value; const billing=document.getElementById("billing").value; const method=document.getElementById("method").value;
+  const amount=+document.getElementById("amount").value||0; const status=document.getElementById("status").value;
+  if(!school) return alert("Enter School Name");
+  const id=db.ref("finance").push().key;
+  await db.ref("finance/"+id).set({id,schoolName:school,schoolId:schoolId||"",package:pkg,billing,paymentMethod:method,amount,status,due:"30 Nov Every Year",createdAt:Date.now()});
+  alert("✅ Added: "+school+" — "+pkg+" — "+rand(amount));
+  load();
 }
-function getExpectedForSchool(school){ return getPricing(school.plan||'STANDARD').onceOff; }
-function getPlanBadge(plan){ var p=getPricing(plan); return '<span class="plan-badge plan-'+p.plan+'">'+p.plan+' • R '+p.onceOff.toLocaleString()+'/yr</span>'; }
-let MY_ROLE='',MY_SCHOOL_ID='',MY_SCHOOL_NAME='',MY_NAME='',MY_UID=''; let ALL_FIN=[],ALL_SCHOOLS=[];
-function toArr(o){ return Object.entries(o||{}).map(function([id,v]){ v._id=id; return v; }); }
-function getDueDateForYear(year){ return new Date(year, 10, 30); }
-function getSubStatus(school, year){
-  var schoolId=school._id;
-  var pays=ALL_FIN.filter(function(f){ return f.category==='School Subscription' && f.type==='INCOME' && (f.schoolId===schoolId) && String(f.year||new Date(f.date||'').getFullYear()||'')===String(year); });
-  if(pays.length===0){ pays=ALL_FIN.filter(function(f){ return f.category==='School Subscription' && f.type==='INCOME' && (f.schoolId===schoolId) && (f.note||'').includes(String(year)); }); }
-  var paid=pays.length>0;
-  var dueDate=getDueDateForYear(year);
-  var now=new Date(); now.setHours(0,0,0,0);
-  var diffDays=Math.ceil((dueDate - now)/86400000);
-  var totalPaid=pays.reduce(function(s,f){ return s+Number(f.amount||0); },0);
-  var expected=getExpectedForSchool(school);
-  // DEMO = Always FREE — Show as PAID / FREE
-  if(school.plan==='DEMO') return { status:'PAID', days:diffDays, paid:0, pays:[], expected:0, label:'FREE — DEMO' };
-  if(paid) return { status:'PAID', days:diffDays, paid:totalPaid, pays:pays, expected:expected };
-  if(diffDays>=0) return { status:'DUE', days:diffDays, paid:0, pays:[], expected:expected };
-  return { status:'OVERDUE', days:Math.abs(diffDays), paid:0, pays:[], expected:expected };
+async function markPaid(id){await db.ref("finance/"+id+"/status").set("PAID"); load();}
+async function delPay(id){if(confirm("Delete this payment?")){await db.ref("finance/"+id).remove(); load();}}
+async function load(){
+  const snap=await db.ref("finance").once("value"); const rows=document.getElementById("rows");
+  if(!snap.exists()){rows.innerHTML="<tr><td colspan=8>No payments yet.</td></tr>"; return;}
+  let html=""; let paid=0,pending=0,don=0,total=0;
+  snap.forEach(c=>{const s=c.val(); total+=+s.amount||0; if(s.status==="PAID")paid+=+s.amount||0; else if(s.status==="DONATION")don+=+s.amount||0; else pending+=+s.amount||0;
+  html+=`<tr><td>${s.schoolName||"-"}</td><td><b>${s.package||"-"}</b></td><td>${s.billing||"-"}</td><td>${s.paymentMethod||"-"}</td><td><b>${rand(s.amount)}</b></td><td><span class="pill ${s.status}">${s.status||"PENDING"}</span></td><td>${s.due||"30 Nov Every Year"}</td><td><button onclick="markPaid('${s.id}')">✅ Paid</button> <button onclick="delPay('${s.id}')">🗑️</button></td></tr>`;});
+  rows.innerHTML=html;
+  document.getElementById("kpiPaid").textContent=rand(paid); document.getElementById("kpiPending").textContent=rand(pending); document.getElementById("kpiDonation").textContent=rand(don); document.getElementById("kpiTotal").textContent=rand(total);
 }
-function onCatChange(){
-  var cat=document.getElementById('finCat').value; var plan=document.getElementById('finPlan').value; var p=getPricing(plan);
-  var hint=document.getElementById('subHint');
-  var amtEl=document.getElementById('finAmount');
-  if(cat==='School Subscription'){ amtEl.value=p.onceOff; hint.innerHTML='💡 <b>'+p.label+'</b> — Subscription (Once-off) = <b>R '+p.onceOff.toLocaleString()+' / year</b> — Due: 30 Nov. Amount auto-filled.'; }
-  else if(cat==='Setup Fee'){ amtEl.value=p.setup; hint.innerHTML='💡 <b>'+p.label+'</b> — Setup Fee = <b>R '+p.setup.toLocaleString()+'</b> — One-time. Amount auto-filled.'; }
-  else if(cat==='Monthly Fee'){ amtEl.value=p.monthly; hint.innerHTML='💡 <b>'+p.label+'</b> — Monthly Fee = <b>R '+p.monthly.toLocaleString()+' / month</b> — Pick Month below. Amount auto-filled.'; }
-  else { hint.innerHTML='💡 Tip: For Subscription, pick School + Plan + Amount auto-fills. STANDARD Subscription = R 7,500, Setup = R 4,500, Monthly = R 500.'; }
-}
-function onPlanChange(){ onCatChange(); var schoolId=document.getElementById('finSchool').value; var plan=document.getElementById('finPlan').value; if(schoolId){ /* Do not auto-save plan here — Save on ADD or via SAVE PLAN in Subs table */ } }
-function onSchoolChange(){
-  var schoolId=document.getElementById('finSchool').value;
-  var s=ALL_SCHOOLS.find(function(x){ return x._id===schoolId; });
-  if(s){ document.getElementById('finPlan').value=s.plan||'STANDARD'; onCatChange(); var year=document.getElementById('finYear').value||new Date().getFullYear(); if(!document.getElementById('finNote').value) document.getElementById('finNote').value=(s.name||'')+' — '+(s.plan||'STANDARD')+' — '+document.getElementById('finCat').value+' '+year; }
-}
-async function savePlan(schoolId){
-  var sel=document.getElementById('plan_'+schoolId);
-  var newPlan=sel.value;
-  await db.ref('schools/'+schoolId).update({ plan:newPlan });
-  document.getElementById('msg').innerHTML='<div class="ok">✅ Plan saved: <b>'+newPlan+'</b> — '+getPricing(newPlan).label+' — Due Tracker updated.</div>';
-  loadAll();
-}
-function printFinance(){
-  var w=window.open('', '_blank'); var inc=ALL_FIN.filter(function(x){ return x.type==='INCOME'; }).reduce(function(s,x){ return s+Number(x.amount||0); },0); var exp=ALL_FIN.filter(function(x){ return x.type==='EXPENSE'; }).reduce(function(s,x){ return s+Number(x.amount||0); },0);
-  var html='<html><head><title>Finance Report - '+MY_SCHOOL_NAME+'</title><style>@page{size:A4 portrait;margin:12mm} body{margin:0;font-family:Arial;padding:12mm} .header{text-align:center;border-bottom:3px solid #0a1f4d;padding-bottom:8px} .school{font-size:18pt;font-weight:900;text-transform:uppercase} .brand{font-size:11pt;font-weight:900;color:#0a1f4d} table{width:100%;border-collapse:collapse;font-size:10pt;margin-top:12px} th,td{border:1px solid #000;padding:8px} th{background:#0a1f4d;color:#fff} .toolbar{padding:10px;text-align:center} @media print{.toolbar{display:none} body{padding:0}}</style></head><body>';
-  html+='<div class="toolbar"><button onclick="window.print()" style="padding:12px 20px;font-weight:900;background:#0a1f4d;color:#fff;border:none;border-radius:8px">🖨️ PRINT</button> <button onclick="window.close()">✖️ CLOSE</button></div>';
-  html+='<div class="header"><div class="school">'+MY_SCHOOL_NAME+'</div><div class="brand">MAKHANANI LTSM 2.0</div></div><h2 style="text-align:center">💰 FINANCE REPORT</h2><p style="text-align:center">Income: R '+inc.toFixed(2)+' • Expenses: R '+exp.toFixed(2)+' • Profit: R '+(inc-exp).toFixed(2)+' • Date: '+new Date().toLocaleString()+' • By: '+MY_NAME+'</p><table><tr><th>Date</th><th>Type</th><th>Category</th><th>Plan</th><th>School</th><th>Note</th><th>Amount</th></tr>';
-  ALL_FIN.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); }).forEach(function(f){ html+='<tr><td>'+(f.date||'')+'</td><td>'+f.type+'</td><td>'+f.category+'</td><td>'+(f.plan||'—')+'</td><td>'+(f.schoolName||'')+'</td><td>'+(f.note||'')+'</td><td>R '+Number(f.amount||0).toFixed(2)+'</td></tr>'; });
-  html+='</table><p style="text-align:center;font-size:8pt;color:#64748b">MAKHANANI LTSM 2.0 • Generated: '+new Date().toLocaleString()+'</p></body></html>';
-  w.document.write(html); w.document.close();
-}
-function printDueList(){
-  var year=parseInt(document.getElementById('finYear').value)||new Date().getFullYear();
-  var w=window.open('', '_blank');
-  var html='<html><head><title>Due List '+year+' - Makhanani LTSM 2.0</title><style>@page{size:A4 landscape;margin:10mm} body{margin:0;font-family:Arial;padding:10mm} .header{text-align:center;border-bottom:3px solid #0a1f4d;padding-bottom:8px} .school{font-size:18pt;font-weight:900;text-transform:uppercase} .brand{font-size:11pt;font-weight:900;color:#0a1f4d} table{width:100%;border-collapse:collapse;font-size:10pt;margin-top:12px} th,td{border:1px solid #000;padding:8px} th{background:#0a1f4d;color:#fff} .toolbar{padding:10px;text-align:center} .sig{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:30px} .sig div{border-top:1px solid #000;padding-top:6px;font-size:10pt;text-align:center} @media print{.toolbar{display:none} body{padding:0}}</style></head><body>';
-  html+='<div class="toolbar"><button onclick="window.print()" style="padding:12px 20px;font-weight:900;background:#0a1f4d;color:#fff;border:none;border-radius:8px">🖨️ PRINT DUE LIST</button> <button onclick="window.close()">✖️ CLOSE</button></div>';
-  html+='<div class="header"><div class="school">MAKHANANI LTSM 2.0 — ALL SCHOOLS</div><div class="brand">XINTIMANI GROUP HOLDINGS (PTY)Ltd</div></div><h2 style="text-align:center">📅 SUBSCRIPTION DUE LIST — '+year+' — Due: 30 Nov '+year+'</h2><p style="text-align:center">Date: '+new Date().toLocaleString()+' • By: '+MY_NAME+'</p><table><tr><th>#</th><th>School</th><th>Plan</th><th>Setup</th><th>Monthly</th><th>Status</th><th>Days Left / Overdue</th><th>Paid Amount</th><th>Expected (Once-Off)</th><th>Outstanding</th></tr>';
-  var schools = MY_ROLE==='SUPER_ADMIN' ? ALL_SCHOOLS : ALL_SCHOOLS.filter(function(s){ return s._id===MY_SCHOOL_ID; });
-  schools.slice().sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); }).forEach(function(s, idx){
-    var st=getSubStatus(s, year); var p=getPricing(s.plan||'STANDARD');
-    var outstanding=st.status==='PAID' ? 0 : st.expected;
-    html+='<tr><td>'+(idx+1)+'</td><td><b>'+(s.name||'')+'</b></td><td><b>'+p.plan+'</b></td><td>R '+p.setup.toFixed(2)+'</td><td>R '+p.monthly.toFixed(2)+'</td><td><b>'+st.status+'</b></td><td>'+(st.status==='PAID' ? 'Paid ✅' : st.status==='DUE' ? st.days+' days left' : st.days+' days OVERDUE')+'</td><td>R '+st.paid.toFixed(2)+'</td><td>R '+st.expected.toFixed(2)+'</td><td>R '+outstanding.toFixed(2)+'</td></tr>';
-  });
-  html+='</table><div class="sig"><div>✍️ Signature: Finance — '+MY_NAME+'<br><br>Date: _______________</div><div>✍️ Signature: Director<br><br>Date: _______________</div></div><p style="text-align:center;font-size:8pt;color:#64748b">MAKHANANI LTSM 2.0 • Generated: '+new Date().toLocaleString()+'</p></body></html>';
-  w.document.write(html); w.document.close();
-}
-function exportFinance(){ var ws=XLSX.utils.json_to_sheet(ALL_FIN.map(function(f){ return { Date:f.date, Year:f.year||'', Month:f.month||'', Type:f.type, Category:f.category, Plan:f.plan||'', School:f.schoolName||'', Note:f.note||'', Amount:f.amount, By:f.by||'' }; })); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Finance'); XLSX.writeFile(wb,'Makhanani_Finance.xlsx'); }
-function exportDueList(){ var year=parseInt(document.getElementById('finYear').value)||new Date().getFullYear(); var rows=ALL_SCHOOLS.map(function(s){ var st=getSubStatus(s, year); var p=getPricing(s.plan||'STANDARD'); return { School:s.name, EMIS:s.emis||'', Plan:p.plan, Setup:p.setup, Monthly:p.monthly, Year:year, Status:st.status, Days:st.days, Paid:st.paid, Expected:st.expected, Outstanding: st.status==='PAID'?0:st.expected }; }); var ws=XLSX.utils.json_to_sheet(rows); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'DueList_'+year); XLSX.writeFile(wb,'Makhanani_DueList_'+year+'.xlsx'); }
-async function addFinance(){
-  var type=document.getElementById('finType').value; var cat=document.getElementById('finCat').value; var amt=parseFloat(document.getElementById('finAmount').value)||0; var date=document.getElementById('finDate').value; var year=document.getElementById('finYear').value; var month=document.getElementById('finMonth').value; var note=document.getElementById('finNote').value.trim();
-  var schoolId=document.getElementById('finSchool').value; var plan=document.getElementById('finPlan').value; var schoolName='';
-  if(schoolId){ var s=ALL_SCHOOLS.find(function(x){ return x._id===schoolId; }); if(s) schoolName=s.name; }
-  if(!amt||!date){ document.getElementById('finMsg').innerHTML='<div class="warn">❌ Enter Amount + Date</div>'; return; }
-  if(cat==='School Subscription' && !schoolId){ document.getElementById('finMsg').innerHTML='<div class="warn">❌ Pick School for Subscription</div>'; return; }
-  if(cat==='School Subscription' && !note) note=schoolName+' — '+plan+' — Annual Subscription '+year;
-  if(cat==='Setup Fee' && !note) note=schoolName+' — '+plan+' — Setup Fee';
-  if(cat==='Monthly Fee' && !note) note=schoolName+' — '+plan+' — Monthly Fee '+(month||'')+' '+year;
-  if(!schoolId){ schoolId=MY_SCHOOL_ID; schoolName=MY_SCHOOL_NAME; }
-  await db.ref('finance').push({ schoolId:schoolId, schoolName:schoolName, plan:plan, type:type, category:cat, amount:amt, date:date, year:parseInt(year), month:month||'', note:note, by: auth.currentUser.email, byName:MY_NAME, at:Date.now(), atStr:new Date().toLocaleString() });
-  // Also update school plan if this is a subscription / setup — Keep school plan in sync
-  if(schoolId && (cat==='School Subscription' || cat==='Setup Fee' || cat==='Monthly Fee')){ await db.ref('schools/'+schoolId).update({ plan:plan }); }
-  document.getElementById('finMsg').innerHTML='<div class="ok">✅ Added '+type+' R '+amt.toFixed(2)+' — '+cat+' — '+plan+' — '+(schoolName||'')+' • Year '+year+'</div>'; document.getElementById('finAmount').value=''; document.getElementById('finNote').value=''; showTab('tabSubs', document.querySelectorAll('.tabs button')[0]); loadAll();
-}
-function markPaid(schoolId, schoolName, plan){
-  document.getElementById('finSchool').value=schoolId;
-  document.getElementById('finType').value='INCOME';
-  document.getElementById('finCat').value='School Subscription';
-  document.getElementById('finPlan').value=plan||'STANDARD';
-  onCatChange();
-  document.getElementById('finNote').value=schoolName+' — '+(plan||'STANDARD')+' — Annual Subscription '+(document.getElementById('finYear').value||new Date().getFullYear());
-  showTab('tabAdd', document.querySelectorAll('.tabs button')[2]);
-  document.getElementById('finDate').focus();
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-async function deleteFin(id){ if(!confirm('Delete this transaction?')) return; await db.ref('finance/'+id).remove(); loadAll(); }
-function renderAll(){
-  var year=parseInt(document.getElementById('finYear').value)||new Date().getFullYear();
-  var inc=ALL_FIN.filter(function(x){ return x.type==='INCOME'; }).reduce(function(s,x){ return s+Number(x.amount||0); },0); var exp=ALL_FIN.filter(function(x){ return x.type==='EXPENSE'; }).reduce(function(s,x){ return s+Number(x.amount||0); },0);
-  document.getElementById('kIncome').textContent='R '+inc.toFixed(2); document.getElementById('kExpense').textContent='R '+exp.toFixed(2); document.getElementById('kProfit').textContent='R '+(inc-exp).toFixed(2); document.getElementById('kCount').textContent=ALL_FIN.length;
-  var schools = MY_ROLE==='SUPER_ADMIN' ? ALL_SCHOOLS : ALL_SCHOOLS.filter(function(s){ return s._id===MY_SCHOOL_ID; });
-  var subFilter=document.getElementById('subFilter').value;
-  var planFilter=document.getElementById('planFilter').value;
-  var paidCount=0, dueCount=0, overdueCount=0, dueAmt=0;
-  var sh='<table><tr><th>School</th><th>Plan — Change + Save</th><th>Setup / Monthly / Once-Off</th><th>Year / Due</th><th>Status</th><th>Paid / Expected</th><th>Action</th></tr>';
-  schools.slice().sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); }).forEach(function(s){
-    var st=getSubStatus(s, year); var p=getPricing(s.plan||'STANDARD');
-    if(st.status==='PAID') paidCount++; else if(st.status==='DUE'){ dueCount++; dueAmt+=st.expected; } else { overdueCount++; dueAmt+=st.expected; }
-    if(subFilter && st.status!==subFilter) return;
-    if(planFilter && (s.plan||'STANDARD')!==planFilter) return;
-    var badge = st.status==='PAID' ? '<b style="color:#16a34a">✅ PAID</b>' : st.status==='DUE' ? '<b style="color:#d97706">⏳ DUE — '+st.days+' days left</b>' : '<b style="color:#dc2626">🚨 OVERDUE — '+st.days+' days overdue</b>';
-    if(s.plan==='DEMO') badge='<b style="color:#16a34a">✅ FREE — DEMO</b>';
-    sh+='<tr><td><b>'+(s.name||'')+'</b><br><small>EMIS: '+(s.emis||'—')+' • ID: '+s._id+'</small></td><td>'+getPlanBadge(s.plan||'STANDARD')+'<br><select id="plan_'+s._id+'" style="margin-top:6px;padding:8px"><option '+(s.plan==='DEMO'?'selected':'')+'>DEMO</option><option '+(s.plan==='STARTER'?'selected':'')+'>STARTER</option><option '+(!s.plan||s.plan==='STANDARD'?'selected':'')+'>STANDARD</option><option '+(s.plan==='PREMIUM'?'selected':'')+'>PREMIUM</option></select><br><button class="btn btn-gold" style="margin-top:6px" onclick="savePlan(\''+s._id+'\')">💾 SAVE PLAN</button></td><td>Setup: <b>R '+p.setup.toLocaleString()+'</b><br>Monthly: <b>R '+p.monthly.toLocaleString()+'</b><br>Once-Off: <b>R '+p.onceOff.toLocaleString()+'</b></td><td>Year: <b>'+year+'</b><br>Due: <b>30 Nov '+year+'</b></td><td>'+badge+'</td><td>Paid: <b>R '+st.paid.toFixed(2)+'</b><br>Expected: <b>R '+st.expected.toFixed(2)+'</b><br>Outstanding: <b>R '+(st.status==='PAID'?0:st.expected).toFixed(2)+'</b></td><td>'+(st.status!=='PAID' && s.plan!=='DEMO' ? '<button class="btn btn-green" onclick="markPaid(\''+s._id+'\',\''+String(s.name||'').replace(/\'/g,"")+'\',\''+(s.plan||'STANDARD')+'\')">💰 MARK PAID →</button>' : '<span style="color:#16a34a">✅ Paid / Free</span>')+'</td></tr>';
-  });
-  sh+='</table>';
-  if(schools.length===0) sh='<div class="info">No schools found. Create school in Super Admin first.</div>';
-  document.getElementById('subsList').innerHTML=sh;
-  document.getElementById('kPaid').textContent=paidCount;
-  document.getElementById('kDue').textContent=dueCount;
-  document.getElementById('kOverdue').textContent=overdueCount;
-  document.getElementById('kDueAmount').textContent='R '+dueAmt.toFixed(2);
-  var q=(document.getElementById('finQ').value||'').toLowerCase();
-  var tf=document.getElementById('finTypeFilter').value;
-  var list=ALL_FIN.filter(function(f){ if(tf && f.type!==tf) return false; if(q && !((f.note||'').toLowerCase().includes(q) || (f.category||'').toLowerCase().includes(q) || (f.schoolName||'').toLowerCase().includes(q) || (f.plan||'').toLowerCase().includes(q))) return false; return true; }).sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
-  var h='<table><tr><th>Date / Year</th><th>Type</th><th>Category</th><th>Plan</th><th>School / Note</th><th>Amount</th><th>Action</th></tr>';
-  list.forEach(function(f){ h+='<tr><td>'+(f.date||'')+'<br><small>Year: '+(f.year||'')+' '+(f.month||'')+'</small></td><td><b>'+f.type+'</b></td><td>'+f.category+'</td><td>'+(f.plan?getPlanBadge(f.plan):'—')+'</td><td><b>'+(f.schoolName||'')+'</b><br>'+(f.note||'')+'<br><small>By: '+(f.by||'')+'</small></td><td><b>R '+Number(f.amount||0).toFixed(2)+'</b></td><td><button class="btn btn-red" onclick="deleteFin(\''+f._id+'\')">🗑️ DELETE</button></td></tr>'; });
-  h+='</table>'; if(list.length===0) h='<div class="info">No transactions yet. Add one in ADD TRANSACTION tab.</div>';
-  document.getElementById('finList').innerHTML=h;
-  var opts='<option value="">— Pick School —</option>' + ALL_SCHOOLS.map(function(s){ return '<option value="'+s._id+'">'+(s.name||s._id)+' — '+(s.plan||'STANDARD')+'</option>'; }).join('');
-  document.getElementById('finSchool').innerHTML=opts;
-  if(MY_ROLE!=='SUPER_ADMIN' && MY_SCHOOL_ID){ document.getElementById('finSchool').value=MY_SCHOOL_ID; onSchoolChange(); }
-}
-async function loadAll(){ try{ var [fSnap,sSnap]=await Promise.all([db.ref('finance').once('value'), db.ref('schools').once('value')]); ALL_SCHOOLS=toArr(sSnap.val()); var all=toArr(fSnap.val()); ALL_FIN = (MY_ROLE==='SUPER_ADMIN') ? all : all.filter(function(x){ return x.schoolId===MY_SCHOOL_ID; }); renderAll(); document.getElementById('msg').innerHTML='<div class="ok">✅ Connected — Transactions: '+ALL_FIN.length+' • Schools: '+ALL_SCHOOLS.length+' • Year: '+(document.getElementById('finYear').value||new Date().getFullYear())+'</div>'; }catch(e){ document.getElementById('msg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; } }
-auth.onAuthStateChanged(function(u){ var el=document.getElementById('whoAmI'); if(!u){ el.innerHTML='👤 Not logged in — Sending to Login...'; setTimeout(function(){ window.location.href='login.html'; },1000); return; } db.ref('users/'+u.uid).once('value').then(function(s){ var d=s.val()||{}; MY_ROLE=(d.role||'').toUpperCase(); MY_SCHOOL_ID=d.schoolId||''; MY_SCHOOL_NAME=d.schoolName||'ALL Schools'; MY_UID=u.uid; MY_NAME=d.name||u.email; if(!['SUPER_ADMIN','SCHOOL_ADMIN','PRINCIPAL'].includes(MY_ROLE)){ alert('🔒 Finance is for School Admin / Principal / Super Admin.\nYou are: '+MY_ROLE+'\nGoing to your page: '+getPageForRole(MY_ROLE)); window.location.href=getPageForRole(MY_ROLE); return; } el.innerHTML='✅ <b>'+MY_NAME+'</b> — '+MY_ROLE+' • '+MY_SCHOOL_NAME; document.getElementById('schoolNameLine').textContent=MY_SCHOOL_NAME+' • '+MY_ROLE; document.getElementById('schoolAdminBtn').style.display=(MY_ROLE==='SCHOOL_ADMIN'?'inline-block':'none'); document.getElementById('superAdminBtn').style.display=(MY_ROLE==='SUPER_ADMIN'?'inline-block':'none'); document.getElementById('finDate').value=new Date().toISOString().slice(0,10); document.getElementById('finYear').value=String(new Date().getFullYear()); document.getElementById('mainContent').style.display='block'; onCatChange(); loadAll(); }); });
+load();
 </script></body></html>
