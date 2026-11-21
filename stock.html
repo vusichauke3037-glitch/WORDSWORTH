@@ -1,115 +1,442 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Stock - Makhanani LTSM 2.0</title>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#0a1f4d}
-header{background:#0a1f4d;color:#fff;padding:14px 12px;text-align:center;border-bottom:4px solid #d4af37}
-header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;color:#d4af37}
-.wrap{max-width:1000px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-h2{margin:0 0 10px;font-size:16px}label{font-weight:900;font-size:13px;display:block;margin-top:12px}
-input,select{width:100%;padding:14px;border:2px solid #0a1f4d;border-radius:8px;font-size:16px;font-weight:700;background:#fff;color:#0a1f4d;cursor:pointer}
-input{cursor:text}.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:13px}.btn-full{width:100%;margin-top:12px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-red{background:#ef4444;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-purple{background:#7c3aed;color:#fff}.btn-orange{background:#ea580c;color:#fff}
-.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6;margin-top:10px}.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
-.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.kpi div{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2)}.kpi b{font-size:20px;display:block}.kpi span{font-size:11px;font-weight:900;color:#64748b}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#0a1f4d;color:#fff}
-@media(max-width:700px){.kpi{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column}}
-</style></head>
-<body>
-<header><h1>📦 STOCK — MAKHANANI LTSM 2.0</h1><p>STOCK COUNT — ALL CAPS SUBJECTS — INTERMEDIATE (4-6) TO FET (10-12) — CLASSES A TO J — 4A TO 12J — GRADES 4-12</p>
-<div id="taskbar"></div><script src="nav.js"></script>
-<script>guardPage(2,'Stock');</script>
-</header>
-<div class="wrap">
-<div class="info" id="roleInfo">Loading...</div>
-<div class="kpi"><div><b id="kpiTotal">0</b><span>📚 TOTAL BOOKS</span></div><div><b id="kpiAvail">0</b><span>📗 AVAILABLE</span></div><div><b id="kpiIssued">0</b><span>📕 ISSUED</span></div><div><b id="kpiTitles">0</b><span>📖 TITLES</span></div></div>
+<title>Stock - Makhanani LTSM 2.0 - Xintimani Group</title>
+<link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#0a1f4d">
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+  const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth=firebase.auth(); const db=firebase.database();
+</script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0a1f4d;color:#0a1f4d}.wrap{max-width:1150px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}.card h1{margin:0;font-size:20px;text-align:center}.card h2{margin:14px 0 8px;font-size:16px}.card p,.card li{font-size:13px;line-height:1.7}label{font-weight:900;font-size:12px;display:block;margin-top:10px}input,select{width:100%;padding:12px;border:2px solid #0a1f4d;border-radius:8px;font-size:14px}.btn{border:none;border-radius:8px;padding:12px 14px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}.btn-orange{background:#ea580c;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-red{background:#dc2626;color:#fff}.nav{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0}.nav button{border:none;border-radius:20px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:11px;background:#2a4a8a;color:#fff}.nav button.gold{background:#d4af37;color:#0a1f4d}.nav button.teal{background:#0d9488;color:#fff}.nav button.purple{background:#7c3aed;color:#fff}.nav button.orange{background:#ea580c;color:#fff}.nav button.red{background:#dc2626;color:#fff}.nav button.green{background:#16a34a;color:#fff}.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6}.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px}.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px}.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;text-align:center}.kpi div{background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px}.kpi b{font-size:22px;display:block}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bigbtn{width:100%;padding:16px;font-size:14px}@media(max-width:600px){.kpi{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}@media print{.no-print{display:none!important}.card{box-shadow:none;border:1px solid #000}}</style></head>
+<body><div class="wrap">
 
-<div class="card"><h2>➕ Add Book To Stock — Quick — Same As Librarian</h2>
-<div class="info">Pick Subject (ALL CAPS) + Grade (4-12) → Title auto. Books have NO class — A title like MATHEMATICS GRADE 10 is used by <b>all Grade 10 classes: 10A to 10J</b>.</div>
-<div class="row"><div><label>📚 Subject — ALL CAPS *</label><select id="bookSubject" onchange="onSubjectGrade()"><option value="">-- SUBJECT — ALL CAPS --</option></select></div><div><label>🎓 Grade — 4 To 12 *</label><select id="bookGrade" onchange="onSubjectGrade()"><option value="">-- GRADE — 4 TO 12 --</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>📖 Title — Auto</label><input id="bookTitle" readonly placeholder="Pick Subject + Grade" style="background:#f1f5f9"></div><div><label>🔢 Qty</label><input id="bookQty" type="number" value="1" min="1" max="100"></div></div>
-<button class="btn btn-green btn-full" onclick="addBook()">📚 ADD TO STOCK →</button><div id="addMsg"></div>
+<!-- HEADER -->
+<div class="card no-print" style="text-align:center;padding-bottom:10px">
+<img src="logo.png" alt="Xintimani Group Holdings (PTY)Ltd" style="max-width:220px;width:90%;height:auto;display:block;margin:0 auto">
+<div style="font-size:11px;line-height:1.6">Reg: 2026/934898/07 • Tel: 078 023 3263 • Email: vusichauke3037@gmail.com<br>Directors: Vusi Chauke &amp; Hloniphani Success Masia</div>
+<h1>📦 STOCK — MAKHANANI LTSM 2.0</h1>
+<p style="color:#64748b;font-size:12px" id="schoolNameLine">Loading...</p>
+<div class="nav">
+<button class="gold" onclick="window.location.href='index.html'">🏠 HOME</button>
+<button class="green" onclick="window.location.href='school_admin.html?v=9999'" id="schoolAdminBtn">🏫 SCHOOL ADMIN →</button>
+<button class="purple" onclick="window.location.href='super_admin.html?v=9999'" id="superAdminBtn">👑 SUPER ADMIN →</button>
+<button class="orange" onclick="window.location.href='issue.html?v=9999'">📦 ISSUE →</button>
+<button class="teal" onclick="window.location.href='learner.html?v=9999'">👨‍🎓 LEARNERS →</button>
+<button class="purple" onclick="window.location.href='manuals.html#stock'">📖 MANUAL →</button>
+<button class="red" onclick="doLogout()">🚪 LOGOUT</button>
+</div>
+<div class="info" id="whoAmI">Checking login...</div>
+<div id="msg"></div>
 </div>
 
-<div class="card"><h2>📦 Stock List — Filter By Subject + Grade + Class That Uses It (A-J)</h2>
-<div class="row"><div><label>🔍 Search</label><input id="searchStock" placeholder="🔍 Title / Barcode" oninput="renderStock()"></div><div><label>📚 Filter Subject — ALL CAPS</label><select id="filterSubject" onchange="renderStock()"><option value="">📚 ALL SUBJECTS</option></select></div><div><label>🎓 Filter Grade — 4 To 12</label><select id="filterGrade" onchange="renderStock()"><option value="">🎓 ALL GRADES — 4 TO 12</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>🏫 Filter Class That Uses Title — A To J</label><select id="filterClass" onchange="renderStock()"><option value="">🏫 ALL CLASSES — 4A TO 12J — 90 CLASSES</option></select></div><div><label>📊 Filter Status</label><select id="filterStatus" onchange="renderStock()"><option value="">📊 ALL STATUS</option><option>AVAILABLE</option><option>ISSUED</option><option>LOST</option><option>DAMAGED</option></select></div></div>
-<div id="stockInfo" class="info">Loading...</div>
-<div class="row"><button class="btn btn-teal" onclick="window.print()">🖨️ PRINT STOCK</button><button class="btn btn-gold" onclick="exportCSV()">📥 EXPORT STOCK CSV</button><button class="btn btn-purple" onclick="go('librarian.html')">📚 GO TO LIBRARIAN →</button></div>
-<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Barcode</th><th>Title — ALL CAPS</th><th>Subject / Grade</th><th>Classes That Use It — A-J</th><th>Status</th><th>Issued To</th><th>Action</th></tr></thead><tbody id="stockTable"></tbody></table></div></div>
+<!-- ⏱️ VIEW AS TIMER -->
+<div id="viewAsTimerStock" style="display:none" class="card no-print">
+<div style="background:#7c3aed;color:#fff;border-radius:10px;padding:12px;text-align:center">
+👁️ VIEW AS: <b id="viewAsStockSchool2">—</b> • ⏱️ Time Left: <b id="viewAsTimerStockText" style="font-size:18px">30:00</b> • <button class="btn btn-gold" onclick="extendViewAsStock()">⏱️ EXTEND +30 MIN</button> <button class="btn btn-grey" onclick="exitViewAsStock()">🚪 EXIT VIEW</button> <button class="btn btn-grey" onclick="window.location.href='school_admin.html?v=9999'">🏫 BACK TO SCHOOL ADMIN →</button>
+</div>
+</div>
+
+<!-- 🔒 LOCKED -->
+<div id="lockedBannerStock" style="display:none" class="card no-print">
+<div style="background:#dc2626;color:#fff;border-radius:10px;padding:12px;text-align:center">
+<div style="font-size:15px;font-weight:900">🔒 SCHOOL LOCKED — SUPER ADMIN IS VIEWING AS YOU</div>
+<div style="font-size:12px;margin-top:4px">Super Admin: <b id="lockedByStock">—</b> • You CANNOT Add / Edit / Delete / Bulk Upload books while locked.<br>You CAN still view stock.</div>
+<div style="margin-top:8px"><button class="btn btn-gold" onclick="checkStockLock(true)">🔄 CHECK IF UNLOCKED</button></div>
+</div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="card no-print" id="mainContent" style="display:none"><h2>📊 Stock Dashboard — Grouped</h2>
+<div class="kpi"><div><b id="kBooks">—</b>Titles</div><div><b id="kQty">—</b>Total Qty</div><div><b id="kAvail">—</b>Available</div><div><b id="kSchools">—</b>Schools (Super Admin)</div></div>
+<div style="margin-top:10px"><button class="btn btn-purple" onclick="window.print()">🖨️ PRINT STOCK LIST →</button> <button class="btn btn-teal" onclick="exportBooks()">📤 EXPORT TO EXCEL →</button> <button class="btn btn-grey" onclick="loadAll()">🔄 REFRESH</button> <button class="btn btn-orange" onclick="fixOldBooks()">🔧 FIX OLD BOOKS (Add Group/Dept) →</button></div>
+<label style="margin-top:12px" id="schoolFilterLabel">Filter By School (Super Admin Only)</label>
+<select id="schoolFilter" onchange="renderBooks()"><option value="">ALL SCHOOLS</option></select>
+<div class="info" style="margin-top:10px">📁 <b>How Stock Is Organized:</b> GROUP → DEPARTMENT → GRADE → SUBJECT<br>FOUNDATION (R-3) • INTERMEDIATE (4-6) • SENIOR (7-9) • FET (10-12)<br>Group + Department are auto-calculated from Grade + Subject. You never type them.</div>
+</div>
+
+<!-- ADD BOOK -->
+<div class="card no-print" id="addCard" style="display:none"><h2>➕ Add Book — Group + Department Auto-Filled</h2>
+<div class="info" id="addInfo">Books you add are auto-locked to YOUR school. Group + Department auto-calculated.</div>
+<div class="row"><div><label>Title *</label><input id="bTitle" placeholder="e.g. English Grade 5 Learner Book"></div><div><label>Book No * (e.g. ENG-5-001)</label><input id="bBookNo" placeholder="ENG-5-001"></div></div>
+<div class="row"><div><label>Grade *</label><select id="bGrade" onchange="previewGroupDept()"><option value="">— Choose —</option><option value="R">R</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div><div><label>Subject *</label><select id="bSubject" onchange="previewGroupDept()"><option value="">— Choose —</option><option value="English">English</option><option value="Sepedi">Sepedi</option><option value="Xitsonga">Xitsonga</option><option value="Afrikaans">Afrikaans</option><option value="Maths">Maths</option><option value="Maths Lit">Maths Lit</option><option value="Natural Sciences">Natural Sciences</option><option value="Physical Sciences">Physical Sciences</option><option value="Life Sciences">Life Sciences</option><option value="Social Sciences">Social Sciences</option><option value="History">History</option><option value="Geography">Geography</option><option value="Life Skills">Life Skills</option><option value="Life Orientation">Life Orientation</option><option value="Accounting">Accounting</option><option value="Business Studies">Business Studies</option><option value="Economics">Economics</option><option value="Technology">Technology</option><option value="EMS">EMS</option><option value="Other">Other</option></select></div></div>
+<div id="groupDeptPreview" class="ok" style="margin-top:10px;display:none"></div>
+<div class="row"><div><label>Qty *</label><input id="bQty" type="number" min="1" value="1"></div><div><label>School *</label><select id="bSchool"><option value="">Loading schools...</option></select></div></div>
+<button class="btn btn-green" id="addBookBtn" style="margin-top:12px" onclick="addBook()">➕ ADD BOOK →</button>
+<div id="addMsg"></div>
+</div>
+
+<!-- BULK UPLOAD -->
+<div class="card no-print" id="bulkCard" style="display:none"><h2>📤 Bulk Upload Books (Excel) — Group + Dept Auto-Added</h2>
+<div class="info">Excel columns: <b>Title, BookNo, Grade, Subject, Qty</b> — First row = header. Group + Department auto-calculated from Grade + Subject. Books auto-locked to YOUR school (or chosen school if Super Admin).</div>
+<label>Choose Excel File (.xlsx)</label><input id="bulkFile" type="file" accept=".xlsx,.xls,.csv">
+<button class="btn btn-green" id="bulkUploadBtn" style="margin-top:12px" onclick="bulkUpload()">📤 BULK UPLOAD →</button>
+<div id="bulkMsg"></div>
+<div style="margin-top:10px"><button class="btn btn-grey" onclick="downloadBookTemplate()">📄 DOWNLOAD TEMPLATE</button></div>
+</div>
+
+<!-- FILTERS + LIST -->
+<div class="card" id="listCard" style="display:none"><h2>📋 Books List — Grouped By Group → Department → Grade → Subject</h2>
+<div class="row"><div><label>Filter: Group</label><select id="groupFilter" onchange="renderBooks()"><option value="">ALL GROUPS</option><option>FOUNDATION PHASE</option><option>INTERMEDIATE PHASE</option><option>SENIOR PHASE</option><option>FET PHASE</option><option>OTHER</option></select></div><div><label>Filter: Department</label><select id="deptFilter" onchange="renderBooks()"><option value="">ALL DEPARTMENTS</option><option>Languages</option><option>Maths & Science</option><option>Humanities / Commerce</option><option>Life Skills</option><option>Other</option></select></div></div>
+<div class="row"><div><label>Filter: Grade</label><select id="gradeFilter" onchange="renderBooks()"><option value="">ALL GRADES</option><option>R</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>Filter: Subject</label><select id="subjectFilter" onchange="renderBooks()"><option value="">ALL SUBJECTS</option><option>English</option><option>Sepedi</option><option>Xitsonga</option><option>Afrikaans</option><option>Maths</option><option>Maths Lit</option><option>Natural Sciences</option><option>Physical Sciences</option><option>Life Sciences</option><option>Social Sciences</option><option>History</option><option>Geography</option><option>Life Skills</option><option>Life Orientation</option><option>Accounting</option><option>Business Studies</option><option>Economics</option><option>Technology</option><option>EMS</option><option>Other</option></select></div></div>
+<label style="margin-top:10px">Search (Title / Book No / Grade / Subject / School)</label><input id="bookQ" placeholder="Type title / book no..." oninput="renderBooks()">
+<div id="booksList">Loading books...</div>
+</div>
+
+<div class="card no-print" style="text-align:center"><div style="border-top:3px solid #d4af37;padding:12px 8px;background:#f8fafc;border-radius:8px"><b>XINTIMANI GROUP HOLDINGS (PTY)Ltd</b><br><span style="font-size:11px">Reg: 2026/934898/07 • Directors: Vusi Chauke &amp; Hloniphani Success Masia<br>Tel: 078 023 3263 • Email: vusichauke3037@gmail.com<br>Makhanani LTSM 2.0 — V2.51 Final • Due: 30 Nov Every Year</span></div><div style="margin-top:10px"><button class="btn btn-grey" onclick="clearCache()">🧹 CLEAR CACHE</button> <button class="btn btn-grey" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
 <script>
-const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
-if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const rtdb=firebase.database();
-function toCaps(s){return String(s||'').trim().toUpperCase();}
-function norm(s){return String(s||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');}
-function pad(n,l){return String(n).padStart(l,'0');}
-let user=null;try{user=JSON.parse(localStorage.getItem('makhanani_user')||'null');}catch(e){}
-let mySchoolId=user?.schoolId||'WHS';
-const SUBJECT_GROUPS=[
-  {label:'INTERMEDIATE — GRADES 4-6', items:['ENGLISH HOME LANGUAGE','ENGLISH FIRST ADDITIONAL LANGUAGE','AFRIKAANS HOME LANGUAGE','AFRIKAANS FIRST ADDITIONAL LANGUAGE','ISIZULU HOME LANGUAGE','ISIXHOSA HOME LANGUAGE','SESOTHO HOME LANGUAGE','SETSWANA HOME LANGUAGE','MATHEMATICS','NATURAL SCIENCES AND TECHNOLOGY','SOCIAL SCIENCES','LIFE SKILLS']},
-  {label:'SENIOR — GRADES 7-9', items:['NATURAL SCIENCES','ECONOMIC AND MANAGEMENT SCIENCES','TECHNOLOGY','CREATIVE ARTS','LIFE ORIENTATION']},
-  {label:'FET — GRADES 10-12', items:['MATHEMATICAL LITERACY','TECHNICAL MATHEMATICS','PHYSICAL SCIENCES','TECHNICAL SCIENCES','LIFE SCIENCES','AGRICULTURAL SCIENCES','ACCOUNTING','BUSINESS STUDIES','ECONOMICS','HISTORY','GEOGRAPHY','TOURISM','CONSUMER STUDIES','COMPUTER APPLICATIONS TECHNOLOGY','INFORMATION TECHNOLOGY','ENGINEERING GRAPHICS AND DESIGN','VISUAL ARTS','DRAMATIC ARTS','MUSIC','PHYSICAL EDUCATION','RELIGION STUDIES']}
-];
-const ALL_SUBJECTS=[...new Set(SUBJECT_GROUPS.flatMap(g=>g.items))];
-// --- CLASSES A TO J — 90 CLASSES — SAME AS ALL OTHER FILES ---
-const ALL_CLASSES=['4A','4B','4C','4D','4E','4F','4G','4H','4I','4J','5A','5B','5C','5D','5E','5F','5G','5H','5I','5J','6A','6B','6C','6D','6E','6F','6G','6H','6I','6J','7A','7B','7C','7D','7E','7F','7G','7H','7I','7J','8A','8B','8C','8D','8E','8F','8G','8H','8I','8J','9A','9B','9C','9D','9E','9F','9G','9H','9I','9J','10A','10B','10C','10D','10E','10F','10G','10H','10I','10J','11A','11B','11C','11D','11E','11F','11G','11H','11I','11J','12A','12B','12C','12D','12E','12F','12G','12H','12I','12J'];
-function classesForGrade(grade){ return ALL_CLASSES.filter(c=>c.replace(/[^0-9]/g,'')===String(grade)); }
-let books=[];
-function go(p){ window.location.href=p; }
-function demoBooks(){
-  let list=[]; let n=1;
-  [['ENGLISH HOME LANGUAGE','4'],['MATHEMATICS','5'],['NATURAL SCIENCES AND TECHNOLOGY','6'],['SOCIAL SCIENCES','7'],['NATURAL SCIENCES','8'],['ECONOMIC AND MANAGEMENT SCIENCES','9'],['MATHEMATICS','10'],['PHYSICAL SCIENCES','11'],['HISTORY','12']].forEach(([sub,gr])=>{
-    for(let i=1;i<=3;i++) list.push({barcode:'WHS'+pad(n++,6),title:toCaps(sub)+' GRADE '+gr,subject:toCaps(sub),grade:String(gr),status:'AVAILABLE',issuedTo:''});
-  });
-  return list;
+if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }); }
+function clearCache(){ localStorage.clear(); location.href='stock.html?v='+Date.now(); }
+function doLogout(){
+  sessionStorage.setItem('makhanani_just_logged_out','1');
+  sessionStorage.removeItem('makhanani_impersonate');
+  if(STOCK_VIEW_AS_TIMER) clearInterval(STOCK_VIEW_AS_TIMER);
+  if(STOCK_FORCE_EXIT_CHECKER) clearInterval(STOCK_FORCE_EXIT_CHECKER);
+  auth.signOut().then(function(){ localStorage.removeItem('makhanani_user'); window.location.href='login.html?v=9999'; });
 }
-function loadAll(){
-  document.getElementById('roleInfo').innerHTML=`📦 <b>${toCaps(user?.name||'LIBRARIAN')}</b> — STOCK — School: <b>${mySchoolId}</b><br>Sees ALL subjects — <b>${ALL_SUBJECTS.length} ALL CAPS</b> — Intermediate to FET — Grades 4-12 — Classes <b>4A to 12J — A to J — 90 classes</b>.<br>Books have NO class — A Grade 10 title is used by 10A, 10B, 10C, 10D, 10E, 10F, 10G, 10H, 10I, 10J.`;
-  let html='<option value="">-- SUBJECT — ALL CAPS --</option>';
-  SUBJECT_GROUPS.forEach(g=>{ html+=`<optgroup label="${g.label}">${g.items.map(s=>`<option>${s}</option>`).join('')}</optgroup>`; });
-  document.getElementById('bookSubject').innerHTML=html;
-  let fHtml='<option value="">📚 ALL SUBJECTS — ALL CAPS</option>';
-  SUBJECT_GROUPS.forEach(g=>{ fHtml+=`<optgroup label="${g.label}">${g.items.map(s=>`<option>${s}</option>`).join('')}</optgroup>`; });
-  document.getElementById('filterSubject').innerHTML=fHtml;
-  document.getElementById('filterClass').innerHTML='<option value="">🏫 ALL CLASSES — 4A TO 12J — 90 CLASSES</option>'+ALL_CLASSES.map(c=>`<option>${c}</option>`).join('');
-  books=demoBooks();
-  try{ rtdb.ref('stock/'+mySchoolId).once('value').then(s=>{ if(s.val()) books=Object.values(s.val()).map(b=>({...b,subject:toCaps(b.subject),title:toCaps(b.title),grade:String(b.grade),status:toCaps(b.status||'AVAILABLE')})); renderStock(); }).catch(()=>{}); }catch(e){}
-  renderStock();
+let MY_ROLE='', MY_SCHOOL_ID='', MY_SCHOOL_NAME='';
+let ALL_BOOKS=[], ALL_SCHOOLS=[], ALL_ISSUES=[];
+let IS_VIEW_AS=false, VIEW_AS_DATA=null;
+function toArr(o){ return Object.entries(o||{}).map(function([id,v]){ v._id=id; return v; }); }
+function filterBySchool(allItems){
+  if(MY_ROLE==='SUPER_ADMIN' && !IS_VIEW_AS) return allItems;
+  return allItems.filter(function(item){ return item.schoolId===MY_SCHOOL_ID; });
 }
-function onSubjectGrade(){
-  let sub=document.getElementById('bookSubject').value; let grade=document.getElementById('bookGrade').value;
-  document.getElementById('bookTitle').value=(sub&&grade)?`${toCaps(sub)} GRADE ${grade}`:'';
+// --- GROUP / DEPARTMENT AUTO-MAP ---
+function getGroupForGrade(grade){
+  var g=String(grade||'').trim().toUpperCase();
+  if(['R','1','2','3'].includes(g)) return 'FOUNDATION PHASE';
+  if(['4','5','6'].includes(g)) return 'INTERMEDIATE PHASE';
+  if(['7','8','9'].includes(g)) return 'SENIOR PHASE';
+  if(['10','11','12'].includes(g)) return 'FET PHASE';
+  return 'OTHER';
 }
-function nextBarcode(){ let max=0; books.forEach(b=>{ let m=String(b.barcode||'').match(/(\d+)$/); if(m) max=Math.max(max,parseInt(m[1],10)); }); return 'WHS'+pad(max+1,6); }
+function getDeptForSubject(subject){
+  var s=String(subject||'').trim().toLowerCase();
+  if(['english','sepedi','xitsonga','afrikaans','isizulu','setswana','sesotho'].includes(s)) return 'Languages';
+  if(['maths','mathematics','maths lit','mathematical literacy','natural sciences','physical sciences','life sciences','technology','physical science'].includes(s)) return 'Maths & Science';
+  if(['social sciences','history','geography','ems','economic management sciences','accounting','business studies','economics'].includes(s)) return 'Humanities / Commerce';
+  if(['life skills','life orientation'].includes(s)) return 'Life Skills';
+  return 'Other';
+}
+function enrichBook(b){
+  if(!b.group) b.group=getGroupForGrade(b.grade);
+  if(!b.department) b.department=getDeptForSubject(b.subject);
+  return b;
+}
+function previewGroupDept(){
+  var grade=document.getElementById('bGrade').value;
+  var subj=document.getElementById('bSubject').value;
+  var el=document.getElementById('groupDeptPreview');
+  if(!grade||!subj){ el.style.display='none'; return; }
+  var g=getGroupForGrade(grade); var d=getDeptForSubject(subj);
+  el.style.display='block';
+  el.innerHTML='📁 Will Save As: <b>'+g+'</b> → 🗂️ <b>'+d+'</b> → 🎓 Grade <b>'+grade+'</b> → 📖 <b>'+subj+'</b>';
+}
+async function fixOldBooks(){
+  if(!confirm('🔧 FIX OLD BOOKS?\n\nThis adds Group + Department to all books that are missing them.\n\nContinue?')) return;
+  try{
+    var snap=await db.ref('books').once('value'); var all=snap.val()||{}; var count=0;
+    for(var id in all){
+      var b=all[id];
+      if(!b.group || !b.department){
+        await db.ref('books/'+id).update({ group:getGroupForGrade(b.grade), department:getDeptForSubject(b.subject) });
+        count++;
+      }
+    }
+    alert('✅ Fixed '+count+' old books with Group + Department');
+    loadAll();
+  }catch(e){ alert('❌ '+e.message); }
+}
+// --- VIEW AS TIMER ---
+let STOCK_VIEW_AS_TIMER=null, STOCK_FORCE_EXIT_CHECKER=null;
+function startViewAsTimerStock(){
+  var impStr=sessionStorage.getItem('makhanani_impersonate'); if(!impStr) return;
+  try{
+    var imp=JSON.parse(impStr); var expiry=imp.expiresAt; if(!expiry) return;
+    document.getElementById('viewAsTimerStock').style.display='block';
+    document.getElementById('viewAsStockSchool2').textContent=imp.schoolName;
+    if(STOCK_VIEW_AS_TIMER) clearInterval(STOCK_VIEW_AS_TIMER);
+    STOCK_VIEW_AS_TIMER=setInterval(function(){
+      var left=expiry-Date.now();
+      if(left<=0){ clearInterval(STOCK_VIEW_AS_TIMER); autoExitViewAsStock(); return; }
+      var mins=Math.floor(left/60000); var secs=Math.floor((left%60000)/1000);
+      document.getElementById('viewAsTimerStockText').textContent=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+      if(left<=5*60*1000 && !window._stockWarned){ window._stockWarned=true; alert('⏱️ VIEW AS — 5 MIN LEFT\n\nTap EXTEND +30 MIN or EXIT VIEW.'); }
+    },1000);
+  }catch(e){}
+}
+async function extendViewAsStock(){
+  var impStr=sessionStorage.getItem('makhanani_impersonate'); if(!impStr) return;
+  var imp=JSON.parse(impStr);
+  imp.expiresAt=Date.now()+(30*60*1000);
+  sessionStorage.setItem('makhanani_impersonate', JSON.stringify(imp));
+  if(imp.logId){
+    await db.ref('viewAsLogs/'+imp.logId).update({ expiresAt:imp.expiresAt, expiresAtStr:new Date(imp.expiresAt).toLocaleString() });
+    await db.ref('schoolNotifications').push({ schoolId:imp.schoolId, schoolName:imp.schoolName, type:'EXTENDED', title:'⏱️ VIEW AS EXTENDED — +30 Min', message:'Super Admin extended View As for '+imp.schoolName+' by +30 min. New expiry: '+new Date(imp.expiresAt).toLocaleString()+'. School remains LOCKED.', logId:imp.logId, from:imp.superAdminEmail, fromName:'Super Admin', at:Date.now(), atStr:new Date().toLocaleString(), read:false });
+    await db.ref('viewAsActions').push({ logId:imp.logId, superAdminUid:imp.superAdminUid, superAdminEmail:imp.superAdminEmail, schoolId:imp.schoolId, schoolName:imp.schoolName, action:'Extended Session', detail:'Extended +30 min from Stock page', at:Date.now(), atStr:new Date().toLocaleString() });
+  }
+  window._stockWarned=false; alert('✅ Extended +30 MIN'); startViewAsTimerStock();
+}
+async function unlockStockSchool(imp){ if(imp && imp.schoolId){ try{ await db.ref('schools/'+imp.schoolId).update({ lockedByViewAs:false, lockedBy:'', lockedByName:'', lockedAt:null, lockedAtStr:'', lockedLogId:'', lockedExpiresAt:null }); }catch(e){} } }
+async function exitViewAsStock(){
+  var impStr=sessionStorage.getItem('makhanani_impersonate');
+  if(impStr){
+    try{
+      var imp=JSON.parse(impStr);
+      if(imp.logId){
+        var durSec=Math.round((Date.now()-imp.startedAt)/1000);
+        await db.ref('viewAsLogs/'+imp.logId).update({ endedAt:Date.now(), endedAtStr:new Date().toLocaleString(), durationSec:durSec, durationStr:Math.floor(durSec/60)+' min '+(durSec%60)+' sec', status:'ENDED', exitReason:'MANUAL_EXIT' });
+        await db.ref('schoolNotifications').push({ schoolId:imp.schoolId, schoolName:imp.schoolName, type:'UNLOCKED', title:'✅ UNLOCKED — Super Admin Finished Viewing', message:'Super Admin finished Viewing As '+imp.schoolName+'. You are now UNLOCKED.', logId:imp.logId, from:imp.superAdminEmail, fromName:'Super Admin', at:Date.now(), atStr:new Date().toLocaleString(), read:false });
+        await db.ref('viewAsActions').push({ logId:imp.logId, superAdminUid:imp.superAdminUid, superAdminEmail:imp.superAdminEmail, schoolId:imp.schoolId, schoolName:imp.schoolName, action:'Exited View As', detail:'Manual exit from Stock page', at:Date.now(), atStr:new Date().toLocaleString() });
+      }
+      await unlockStockSchool(imp);
+    }catch(e){}
+  }
+  sessionStorage.removeItem('makhanani_impersonate'); window.location.href='super_admin.html?v=9999';
+}
+async function autoExitViewAsStock(){
+  var impStr=sessionStorage.getItem('makhanani_impersonate');
+  if(impStr){
+    try{
+      var imp=JSON.parse(impStr);
+      if(imp.logId){
+        var durSec=Math.round((Date.now()-imp.startedAt)/1000);
+        await db.ref('viewAsLogs/'+imp.logId).update({ endedAt:Date.now(), endedAtStr:new Date().toLocaleString(), durationSec:durSec, durationStr:Math.floor(durSec/60)+' min '+(durSec%60)+' sec', status:'AUTO-EXITED (Timeout)', exitReason:'TIMEOUT' });
+        await db.ref('schoolNotifications').push({ schoolId:imp.schoolId, schoolName:imp.schoolName, type:'AUTO_EXITED', title:'⏱️ UNLOCKED — View As Timed Out (30 Min)', message:'Super Admin View As session for '+imp.schoolName+' timed out after 30 min and auto-exited. You are now UNLOCKED.', logId:imp.logId, from:imp.superAdminEmail, fromName:'Super Admin', at:Date.now(), atStr:new Date().toLocaleString(), read:false });
+      }
+      await unlockStockSchool(imp);
+    }catch(e){}
+  }
+  sessionStorage.removeItem('makhanani_impersonate'); alert('⏱️ VIEW AS SESSION ENDED\n\nAuto-exited after 30 min.'); window.location.href='super_admin.html?v=9999';
+}
+function startForceExitCheckerStock(){
+  var impStr=sessionStorage.getItem('makhanani_impersonate'); if(!impStr) return;
+  try{
+    var imp=JSON.parse(impStr); if(!imp.logId) return;
+    if(STOCK_FORCE_EXIT_CHECKER) clearInterval(STOCK_FORCE_EXIT_CHECKER);
+    STOCK_FORCE_EXIT_CHECKER=setInterval(async function(){
+      try{
+        var snap=await db.ref('viewAsLogs/'+imp.logId).once('value'); var data=snap.val(); if(!data) return;
+        if(data.forceExit===true || data.status==='FORCE-EXITED'){
+          clearInterval(STOCK_FORCE_EXIT_CHECKER); if(STOCK_VIEW_AS_TIMER) clearInterval(STOCK_VIEW_AS_TIMER);
+          sessionStorage.removeItem('makhanani_impersonate');
+          alert('🚨 VIEW AS SESSION FORCE-EXITED\n\nSuper Admin ('+(data.forceExitBy||'Super Admin')+') force-exited this session.');
+          window.location.href='super_admin.html?v=9999';
+        }
+      }catch(e){}
+    },10000);
+  }catch(e){}
+}
+// --- LOCK ---
+async function checkStockLock(showAlert){
+  var impStr=sessionStorage.getItem('makhanani_impersonate'); if(impStr) return false;
+  if(!MY_SCHOOL_ID) return false;
+  try{
+    var snap=await db.ref('schools/'+MY_SCHOOL_ID).once('value'); var data=snap.val()||{};
+    if(data.lockedByViewAs===true){
+      document.getElementById('lockedBannerStock').style.display='block';
+      document.getElementById('lockedByStock').textContent=data.lockedBy||'Super Admin';
+      disableStockWrite(true);
+      if(showAlert) alert('🔒 BLOCKED — SCHOOL LOCKED\n\nSuper Admin ('+(data.lockedBy||'')+') is Viewing As your school.\nYou cannot add / edit / delete books while locked.\nYou can still view stock.');
+      return true;
+    } else { document.getElementById('lockedBannerStock').style.display='none'; disableStockWrite(false); return false; }
+  }catch(e){ return false; }
+}
+function disableStockWrite(disabled){
+  ['addBookBtn','bulkUploadBtn'].forEach(function(id){ var el=document.getElementById(id); if(el){ el.disabled=disabled; el.style.opacity=disabled?'0.5':'1'; } });
+  document.querySelectorAll('#addCard input, #addCard select, #bulkCard input').forEach(function(inp){ inp.disabled=disabled; });
+  document.querySelectorAll('.editBookBtn, .deleteBookBtn').forEach(function(b){ b.disabled=disabled; b.style.opacity=disabled?'0.5':'1'; });
+}
+async function logViewAsActionStock(action, detail){
+  var impStr=sessionStorage.getItem('makhanani_impersonate'); if(!impStr) return;
+  try{
+    var imp=JSON.parse(impStr); if(!imp.logId) return;
+    await db.ref('viewAsActions').push({ logId:imp.logId, superAdminUid:imp.superAdminUid, superAdminEmail:imp.superAdminEmail, schoolId:MY_SCHOOL_ID, schoolName:MY_SCHOOL_NAME, action:action, detail:detail, at:Date.now(), atStr:new Date().toLocaleString() });
+    var snap=await db.ref('viewAsLogs/'+imp.logId).once('value'); var cur=snap.val()||{};
+    await db.ref('viewAsLogs/'+imp.logId).update({ actionsCount:(cur.actionsCount||0)+1 });
+  }catch(e){}
+}
+// --- ADD / EDIT / DELETE / BULK ---
 async function addBook(){
-  let sub=document.getElementById('bookSubject').value; let grade=document.getElementById('bookGrade').value; let title=document.getElementById('bookTitle').value; let qty=parseInt(document.getElementById('bookQty').value||'1',10);
-  let msg=document.getElementById('addMsg');
-  if(!sub||!grade||!title){ msg.innerHTML='<div class="warn">⚠️ Pick Subject (ALL CAPS) + Grade (4-12).</div>'; return; }
-  if(isNaN(qty)||qty<1) qty=1; if(qty>100) qty=100;
-  let added=[];
-  for(let i=0;i<qty;i++){ let code=nextBarcode(); let rec={barcode:code,title:toCaps(title),subject:toCaps(sub),grade:String(grade),status:'AVAILABLE',issuedTo:'',schoolId:mySchoolId,date:new Date().toISOString().slice(0,10)}; try{ await rtdb.ref('stock/'+mySchoolId+'/'+norm(code)).set(rec); }catch(e){} books.push(rec); added.push(code); }
-  msg.innerHTML=`<div class="ok">✅ ADDED — ${added.length}x <b>${toCaps(title)}</b> — Used by ${classesForGrade(grade).join(', ')} — Barcodes: ${added.join(', ')}</div>`;
-  renderStock();
+  if(await checkStockLock(true)) return;
+  var msg=document.getElementById('addMsg');
+  try{
+    var title=document.getElementById('bTitle').value.trim(), bookNo=document.getElementById('bBookNo').value.trim(), grade=document.getElementById('bGrade').value, subject=document.getElementById('bSubject').value, qty=parseInt(document.getElementById('bQty').value)||1;
+    var schoolId=document.getElementById('bSchool').value;
+    if(!title||!bookNo||!grade||!subject){ msg.innerHTML='<div class="warn">❌ Fill Title + Book No + Grade + Subject</div>'; return; }
+    if(!schoolId){ msg.innerHTML='<div class="warn">❌ Choose School</div>'; return; }
+    if(qty<1) qty=1;
+    var schoolName=ALL_SCHOOLS.find(function(s){ return s._id===schoolId; })?.name||schoolId;
+    var group=getGroupForGrade(grade); var dept=getDeptForSubject(subject);
+    msg.innerHTML='<div class="info">Adding book...</div>';
+    await db.ref('books').push({ title:title, bookNo:bookNo, grade:grade, subject:subject, group:group, department:dept, totalQty:qty, status:'Available', schoolId:schoolId, schoolName:schoolName, createdAt:Date.now(), createdBy: auth.currentUser?auth.currentUser.email:'' });
+    msg.innerHTML='<div class="ok">✅ Book Added: <b>'+title+'</b> ('+bookNo+') — Qty: '+qty+'<br>📁 '+group+' → 🗂️ '+dept+' → Grade '+grade+' → '+subject+' — School: <b>'+schoolName+'</b></div>';
+    document.getElementById('bTitle').value=''; document.getElementById('bBookNo').value=''; document.getElementById('groupDeptPreview').style.display='none';
+    await logViewAsActionStock('Added Book', title+' ('+bookNo+') — '+group+' / '+dept+' / Grade '+grade+' / '+subject+' — Qty: '+qty);
+    loadAll();
+  }catch(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
 }
-function renderStock(){
-  let q=toCaps(document.getElementById('searchStock').value||''); let fSub=document.getElementById('filterSubject').value; let fGrade=document.getElementById('filterGrade').value; let fClass=document.getElementById('filterClass').value; let fStatus=document.getElementById('filterStatus').value;
-  let list=books.filter(b=>{
-    if(fSub && toCaps(b.subject)!==fSub) return false;
-    if(fGrade && String(b.grade)!==fGrade) return false;
-    if(fClass && !classesForGrade(b.grade).includes(toCaps(fClass))) return false; // Class filter = show titles used by that class
-    if(fStatus && toCaps(b.status)!==fStatus) return false;
-    if(q && !(toCaps(b.title)+' '+toCaps(b.barcode)).includes(q)) return false;
-    return true;
+async function deleteBook(id, title){
+  if(await checkStockLock(true)) return;
+  if(!confirm('Delete book?\n\n'+decodeURIComponent(title))) return;
+  try{ await db.ref('books/'+id).remove(); await logViewAsActionStock('Deleted Book', decodeURIComponent(title)); alert('✅ Deleted: '+decodeURIComponent(title)); loadAll(); }catch(e){ alert('❌ '+e.message); }
+}
+async function editBook(id){
+  if(await checkStockLock(true)) return;
+  var b=ALL_BOOKS.find(function(x){ return x._id===id; }); if(!b) return;
+  var newQty=prompt('Edit Qty for:\n\n'+b.title+' ('+b.bookNo+')\n'+b.group+' / '+b.department+' / Grade '+b.grade+' / '+b.subject+'\nCurrent Qty: '+(b.totalQty||1)+'\n\nEnter NEW Qty:', b.totalQty||1);
+  if(newQty===null) return;
+  newQty=parseInt(newQty); if(isNaN(newQty)||newQty<0){ alert('❌ Qty must be 0 or more'); return; }
+  try{ await db.ref('books/'+id).update({ totalQty:newQty }); await logViewAsActionStock('Edited Book Qty', b.title+' — New Qty: '+newQty); alert('✅ Updated Qty: '+newQty); loadAll(); }catch(e){ alert('❌ '+e.message); }
+}
+function downloadBookTemplate(){
+  var ws=XLSX.utils.json_to_sheet([{Title:'English Grade 5 Learner Book',BookNo:'ENG-5-001',Grade:'5',Subject:'English',Qty:10}]);
+  var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Books'); XLSX.writeFile(wb,'Makhanani_Books_Template.xlsx');
+}
+async function bulkUpload(){
+  if(await checkStockLock(true)) return;
+  var msg=document.getElementById('bulkMsg');
+  var file=document.getElementById('bulkFile').files[0];
+  if(!file){ msg.innerHTML='<div class="warn">❌ Choose Excel file first</div>'; return; }
+  try{
+    msg.innerHTML='<div class="info">Uploading books...</div>';
+    var schoolId=document.getElementById('bSchool').value;
+    if(!schoolId){ msg.innerHTML='<div class="warn">❌ Choose School in Add Book form first (Bulk uses same school)</div>'; return; }
+    var schoolName=ALL_SCHOOLS.find(function(s){ return s._id===schoolId; })?.name||schoolId;
+    var data=await file.arrayBuffer(); var wb=XLSX.read(data); var ws=wb.Sheets[wb.SheetNames[0]]; var rows=XLSX.utils.sheet_to_json(ws);
+    var count=0;
+    for(var i=0;i<rows.length;i++){
+      var r=rows[i];
+      var title=(r.Title||'').toString().trim(); var bookNo=(r.BookNo||'').toString().trim();
+      if(!title||!bookNo) continue;
+      var grade=(r.Grade||'').toString().trim(); var subject=(r.Subject||'').toString().trim();
+      await db.ref('books').push({ title:title, bookNo:bookNo, grade:grade, subject:subject, group:getGroupForGrade(grade), department:getDeptForSubject(subject), totalQty:parseInt(r.Qty)||1, status:'Available', schoolId:schoolId, schoolName:schoolName, createdAt:Date.now(), createdBy: auth.currentUser?auth.currentUser.email:'' });
+      count++;
+    }
+    msg.innerHTML='<div class="ok">✅ Uploaded <b>'+count+'</b> books for <b>'+schoolName+'</b> — Group + Department auto-added</div>';
+    await logViewAsActionStock('Bulk Upload Books', count+' books — School: '+schoolName);
+    loadAll();
+  }catch(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
+}
+function exportBooks(){
+  var rows=[];
+  ALL_BOOKS.forEach(function(b){ rows.push({ Group:b.group, Department:b.department, Grade:b.grade, Subject:b.subject, School:b.schoolName||b.schoolId, Title:b.title, BookNo:b.bookNo, Qty:b.totalQty, Status:b.status }); });
+  var ws=XLSX.utils.json_to_sheet(rows); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Books'); XLSX.writeFile(wb,'Makhanani_Stock_'+(MY_SCHOOL_ID||'All')+'.xlsx');
+}
+// --- RENDER GROUPED ---
+function renderBooks(){
+  var q=(document.getElementById('bookQ').value||'').toLowerCase();
+  var schoolFilter=document.getElementById('schoolFilter').value;
+  var groupFilter=document.getElementById('groupFilter')?.value||'';
+  var deptFilter=document.getElementById('deptFilter')?.value||'';
+  var gradeFilter=document.getElementById('gradeFilter')?.value||'';
+  var subjectFilter=document.getElementById('subjectFilter')?.value||'';
+  var list=ALL_BOOKS.filter(function(b){
+    if(schoolFilter && b.schoolId!==schoolFilter) return false;
+    if(groupFilter && b.group!==groupFilter) return false;
+    if(deptFilter && b.department!==deptFilter) return false;
+    if(gradeFilter && String(b.grade)!==gradeFilter) return false;
+    if(subjectFilter && b.subject!==subjectFilter) return false;
+    if(!q) return true;
+    return ((b.title||'').toLowerCase().includes(q) || (b.bookNo||'').toLowerCase().includes(q) || (b.group||'').toLowerCase().includes(q) || (b.department||'').toLowerCase().includes(q) || (b.schoolName||'').toLowerCase().includes(q));
   });
-  document.getElementById('kpiTotal').textContent=books.length;
-  document.getElementById('kpiAvail').textContent=books.filter(b=>toCaps(b.status)==='AVAILABLE').length;
-  document.getElementById('kpiIssued').textContent=books.filter(b=>toCaps(b.status)==='ISSUED').length;
-  document.getElementById('kpiTitles').textContent=new Set(books.map(b=>b.title)).size;
-  document.getElementById('stockInfo').innerHTML=`Showing <b>${list.length}</b> of <b>${books.length}</b> books. ${fClass?`Class <b>${fClass}</b> uses titles for Grade <b>${fClass.replace(/[^0-9]/g,'')}</b> — ${classesForGrade(fClass.replace(/[^0-9]/g,'')).join(', ')}`:''}`;
-  document.getElementById('stockTable').innerHTML=list.length?list.map(b=>`<tr><td><b>${b.barcode}</b></td><td><b>${toCaps(b.title)}</b></td><td>${toCaps(b.subject)}<br>Grade ${b.grade}</td><td><small>${classesForGrade(b.grade).join(', ')}</small></td><td>${toCaps(b.status)}</td><td>${b.issuedTo||'—'}</td><td>${toCaps(b.status)==='AVAILABLE'?`<button class="btn btn-red" onclick="deleteBook('${b.barcode}')">🗑️ DELETE</button>`:'—'}</td></tr>`).join(''):`<tr><td colspan="7" style="text-align:center;padding:20px">No books for this filter.</td></tr>`;
+  var grouped={};
+  list.forEach(function(b){
+    var key=b.group+'||'+b.department+'||'+b.grade+'||'+b.subject;
+    if(!grouped[key]) grouped[key]={ group:b.group, department:b.department, grade:b.grade, subject:b.subject, books:[], qty:0 };
+    grouped[key].books.push(b); grouped[key].qty+=(b.totalQty||1);
+  });
+  var keys=Object.keys(grouped).sort();
+  var groupTotals={};
+  list.forEach(function(b){ groupTotals[b.group]=(groupTotals[b.group]||0)+(b.totalQty||1); });
+  var html='';
+  if(list.length>0){
+    html+='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">'+Object.keys(groupTotals).sort().map(function(g){ return '<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:12px"><b>'+g+'</b><br>Qty: '+groupTotals[g]+'</div>'; }).join('')+'</div>';
+  }
+  if(keys.length===0) html+='<div class="info">No books found for this filter. Add one above.</div>';
+  keys.forEach(function(k){
+    var g=grouped[k];
+    html+='<div style="background:#0a1f4d;color:#fff;border-radius:8px;padding:10px;margin-top:12px;font-size:13px">📁 '+g.group+' &nbsp; → &nbsp; 🗂️ '+g.department+' &nbsp; → &nbsp; 🎓 Grade '+g.grade+' &nbsp; → &nbsp; 📖 '+g.subject+' &nbsp; <span style="background:#d4af37;color:#0a1f4d;border-radius:12px;padding:2px 8px;font-size:11px">'+g.books.length+' titles • Qty: '+g.qty+'</span></div>';
+    html+='<table><tr><th>Title</th><th>Book No</th><th>Qty</th><th>School</th><th>Action</th></tr>';
+    g.books.forEach(function(b){
+      html+='<tr><td><b>'+(b.title||'—')+'</b></td><td>'+(b.bookNo||'—')+'</td><td><b>'+(b.totalQty||1)+'</b></td><td>'+(b.schoolName||b.schoolId||'—')+'</td><td style="white-space:nowrap"><button class="btn btn-orange editBookBtn" onclick="editBook(\''+b._id+'\')">✏️ EDIT QTY</button> <button class="btn btn-red deleteBookBtn" onclick="deleteBook(\''+b._id+'\',\''+encodeURIComponent(b.title||'')+'\')">🗑️ DELETE</button></td></tr>';
+    });
+    html+='</table>';
+  });
+  document.getElementById('booksList').innerHTML=html;
+  var totalQty=list.reduce(function(s,b){ return s+(b.totalQty||1); },0);
+  document.getElementById('kBooks').textContent=list.length;
+  document.getElementById('kQty').textContent=totalQty;
+  document.getElementById('kAvail').textContent=list.filter(function(b){ return (b.status||'Available')==='Available'; }).length;
+  document.getElementById('kSchools').textContent=ALL_SCHOOLS.length;
 }
-async function deleteBook(code){ if(!confirm('Delete '+code+'?')) return; try{ await rtdb.ref('stock/'+mySchoolId+'/'+norm(code)).remove(); }catch(e){} books=books.filter(x=>norm(x.barcode)!==norm(code)); renderStock(); }
-function exportCSV(){ let rows=[['BARCODE','TITLE','SUBJECT','GRADE','STATUS','ISSUED_TO','CLASSES_THAT_USE_IT']]; books.forEach(b=>rows.push([b.barcode,b.title,b.subject,b.grade,b.status,b.issuedTo||'',classesForGrade(b.grade).join(' ')])); let csv=rows.map(r=>r.join(',')).join('\n'); let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='STOCK.csv'; a.click(); }
-loadAll();
+// --- LOAD ALL ---
+async function loadAll(){
+  try{
+    var [bSnap,sSnap,iSnap]=await Promise.all([db.ref('books').once('value'),db.ref('schools').once('value'),db.ref('issues').once('value')]);
+    ALL_SCHOOLS=toArr(sSnap.val()); ALL_ISSUES=toArr(iSnap.val());
+    ALL_BOOKS=filterBySchool(toArr(bSnap.val())).map(enrichBook);
+    var sel=document.getElementById('bSchool');
+    if(MY_ROLE==='SUPER_ADMIN' && !IS_VIEW_AS){
+      sel.innerHTML='<option value="">— Choose School —</option>'+ALL_SCHOOLS.map(function(s){ return '<option value="'+s._id+'">'+(s.name||s._id)+' ('+s._id+')</option>'; }).join('');
+      sel.disabled=false;
+      document.getElementById('schoolFilter').innerHTML='<option value="">ALL SCHOOLS</option>'+ALL_SCHOOLS.map(function(s){ return '<option value="'+s._id+'">'+(s.name||s._id)+'</option>'; }).join('');
+      document.getElementById('schoolFilterLabel').textContent='Filter By School (Super Admin Only)';
+    } else {
+      sel.innerHTML='<option value="'+MY_SCHOOL_ID+'">'+MY_SCHOOL_NAME+' ('+MY_SCHOOL_ID+')</option>';
+      sel.value=MY_SCHOOL_ID; sel.disabled=true;
+      document.getElementById('schoolFilter').innerHTML='<option value="">'+MY_SCHOOL_NAME+' (Your School Only)</option>';
+      document.getElementById('schoolFilterLabel').textContent='School — Locked To Your School';
+    }
+    document.getElementById('addInfo').textContent=MY_ROLE==='SUPER_ADMIN' && !IS_VIEW_AS?'Books you add — Choose ANY school. Group + Dept auto-calculated.':'Books you add are auto-locked to YOUR school: '+MY_SCHOOL_NAME+'. Group + Dept auto-calculated.';
+    renderBooks();
+    document.getElementById('msg').innerHTML='<div class="ok">✅ Connected — Books: '+ALL_BOOKS.length+(IS_VIEW_AS?' • 👁️ VIEW AS: '+MY_SCHOOL_NAME:'')+'</div>';
+  }catch(e){ document.getElementById('msg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
+}
+// --- AUTH GUARD ---
+auth.onAuthStateChanged(function(u){
+  var el=document.getElementById('whoAmI');
+  if(!u){ el.innerHTML='👤 Not logged in — Sending to Login...'; setTimeout(function(){ window.location.href='login.html'; },1000); return; }
+  db.ref('users/'+u.uid).once('value').then(function(s){
+    var d=s.val()||{}; var realRole=(d.role||'').toUpperCase(); var realSchoolId=d.schoolId||''; var realSchoolName=d.schoolName||realSchoolId||'—';
+    var impStr=sessionStorage.getItem('makhanani_impersonate');
+    if(impStr && realRole==='SUPER_ADMIN'){
+      try{
+        VIEW_AS_DATA=JSON.parse(impStr); IS_VIEW_AS=true; MY_ROLE='SCHOOL_ADMIN'; MY_SCHOOL_ID=VIEW_AS_DATA.schoolId; MY_SCHOOL_NAME=VIEW_AS_DATA.schoolName;
+        el.innerHTML='👁️ <b>VIEW AS:</b> Stock for <b>'+MY_SCHOOL_NAME+'</b> • Super Admin: <b>'+(d.name||u.email)+'</b> • <button class="btn btn-gold" onclick="exitViewAsStock()">🚪 EXIT VIEW</button>';
+        document.getElementById('schoolNameLine').textContent=MY_SCHOOL_NAME+' • SchoolId: '+MY_SCHOOL_ID+' • 👁️ VIEW AS MODE';
+        ['mainContent','addCard','bulkCard','listCard'].forEach(function(id){ document.getElementById(id).style.display='block'; });
+        loadAll(); startViewAsTimerStock(); startForceExitCheckerStock(); return;
+      }catch(e){ sessionStorage.removeItem('makhanani_impersonate'); }
+    }
+    if(impStr && realRole!=='SUPER_ADMIN'){ sessionStorage.removeItem('makhanani_impersonate'); }
+    MY_ROLE=realRole; MY_SCHOOL_ID=realSchoolId; MY_SCHOOL_NAME=realSchoolName;
+    if(!['SUPER_ADMIN','SCHOOL_ADMIN','LIBRARIAN','TEACHER','HOD','PRINCIPAL','ADMIN'].includes(MY_ROLE)){ alert('🔒 No access to Stock.\nYou are: '+(d.role||'—')); window.location.href='index.html?v=9999'; return; }
+    if(MY_ROLE==='SUPER_ADMIN'){
+      el.innerHTML='✅ Logged in as <b>'+(d.name||u.email)+'</b> — Role: <b>SUPER_ADMIN</b> • ALL Schools';
+      document.getElementById('schoolNameLine').textContent='ALL Schools • Super Admin';
+      document.getElementById('schoolAdminBtn').style.display='none'; document.getElementById('superAdminBtn').style.display='inline-block';
+    } else if(MY_ROLE==='SCHOOL_ADMIN'){
+      el.innerHTML='✅ Logged in as <b>'+(d.name||u.email)+'</b> — Role: <b>SCHOOL_ADMIN</b> • School: <b>'+MY_SCHOOL_NAME+'</b> • Stock for YOUR school only';
+      document.getElementById('schoolNameLine').textContent=MY_SCHOOL_NAME+' • SchoolId: '+MY_SCHOOL_ID;
+      document.getElementById('schoolAdminBtn').style.display='inline-block'; document.getElementById('superAdminBtn').style.display='none';
+    } else {
+      if(!MY_SCHOOL_ID){ el.innerHTML='❌ No schoolId on your account. Ask Super Admin to set your schoolId.'; return; }
+      el.innerHTML='✅ Logged in as <b>'+(d.name||u.email)+'</b> — Role: <b>'+MY_ROLE+'</b> • School: <b>'+MY_SCHOOL_NAME+'</b> • View Only (Cannot Add / Delete unless Librarian)';
+      document.getElementById('schoolNameLine').textContent=MY_SCHOOL_NAME+' • SchoolId: '+MY_SCHOOL_ID+' • Role: '+MY_ROLE;
+      document.getElementById('schoolAdminBtn').style.display='none'; document.getElementById('superAdminBtn').style.display='none';
+      if(['TEACHER','HOD','PRINCIPAL'].includes(MY_ROLE)){ document.getElementById('addCard').style.display='none'; document.getElementById('bulkCard').style.display='none'; }
+    }
+    ['mainContent','listCard'].forEach(function(id){ document.getElementById(id).style.display='block'; });
+    if(['SUPER_ADMIN','SCHOOL_ADMIN','LIBRARIAN'].includes(MY_ROLE)){ document.getElementById('addCard').style.display='block'; document.getElementById('bulkCard').style.display='block'; }
+    loadAll();
+    if(!IS_VIEW_AS && MY_ROLE!=='SUPER_ADMIN'){ checkStockLock(false); setInterval(function(){ checkStockLock(false); },15000); }
+    startViewAsTimerStock(); startForceExitCheckerStock();
+  });
+});
 </script></body></html>
