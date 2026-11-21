@@ -1,68 +1,116 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login - Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#0a1f4d;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px}.card{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:420px;text-align:center}.card img{height:70px;background:#f4f6fb;border-radius:12px;padding:6px}input{width:100%;padding:13px;border:1px solid #ddd;border-radius:8px;margin-top:10px;font-size:15px}button{width:100%;padding:14px;background:#d4af37;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:14px}.link{margin-top:12px;font-size:13px;color:#0a1f4d;cursor:pointer;text-decoration:underline}.err{color:red;font-weight:700;margin-top:10px}.ok{color:green;font-weight:700;margin-top:10px}.role{margin-top:14px;text-align:left;background:#f4f6fb;padding:12px;border-radius:10px;font-size:12px;color:#333}.role b{color:#0a1f4d}</style></head>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#0a1f4d;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px}.card{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:420px;text-align:center}.card img{height:70px;background:#f4f6fb;border-radius:12px;padding:6px}input{width:100%;padding:13px;border:1px solid #ddd;border-radius:8px;margin-top:10px;font-size:15px}button{width:100%;padding:14px;background:#d4af37;border:none;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;margin-top:14px}button:disabled{opacity:.6;cursor:wait}.link{margin-top:12px;font-size:13px;color:#0a1f4d;cursor:pointer;text-decoration:underline}.err{color:#dc2626;font-weight:700;margin-top:10px;font-size:14px}.ok{color:#16a34a;font-weight:700;margin-top:10px;font-size:14px}.role{margin-top:14px;text-align:left;background:#f4f6fb;padding:12px;border-radius:10px;font-size:12px;color:#333}.role b{color:#0a1f4d}.show{position:relative}.show span{position:absolute;right:10px;top:22px;cursor:pointer;font-size:13px;color:#0a1f4d;font-weight:700}</style></head>
 <body>
 <div class="card">
 <img src="logo.png">
 <h2 style="margin:10px 0 0">Makhanani LTSM 2.0</h2><p style="color:#666;margin:6px 0 0">Wordsworth High School — Login</p>
 <input id="email" type="email" placeholder="Email — e.g. hod.languages@whs.co.za" autocomplete="username">
-<input id="password" type="password" placeholder="Password" autocomplete="current-password">
-<button onclick="doLogin()">🔐 LOGIN</button>
+<div class="show"><input id="password" type="password" placeholder="Password" autocomplete="current-password"><span onclick="togglePass()">👁️ Show</span></div>
+<button id="loginBtn" onclick="doLogin()">🔐 LOGIN</button>
 <p id="msg"></p>
 <div class="link" onclick="doForgot()">Forgot Password? Click to Reset</div>
 <div class="link" onclick="location.href='register.html'">No Account? Register — Admin Will Assign Role</div>
-<div class="role"><b>How Role Login Works:</b><br>1. You login with Email + Password<br>2. System reads your Role from Database<br>3. You are sent to YOUR dashboard automatically<br><br><b>Super Admin</b> → super_admin.html<br><b>Admin</b> → index.html<br><b>Principal</b> → principal.html<br><b>Librarian</b> → librarian.html<br><b>HOD</b> → hod.html<br><b>Teacher</b> → teacher.html<br><b>Finance</b> → finance.html</div>
+<div class="role"><b>How Role Login Works:</b><br>1. You login with Email + Password<br>2. System reads your Role from Database<br>3. You are sent to YOUR dashboard automatically<br><br><b>Super Admin</b> → super_admin.html<br><b>Admin</b> → index.html<br><b>Principal</b> → principal.html<br><b>Librarian</b> → librarian.html<br><b>HOD</b> → hod.html<br><b>Teacher</b> → teacher.html<br><b>Finance</b> → finance.html<br><br><b>Finance Only Files:</b> Subscriptions • Financial Projections • HR • Marketing</div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 try{firebase.initializeApp(firebaseConfig);}catch(e){}
 const db=firebase.database();
+
+// ===== NORMALIZE ROLE — Fixes SUPER_ADMIN vs Super Admin vs super admin =====
+function normRole(r){
+  if(!r) return "";
+  let x=String(r).trim().toLowerCase().replace(/_/g," ").replace(/\s+/g," ");
+  if(x==="super admin"||x==="superadmin") return "Super Admin";
+  if(x==="admin"||x==="administrator") return "Admin";
+  if(x==="principal"||x==="headmaster"||x==="head teacher") return "Principal";
+  if(x==="librarian"||x==="library") return "Librarian";
+  if(x==="hod"||x==="head of department"||x==="head of dept") return "HOD";
+  if(x==="teacher"||x==="educator") return "Teacher";
+  if(x==="finance"||x==="financial"||x==="bursar") return "Finance";
+  return r;
+}
 function roleToPage(role){
-  if(role==="Super Admin") return "super_admin.html";
-  if(role==="Admin") return "index.html";
-  if(role==="Principal") return "principal.html";
-  if(role==="Librarian") return "librarian.html";
-  if(role==="HOD") return "hod.html";
-  if(role==="Teacher") return "teacher.html";
-  if(role==="Finance") return "finance.html";
-  return "teacher.html"; // default
+  let r=normRole(role);
+  if(r==="Super Admin") return "super_admin.html";
+  if(r==="Admin") return "index.html";
+  if(r==="Principal") return "principal.html";
+  if(r==="Librarian") return "librarian.html";
+  if(r==="HOD") return "hod.html";
+  if(r==="Teacher") return "teacher.html";
+  if(r==="Finance") return "finance.html";
+  return "teacher.html";
+}
+function togglePass(){
+  let p=document.getElementById("password");
+  p.type=(p.type==="password"?"text":"password");
 }
 async function doLogin(){
   let email=document.getElementById("email").value.trim().toLowerCase();
   let pass=document.getElementById("password").value;
   let msg=document.getElementById("msg");
+  let btn=document.getElementById("loginBtn");
   if(!email||!pass){ msg.textContent="Enter Email + Password"; msg.className="err"; return; }
   msg.textContent="Checking..."; msg.className="ok";
+  btn.disabled=true; btn.textContent="⏳ LOGGING IN...";
   try{
     let cred=await firebase.auth().signInWithEmailAndPassword(email,pass);
     let uid=cred.user.uid;
     let snap=await db.ref("users/"+uid).once("value");
     if(!snap.exists()){
-      msg.textContent="⛔ No user record found. Ask Admin to create your account in Database → users → "+uid;
-      msg.className="err"; return;
+      msg.textContent="⛔ No user record found for this email. Ask Admin to create you in super_admin.html → Create User.";
+      msg.className="err"; btn.disabled=false; btn.textContent="🔐 LOGIN"; return;
     }
     let user=snap.val();
-    if(user.disabled){ msg.textContent="⛔ Account disabled. Contact Admin."; msg.className="err"; await firebase.auth().signOut(); return; }
+    user.role=normRole(user.role);
+    if(user.disabled){
+      msg.textContent="⛔ Account disabled. Contact Admin.";
+      msg.className="err"; await firebase.auth().signOut(); btn.disabled=false; btn.textContent="🔐 LOGIN"; return;
+    }
     // Save for fast guard
     localStorage.setItem("makhanani_role", user.role||"");
     localStorage.setItem("makhanani_school", user.schoolId||"");
     localStorage.setItem("makhanani_dept", user.department||"");
+    localStorage.setItem("makhanani_name", user.name||"");
     msg.textContent=`✅ Welcome ${user.name||user.email} — ${user.role} • Redirecting...`; msg.className="ok";
     setTimeout(()=>location.href=roleToPage(user.role),800);
   }catch(e){
-    msg.textContent="⛔ "+(e.message||"Login failed — check Email / Password");
-    msg.className="err";
+    let txt=(e.code||"")+" "+(e.message||"");
+    if(txt.includes("permission_denied") || txt.includes("permission")){
+      msg.textContent="⛔ Database Rules blocked login. Admin: Go to Firebase → Realtime Database → Rules → Publish the new rules, then try again.";
+    } else if(txt.includes("user-not-found") || txt.includes("wrong-password") || txt.includes("invalid-credential") || txt.includes("invalid-login")){
+      msg.textContent="⛔ Wrong Email or Password. Try again or click Forgot Password.";
+    } else if(txt.includes("too-many-requests")){
+      msg.textContent="⛔ Too many tries. Wait 1 minute, then try again or click Forgot Password.";
+    } else if(txt.includes("network") || txt.includes("offline")){
+      msg.textContent="⛔ No internet. Check data / WiFi and try again.";
+    } else {
+      msg.textContent="⛔ "+(e.message||"Login failed — check Email / Password");
+    }
+    msg.className="err"; btn.disabled=false; btn.textContent="🔐 LOGIN";
   }
 }
 // Enter key = Login
 document.getElementById("password").addEventListener("keydown",e=>{ if(e.key==="Enter") doLogin(); });
+document.getElementById("email").addEventListener("keydown",e=>{ if(e.key==="Enter") doLogin(); });
 // If already logged in, go straight to role page
 firebase.auth().onAuthStateChanged(async u=>{
   if(!u) return;
-  // Don't auto-redirect if user just came to login to switch account — only if they didn't click logout
+  // Don't auto-redirect if user just clicked Logout
   if(sessionStorage.getItem("justLoggedOut")){ sessionStorage.removeItem("justLoggedOut"); return; }
-  let snap=await db.ref("users/"+u.uid).once("value");
-  if(snap.exists()){ let user=snap.val(); location.href=roleToPage(user.role); }
+  try{
+    let snap=await db.ref("users/"+u.uid).once("value");
+    if(snap.exists()){
+      let user=snap.val();
+      user.role=normRole(user.role);
+      if(user.disabled) return;
+      location.href=roleToPage(user.role);
+    }
+  }catch(e){
+    // If Rules block auto-redirect, stay on login — user can click LOGIN again
+    // Do not show error here, doLogin() will show friendly error
+  }
 });
 async function doForgot(){
   let email=document.getElementById("email").value.trim();
