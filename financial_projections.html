@@ -1,72 +1,14 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Financial Projections - Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}header img{height:42px;background:#fff;border-radius:8px;padding:2px}.btn{background:#d4af37;color:#000;border:none;padding:10px 14px;border-radius:8px;font-weight:900;cursor:pointer}.wrap{max-width:1100px;margin:0 auto;padding:16px}.card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:14px}.muted{color:#666;font-size:13px}label{font-size:13px;font-weight:700}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-top:6px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}th{background:#0a1f4d;color:#fff}.kpi{background:#0a1f4d;color:#fff;border-radius:12px;padding:14px}.kpi small{color:#d4af37}.kpi b{font-size:24px;display:block;margin-top:4px}.kpi.gold{background:#d4af37;color:#000}.kpi.gold small{color:#0a1f4d}</style></head>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between}header img{height:42px;background:#fff;border-radius:8px;padding:2px}.btn{background:#d4af37;color:#000;border:none;padding:10px 14px;border-radius:8px;font-weight:900;cursor:pointer}.wrap{max-width:1000px;margin:0 auto;padding:16px}.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:14px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}th{background:#0a1f4d;color:#fff}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}@media(max-width:700px){.grid3{grid-template-columns:1fr}}</style></head>
 <body>
-<header><div style="display:flex;gap:10px;align-items:center"><img src="logo.png"><b>Makhanani LTSM 2.0<br><span style="font-size:11px;font-weight:400">Financial Projections</span></b></div><button class="btn" onclick="location.href='index.html'">🏠 Home</button></header>
+<script>const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=firebase.database();
+firebase.auth().onAuthStateChanged(async(u)=>{if(!u){alert("🔒 Login first");location.href="login.html";return;}const s=await db.ref("users/"+u.uid).once("value");const role=s.exists()?s.val().role:"TEACHER";if(!["SUPER_ADMIN","FINANCE"].includes(role)){alert("⛔ Projections are SUPER_ADMIN + FINANCE only. Your role: "+role);location.href="index.html";return;}});
+function logout(){firebase.auth().signOut().then(()=>location.href="login.html");}</script>
+<header><div style="display:flex;gap:10px;align-items:center"><img src="logo.png"><b>📈 Financial Projections — SUPER_ADMIN + FINANCE ONLY</b></div><button class="btn" onclick="location.href='finance.html'">💰 Finance</button></header>
 <div class="wrap">
-<div class="card"><h1 style="margin:0">📈 Financial Projections — New Prices V5</h1><p class="muted">Change number of schools → Revenue updates. Based on: <b>DEMO FREE 7 Days | STARTER R 3,000 + R 500/mo or R 4,500/yr | STANDARD R 4,500 + R 800/mo or R 7,500/yr | PREMIUM R 5,500 + R 950/mo or R 9,000/yr</b> • Due 30 Nov Every Year.</p>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px">
-<div><label>STARTER Schools (Yearly)</label><input type="number" id="nStarter" value="10" oninput="calc()"></div>
-<div><label>STANDARD Schools (Yearly)</label><input type="number" id="nStandard" value="10" oninput="calc()"></div>
-<div><label>PREMIUM Schools (Yearly)</label><input type="number" id="nPremium" value="5" oninput="calc()"></div>
-<div><label>DEMO / Donation Schools (FREE)</label><input type="number" id="nDemo" value="2" oninput="calc()"></div>
+<div class="card"><h2 style="margin:0">📈 3-Year Projection — V5 Pricing</h2><p style="color:#666;font-size:13px">Assumption: Year 1 = 2 Donation Schools (R 0) + Paid Schools. Year 2+ Donation Schools renew at PREMIUM R 9,000/yr.</p><table><thead><tr><th>Year</th><th>Schools</th><th>Avg Revenue / School</th><th>Total Revenue</th></tr></thead><tbody><tr><td><b>Year 1 (2026-2027)</b><br>2 Donations + 10 Paid</td><td>12</td><td>R 10,000</td><td><b>R 100,000</b></td></tr><tr><td><b>Year 2 (2027-2028)</b><br>2 Renewals + 20 Paid</td><td>22</td><td>R 9,500</td><td><b>R 209,000</b></td></tr><tr><td><b>Year 3 (2028-2029)</b><br>40 Schools</td><td>40</td><td>R 9,000</td><td><b>R 360,000</b></td></tr></tbody></table></div>
+<div class="grid3"><div class="card"><h3 style="margin:0">🎁 Donations — Year 1</h3><p>Wordsworth: R 14,500 FREE<br>George Sonto: R 14,500 FREE<br><b>Total: R 29,000 FREE</b><br>These schools become paying in Year 2.</p></div><div class="card"><h3 style="margin:0">💰 Revenue Mix</h3><p>STARTER: 30% of schools<br>STANDARD: 40%<br>PREMIUM: 30%<br>Most schools choose STANDARD.</p></div><div class="card"><h3 style="margin:0">📅 Renewal Cycle</h3><p>All renewals due <b>30 Nov Every Year</b><br>Send reminders 1 Nov, 15 Nov, 25 Nov.<br>WhatsApp: 078 023 3263</p></div></div>
+<div class="card"><h2 style="margin:0">📋 Live Schools (From Database)</h2><div style="overflow:auto"><table><thead><tr><th>School</th><th>Plan</th><th>Status</th><th>Year 1 Amount</th></tr></thead><tbody id="liveRows"><tr><td colspan="4">Loading...</td></tr></tbody></table></div></div>
 </div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>Billing Assumption</label><select id="billing" onchange="calc()"><option value="YEARLY" selected>YEARLY — Most schools pay Yearly</option><option value="MONTHLY">MONTHLY — 12 x Monthly</option></select></div><div><label>Costs Per Year (R) — Hosting, Transport, Printing</label><input type="number" id="costs" value="30000" oninput="calc()"></div></div>
-</div>
-
-<div class="grid" style="grid-template-columns:repeat(4,1fr)">
-<div class="card kpi"><small>Total Schools</small><b id="kpiSchools">27</b></div>
-<div class="card kpi"><small>Year 1 Revenue (Setup + Plan)</small><b id="kpiYear1">R 0</b></div>
-<div class="card kpi"><small>Year 2+ Revenue (Plan Only)</small><b id="kpiYear2">R 0</b></div>
-<div class="card kpi gold"><small>Profit Year 1 (After Costs)</small><b id="kpiProfit">R 0</b></div>
-</div>
-
-<div class="card"><h2 style="margin:0">📦 Breakdown By Plan — V5</h2><div style="overflow:auto"><table><thead><tr><th>Plan</th><th>Schools</th><th>Setup (Once)</th><th>Plan Fee (Yearly / Monthly x12)</th><th>Year 1 Total</th><th>Year 2+ (Plan Only)</th></tr></thead><tbody id="rows"></tbody></table></div><p class="muted">Year 1 = Setup + Plan Fee. Year 2+ = Plan Fee only (Setup is once-off). Due: 30 Nov Every Year.</p></div>
-
-<div class="card"><h2 style="margin:0">📊 3-Year Projection</h2><div style="overflow:auto"><table><thead><tr><th>Year</th><th>Schools</th><th>Revenue</th><th>Costs</th><th>Profit</th></tr></thead><tbody id="projRows"></tbody></table></div></div>
-
-<div class="card"><h2 style="margin:0">🎯 Target Example — 50 Schools</h2><p style="font-size:13px;line-height:1.7" id="targetText"></p></div>
-</div>
-<script>
-const firebaseConfig={apiKey:"AIzaSyB8jS2Jjjf7r5m8ZxXxXxXxXxXxXxXxXx",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abcdef"};
-firebase.initializeApp(firebaseConfig);
-// NEW PRICES V5
-const PACKAGES={
- DEMO:{name:"DEMO",setup:0,monthly:0,yearly:0},
- STARTER:{name:"STARTER",setup:3000,monthly:500,yearly:4500},
- STANDARD:{name:"STANDARD",setup:4500,monthly:800,yearly:7500},
- PREMIUM:{name:"PREMIUM",setup:5500,monthly:950,yearly:9000}
-};
-function rand(n){return "R "+Math.round(n).toLocaleString("en-ZA")}
-function calc(){
-  const billing=document.getElementById("billing").value;
-  const costs=+document.getElementById("costs").value||0;
-  const counts={STARTER:+document.getElementById("nStarter").value||0, STANDARD:+document.getElementById("nStandard").value||0, PREMIUM:+document.getElementById("nPremium").value||0, DEMO:+document.getElementById("nDemo").value||0};
-  let totalSchools=0, year1=0, year2=0, html="";
-  ["STARTER","STANDARD","PREMIUM","DEMO"].forEach(k=>{
-    const p=PACKAGES[k]; const n=counts[k]; totalSchools+=n;
-    const fee = billing==="YEARLY"? p.yearly : p.monthly*12;
-    const y1 = n*(p.setup+fee); const y2 = n*fee;
-    year1+=y1; year2+=y2;
-    html+=`<tr><td><b>${k}</b> ${k==="DEMO"?"— FREE 7 Days":""}</td><td>${n}</td><td>${rand(p.setup)} x ${n} = ${rand(p.setup*n)}</td><td>${rand(fee)} x ${n} = ${rand(fee*n)}</td><td><b>${rand(y1)}</b></td><td><b>${rand(y2)}</b></td></tr>`;
-  });
-  document.getElementById("rows").innerHTML=html;
-  document.getElementById("kpiSchools").textContent=totalSchools;
-  document.getElementById("kpiYear1").textContent=rand(year1);
-  document.getElementById("kpiYear2").textContent=rand(year2);
-  document.getElementById("kpiProfit").textContent=rand(year1-costs);
-  // 3-year: assume +20% schools each year
-  let proj=""; let s=totalSchools, r1=year1, r2=year2;
-  for(let y=1;y<=3;y++){
-    const rev = y===1? r1 : Math.round(r2*Math.pow(1.2,y-1));
-    const c = Math.round(costs*Math.pow(1.1,y-1));
-    proj+=`<tr><td><b>Year ${y}</b></td><td>${Math.round(s*Math.pow(1.2,y-1))}</td><td>${rand(rev)}</td><td>${rand(c)}</td><td><b>${rand(rev-c)}</b></td></tr>`;
-  }
-  document.getElementById("projRows").innerHTML=proj;
-  // Target 50 schools example: 20 Starter, 20 Standard, 10 Premium
-  const tY1 = 20*(3000+4500)+20*(4500+7500)+10*(5500+9000);
-  const tY2 = 20*4500+20*7500+10*9000;
-  document.getElementById("targetText").innerHTML=`If you get <b>50 paid schools</b> (20 STARTER + 20 STANDARD + 10 PREMIUM, Yearly): <b>Year 1 = ${rand(tY1)}</b> (Setup + Yearly) • <b>Year 2+ = ${rand(tY2)} per year</b> (Yearly only, due 30 Nov). Even with <b>2 FREE donation schools</b> (Wordsworth + George Sonto), you still make this — donations are marketing, they bring paid schools.`;
-}
-calc();
-</script></body></html>
+<script>async function load(){const s=await db.ref("schools").once("value");const r=document.getElementById("liveRows");if(!s.exists()){r.innerHTML="<tr><td colspan=4>No schools yet. Add in Super Admin.</td></tr>";return;}const p={DEMO:0,STARTER:7500,STANDARD:12000,PREMIUM:14500};let h="";s.forEach(c=>{const v=c.val();const amt=v.donation==="YES"?0:(p[v.plan]||0);h+=`<tr><td>${v.name}</td><td>${v.plan}</td><td>${v.donation==="YES"?"🎁 DONATED FREE":"✅ ACTIVE"}</td><td>R ${amt.toLocaleString()}</td></tr>`;});r.innerHTML=h;}load();</script></body></html>
