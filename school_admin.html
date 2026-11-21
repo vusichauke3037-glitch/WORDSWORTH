@@ -1,77 +1,16 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>School Admin - Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}header img{height:42px;background:#fff;border-radius:8px;padding:2px}.btn{background:#d4af37;color:#000;border:none;padding:10px 14px;border-radius:8px;font-weight:900;cursor:pointer}.wrap{max-width:1100px;margin:0 auto;padding:16px}.card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:14px}.muted{color:#666;font-size:13px}label{font-size:13px;font-weight:700}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-top:6px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}th{background:#0a1f4d;color:#fff}.pill{padding:4px 8px;border-radius:20px;font-size:11px;font-weight:900}.ACTIVE{background:#dcfce7}.PENDING{background:#ffedd5}.TRIAL{background:#fef9c3}.kpi{background:#0a1f4d;color:#fff;border-radius:12px;padding:14px}.kpi small{color:#d4af37}.kpi b{font-size:22px;display:block}.notice{background:#fff7d6;border-left:4px solid #d4af37;padding:12px;border-radius:10px;font-size:13px;line-height:1.6}</style></head>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}header img{height:42px;background:#fff;border-radius:8px;padding:2px}.btn{background:#d4af37;color:#000;border:none;padding:10px 14px;border-radius:8px;font-weight:900;cursor:pointer}.btn.dark{background:#0a1f4d;color:#fff}.wrap{max-width:1000px;margin:0 auto;padding:16px}.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:14px}.muted{color:#666;font-size:13px}label{display:block;font-size:12px;font-weight:700;margin-top:10px}input,select{width:100%;padding:11px;border:1px solid #ddd;border-radius:8px;margin-top:4px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}th{background:#0a1f4d;color:#fff}</style></head>
 <body>
-<header><div style="display:flex;gap:10px;align-items:center"><img src="logo.png"><b>Makhanani LTSM 2.0<br><span style="font-size:11px;font-weight:400">School Admin</span></b></div><button class="btn" onclick="location.href='index.html'">🏠 Home</button></header>
-<div class="wrap">
-<div class="card"><h1 style="margin:0">🏫 School Admin Dashboard</h1><p class="muted">Manage your school, users, learners, books & subscription.</p><div id="schoolInfo" class="notice">Loading school...</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px"><div><label>School Name</label><input id="schoolName" placeholder="George Sonto High School"></div><div><label>School ID</label><input id="schoolId" placeholder="From Super Admin"></div></div><button class="btn" style="margin-top:10px" onclick="loadSchool()">🔍 LOAD MY SCHOOL</button></div>
-
-<div class="grid" style="grid-template-columns:repeat(4,1fr)"><div class="card kpi" style="margin:0"><small>Learners</small><b id="kpiLearners">0</b></div><div class="card kpi" style="margin:0"><small>Books</small><b id="kpiBooks">0</b></div><div class="card kpi" style="margin:0"><small>Issues</small><b id="kpiIssues">0</b></div><div class="card kpi" style="margin:0;background:#d4af37;color:#000"><small style="color:#0a1f4d">My Plan</small><b id="kpiPlan">—</b></div></div>
-
-<div class="card"><h2 style="margin:0">💳 My Subscription — V5 Prices</h2><p class="muted">DEMO FREE 7 Days | STARTER R 3,000 + R 500/mo or R 4,500/yr | STANDARD R 4,500 + R 800/mo or R 7,500/yr | PREMIUM R 5,500 + R 950/mo or R 9,000/yr • Due 30 Nov Every Year</p>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"><div><label>Upgrade / Change To</label><select id="newPkg"><option value="DEMO">DEMO — FREE 7 Days</option><option value="STARTER">STARTER</option><option value="STANDARD">STANDARD</option><option value="PREMIUM">PREMIUM</option></select></div><div><label>Billing</label><select id="newBilling"><option value="YEARLY" selected>YEARLY</option><option value="MONTHLY">MONTHLY</option></select></div><div><label>Payment Method</label><select id="newMethod"><option value="EFT">EFT</option><option value="CASH">Cash</option><option value="CARD">Card</option><option value="DONATION">Donation — FREE 12 Months</option><option value="DEMO">Demo — FREE 7 Days</option></select></div></div>
-<p class="muted" id="upgradeHint"></p><button class="btn" style="width:100%;padding:14px;font-size:16px;margin-top:10px" onclick="upgradePlan()">✅ CHANGE / UPGRADE PLAN</button>
-<div style="overflow:auto;margin-top:12px"><table><thead><tr><th>Package</th><th>Billing</th><th>Setup</th><th>Plan Fee</th><th>Total Year 1</th><th>Status</th><th>Due</th></tr></thead><tbody id="subRows"><tr><td colspan="7">No subscription yet — choose a plan above.</td></tr></tbody></table></div></div>
-
-<div class="card"><h2 style="margin:0">➕ Add User (Teacher / HOD / Librarian)</h2><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px"><div><label>Full Name</label><input id="uName" placeholder="Full Name"></div><div><label>Role</label><select id="uRole"><option value="TEACHER">Teacher</option><option value="HOD">HOD</option><option value="LIBRARIAN">Librarian</option></select></div><div><label>Phone / Email</label><input id="uContact" placeholder="078... / email"></div></div><button class="btn" style="margin-top:10px;width:100%" onclick="addUser()">✅ ADD USER</button><div id="userList" style="margin-top:12px;font-size:13px"></div></div>
-</div>
-<script>
-const firebaseConfig={apiKey:"AIzaSyB8jS2Jjjf7r5m8ZxXxXxXxXxXxXxXxXx",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abcdef"};
-firebase.initializeApp(firebaseConfig); const db=firebase.database();
-// NEW PRICES V5
-const PACKAGES={
- DEMO:{name:"DEMO",setup:0,monthly:0,yearly:0},
- STARTER:{name:"STARTER",setup:3000,monthly:500,yearly:4500},
- STANDARD:{name:"STANDARD",setup:4500,monthly:800,yearly:7500},
- PREMIUM:{name:"PREMIUM",setup:5500,monthly:950,yearly:9000}
-};
-function rand(n){return "R "+(+n||0).toLocaleString("en-ZA")}
-function totalYear1(pkg,billing){const p=PACKAGES[pkg]; return p.setup + (billing==="YEARLY"? p.yearly : p.monthly*12);}
-function planFee(pkg,billing){const p=PACKAGES[pkg]; return billing==="YEARLY"? p.yearly : p.monthly;}
-function updateHint(){
-  const pkg=document.getElementById("newPkg").value; const billing=document.getElementById("newBilling").value; const p=PACKAGES[pkg];
-  document.getElementById("upgradeHint").textContent = `${pkg} (${billing}): Setup ${p.setup===0?"FREE":rand(p.setup)} + ${billing==="YEARLY"?"Yearly "+rand(p.yearly):"Monthly "+rand(p.monthly)} = Total Year 1 ${rand(totalYear1(pkg,billing))} • Due 30 Nov Every Year`;
-}
-document.getElementById("newPkg").addEventListener("change",updateHint); document.getElementById("newBilling").addEventListener("change",updateHint); updateHint();
-async function loadSchool(){
-  const name=document.getElementById("schoolName").value.trim(); const id=document.getElementById("schoolId").value.trim();
-  if(!name&&!id) return alert("Enter School Name or ID");
-  const info=document.getElementById("schoolInfo");
-  // Find subscription
-  const snap=await db.ref("subscriptions").orderByChild("schoolName").equalTo(name).once("value");
-  let found=null; if(snap.exists()){ snap.forEach(c=>{found=c.val();}); }
-  if(!found && id){ const s2=await db.ref("subscriptions").orderByChild("schoolId").equalTo(id).once("value"); if(s2.exists()){ s2.forEach(c=>{found=c.val();}); } }
-  if(found){
-    document.getElementById("kpiPlan").textContent=found.package+" ("+(found.billing||"")+")";
-    document.getElementById("subRows").innerHTML=`<tr><td><b>${found.package}</b></td><td>${found.billing||"-"}</td><td>${found.setup===0?"FREE":rand(found.setup)}</td><td>${rand(found.planFee)}</td><td><b>${rand(found.totalYear1)}</b></td><td><span class="pill ${found.status}">${found.status}</span></td><td>30 Nov Every Year</td></tr>`;
-    info.innerHTML=`School: <b>${found.schoolName||name}</b> • Plan: <b>${found.package} (${found.billing||""})</b> • Total Year 1: <b>${rand(found.totalYear1)}</b> • Status: <b>${found.status}</b> • Due: <b>30 Nov Every Year</b>`;
-  } else {
-    info.innerHTML=`No subscription found for <b>${name||id}</b> — Choose a plan below to subscribe. V5: STARTER R 7,500 Year 1 • STANDARD R 12,000 • PREMIUM R 14,500`;
-  }
-  const l=await db.ref("learners").once("value"); document.getElementById("kpiLearners").textContent=l.exists()?Object.keys(l.val()).length:0;
-  const b=await db.ref("books").once("value"); document.getElementById("kpiBooks").textContent=b.exists()?Object.keys(b.val()).length:0;
-  const iss=await db.ref("issues").once("value"); document.getElementById("kpiIssues").textContent=iss.exists()?Object.keys(iss.val()).length:0;
-}
-async function upgradePlan(){
-  const name=document.getElementById("schoolName").value.trim(); const id=document.getElementById("schoolId").value.trim();
-  const pkg=document.getElementById("newPkg").value; const billing=document.getElementById("newBilling").value; const method=document.getElementById("newMethod").value;
-  if(!name&&!id) return alert("Enter School Name / ID first, then Load");
-  const subId=db.ref("subscriptions").push().key;
-  const data={id:subId,schoolName:name||"",schoolId:id||"",package:pkg,billing,setup:PACKAGES[pkg].setup,monthly:PACKAGES[pkg].monthly,yearly:PACKAGES[pkg].yearly,planFee:planFee(pkg,billing),totalYear1:totalYear1(pkg,billing),due:"30 Nov Every Year",paymentMethod:method,status:method==="DONATION"||method==="DEMO"?"ACTIVE":"PENDING",createdAt:Date.now()};
-  await db.ref("subscriptions/"+subId).set(data);
-  await db.ref("finance/"+subId).set({...data,type:"SUBSCRIPTION",amount:totalYear1(pkg,billing)});
-  if(id) await db.ref("schools/"+id+"/plan").set(pkg);
-  alert("✅ Changed to "+pkg+" ("+billing+") — Total Year 1: "+rand(totalYear1(pkg,billing)));
-  loadSchool();
-}
-async function addUser(){
-  const name=document.getElementById("uName").value.trim(); const role=document.getElementById("uRole").value; const contact=document.getElementById("uContact").value.trim();
-  const school=document.getElementById("schoolName").value.trim();
-  if(!name) return alert("Enter Name");
-  const id=db.ref("users").push().key;
-  await db.ref("users/"+id).set({id,name,role,contact,schoolName:school,createdAt:Date.now()});
-  document.getElementById("userList").innerHTML+="✅ "+name+" ("+role+") added<br>";
-  document.getElementById("uName").value="";
-}
-</script></body></html>
+<script>const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=firebase.database();
+firebase.auth().onAuthStateChanged(async(u)=>{if(!u){alert("🔒 Please login");location.href="login.html";return;}const s=await db.ref("users/"+u.uid).once("value");const role=s.exists()?s.val().role:"TEACHER";if(!["SUPER_ADMIN","SCHOOL_ADMIN"].includes(role)){alert("⛔ Access Denied — School Admin Only. Your role: "+role);location.href="index.html";return;}document.getElementById("myEmail").textContent=u.email;});
+function logout(){firebase.auth().signOut().then(()=>location.href="login.html");}</script>
+<header><div style="display:flex;gap:10px;align-items:center"><img src="logo.png"><b>School Admin<br><span style="font-size:11px" id="myEmail">...</span></b></div><div style="display:flex;gap:8px"><button class="btn" onclick="location.href='index.html'">🏠 Home</button><button class="btn" style="background:#eee" onclick="logout()">🚪 Logout</button></div></header>
+<div class="wrap"><div class="card" style="background:#fff7d6;border-left:4px solid #d4af37"><b>🏫 School Admin View</b><br><span style="font-size:13px">Manage learners, books, users & subscription.<br><b>Finance, Marketing & Donation Letters are Super Admin only</b> — Contact Super Admin: 078 023 3263</span></div>
+<div class="card"><h2 style="margin:0">📚 Quick Links</h2><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn dark" onclick="location.href='librarian.html'">📚 Librarian</button><button class="btn dark" onclick="location.href='hod.html'">✅ HOD</button><button class="btn dark" onclick="location.href='teacher.html'">👩‍🏫 Teacher</button><button class="btn dark" onclick="location.href='subscription.html'">💳 My Subscription</button></div></div>
+<div class="card"><h2 style="margin:0">👥 Add Learner</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Learner Name</label><input id="learnerName" placeholder="Full Name"></div><div><label>Learner ID / Admission No</label><input id="learnerId" placeholder="e.g. L001"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Grade</label><select id="learnerGrade"><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Class</label><input id="learnerClass" placeholder="e.g. 10A"></div></div><button class="btn dark" style="width:100%;margin-top:12px" onclick="addLearner()">✅ ADD LEARNER</button><div style="overflow:auto;margin-top:12px"><table><thead><tr><th>Name</th><th>ID</th><th>Grade</th><th>Class</th><th>Delete</th></tr></thead><tbody id="learnerRows"><tr><td colspan="5">Loading...</td></tr></tbody></table></div></div>
+<div class="card"><h2 style="margin:0">📖 Add Book</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Book Title</label><input id="bookTitle" placeholder="e.g. Maths Grade 10"></div><div><label>Book No / Barcode</label><input id="bookNo" placeholder="e.g. B001"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Subject</label><input id="bookSubject" placeholder="Maths"></div><div><label>Grade</label><select id="bookGrade"><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div></div><button class="btn dark" style="width:100%;margin-top:12px" onclick="addBook()">✅ ADD BOOK</button><div style="overflow:auto;margin-top:12px"><table><thead><tr><th>Title</th><th>Book No</th><th>Subject</th><th>Grade</th><th>Delete</th></tr></thead><tbody id="bookRows"><tr><td colspan="5">Loading...</td></tr></tbody></table></div></div></div>
+<script>async function addLearner(){const n=document.getElementById("learnerName").value.trim();const id=document.getElementById("learnerId").value.trim();if(!n||!id)return alert("Enter Name + ID");const k=db.ref("learners").push().key;await db.ref("learners/"+k).set({name:n,learnerId:id,grade:document.getElementById("learnerGrade").value,class:document.getElementById("learnerClass").value,createdAt:Date.now()});loadLearners();}
+async function loadLearners(){const s=await db.ref("learners").once("value");const r=document.getElementById("learnerRows");if(!s.exists()){r.innerHTML="<tr><td colspan=5>No learners yet.</td></tr>";return;}let h="";s.forEach(c=>{const v=c.val();h+=`<tr><td>${v.name}</td><td>${v.learnerId}</td><td>${v.grade}</td><td>${v.class||""}</td><td><button onclick="delLearner('${c.key}')">🗑️</button></td></tr>`;});r.innerHTML=h;}async function delLearner(id){if(confirm("Delete?")){await db.ref("learners/"+id).remove();loadLearners();}}
+async function addBook(){const t=document.getElementById("bookTitle").value.trim();const no=document.getElementById("bookNo").value.trim();if(!t||!no)return alert("Enter Title + Book No");const k=db.ref("books").push().key;await db.ref("books/"+k).set({title:t,bookNo:no,subject:document.getElementById("bookSubject").value,grade:document.getElementById("bookGrade").value,createdAt:Date.now()});loadBooks();}
+async function loadBooks(){const s=await db.ref("books").once("value");const r=document.getElementById("bookRows");if(!s.exists()){r.innerHTML="<tr><td colspan=5>No books yet.</td></tr>";return;}let h="";s.forEach(c=>{const v=c.val();h+=`<tr><td>${v.title}</td><td>${v.bookNo}</td><td>${v.subject||""}</td><td>${v.grade}</td><td><button onclick="delBook('${c.key}')">🗑️</button></td></tr>`;});r.innerHTML=h;}async function delBook(id){if(confirm("Delete?")){await db.ref("books/"+id).remove();loadBooks();}}loadLearners();loadBooks();</script></body></html>
