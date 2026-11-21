@@ -1,87 +1,17 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login - Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#0a1f4d;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px}.box{background:#fff;border-radius:16px;padding:24px;max-width:440px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}.box img{height:90px}.box h1{color:#0a1f4d;margin:10px 0 4px;font-size:22px}.muted{color:#666;font-size:13px}label{display:block;text-align:left;font-size:13px;font-weight:700;margin-top:14px}input{width:100%;padding:13px;border:1px solid #ddd;border-radius:10px;margin-top:6px}.btn{width:100%;padding:14px;border:none;border-radius:10px;font-weight:900;cursor:pointer;margin-top:14px;font-size:16px}.btn.login{background:#0a1f4d;color:#fff}.btn.gold{background:#d4af37;color:#000}.error{background:#fee2e2;color:#991b1b;padding:10px;border-radius:10px;font-size:13px;display:none;margin-top:12px}.ok{background:#dcfce7;color:#166534;padding:10px;border-radius:10px;font-size:13px;display:none;margin-top:12px}.pill{display:inline-block;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:900;background:#fef9c3}</style></head>
-<body><div class="box">
-<img src="logo.png" alt="Logo"><h1>Makhanani LTSM 2.0</h1><p class="muted">Xintimani Group Holdings (PTY) Ltd • Reg: 2026/934898/07<br>Role-Based Login — Your role decides what you see</p>
-<div id="msgError" class="error"></div><div id="msgOk" class="ok"></div>
-<label>Email</label><input id="email" type="email" placeholder="you@school.co.za">
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#0a1f4d;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:16px}.card{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:420px;text-align:center}.card img{height:70px;background:#fff;border-radius:10px}label{display:block;font-size:12px;font-weight:700;text-align:left;margin-top:12px}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin-top:4px}.btn{background:#d4af37;color:#000;border:none;padding:13px;border-radius:8px;font-weight:900;cursor:pointer;width:100%;margin-top:14px}.btn.dark{background:#0a1f4d;color:#fff}.muted{color:#666;font-size:12px}.link{color:#0a1f4d;font-weight:700;cursor:pointer}</style></head>
+<body>
+<div class="card"><img src="logo.png"><h2 style="margin:8px 0 0;color:#0a1f4d">Makhanani LTSM 2.0</h2><p class="muted">Login to access Stock • Issue • Librarian • HOD • Teacher</p>
+<label>Email</label><input id="email" type="email" placeholder="you@gmail.com">
 <label>Password</label><input id="password" type="password" placeholder="••••••••">
-<label>School (Optional — For First Time)</label><input id="schoolName" placeholder="e.g. George Sonto High School">
-<button class="btn login" onclick="doLogin()">🔑 LOGIN</button>
-<button class="btn gold" onclick="doSignup()">📝 CREATE ACCOUNT — First Time Only</button>
-<button class="btn" style="background:#eee" onclick="doForgot()">❓ Forgot Password?</button>
-<p class="muted" style="margin-top:12px">After login, you go to YOUR dashboard only.<br>
-<b>Principal / School Admin</b> cannot see Finance / Marketing / Donation Letters / HR.<br>
-<b>Finance / Marketing / Letters / HR</b> = SUPER ADMIN ONLY (Finance also sees Finance).<br>
-<span class="pill">SUPER_ADMIN = Full Access</span></p>
-<span style="font-size:13px;color:#0a1f4d;cursor:pointer;text-decoration:underline" onclick="location.href='index.html'">← Back to Home</span>
-</div>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
-  authDomain: "makhanani-ltsm.firebaseapp.com",
-  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
-  projectId: "makhanani-ltsm",
-  storageBucket: "makhanani-ltsm.firebasestorage.app",
-  messagingSenderId: "247180363183",
-  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
-  measurementId: "G-PEST1XFCR8"
-};
-firebase.initializeApp(firebaseConfig); const auth=firebase.auth(); const db=firebase.database();
-function showError(m){const e=document.getElementById("msgError"); e.style.display="block"; e.textContent=m; document.getElementById("msgOk").style.display="none";}
-function showOk(m){const e=document.getElementById("msgOk"); e.style.display="block"; e.textContent=m; document.getElementById("msgError").style.display="none";}
-function goByRole(role){
-  const map={
-    SUPER_ADMIN:"super_admin.html",
-    PRINCIPAL:"principal.html",
-    SCHOOL_ADMIN:"school_admin.html",
-    HOD:"hod.html",
-    LIBRARIAN:"librarian.html",
-    TEACHER:"teacher.html",
-    FINANCE:"finance.html"
-  };
-  location.href=map[role]||"index.html";
-}
-async function doLogin(){
-  const email=document.getElementById("email").value.trim(); const pass=document.getElementById("password").value;
-  if(!email||!pass) return showError("Enter Email + Password");
-  try{
-    const res=await auth.signInWithEmailAndPassword(email,pass);
-    const snap=await db.ref("users/"+res.user.uid).once("value");
-    if(!snap.exists()){
-      await db.ref("users/"+res.user.uid).set({email,role:"TEACHER",schoolName:document.getElementById("schoolName").value.trim()||"",createdAt:Date.now()});
-      showOk("✅ Logged in — No role yet, set to TEACHER. Ask Super Admin to change your role.");
-      setTimeout(()=>goByRole("TEACHER"),1000); return;
-    }
-    const u=snap.val(); const role=u.role||"TEACHER";
-    await db.ref("users/"+res.user.uid).update({lastLogin:Date.now()});
-    showOk("✅ Welcome "+email+" — Role: "+role+" — Opening your dashboard...");
-    setTimeout(()=>goByRole(role),800);
-  }catch(e){
-    if(e.code==="auth/user-not-found") showError("❌ No account. Click CREATE ACCOUNT.");
-    else if(e.code==="auth/wrong-password") showError("❌ Wrong password. Click Forgot Password?");
-    else showError("❌ "+e.message);
-  }
-}
-async function doSignup(){
-  const email=document.getElementById("email").value.trim(); const pass=document.getElementById("password").value; const school=document.getElementById("schoolName").value.trim();
-  if(!email||!pass) return showError("Enter Email + Password to create account");
-  if(pass.length<6) return showError("Password must be 6+ characters");
-  try{
-    const res=await auth.createUserWithEmailAndPassword(email,pass);
-    const all=await db.ref("users").once("value");
-    const isFirst = !all.exists() || Object.keys(all.val()).length===0;
-    let role = isFirst? "SUPER_ADMIN" : "TEACHER";
-    await db.ref("users/"+res.user.uid).set({email,role,schoolName:school||"",createdAt:Date.now()});
-    showOk("✅ Account created as "+role+" — Now click LOGIN");
-  }catch(e){ if(e.code==="auth/email-already-in-use") showError("❌ Email already exists. Click LOGIN."); else showError("❌ "+e.message); }
-}
-async function doForgot(){
-  const email=document.getElementById("email").value.trim();
-  if(!email) return showError("Enter your Email first, then click Forgot Password");
-  try{ await auth.sendPasswordResetEmail(email); showOk("✅ Password reset email sent to "+email+" — Check inbox / spam."); }
-  catch(e){ showError("❌ "+e.message); }
-}
-auth.onAuthStateChanged(async(u)=>{ if(u){ const s=await db.ref("users/"+u.uid).once("value"); if(s.exists()) showOk("✅ Already logged in as "+u.email+" — Role: "+s.val().role+" — Click LOGIN to continue"); }});
-document.getElementById("password").addEventListener("keyup",e=>{if(e.key==="Enter") doLogin();});
-</script></body></html>
+<button class="btn dark" onclick="doLogin()">🔐 LOGIN</button>
+<p id="msg" style="font-size:13px;display:none;padding:10px;border-radius:8px"></p>
+<p class="muted">No account? <span class="link" onclick="location.href='register.html'">📝 Register Here</span></p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px"><button class="btn" onclick="location.href='stock.html'">📦 Stock</button><button class="btn" onclick="location.href='issue.html'">📤 Issue</button><button class="btn" onclick="location.href='index.html'">🏠 Home</button><button class="btn" onclick="location.href='register.html'">📝 Register</button></div>
+<p class="muted" style="margin-top:12px">Xintimani Group Holdings (PTY) Ltd • Reg: 2026/934898/07<br>Banking details available on request only.</p></div>
+<script>const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};firebase.initializeApp(firebaseConfig);const db=firebase.database();const auth=firebase.auth();
+function show(m,ok){const e=document.getElementById("msg");e.style.display="block";e.style.background=ok?"#dcfce7":"#fee2e2";e.textContent=m;}
+async function doLogin(){const email=document.getElementById("email").value.trim();const pass=document.getElementById("password").value;if(!email||!pass)return show("❌ Enter Email + Password",false);try{const cred=await auth.signInWithEmailAndPassword(email,pass);const s=await db.ref("users/"+cred.user.uid).once("value");let role="TEACHER";let schoolId="";if(s.exists()){role=s.val().role||"TEACHER";schoolId=s.val().schoolId||s.val().school||"";}// FIX: If user has no schoolId, auto-set to Wordsworth — no block
+if(!schoolId){await db.ref("users/"+cred.user.uid+"/schoolId").set("Wordsworth High School");await db.ref("users/"+cred.user.uid+"/school").set("Wordsworth High School");}
+show("✅ Welcome! Role: "+role+" — Redirecting...",true);setTimeout(()=>{if(role==="SUPER_ADMIN")location.href="super_admin.html";else if(role==="PRINCIPAL")location.href="principal.html";else if(role==="SCHOOL_ADMIN")location.href="school_admin.html";else if(role==="HOD")location.href="hod.html";else if(role==="LIBRARIAN")location.href="librarian.html";else if(role==="TEACHER")location.href="teacher.html";else location.href="index.html";},800);}catch(e){show("❌ "+e.message,false);}}</script></body></html>
