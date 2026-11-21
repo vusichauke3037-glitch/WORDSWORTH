@@ -1,55 +1,332 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Teacher - Makhanani LTSM 2.0 - V2</title>
+<title>My Class - Makhanani LTSM 2.0 - V3</title>
+<link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#0a1f4d">
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script>
   const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth=firebase.auth(); const db=firebase.database();
 </script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0a1f4d;color:#0a1f4d}.wrap{max-width:1100px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}.card h1{margin:0;font-size:20px;text-align:center}.card h2{margin:14px 0 8px;font-size:16px}label{font-weight:900;font-size:12px;display:block;margin-top:10px}input,select{width:100%;padding:12px;border:2px solid #0a1f4d;border-radius:8px;font-size:14px}.btn{border:none;border-radius:8px;padding:12px 14px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-red{background:#dc2626;color:#fff}.nav{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0}.nav button{border:none;border-radius:20px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:11px;background:#2a4a8a;color:#fff}.nav button.gold{background:#d4af37;color:#0a1f4d}.nav button.green{background:#16a34a;color:#fff}.nav button.red{background:#dc2626;color:#fff}.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6}.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px}.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px}.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;text-align:center}.kpi div{background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px}.kpi b{font-size:22px;display:block}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#0a1f4d;color:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bigbtn{width:100%;padding:16px;font-size:14px}@media(max-width:600px){.kpi{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}</style></head>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0a1f4d;color:#0a1f4d}.wrap{max-width:1150px;margin:0 auto;padding:12px}.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}.card h1{margin:0;font-size:20px;text-align:center}.card h2{margin:14px 0 8px;font-size:16px}.card p{font-size:13px;line-height:1.7}label{font-weight:900;font-size:12px;display:block;margin-top:10px}input,select{width:100%;padding:12px;border:2px solid #0a1f4d;border-radius:8px;font-size:14px}.btn{border:none;border-radius:8px;padding:12px 14px;font-weight:900;cursor:pointer;font-size:13px}.btn-green{background:#0a1f4d;color:#fff}.btn-gold{background:#d4af37;color:#0a1f4d}.btn-grey{background:#e2e8f0;color:#0a1f4d}.btn-purple{background:#7c3aed;color:#fff}.btn-teal{background:#0d9488;color:#fff}.btn-red{background:#dc2626;color:#fff}.nav{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0}.nav button{border:none;border-radius:20px;padding:10px 12px;font-weight:900;cursor:pointer;font-size:11px;background:#2a4a8a;color:#fff}.nav button.gold{background:#d4af37;color:#0a1f4d}.nav button.teal{background:#0d9488;color:#fff}.nav button.purple{background:#7c3aed;color:#fff}.nav button.green{background:#16a34a;color:#fff}.nav button.red{background:#dc2626;color:#fff}.info{background:#fef3c7;border:2px solid #d4af37;border-radius:8px;padding:10px;font-size:13px;line-height:1.6}.warn{background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:10px;font-size:13px}.ok{background:#dcfce7;border:2px solid #22c55e;border-radius:8px;padding:10px;font-size:13px}.kpi{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;text-align:center}.kpi div{background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px}.kpi b{font-size:22px;display:block}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}th{background:#0a1f4d;color:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bigbtn{width:100%;padding:16px;font-size:14px}@media(max-width:600px){.kpi{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}@media print{.no-print{display:none!important}.card{box-shadow:none;border:1px solid #000}}</style></head>
 <body><div class="wrap">
-<div class="card" style="text-align:center"><img src="logo.png" style="max-width:200px;width:90%;display:block;margin:0 auto"><h1>👩‍🏫 TEACHER — MAKHANANI LTSM 2.0 — V2</h1><p id="schoolNameLine" style="color:#64748b;font-size:12px">Loading...</p>
-<div class="nav"><button class="gold" onclick="window.location.href='index.html'">🏠 HOME</button><button class="green" onclick="window.location.href='issue.html?v=9999'">📦 ISSUE →</button><button onclick="window.location.href='learner.html?v=9999'">👨‍🎓 LEARNERS →</button><button class="gold" id="hodBtn" style="display:none" onclick="window.location.href='hod.html?v=9999'">✅ HOD APPROVALS →</button><button class="red" onclick="doLogout()">🚪 LOGOUT</button></div>
-<div class="info" id="whoAmI">Checking login...</div><div id="msg"></div></div>
 
-<div class="card" id="mainContent" style="display:none"><h2>📊 My Class Dashboard</h2>
-<div class="kpi"><div><b id="kMyReq">—</b>My Requests</div><div><b id="kPending">—</b>Pending</div><div><b id="kGot">—</b>Librarian Gave Me</div><div><b id="kIssuedClass">—</b>I Issued To Class</div></div>
-<div class="info" id="myClassInfo" style="margin-top:10px"></div>
-<div class="info" style="margin-top:8px"><b>ID RULE:</b> Pick by <b>Learner ID (5A001)</b> + <b>Book No (MPS000001)</b> — Same name / title can exist, ID never duplicates.</div></div>
+<div class="card no-print" style="text-align:center;padding-bottom:10px">
+<img src="logo.png" alt="Xintimani Group Holdings (PTY)Ltd" style="max-width:220px;width:90%;height:auto;display:block;margin:0 auto">
+<div style="font-size:11px;line-height:1.6">Reg: 2026/934898/07 • Tel: 078 023 3263 • Email: vusichauke3037@gmail.com<br>Directors: Vusi Chauke &amp; Hloniphani Success Masia</div>
+<h1>👩‍🏫 MY CLASS — MAKHANANI LTSM 2.0</h1>
+<p style="color:#64748b;font-size:12px" id="schoolNameLine">Loading...</p>
+<div class="nav">
+<button class="gold" onclick="window.location.href='index.html'">🏠 HOME</button>
+<button class="green" onclick="window.location.href='stock.html?v=9999'">📦 STOCK →</button>
+<button class="green" onclick="window.location.href='learner.html?v=9999'">👨‍🎓 LEARNERS →</button>
+<button class="green" onclick="window.location.href='issue.html?v=9999'">📦 ISSUE →</button>
+<button class="green" onclick="window.location.href='hod.html?v=9999'" id="hodBtn" style="display:none">✅ HOD →</button>
+<button class="green" onclick="window.location.href='school_admin.html?v=9999'" id="schoolAdminBtn">🏫 SCHOOL ADMIN →</button>
+<button class="purple" onclick="window.location.href='super_admin.html?v=9999'" id="superAdminBtn">👑 SUPER ADMIN →</button>
+<button class="purple" onclick="window.location.href='manuals.html#teacher'">📖 MANUAL →</button>
+<button class="red" onclick="doLogout()">🚪 LOGOUT</button>
+</div>
+<div class="info" id="whoAmI">Checking login...</div>
+<div id="msg"></div>
+</div>
 
-<div class="card" id="reqCard" style="display:none"><h2>📝 1. Request Books — For MY Class Only</h2>
-<div class="info">Your class is locked from your profile. HOD approves Teacher requests. Principal / School Admin approves HOD requests. You cannot approve your own.</div>
-<div class="row"><div><label>Subject *</label><select id="reqSubject" onchange="renderReqBooks()"><option value="">— Choose —</option><option>English</option><option>Sepedi</option><option>Xitsonga</option><option>Afrikaans</option><option>Maths</option><option>Maths Lit</option><option>Natural Sciences</option><option>Physical Sciences</option><option>Life Sciences</option><option>Social Sciences</option><option>History</option><option>Geography</option><option>Life Skills</option><option>Life Orientation</option><option>Accounting</option><option>Business Studies</option><option>Economics</option><option>Technology</option><option>EMS</option><option>Other</option></select></div><div><label>Book * — Shows Book No</label><select id="reqBook"><option value="">— Choose Subject first —</option></select></div></div>
-<div class="row"><div><label>Qty Needed *</label><input id="reqQty" type="number" min="1" value="30"></div><div><label>Note</label><input id="reqNote" placeholder="e.g. Term 1"></div></div>
-<button class="btn btn-green" style="margin-top:12px" onclick="teacherRequestBook()">📝 SEND REQUEST →</button><div id="reqMsg"></div></div>
+<div id="viewAsTimerTeacher" style="display:none" class="card no-print">
+<div style="background:#7c3aed;color:#fff;border-radius:10px;padding:12px;text-align:center">
+👁️ VIEW AS: <b id="viewAsTeacherSchool">—</b> • ⏱️ Time Left: <b id="viewAsTimerTeacherText" style="font-size:18px">30:00</b> • <button class="btn btn-gold" onclick="extendViewAsTeacher()">⏱️ EXTEND +30 MIN</button> <button class="btn btn-grey" onclick="exitViewAsTeacher()">🚪 EXIT VIEW</button> <button class="btn btn-grey" onclick="window.location.href='school_admin.html?v=9999'">🏫 BACK TO SCHOOL ADMIN →</button>
+</div>
+</div>
 
-<div class="card" id="issueClassCard" style="display:none"><h2>👨‍🎓 2. Issue To MY Class — Up To What Librarian Gave Me</h2>
-<div class="info">Pick by <b>Book No + Learner ID</b>. If two learners have same name, check ID. If two books have same title, check Book No.</div>
-<label>My Approved Requests (Librarian Gave Me Books) — Shows Book No</label><select id="myRequestSelect" onchange="renderMyClassLearners()"><option value="">— No request with books yet —</option></select>
-<div id="myRequestInfo" style="margin-top:10px"></div>
-<label>Search Learner In MY Class (Name or Learner ID e.g. Thandi or 5A001)</label><input id="myClassLearnerSearch" placeholder="Type learner name or ID..." oninput="renderMyClassLearners()">
-<label>Learner In MY Class * — Shows Learner ID</label><select id="myClassLearner"><option value="">— Pick request first —</option></select>
-<button class="btn btn-green bigbtn" style="margin-top:12px" onclick="teacherIssueToLearner()">📤 ISSUE TO MY LEARNER →</button><div id="myClassIssueMsg"></div></div>
+<div id="lockedBannerTeacher" style="display:none" class="card no-print">
+<div style="background:#dc2626;color:#fff;border-radius:10px;padding:12px;text-align:center">
+<div style="font-size:15px;font-weight:900">🔒 SCHOOL LOCKED — SUPER ADMIN IS VIEWING AS YOU</div>
+<div style="font-size:12px;margin-top:4px">Super Admin: <b id="lockedByTeacher">—</b> • You CANNOT Request / Issue while locked.<br>You CAN still view your class.</div>
+<div style="margin-top:8px"><button class="btn btn-gold" onclick="checkTeacherLock(true)">🔄 CHECK IF UNLOCKED</button></div>
+</div>
+</div>
 
-<div class="card" id="myReqListCard" style="display:none"><h2>📋 My Requests — Track — Shows Book No</h2><div id="myRequestsList">Loading...</div></div>
-<div class="card" id="myIssuesCard" style="display:none"><h2>📋 Books I Issued To My Class — Shows Learner ID + Book No</h2><div id="myIssuesList">Loading...</div></div>
-<div class="card" style="text-align:center"><b>XINTIMANI GROUP HOLDINGS (PTY)Ltd</b><br><span style="font-size:11px">Reg: 2026/934898/07 • Tel: 078 023 3263 • Email: vusichauke3037@gmail.com</span><div style="margin-top:10px"><button class="btn btn-grey" onclick="doLogout()">🚪 LOGOUT</button></div></div>
+<div class="card no-print" id="mainContent" style="display:none"><h2>📊 My Class Dashboard</h2>
+<div class="kpi"><div><b id="kLearners">—</b>Learners In My Class</div><div><b id="kBooksHeld">—</b>Books Held By Teacher</div><div><b id="kIssued">—</b>Issued To Learners</div><div><b id="kPending">—</b>Pending Requests</div></div>
+<div class="info" style="margin-top:10px"><b>FLOW:</b> 1. You Request → 2. HOD Approves + Sets MAX → 3. Librarian Issues to You (up to MAX) → 4. You Issue to Learners<br><b>ID RULE:</b> Every list shows <b>Learner ID (5A001)</b> + <b>Book No (MPS000001)</b> — Same name / title can exist, ID never duplicates.</div>
+<div style="margin-top:10px"><button class="btn btn-purple" onclick="window.print()">🖨️ PRINT MY CLASS →</button> <button class="btn btn-teal" onclick="exportMyClass()">📤 EXPORT TO EXCEL →</button> <button class="btn btn-grey" onclick="loadAll()">🔄 REFRESH</button></div>
+<div class="row"><div><label>My Grade *</label><select id="myGrade" onchange="saveMyClass();renderAll()"><option value="">— Pick Grade —</option><option>R</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div><div><label>My Class *</label><select id="myClass" onchange="saveMyClass();renderAll()"><option value="">— Pick Class —</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option></select></div></div>
+<div id="myClassInfo" style="margin-top:10px"></div>
+</div>
+
+<div class="card no-print" id="scanCard" style="display:none"><h2>📷 SCAN TO ISSUE TO LEARNER — No Typing — 2 Seconds</h2>
+<div class="info">1. Scan <b>Learner Barcode</b> (e.g. 5A001) → 2. Scan <b>Book Barcode</b> (e.g. MPS000001) → 3. Press SCAN ISSUE. You can only issue books you are currently holding (Issued To Teacher). Brand: <b>MAKHANANI LTSM 2.0</b></div>
+<div class="row"><div><label>📷 SCAN LEARNER ID (e.g. 5A001)</label><input id="scanLearner" placeholder="Scan learner barcode here..." autocomplete="off" onkeyup="if(event.key==='Enter') handleScanLearner()"></div><div><label>📷 SCAN BOOK NO (e.g. MPS000001)</label><input id="scanBook" placeholder="Scan book barcode here..." autocomplete="off" onkeyup="if(event.key==='Enter') handleScanBook()"></div></div>
+<div id="scanResult" style="margin-top:10px"></div>
+<button class="btn btn-green bigbtn" style="margin-top:10px" onclick="scanIssueToLearner()">📤 SCAN ISSUE TO LEARNER →</button>
+<div id="scanMsg"></div>
+<button class="btn btn-grey" style="margin-top:8px" onclick="clearScan()">🧹 CLEAR SCAN</button>
+</div>
+
+<div class="card no-print" id="requestCard" style="display:none"><h2>📝 Request Books — For My Class</h2>
+<div class="info">Request goes to HOD (or Principal if you are HOD). HOD sets MAX. Librarian can issue up to MAX only. Check <b>Book No</b> — Same title can exist.</div>
+<div class="row"><div><label>Book * — Shows Book No</label><select id="reqBook"><option value="">— Pick Book —</option></select></div><div><label>Qty Requested *</label><input id="reqQty" type="number" min="1" value="30"></div></div>
+<label>Note (Optional)</label><input id="reqNote" placeholder="e.g. For Term 1, 30 learners in 5A">
+<button class="btn btn-green bigbtn" id="requestBtn" style="margin-top:10px" onclick="submitRequest()">📝 SUBMIT REQUEST →</button>
+<div id="requestMsg"></div>
+<h2 style="margin-top:16px">📋 My Requests — Shows Book No</h2>
+<div id="myRequestsList">Loading...</div>
+</div>
+
+<div class="card no-print" id="myBooksCard" style="display:none"><h2>📚 Books Held By Me — From Librarian — Shows Book No</h2>
+<div class="info">These are books Librarian issued to you. You can now issue them to learners in your class. If you hold 0, ask Librarian to issue from your approved request.</div>
+<div id="myHeldBooks">Loading...</div>
+</div>
+
+<div class="card no-print" id="issueCard" style="display:none"><h2>📤 Issue To Learner — Manual (No Scan)</h2>
+<div class="row"><div><label>Learner * — Shows Learner ID</label><select id="issueLearner" onchange="updateLearnerInfo()"><option value="">— Pick Learner —</option></select></div><div><label>Book * — Shows Book No — Only Books You Hold</label><select id="issueBook" onchange="updateBookInfo()"><option value="">— Pick Book You Hold —</option></select></div></div>
+<div id="learnerInfo"></div><div id="bookInfo"></div>
+<button class="btn btn-green bigbtn" id="issueBtn" style="margin-top:10px" onclick="issueToLearnerManual()">📤 ISSUE TO LEARNER →</button>
+<div id="issueMsg"></div>
+</div>
+
+<div class="card" id="listCard" style="display:none"><h2>👨‍🎓 My Class — Learners + Books Held — Shows Learner ID + Book No</h2>
+<div class="row"><div><label>Search (Learner / Learner ID / Book / Book No)</label><input id="classQ" placeholder="Thandi / 5A001 / MPS000001..." oninput="renderAll()"></div><div><label>Filter</label><select id="classFilter" onchange="renderAll()"><option value="">ALL LEARNERS</option><option>WITH_BOOKS</option><option>NO_BOOKS</option></select></div></div>
+<div id="myClassList">Loading...</div></div>
+
+<div class="card no-print" style="text-align:center"><div style="border-top:3px solid #d4af37;padding:12px 8px;background:#f8fafc;border-radius:8px"><b>XINTIMANI GROUP HOLDINGS (PTY)Ltd</b><br><span style="font-size:11px">Reg: 2026/934898/07 • Directors: Vusi Chauke &amp; Hloniphani Success Masia<br>Tel: 078 023 3263 • Email: vusichauke3037@gmail.com<br>Makhanani LTSM 2.0 — V2.51 Final • Due: 30 Nov Every Year</span></div><div style="margin-top:10px"><button class="btn btn-grey" onclick="clearCache()">🧹 CLEAR CACHE</button> <button class="btn btn-grey" onclick="doLogout()">🚪 LOGOUT</button></div></div>
 </div>
 <script>
-function doLogout(){ auth.signOut().then(function(){ window.location.href='login.html?v=9999'; }); }
-let MY_ROLE='',MY_SCHOOL_ID='',MY_SCHOOL_NAME='',MY_NAME='',MY_GRADE='',MY_CLASS='',MY_UID='';
-let ALL_BOOKS=[],ALL_LEARNERS=[],ALL_ISSUES=[],ALL_REQUESTS=[];
+if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }); }
+function clearCache(){ localStorage.clear(); location.href='teacher.html?v='+Date.now(); }
+function doLogout(){ sessionStorage.setItem('makhanani_just_logged_out','1'); sessionStorage.removeItem('makhanani_impersonate'); if(TEACHER_VIEW_AS_TIMER) clearInterval(TEACHER_VIEW_AS_TIMER); if(TEACHER_FORCE_EXIT_CHECKER) clearInterval(TEACHER_FORCE_EXIT_CHECKER); auth.signOut().then(function(){ localStorage.removeItem('makhanani_user'); window.location.href='login.html?v=9999'; }); }
+let MY_ROLE='',MY_SCHOOL_ID='',MY_SCHOOL_NAME='',MY_NAME='',MY_UID='',MY_GRADE='',MY_CLASS='';
+let ALL_LEARNERS=[],ALL_BOOKS=[],ALL_ISSUES=[],ALL_SCHOOLS=[],ALL_REQUESTS=[],ALL_USERS=[];
+let IS_VIEW_AS=false,VIEW_AS_DATA=null;
 function toArr(o){ return Object.entries(o||{}).map(function([id,v]){ v._id=id; return v; }); }
-function getGroupForGrade(g){ g=String(g||'').toUpperCase(); if(['R','1','2','3'].includes(g)) return 'FOUNDATION PHASE'; if(['4','5','6'].includes(g)) return 'INTERMEDIATE PHASE'; if(['7','8','9'].includes(g)) return 'SENIOR PHASE'; if(['10','11','12'].includes(g)) return 'FET PHASE'; return 'OTHER'; }
-function getDeptForSubject(s){ s=String(s||'').toLowerCase(); if(['english','sepedi','xitsonga','afrikaans'].includes(s)) return 'Languages'; if(['maths','maths lit','natural sciences','physical sciences','life sciences','technology'].includes(s)) return 'Maths & Science'; if(['social sciences','history','geography','ems','accounting','business studies','economics'].includes(s)) return 'Humanities / Commerce'; if(['life skills','life orientation'].includes(s)) return 'Life Skills'; return 'Other'; }
-function renderReqBooks(){ var subj=document.getElementById('reqSubject').value; var sel=document.getElementById('reqBook'); var list=ALL_BOOKS.filter(function(b){ return !subj||b.subject===subj; }); sel.innerHTML='<option value="">— Pick Book ('+list.length+') —</option>'+list.map(function(b){ return '<option value="'+b._id+'">'+b.title+' — '+b.bookNo+' — Grade '+b.grade+'</option>'; }).join(''); }
-async function teacherRequestBook(){ var msg=document.getElementById('reqMsg'); try{ var subj=document.getElementById('reqSubject').value; var bookId=document.getElementById('reqBook').value; var qty=parseInt(document.getElementById('reqQty').value)||0; var note=document.getElementById('reqNote').value.trim(); if(!subj||!bookId||qty<1){ msg.innerHTML='<div class="warn">❌ Fill Subject + Book + Qty</div>'; return; } if(!MY_GRADE||!MY_CLASS){ msg.innerHTML='<div class="warn">❌ Your Grade/Class not set. Ask School Admin.</div>'; return; } var book=ALL_BOOKS.find(function(b){ return b._id===bookId; }); var approver=(MY_ROLE==='HOD'||MY_ROLE==='PRINCIPAL')?'PRINCIPAL / SCHOOL ADMIN':'HOD'; await db.ref('bookRequests').push({ teacherId:MY_UID, teacherName:MY_NAME, teacherEmail: auth.currentUser.email, teacherRole:MY_ROLE, grade:MY_GRADE, className:MY_CLASS, subject:subj, group:book.group||getGroupForGrade(book.grade), department:book.department||getDeptForSubject(book.subject), bookId:bookId, bookTitle:book.title, bookNo:book.bookNo||'', requestedQty:qty, approvedQty:0, issuedToTeacherQty:0, issuedToLearnersQty:0, status:'PENDING', note:note, schoolId:MY_SCHOOL_ID, schoolName:MY_SCHOOL_NAME, requestedAt:Date.now(), requestedAtStr:new Date().toLocaleString(), approverNeeded:approver }); msg.innerHTML='<div class="ok">✅ Sent to '+approver+' — '+qty+' x '+book.title+' — '+book.bookNo+' for Grade '+MY_GRADE+' '+MY_CLASS+'</div>'; loadAll(); }catch(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; } }
-function renderMyClassLearners(){ var sel=document.getElementById('myRequestSelect'); var reqId=sel.value; var info=document.getElementById('myRequestInfo'); var lSel=document.getElementById('myClassLearner'); var q=(document.getElementById('myClassLearnerSearch').value||'').toLowerCase(); if(!reqId){ info.innerHTML=''; lSel.innerHTML='<option value="">— Pick request first —</option>'; return; } var req=ALL_REQUESTS.find(function(r){ return r._id===reqId; }); if(!req) return; var remaining=(req.issuedToTeacherQty||0)-(req.issuedToLearnersQty||0); info.innerHTML='<div class="info"><b>'+req.bookTitle+'</b> — <b>'+req.bookNo+'</b><br>HOD MAX: '+(req.approvedQty||0)+' • Librarian Gave Me: '+(req.issuedToTeacherQty||0)+' • I Issued: '+(req.issuedToLearnersQty||0)+' • <b>Remaining: '+remaining+'</b></div>'; var list=ALL_LEARNERS.filter(function(l){ return String(l.grade)===String(req.grade)&&String(l.className)===String(req.className)&&(!q||(l.fullName||'').toLowerCase().includes(q)||(l.admissionNo||'').toLowerCase().includes(q)); }); lSel.innerHTML='<option value="">— Pick Learner ('+list.length+') —</option>'+list.map(function(l){ return '<option value="'+l._id+'">'+l.fullName+' — '+l.admissionNo+' — Grade '+l.grade+' '+l.className+'</option>'; }).join(''); }
-async function teacherIssueToLearner(){ var msg=document.getElementById('myClassIssueMsg'); try{ var reqId=document.getElementById('myRequestSelect').value; var learnerId=document.getElementById('myClassLearner').value; if(!reqId||!learnerId){ msg.innerHTML='<div class="warn">❌ Pick Request + Learner</div>'; return; } var req=ALL_REQUESTS.find(function(r){ return r._id===reqId; }); var learner=ALL_LEARNERS.find(function(l){ return l._id===learnerId; }); if(String(learner.grade)!==String(req.grade)||String(learner.className)!==String(req.className)){ msg.innerHTML='<div class="warn">❌ Only YOUR class: Grade '+req.grade+' '+req.className+'</div>'; return; } var remaining=(req.issuedToTeacherQty||0)-(req.issuedToLearnersQty||0); if(remaining<=0){ msg.innerHTML='<div class="warn">❌ No books left.</div>'; return; } var dup=ALL_ISSUES.find(function(i){ return i.learnerId===learnerId&&i.bookId===req.bookId&&i.status==='ISSUED'; }); if(dup){ msg.innerHTML='<div class="warn">❌ Learner '+learner.fullName+' ('+learner.admissionNo+') already has this book ('+req.bookNo+').</div>'; return; } await db.ref('issues').push({ learnerId:learnerId, learnerName:learner.fullName, admissionNo:learner.admissionNo||'', grade:learner.grade, className:learner.className, bookId:req.bookId, bookTitle:req.bookTitle, bookNo:req.bookNo||'', subject:req.subject, group:req.group, department:req.department, schoolId:req.schoolId, schoolName:req.schoolName, status:'ISSUED', requestId:reqId, issuedByTeacher:req.teacherName, issuedAt:Date.now(), issuedAtStr:new Date().toLocaleString(), issuedBy: auth.currentUser.email }); var newTotal=(req.issuedToLearnersQty||0)+1; await db.ref('bookRequests/'+reqId).update({ issuedToLearnersQty:newTotal, status:newTotal>=(req.issuedToTeacherQty||0)?'COMPLETED':'ISSUING_TO_CLASS' }); msg.innerHTML='<div class="ok">✅ Issued: <b>'+req.bookTitle+' — '+req.bookNo+'</b> → <b>'+learner.fullName+' — '+learner.admissionNo+'</b> — Remaining: '+(remaining-1)+'</div>'; loadAll(); }catch(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; } }
-function renderMy(){ var my=ALL_REQUESTS.filter(function(r){ return r.teacherId===MY_UID; }).sort(function(a,b){ return (b.requestedAt||0)-(a.requestedAt||0); }); document.getElementById('kMyReq').textContent=my.length; document.getElementById('kPending').textContent=my.filter(function(r){ return r.status==='PENDING'; }).length; document.getElementById('kGot').textContent=my.reduce(function(s,r){ return s+(r.issuedToTeacherQty||0); },0); document.getElementById('kIssuedClass').textContent=my.reduce(function(s,r){ return s+(r.issuedToLearnersQty||0); },0); var html='<table><tr><th>Book — Book No</th><th>Requested / MAX / Got / Issued</th><th>Status</th></tr>'; my.forEach(function(r){ html+='<tr><td><b>'+r.bookTitle+'</b> — <b>'+r.bookNo+'</b><br>Grade '+r.grade+' '+r.className+' • '+r.requestedAtStr+'</td><td>Req: <b>'+r.requestedQty+'</b> • MAX: <b>'+(r.approvedQty||0)+'</b><br>Got: <b>'+(r.issuedToTeacherQty||0)+'</b> • Issued: <b>'+(r.issuedToLearnersQty||0)+'</b></td><td><b>'+r.status+'</b><br><small>Approver: '+r.approverNeeded+'</small></td></tr>'; }); html+='</table>'; if(my.length===0) html='<div class="info">No requests yet. Request above.</div>'; document.getElementById('myRequestsList').innerHTML=html; var myReqs=my.filter(function(r){ return (r.issuedToTeacherQty||0)>0; }); var sel=document.getElementById('myRequestSelect'); var prev=sel.value; sel.innerHTML='<option value="">— Pick My Request ('+myReqs.length+') —</option>'+myReqs.map(function(r){ return '<option value="'+r._id+'">'+r.bookTitle+' — '+r.bookNo+' — Got: '+(r.issuedToTeacherQty||0)+' • Issued: '+(r.issuedToLearnersQty||0)+'</option>'; }).join(''); if(prev) sel.value=prev; renderMyClassLearners(); var myIssues=ALL_ISSUES.filter(function(i){ return i.requestId && my.some(function(r){ return r._id===i.requestId; }) && i.status==='ISSUED'; }).sort(function(a,b){ return (b.issuedAt||0)-(a.issuedAt||0); }); var ih='<table><tr><th>Learner — Learner ID</th><th>Book — Book No</th><th>Issued</th></tr>'; myIssues.slice(0,100).forEach(function(i){ ih+='<tr><td><b>'+i.learnerName+'</b> — <b>'+i.admissionNo+'</b></td><td><b>'+i.bookTitle+'</b> — <b>'+i.bookNo+'</b></td><td>'+i.issuedAtStr+'</td></tr>'; }); ih+='</table>'; if(myIssues.length===0) ih='<div class="info">No books issued to your class yet.</div>'; document.getElementById('myIssuesList').innerHTML=ih; }
-async function loadAll(){ try{ var [b,l,i,r]=await Promise.all([db.ref('books').once('value'),db.ref('learners').once('value'),db.ref('issues').once('value'),db.ref('bookRequests').once('value')]); ALL_BOOKS=toArr(b.val()).filter(function(x){ return x.schoolId===MY_SCHOOL_ID; }).map(function(b2){ if(!b2.group) b2.group=getGroupForGrade(b2.grade); if(!b2.department) b2.department=getDeptForSubject(b2.subject); return b2; }); ALL_LEARNERS=toArr(l.val()).filter(function(x){ return x.schoolId===MY_SCHOOL_ID; }); ALL_ISSUES=toArr(i.val()).filter(function(x){ return x.schoolId===MY_SCHOOL_ID; }); ALL_REQUESTS=toArr(r.val()).filter(function(x){ return x.schoolId===MY_SCHOOL_ID; }); renderReqBooks(); renderMy(); document.getElementById('msg').innerHTML='<div class="ok">✅ Connected — Books: '+ALL_BOOKS.length+' • My Learners: '+ALL_LEARNERS.filter(function(x){ return String(x.grade)===String(MY_GRADE)&&String(x.className)===String(MY_CLASS); }).length+'</div>'; }catch(e){ document.getElementById('msg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; } }
-auth.onAuthStateChanged(function(u){ if(!u){ window.location.href='login.html'; return; } db.ref('users/'+u.uid).once('value').then(function(s){ var d=s.val()||{}; var role=(d.role||'').toUpperCase(); if(!['TEACHER','HOD','PRINCIPAL'].includes(role)){ alert('🔒 Teacher page only. You are: '+role); window.location.href='index.html'; return; } MY_ROLE=role; MY_SCHOOL_ID=d.schoolId||''; MY_SCHOOL_NAME=d.schoolName||MY_SCHOOL_ID; MY_UID=u.uid; MY_NAME=d.name||u.email; MY_GRADE=d.grade||''; MY_CLASS=d.className||d.class||''; document.getElementById('whoAmI').innerHTML='✅ <b>'+MY_NAME+'</b> — '+MY_ROLE+' • '+MY_SCHOOL_NAME+' • Grade '+(MY_GRADE||'—')+' '+(MY_CLASS||'—'); document.getElementById('schoolNameLine').textContent=MY_SCHOOL_NAME+' • Grade '+(MY_GRADE||'—')+' '+(MY_CLASS||'—'); document.getElementById('myClassInfo').innerHTML='Your Class: <b>Grade '+(MY_GRADE||'—')+' '+(MY_CLASS||'—')+'</b><br>'+(MY_ROLE==='HOD'?'You are HOD — Your requests go to Principal / School Admin. You approve OTHER teachers in HOD page.':'Your requests go to HOD.')+'<br>'+(MY_GRADE?'':'⚠️ Grade/Class not set — Ask School Admin.'); if(MY_ROLE==='HOD'||MY_ROLE==='PRINCIPAL') document.getElementById('hodBtn').style.display='inline-block'; ['mainContent','reqCard','issueClassCard','myReqListCard','myIssuesCard'].forEach(function(id){ document.getElementById(id).style.display='block'; }); loadAll(); }); });
+function filterBySchool(all){ if(MY_ROLE==='SUPER_ADMIN' && !IS_VIEW_AS) return all; return all.filter(function(x){ return x.schoolId===MY_SCHOOL_ID; }); }
+// --- STICKER HELPERS — NO DUPLICATE GRADE ---
+function getBookStickerSub(title, grade, subject){
+  var t=String(title||'').toLowerCase();
+  var hasGrade=t.includes('grade '+grade) || t.includes('grade'+grade) || t.includes('gr '+grade);
+  var hasSubject=t.includes(String(subject||'').toLowerCase());
+  if(hasGrade) return subject;
+  if(hasSubject) return 'Grade '+grade;
+  return 'Grade '+grade+' • '+subject;
+}
+function getLearnerStickerSub(grade, className, gender){
+  var sub='Grade '+grade+' '+className;
+  if(gender) sub+=' • '+gender;
+  return sub;
+}
+// --- BARCODE A4 — BRAND MAKHANANI LTSM 2.0 ---
+function showBookBarcode_A4(bookNo, title, grade, subject){
+  var sub=getBookStickerSub(title, grade, subject);
+  var w=window.open('', '_blank');
+  var html='<html><head><title>'+bookNo+'</title><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script><style>@page{size:A4;margin:0} body{margin:0;font-family:Arial;display:flex;justify-content:center;padding:20px} .a4-label{border:1.2px dashed #000;border-radius:4px;padding:4mm;text-align:center;width:63mm;height:54mm;display:flex;flex-direction:column;justify-content:space-between} .school{font-size:10pt;font-weight:900;text-transform:uppercase} .brand{font-size:8pt;font-weight:900;color:#0a1f4d;letter-spacing:1px} .title{font-size:10pt;font-weight:900} .sub{font-size:8pt;color:#475569} svg{width:100%;height:22mm} .code{font-size:11pt;font-weight:900;letter-spacing:1.5px} @media print{body{padding:0} button{display:none}}</style></head><body>';
+  html+='<div><div class="a4-label"><div><div class="school">'+MY_SCHOOL_NAME+'</div><div class="brand">MAKHANANI LTSM 2.0</div><div class="title">'+title+'</div><div class="sub">'+sub+'</div></div><div><svg id="bc"></svg><div class="code">'+bookNo+'</div></div></div><br><button onclick="window.print()" style="padding:12px 20px;font-weight:900">🖨️ PRINT</button></div>';
+  html+='<script>window.onload=function(){JsBarcode("#bc","'+bookNo+'",{format:"CODE128",width:1.6,height:55,displayValue:false,margin:0});};<'+'/script></body></html>';
+  w.document.write(html); w.document.close();
+}
+function showLearnerBarcode_A4(admissionNo, fullName, grade, className, gender){
+  var sub=getLearnerStickerSub(grade, className, gender);
+  var w=window.open('', '_blank');
+  var html='<html><head><title>'+admissionNo+'</title><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script><style>@page{size:A4;margin:0} body{margin:0;font-family:Arial;display:flex;justify-content:center;padding:20px} .a4-label{border:1.2px dashed #000;border-radius:4px;padding:4mm;text-align:center;width:63mm;height:54mm;display:flex;flex-direction:column;justify-content:space-between} .school{font-size:10pt;font-weight:900;text-transform:uppercase} .brand{font-size:8pt;font-weight:900;color:#0a1f4d;letter-spacing:1px} .title{font-size:10pt;font-weight:900} .sub{font-size:8pt;color:#475569} svg{width:100%;height:22mm} .code{font-size:12pt;font-weight:900;letter-spacing:1.5px} @media print{body{padding:0} button{display:none}}</style></head><body>';
+  html+='<div><div class="a4-label"><div><div class="school">'+MY_SCHOOL_NAME+'</div><div class="brand">MAKHANANI LTSM 2.0</div><div class="title">'+fullName+'</div><div class="sub">'+sub+'</div></div><div><svg id="bc"></svg><div class="code">'+admissionNo+'</div></div></div><br><button onclick="window.print()" style="padding:12px 20px;font-weight:900">🖨️ PRINT</button></div>';
+  html+='<script>window.onload=function(){JsBarcode("#bc","'+admissionNo+'",{format:"CODE128",width:1.6,height:55,displayValue:false,margin:0});};<'+'/script></body></html>';
+  w.document.write(html); w.document.close();
+}
+// --- VIEW AS ---
+let TEACHER_VIEW_AS_TIMER=null, TEACHER_FORCE_EXIT_CHECKER=null;
+function startViewAsTimerTeacher(){ var impStr=sessionStorage.getItem('makhanani_impersonate'); if(!impStr) return; try{ var imp=JSON.parse(impStr); var expiry=imp.expiresAt; if(!expiry) return; document.getElementById('viewAsTimerTeacher').style.display='block'; document.getElementById('viewAsTeacherSchool').textContent=imp.schoolName; if(TEACHER_VIEW_AS_TIMER) clearInterval(TEACHER_VIEW_AS_TIMER); TEACHER_VIEW_AS_TIMER=setInterval(function(){ var left=expiry-Date.now(); if(left<=0){ clearInterval(TEACHER_VIEW_AS_TIMER); autoExitViewAsTeacher(); return; } var mins=Math.floor(left/60000); var secs=Math.floor((left%60000)/1000); document.getElementById('viewAsTimerTeacherText').textContent=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0'); if(left<=5*60*1000 && !window._teacherWarned){ window._teacherWarned=true; alert('⏱️ VIEW AS — 5 MIN LEFT'); } },1000); }catch(e){} }
+async function extendViewAsTeacher(){ var impStr=sessionStorage.getItem('makhanani_impersonate'); if(!impStr) return; var imp=JSON.parse(impStr); imp.expiresAt=Date.now()+(30*60*1000); sessionStorage.setItem('makhanani_impersonate', JSON.stringify(imp)); if(imp.logId){ await db.ref('viewAsLogs/'+imp.logId).update({ expiresAt:imp.expiresAt, expiresAtStr:new Date(imp.expiresAt).toLocaleString() }); await db.ref('schoolNotifications').push({ schoolId:imp.schoolId, schoolName:imp.schoolName, type:'EXTENDED', title:'⏱️ VIEW AS EXTENDED — +30 Min', message:'Super Admin extended View As +30 min.', logId:imp.logId, from:imp.superAdminEmail, fromName:'Super Admin', at:Date.now(), atStr:new Date().toLocaleString(), read:false }); await db.ref('viewAsActions').push({ logId:imp.logId, superAdminUid:imp.superAdminUid, superAdminEmail:imp.superAdminEmail, schoolId:imp.schoolId, schoolName:imp.schoolName, action:'Extended Session', detail:'Extended +30 min from Teacher page', at:Date.now(), atStr:new Date().toLocaleString() }); } window._teacherWarned=false; alert('✅ Extended +30 MIN'); startViewAsTimerTeacher(); }
+async function unlockTeacherSchool(imp){ if(imp && imp.schoolId){ try{ await db.ref('schools/'+imp.schoolId).update({ lockedByViewAs:false, lockedBy:'', lockedByName:'', lockedAt:null, lockedAtStr:'', lockedLogId:'', lockedExpiresAt:null }); }catch(e){} } }
+async function exitViewAsTeacher(){ var impStr=sessionStorage.getItem('makhanani_impersonate'); if(impStr){ try{ var imp=JSON.parse(impStr); if(imp.logId){ var durSec=Math.round((Date.now()-imp.startedAt)/1000); await db.ref('viewAsLogs/'+imp.logId).update({ endedAt:Date.now(), endedAtStr:new Date().toLocaleString(), durationSec:durSec, durationStr:Math.floor(durSec/60)+' min '+(durSec%60)+' sec', status:'ENDED', exitReason:'MANUAL_EXIT' }); await db.ref('schoolNotifications').push({ schoolId:imp.schoolId, schoolName:imp.schoolName, type:'UNLOCKED', title:'✅ UNLOCKED — Super Admin Finished Viewing', message:'Super Admin finished Viewing As '+imp.schoolName+'. You are now UNLOCKED.', logId:imp.logId, from:imp.superAdminEmail, fromName:'Super Admin', at:Date.now(), atStr:new Date().toLocaleString(), read:false }); } await unlockTeacherSchool(imp); }catch(e){} } sessionStorage.removeItem('makhanani_impersonate'); window.location.href='super_admin.html?v=9999'; }
+async function autoExitViewAsTeacher(){ var impStr=sessionStorage.getItem('makhanani_impersonate'); if(impStr){ try{ var imp=JSON.parse(impStr); if(imp.logId){ var durSec=Math.round((Date.now()-imp.startedAt)/1000); await db.ref('viewAsLogs/'+imp.logId).update({ endedAt:Date.now(), endedAtStr:new Date().toLocaleString(), durationSec:durSec, durationStr:Math.floor(durSec/60)+' min '+(durSec%60)+' sec', status:'AUTO-EXITED (Timeout)', exitReason:'TIMEOUT' }); } await unlockTeacherSchool(imp); }catch(e){} } sessionStorage.removeItem('makhanani_impersonate'); alert('⏱️ VIEW AS SESSION ENDED'); window.location.href='super_admin.html?v=9999'; }
+function startForceExitCheckerTeacher(){ var impStr=sessionStorage.getItem('makhanani_impersonate'); if(!impStr) return; try{ var imp=JSON.parse(impStr); if(!imp.logId) return; if(TEACHER_FORCE_EXIT_CHECKER) clearInterval(TEACHER_FORCE_EXIT_CHECKER); TEACHER_FORCE_EXIT_CHECKER=setInterval(async function(){ try{ var snap=await db.ref('viewAsLogs/'+imp.logId).once('value'); var data=snap.val(); if(!data) return; if(data.forceExit===true || data.status==='FORCE-EXITED'){ clearInterval(TEACHER_FORCE_EXIT_CHECKER); if(TEACHER_VIEW_AS_TIMER) clearInterval(TEACHER_VIEW_AS_TIMER); sessionStorage.removeItem('makhanani_impersonate'); alert('🚨 VIEW AS SESSION FORCE-EXITED'); window.location.href='super_admin.html?v=9999'; } }catch(e){} },10000); }catch(e){} }
+// --- LOCK ---
+async function checkTeacherLock(showAlert){ var impStr=sessionStorage.getItem('makhanani_impersonate'); if(impStr) return false; if(!MY_SCHOOL_ID) return false; try{ var snap=await db.ref('schools/'+MY_SCHOOL_ID).once('value'); var data=snap.val()||{}; if(data.lockedByViewAs===true){ document.getElementById('lockedBannerTeacher').style.display='block'; document.getElementById('lockedByTeacher').textContent=data.lockedBy||'Super Admin'; disableTeacherWrite(true); if(showAlert) alert('🔒 BLOCKED — SCHOOL LOCKED\n\nSuper Admin is Viewing As your school.\nYou cannot Request / Issue while locked.'); return true; } else { document.getElementById('lockedBannerTeacher').style.display='none'; disableTeacherWrite(false); return false; } }catch(e){ return false; } }
+function disableTeacherWrite(disabled){ ['requestBtn','issueBtn'].forEach(function(id){ var b=document.getElementById(id); if(b){ b.disabled=disabled; b.style.opacity=disabled?'0.5':'1'; } }); document.querySelectorAll('#scanCard input, #scanCard button, #requestCard input, #requestCard select, #issueCard input, #issueCard select').forEach(function(inp){ inp.disabled=disabled; }); }
+async function logViewAsActionTeacher(action, detail){ var impStr=sessionStorage.getItem('makhanani_impersonate'); if(!impStr) return; try{ var imp=JSON.parse(impStr); if(!imp.logId) return; await db.ref('viewAsActions').push({ logId:imp.logId, superAdminUid:imp.superAdminUid, superAdminEmail:imp.superAdminEmail, schoolId:MY_SCHOOL_ID, schoolName:MY_SCHOOL_NAME, action:action, detail:detail, at:Date.now(), atStr:new Date().toLocaleString() }); var snap=await db.ref('viewAsLogs/'+imp.logId).once('value'); var cur=snap.val()||{}; await db.ref('viewAsLogs/'+imp.logId).update({ actionsCount:(cur.actionsCount||0)+1 }); }catch(e){} }
+// --- MY CLASS ---
+function saveMyClass(){
+  MY_GRADE=document.getElementById('myGrade').value;
+  MY_CLASS=document.getElementById('myClass').value;
+  if(MY_GRADE && MY_CLASS){
+    localStorage.setItem('makhanani_my_class_'+MY_UID, JSON.stringify({ grade:MY_GRADE, className:MY_CLASS }));
+    document.getElementById('myClassInfo').innerHTML='<div class="ok">✅ My Class: Grade '+MY_GRADE+' '+MY_CLASS+' • Saved</div>';
+  }
+}
+function loadMyClass(){
+  try{
+    var saved=localStorage.getItem('makhanani_my_class_'+MY_UID);
+    if(saved){ var o=JSON.parse(saved); MY_GRADE=o.grade||''; MY_CLASS=o.className||''; document.getElementById('myGrade').value=MY_GRADE; document.getElementById('myClass').value=MY_CLASS; }
+  }catch(e){}
+}
+// --- SCAN ---
+function clearScan(){ document.getElementById('scanLearner').value=''; document.getElementById('scanBook').value=''; document.getElementById('scanResult').innerHTML=''; document.getElementById('scanMsg').innerHTML=''; document.getElementById('scanLearner').focus(); }
+function handleScanLearner(){
+  var code=document.getElementById('scanLearner').value.trim().toUpperCase();
+  if(!code) return;
+  var l=ALL_LEARNERS.find(function(x){ return (x.admissionNo||'').toUpperCase()===code; });
+  var el=document.getElementById('scanResult');
+  if(!l){ el.innerHTML+='<div class="warn">❌ Learner not found: '+code+'</div>'; return; }
+  if(MY_GRADE && MY_CLASS && (String(l.grade)!==String(MY_GRADE) || String(l.className).toUpperCase()!==String(MY_CLASS).toUpperCase())){ el.innerHTML+='<div class="warn">⚠️ Learner '+l.fullName+' — '+l.admissionNo+' is Grade '+l.grade+' '+l.className+' — NOT your class Grade '+MY_GRADE+' '+MY_CLASS+'</div>'; }
+  el.innerHTML+='<div class="ok">✅ Learner: <b>'+l.fullName+' — '+l.admissionNo+'</b> • Grade '+l.grade+' '+l.className+' <button class="btn btn-purple" onclick="showLearnerBarcode_A4(\''+l.admissionNo+'\',\''+String(l.fullName||'').replace(/\'/g,"")+'\',\''+l.grade+'\',\''+l.className+'\',\''+(l.gender||'')+'\')">📊 BARCODE</button></div>';
+  document.getElementById('issueLearner').value=l._id; updateLearnerInfo();
+  document.getElementById('scanBook').focus();
+}
+function handleScanBook(){
+  var code=document.getElementById('scanBook').value.trim().toUpperCase();
+  if(!code) return;
+  var b=ALL_BOOKS.find(function(x){ return (x.bookNo||'').toUpperCase()===code; });
+  var el=document.getElementById('scanResult');
+  if(!b){ el.innerHTML+='<div class="warn">❌ Book not found: '+code+'</div>'; return; }
+  el.innerHTML+='<div class="ok">✅ Book: <b>'+b.title+' — '+b.bookNo+'</b> • Grade '+b.grade+' '+b.subject+' <button class="btn btn-purple" onclick="showBookBarcode_A4(\''+b.bookNo+'\',\''+String(b.title||'').replace(/\'/g,"")+'\',\''+b.grade+'\',\''+b.subject+'\')">📊 BARCODE</button></div>';
+  document.getElementById('issueBook').value=b._id; updateBookInfo();
+}
+async function scanIssueToLearner(){
+  var learnerCode=document.getElementById('scanLearner').value.trim().toUpperCase();
+  var bookCode=document.getElementById('scanBook').value.trim().toUpperCase();
+  var msg=document.getElementById('scanMsg');
+  if(!learnerCode || !bookCode){ msg.innerHTML='<div class="warn">❌ Scan BOTH Learner + Book first</div>'; return; }
+  var learner=ALL_LEARNERS.find(function(x){ return (x.admissionNo||'').toUpperCase()===learnerCode; });
+  var book=ALL_BOOKS.find(function(x){ return (x.bookNo||'').toUpperCase()===bookCode; });
+  if(!learner || !book){ msg.innerHTML='<div class="warn">❌ Learner or Book not found</div>'; return; }
+  document.getElementById('issueLearner').value=learner._id;
+  document.getElementById('issueBook').value=book._id;
+  await issueToLearnerManual();
+  document.getElementById('scanLearner').value=''; document.getElementById('scanBook').value='';
+  document.getElementById('scanResult').innerHTML='<div class="ok">✅ Issued — Ready for next scan. Scan next learner...</div>';
+  document.getElementById('scanLearner').focus();
+}
+// --- REQUEST ---
+async function submitRequest(){
+  if(await checkTeacherLock(true)) return;
+  var msg=document.getElementById('requestMsg');
+  try{
+    var bookId=document.getElementById('reqBook').value;
+    var qty=parseInt(document.getElementById('reqQty').value)||0;
+    var note=document.getElementById('reqNote').value.trim();
+    if(!bookId || qty<1){ msg.innerHTML='<div class="warn">❌ Pick Book + Qty</div>'; return; }
+    if(!MY_GRADE || !MY_CLASS){ msg.innerHTML='<div class="warn">❌ Pick My Grade + My Class first (top)</div>'; return; }
+    var book=ALL_BOOKS.find(function(x){ return x._id===bookId; });
+    if(!book){ msg.innerHTML='<div class="warn">❌ Book not found</div>'; return; }
+    var approverNeeded=(MY_ROLE==='HOD' ? 'PRINCIPAL' : 'HOD');
+    await db.ref('bookRequests').push({ schoolId:MY_SCHOOL_ID, schoolName:MY_SCHOOL_NAME, teacherId:MY_UID, teacherName:MY_NAME, teacherRole:MY_ROLE, teacherEmail: auth.currentUser.email, bookId:book._id, bookTitle:book.title, bookNo:book.bookNo, grade:MY_GRADE, className:MY_CLASS, subject:book.subject, requestedQty:qty, approvedQty:0, status:'PENDING', approverNeeded:approverNeeded, note:note, requestedAt:Date.now(), requestedAtStr:new Date().toLocaleString() });
+    msg.innerHTML='<div class="ok">✅ Request Sent: <b>'+book.title+' — '+book.bookNo+'</b> • Qty: '+qty+' • To: '+approverNeeded+'</div>';
+    await logViewAsActionTeacher('Requested Books', book.title+' — '+book.bookNo+' x'+qty);
+    document.getElementById('reqNote').value='';
+    loadAll();
+  }catch(e){ msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
+}
+// --- ISSUE TO LEARNER ---
+function updateLearnerInfo(){
+  var id=document.getElementById('issueLearner').value;
+  var el=document.getElementById('learnerInfo');
+  if(!id){ el.innerHTML=''; return; }
+  var l=ALL_LEARNERS.find(function(x){ return x._id===id; });
+  var held=ALL_ISSUES.filter(function(i){ return i.learnerId===id && i.status==='ISSUED'; }).length;
+  el.innerHTML='<div class="info">Learner: <b>'+l.fullName+' — '+l.admissionNo+'</b> • Grade '+l.grade+' '+l.className+' • Holding: <b>'+held+'</b> <button class="btn btn-purple" onclick="showLearnerBarcode_A4(\''+l.admissionNo+'\',\''+String(l.fullName||'').replace(/\'/g,"")+'\',\''+l.grade+'\',\''+l.className+'\',\''+(l.gender||'')+'\')">📊 BARCODE</button></div>';
+}
+function updateBookInfo(){
+  var id=document.getElementById('issueBook').value;
+  var el=document.getElementById('bookInfo');
+  if(!id){ el.innerHTML=''; return; }
+  var b=ALL_BOOKS.find(function(x){ return x._id===id; });
+  var heldByMe=ALL_ISSUES.filter(function(i){ return i.bookId===id && i.teacherId===MY_UID && i.status==='ISSUED_TO_TEACHER'; }).length;
+  var issuedToLearners=ALL_ISSUES.filter(function(i){ return i.bookId===id && i.teacherId===MY_UID && i.status==='ISSUED'; }).length;
+  el.innerHTML='<div class="info">Book: <b>'+b.title+' — '+b.bookNo+'</b> • Grade '+b.grade+' '+b.subject+' • You Hold: <b>'+heldByMe+'</b> • Already Issued To Learners: <b>'+issuedToLearners+'</b> • Remaining To Issue: <b>'+(heldByMe-issuedToLearners)+'</b> <button class="btn btn-purple" onclick="showBookBarcode_A4(\''+b.bookNo+'\',\''+String(b.title||'').replace(/\'/g,"")+'\',\''+b.grade+'\',\''+b.subject+'\')">📊 BARCODE</button></div>';
+}
+async function issueToLearnerManual(){
+  if(await checkTeacherLock(true)) return;
+  var msg=document.getElementById('issueMsg');
+  var scanMsg=document.getElementById('scanMsg');
+  try{
+    var learnerId=document.getElementById('issueLearner').value;
+    var bookId=document.getElementById('issueBook').value;
+    if(!learnerId || !bookId){ if(msg) msg.innerHTML='<div class="warn">❌ Pick Learner + Book</div>'; if(scanMsg) scanMsg.innerHTML='<div class="warn">❌ Pick Learner + Book</div>'; return; }
+    var learner=ALL_LEARNERS.find(function(x){ return x._id===learnerId; });
+    var book=ALL_BOOKS.find(function(x){ return x._id===bookId; });
+    if(!learner || !book){ if(msg) msg.innerHTML='<div class="warn">❌ Learner or Book not found</div>'; return; }
+    var already=ALL_ISSUES.find(function(i){ return i.learnerId===learnerId && i.bookId===bookId && i.status==='ISSUED'; });
+    if(already){ if(msg) msg.innerHTML='<div class="warn">❌ '+learner.fullName+' — '+learner.admissionNo+' ALREADY has '+book.title+' — '+book.bookNo+'</div>'; if(scanMsg) scanMsg.innerHTML='<div class="warn">❌ Already issued</div>'; return; }
+    // Teacher must hold this book
+    var heldIssue=ALL_ISSUES.find(function(i){ return i.bookId===bookId && i.teacherId===MY_UID && i.status==='ISSUED_TO_TEACHER'; });
+    var heldCount=ALL_ISSUES.filter(function(i){ return i.bookId===bookId && i.teacherId===MY_UID && i.status==='ISSUED_TO_TEACHER'; }).length;
+    var issuedToLearners=ALL_ISSUES.filter(function(i){ return i.bookId===bookId && i.teacherId===MY_UID && i.status==='ISSUED'; }).length;
+    // If teacher holds via request, convert one ISSUED_TO_TEACHER to ISSUED for learner
+    // If no held, allow if librarian issued direct? Block for safety
+    if(heldCount - issuedToLearners <= 0 && !heldIssue){
+      if(msg) msg.innerHTML='<div class="warn">❌ YOU DO NOT HOLD THIS BOOK<br>Book: '+book.title+' — '+book.bookNo+'<br>Ask Librarian to issue to you first from your approved request.</div>';
+      if(scanMsg) scanMsg.innerHTML='<div class="warn">❌ You do not hold this book — Ask Librarian</div>';
+      return;
+    }
+    // Find one ISSUED_TO_TEACHER to convert, or create new ISSUED linked to teacher
+    var toConvert=ALL_ISSUES.find(function(i){ return i.bookId===bookId && i.teacherId===MY_UID && i.status==='ISSUED_TO_TEACHER'; });
+    if(toConvert){
+      await db.ref('issues/'+toConvert._id).update({ status:'ISSUED', learnerId:learner._id, learnerName:learner.fullName, admissionNo:learner.admissionNo, issuedToLearnerAt:Date.now(), issuedToLearnerAtStr:new Date().toLocaleString(), issuedToLearnerBy: auth.currentUser.email });
+    } else {
+      await db.ref('issues').push({ schoolId:MY_SCHOOL_ID, schoolName:MY_SCHOOL_NAME, teacherId:MY_UID, teacherName:MY_NAME, learnerId:learner._id, learnerName:learner.fullName, admissionNo:learner.admissionNo, bookId:book._id, bookTitle:book.title, bookNo:book.bookNo, grade:learner.grade, className:learner.className, subject:book.subject, status:'ISSUED', issuedAt:Date.now(), issuedAtStr:new Date().toLocaleString(), issuedBy: auth.currentUser.email });
+    }
+    if(msg) msg.innerHTML='<div class="ok">✅ Issued: <b>'+learner.fullName+' — '+learner.admissionNo+'</b> → <b>'+book.title+' — '+book.bookNo+'</b></div>';
+    if(scanMsg) scanMsg.innerHTML='<div class="ok">✅ Issued: '+learner.fullName+' — '+learner.admissionNo+' → '+book.title+' — '+book.bookNo+'</div>';
+    await logViewAsActionTeacher('Issued To Learner', learner.fullName+' — '+learner.admissionNo+' → '+book.title+' — '+book.bookNo);
+    loadAll();
+  }catch(e){ if(msg) msg.innerHTML='<div class="warn">❌ '+e.message+'</div>'; }
+}
+function exportMyClass(){ var rows=ALL_LEARNERS.filter(function(l){ return String(l.grade)===String(MY_GRADE) && String(l.className).toUpperCase()===String(MY_CLASS).toUpperCase(); }).map(function(l){ var held=ALL_ISSUES.filter(function(i){ return i.learnerId===l._id && i.status==='ISSUED'; }); return { LearnerID:l.admissionNo, FullName:l.fullName, Grade:l.grade, Class:l.className, Gender:l.gender||'', BooksHeld:held.length, Books:held.map(function(i){ return i.bookTitle+' — '+i.bookNo; }).join(' | '), School:l.schoolName }; }); var ws=XLSX.utils.json_to_sheet(rows); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'MyClass'); XLSX.writeFile(wb,'Makhanani_MyClass_'+MY_GRADE+MY_CLASS+'.xlsx'); }
+// --- RENDER ---
+function renderAll(){
+  var myLearners=ALL_LEARNERS.filter(function(l){ return MY_GRADE && MY_CLASS ? (String(l.grade)===String(MY_GRADE) && String(l.className).toUpperCase()===String(MY_CLASS).toUpperCase()) : true; });
+  // Dropdowns
+  document.getElementById('issueLearner').innerHTML='<option value="">— Pick Learner —</option>' + myLearners.slice().sort(function(a,b){ return (a.admissionNo||'').localeCompare(b.admissionNo||''); }).map(function(l){ return '<option value="'+l._id+'">'+l.fullName+' — '+l.admissionNo+' • Grade '+l.grade+' '+l.className+'</option>'; }).join('');
+  // Books I hold
+  var heldBookIds=[...new Set(ALL_ISSUES.filter(function(i){ return i.teacherId===MY_UID && i.status==='ISSUED_TO_TEACHER'; }).map(function(i){ return i.bookId; }))];
+  var heldBooks=ALL_BOOKS.filter(function(b){ return heldBookIds.includes(b._id); });
+  document.getElementById('issueBook').innerHTML='<option value="">— Pick Book You Hold —</option>' + heldBooks.map(function(b){ var held=ALL_ISSUES.filter(function(i){ return i.bookId===b._id && i.teacherId===MY_UID && i.status==='ISSUED_TO_TEACHER'; }).length; var issued=ALL_ISSUES.filter(function(i){ return i.bookId===b._id && i.teacherId===MY_UID && i.status==='ISSUED'; }).length; return '<option value="'+b._id+'">'+b.title+' — '+b.bookNo+' • You Hold: '+held+' • Issued: '+issued+'</option>'; }).join('');
+  document.getElementById('reqBook').innerHTML='<option value="">— Pick Book —</option>' + ALL_BOOKS.slice().sort(function(a,b){ return (a.bookNo||'').localeCompare(b.bookNo||''); }).map(function(b){ return '<option value="'+b._id+'">'+b.title+' — '+b.bookNo+' • Grade '+b.grade+' '+b.subject+'</option>'; }).join('');
+  // Held books list
+  var heldHtml='';
+  if(heldBooks.length===0) heldHtml='<div class="info">You hold 0 books. Request books above, HOD approves, Librarian issues to you.</div>';
+  heldBooks.forEach(function(b){
+    var held=ALL_ISSUES.filter(function(i){ return i.bookId===b._id && i.teacherId===MY_UID && i.status==='ISSUED_TO_TEACHER'; }).length;
+    var issued=ALL_ISSUES.filter(function(i){ return i.bookId===b._id && i.teacherId===MY_UID && i.status==='ISSUED'; }).length;
+    heldHtml+='<div style="border:2px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:8px"><b>'+b.title+'</b> — <b>'+b.bookNo+'</b> • Grade '+b.grade+' '+b.subject+'<br>You Hold: <b>'+held+'</b> • Issued To Learners: <b>'+issued+'</b> • Remaining: <b>'+(held-issued)+'</b> <button class="btn btn-purple" onclick="showBookBarcode_A4(\''+b.bookNo+'\',\''+String(b.title||'').replace(/\'/g,"")+'\',\''+b.grade+'\',\''+b.subject+'\')">📊 BARCODE</button></div>';
+  });
+  document.getElementById('myHeldBooks').innerHTML=heldHtml;
+  // My requests
+  var myReqs=ALL_REQUESTS.filter(function(r){ return r.teacherId===MY_UID; }).sort(function(a,b){ return (b.requestedAt||0)-(a.requestedAt||0); });
+  var reqHtml='<table><tr><th>Book — Book No</th><th>Requested / MAX</th><th>Status</th></tr>';
+  myReqs.forEach(function(r){ reqHtml+='<tr><td><b>'+r.bookTitle+'</b> — <b>'+r.bookNo+'</b><br>Grade '+r.grade+' '+r.className+'</td><td>Req: <b>'+r.requestedQty+'</b> • MAX: <b>'+(r.approvedQty||0)+'</b></td><td><b>'+r.status+'</b><br><small>'+(r.approvedBy||'')+'</small></td></tr>'; });
+  reqHtml+='</table>';
+  if(myReqs.length===0) reqHtml='<div class="info">No requests yet.</div>';
+  document.getElementById('myRequestsList').innerHTML=reqHtml;
+  // KPIs
+  var issuedToLearners=ALL_ISSUES.filter(function(i){ return i.teacherId===MY_UID && i.status==='ISSUED'; }).length;
+  var heldTotal=ALL_ISSUES.filter(function(i){ return i.teacherId===MY_UID && i.status==='ISSUED_TO_TEACHER'; }).length;
+  document.getElementById('kLearners').textContent=myLearners.length;
+  document.getElementById('kBooksHeld').textContent=heldTotal;
+  document.getElementById('kIssued').textContent=issuedToLearners;
+  document.getElementById('kPending').textContent=ALL_REQUESTS.filter(function(r){ return r.teacherId===MY_UID && r.status==='PENDING'; }).length;
+  // My class list
+  var q=(document.getElementById('classQ').value||'').toLowerCase();
+  var cf=document.getElementById('classFilter').value;
+  var list=myLearners.filter(function(l){
+    if(q && !((l.fullName||'').toLowerCase().includes(q) || (l.admissionNo||'').toLowerCase().includes(q))) return false;
+    var held=ALL_ISSUES.filter(function(i){ return i.learnerId===l._id && i.status==='ISSUED'; });
+    if(cf==='WITH_BOOKS' && held.length===0) return false;
+    if(cf==='NO_BOOKS' && held.length>0) return false;
+    return true;
+  }).sort(function(a,b){ return (a.admissionNo||'').localeCompare(b.admissionNo||''); });
+  var html='<table><tr><th>Learner — Learner ID</th><th>Grade / Class</th><th>Books Held — Book No</th><th>Action</th></tr>';
+  list.forEach(function(l){
+    var held=ALL_ISSUES.filter(function(i){ return i.learnerId===l._id && i.status==='ISSUED'; });
+    var booksHtml=held.length===0?'<span style="color:#94a3b8">No books</span>':held.map(function(i){ return '<div>📚 '+i.bookTitle+' — <b>'+i.bookNo+'</b> <button class="btn btn-purple" onclick="showBookBarcode_A4(\''+i.bookNo+'\',\''+String(i.bookTitle||'').replace(/\'/g,"")+'\',\''+i.grade+'\',\''+i.subject+'\')">📊 BARCODE</button></div>'; }).join('');
+    html+='<tr><td><b>'+l.fullName+'</b><br>Learner ID: <b>'+l.admissionNo+'</b></td><td>Grade '+l.grade+' '+l.className+'</td><td>'+booksHtml+'</td><td><button class="btn btn-purple" onclick="showLearnerBarcode_A4(\''+l.admissionNo+'\',\''+String(l.fullName||'').replace(/\'/g,"")+'\',\''+l.grade+'\',\''+l.className+'\',\''+(l.gender||'')+'\')">📊 LEARNER BARCODE</button></td></tr>';
+  });
+  html+='</table>';
+  if(list.length===0) html='<div class="info">No learners in Grade '+MY_GRADE+' '+MY_CLASS+' yet. Pick Grade + Class at top, or add learners in Learners page.</div>';
+  document.getElementById('myClassList').innerHTML=html;
+}
+async function loadAll(){ try{ var [lSnap,bSnap,iSnap,sSnap,rSnap,uSnap]=await Promise.all([db.ref('learners').once('value'),db.ref('books').once('value'),db.ref('issues').once('value'),db.ref('schools').once('value'),db.ref('bookRequests').once('value'),db.ref('users').once('value')]); ALL_SCHOOLS=toArr(sSnap.val()); ALL_LEARNERS=filterBySchool(toArr(lSnap.val())); ALL_BOOKS=filterBySchool(toArr(bSnap.val())); ALL_ISSUES=filterBySchool(toArr(iSnap.val())); ALL_REQUESTS=filterBySchool(toArr(rSnap.val())); ALL_USERS=toArr(uSnap.val()); renderAll(); document.getElementById('msg').innerHTML='<div class="ok">✅ Connected — My Class: '+ALL_LEARNERS.filter(function(l){ return String(l.grade)===String(MY_GRADE) && String(l.className).toUpperCase()===String(MY_CLASS).toUpperCase(); }).length+' learners • Books Held: '+ALL_ISSUES.filter(function(i){ return i.teacherId===MY_UID && i.status==='ISSUED_TO_TEACHER'; }).length+(IS_VIEW_AS?' • 👁️ VIEW AS: '+MY_SCHOOL_NAME:'')+'</div>'; }catch(e){ document.getElementById('msg').innerHTML='<div class="warn">❌ '+e.message+'</div>'; } }
+auth.onAuthStateChanged(function(u){ var el=document.getElementById('whoAmI'); if(!u){ el.innerHTML='👤 Not logged in — Sending to Login...'; setTimeout(function(){ window.location.href='login.html'; },1000); return; } db.ref('users/'+u.uid).once('value').then(function(s){ var d=s.val()||{}; var realRole=(d.role||'').toUpperCase(); var realSchoolId=d.schoolId||''; var realSchoolName=d.schoolName||realSchoolId||'—'; var impStr=sessionStorage.getItem('makhanani_impersonate'); if(impStr && realRole==='SUPER_ADMIN'){ try{ VIEW_AS_DATA=JSON.parse(impStr); IS_VIEW_AS=true; MY_ROLE='TEACHER'; MY_SCHOOL_ID=VIEW_AS_DATA.schoolId; MY_SCHOOL_NAME=VIEW_AS_DATA.schoolName; MY_UID=u.uid; MY_NAME=d.name||u.email; el.innerHTML='👁️ <b>VIEW AS:</b> Teacher for <b>'+MY_SCHOOL_NAME+'</b> • Super Admin: <b>'+MY_NAME+'</b> • <button class="btn btn-gold" onclick="exitViewAsTeacher()">🚪 EXIT VIEW</button>'; document.getElementById('schoolNameLine').textContent=MY_SCHOOL_NAME+' • 👁️ VIEW AS MODE'; loadMyClass(); ['mainContent','scanCard','requestCard','myBooksCard','issueCard','listCard'].forEach(function(id){ document.getElementById(id).style.display='block'; }); loadAll(); startViewAsTimerTeacher(); startForceExitCheckerTeacher(); setTimeout(function(){ var sl=document.getElementById('scanLearner'); if(sl) sl.focus(); },500); return; }catch(e){ sessionStorage.removeItem('makhanani_impersonate'); } } if(impStr && realRole!=='SUPER_ADMIN'){ sessionStorage.removeItem('makhanani_impersonate'); } MY_ROLE=realRole; MY_SCHOOL_ID=realSchoolId; MY_SCHOOL_NAME=realSchoolName; MY_UID=u.uid; MY_NAME=d.name||u.email; if(!['SUPER_ADMIN','SCHOOL_ADMIN','LIBRARIAN','TEACHER','HOD','PRINCIPAL','ADMIN'].includes(MY_ROLE)){ alert('🔒 No access to My Class.'); window.location.href='index.html?v=9999'; return; } if(MY_ROLE==='SUPER_ADMIN'){ el.innerHTML='✅ <b>'+MY_NAME+'</b> — SUPER_ADMIN • ALL Schools'; document.getElementById('schoolNameLine').textContent='ALL Schools • Super Admin'; } else if(MY_ROLE==='SCHOOL_ADMIN'){ el.innerHTML='✅ <b>'+MY_NAME+'</b> — SCHOOL_ADMIN • '+MY_SCHOOL_NAME; document.getElementById('schoolNameLine').textContent=MY_SCHOOL_NAME+' • School Admin'; } else if(MY_ROLE==='LIBRARIAN'){ el.innerHTML='✅ <b>'+MY_NAME+'</b> — LIBRARIAN • '+MY_SCHOOL_NAME; document.getElementById('schoolNameLine').textContent=MY_SCHOOL_NAME+' • Librarian'; } else { if(!MY_SCHOOL_ID){ el.innerHTML='❌ No schoolId on your account.'; return; } el.innerHTML='✅ <b>'+MY_NAME+'</b> — '+MY_ROLE+' • '+MY_SCHOOL_NAME; document.getElementById('schoolNameLine').textContent=MY_SCHOOL_NAME+' • '+MY_ROLE; } if(['HOD','PRINCIPAL','SCHOOL_ADMIN'].includes(MY_ROLE)) document.getElementById('hodBtn').style.display='inline-block'; document.getElementById('schoolAdminBtn').style.display=(MY_ROLE==='SCHOOL_ADMIN'?'inline-block':'none'); document.getElementById('superAdminBtn').style.display=(MY_ROLE==='SUPER_ADMIN'?'inline-block':'none'); loadMyClass(); ['mainContent','scanCard','requestCard','myBooksCard','issueCard','listCard'].forEach(function(id){ document.getElementById(id).style.display='block'; }); loadAll(); if(!IS_VIEW_AS && MY_ROLE!=='SUPER_ADMIN'){ checkTeacherLock(false); setInterval(function(){ checkTeacherLock(false); },15000); } startViewAsTimerTeacher(); startForceExitCheckerTeacher(); setTimeout(function(){ var sl=document.getElementById('scanLearner'); if(sl) sl.focus(); },500); }); });
 </script></body></html>
