@@ -1,19 +1,57 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Register - Makhanani LTSM 2.0</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Register — Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#0a1f4d;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:16px}.card{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:460px;text-align:center}.card img{height:70px;background:#fff;border-radius:10px}label{display:block;font-size:12px;font-weight:700;text-align:left;margin-top:12px}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin-top:4px}.btn{background:#d4af37;color:#000;border:none;padding:13px;border-radius:8px;font-weight:900;cursor:pointer;width:100%;margin-top:14px}.btn.dark{background:#0a1f4d;color:#fff}.muted{color:#666;font-size:12px}.link{color:#0a1f4d;font-weight:700;cursor:pointer}</style></head>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}header img{height:42px;background:#fff;border-radius:8px;padding:2px;cursor:pointer}.btn{background:#d4af37;color:#000;border:none;padding:11px 16px;border-radius:9px;font-weight:900;cursor:pointer;font-size:13px}.btn.dark{background:#0a1f4d;color:#fff}.btn.white{background:#fff;color:#0a1f4d}.btn.green{background:#16a34a;color:#fff}.wrap{max-width:520px;margin:22px auto;padding:0 14px}.card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 4px 18px rgba(0,0,0,.08)}label{display:block;font-size:12px;font-weight:700;margin-top:12px}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:9px;margin-top:4px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;justify-content:center}.links a{font-size:13px;color:#0a1f4d;font-weight:700;text-decoration:none}.note{background:#fef9c3;border:1px solid #eab308;padding:10px 12px;border-radius:10px;font-size:13px;margin-top:14px}.hero{background:linear-gradient(135deg,#0a1f4d,#1e3a8a);color:#fff;border-radius:14px;padding:16px;text-align:center;margin-bottom:14px}.hero h2{margin:0;font-size:20px}.hero p{margin:6px 0 0;opacity:.9;font-size:13px;line-height:1.5}
+@media(max-width:500px){.grid2{grid-template-columns:1fr}.wrap{margin:12px auto}}</style></head>
 <body>
-<div class="card"><img src="logo.png"><h2 style="margin:8px 0 0;color:#0a1f4d">Create Account — Makhanani LTSM 2.0</h2><p class="muted">Register once • Super Admin will set your Role + School after</p>
-<label>Full Name *</label><input id="fullName" placeholder="e.g. Thabo Mokoena">
-<label>Email *</label><input id="email" type="email" placeholder="you@gmail.com">
-<label>School *</label><input id="school" value="Wordsworth High School">
-<label>Role You Want *</label><select id="role"><option>SUPER_ADMIN</option><option>PRINCIPAL</option><option>SCHOOL_ADMIN</option><option>HOD</option><option>LIBRARIAN</option><option selected>TEACHER</option><option>FINANCE</option><option>LEARNER</option></select>
-<label>Password * (6+ characters)</label><input id="password" type="password" placeholder="••••••••">
-<label>Confirm Password *</label><input id="password2" type="password" placeholder="••••••••">
-<button class="btn dark" onclick="doRegister()">📝 CREATE ACCOUNT</button>
-<p id="msg" style="font-size:13px;display:none;padding:10px;border-radius:8px"></p>
-<p class="muted">Already have account? <span class="link" onclick="location.href='login.html'">🔐 Login Here</span></p>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px"><button class="btn" onclick="location.href='stock.html'">📦 Stock</button><button class="btn" onclick="location.href='issue.html'">📤 Issue</button><button class="btn" onclick="location.href='index.html'">🏠 Home</button><button class="btn" onclick="location.href='pricing.html'">💰 Pricing</button></div>
-<p class="muted" style="margin-top:12px">Xintimani Group Holdings (PTY) Ltd • Reg: 2026/934898/07<br>After register, tell Super Admin to approve your Role.</p></div>
-<script>const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};firebase.initializeApp(firebaseConfig);const db=firebase.database();const auth=firebase.auth();
-function show(m,ok){const e=document.getElementById("msg");e.style.display="block";e.style.background=ok?"#dcfce7":"#fee2e2";e.textContent=m;}
-async function doRegister(){const name=document.getElementById("fullName").value.trim();const email=document.getElementById("email").value.trim();const school=document.getElementById("school").value.trim()||"Wordsworth High School";const role=document.getElementById("role").value;const pass=document.getElementById("password").value;const pass2=document.getElementById("password2").value;if(!name||!email||!pass)return show("❌ Fill Name + Email + Password",false);if(pass!==pass2)return show("❌ Passwords do not match",false);if(pass.length<6)return show("❌ Password must be 6+ characters",false);try{const cred=await auth.createUserWithEmailAndPassword(email,pass);await db.ref("users/"+cred.user.uid).set({name,email,role,schoolId:school,school,createdAt:Date.now(),status:"PENDING_APPROVAL"});show("✅ Account created! Role: "+role+" • School: "+school+" — Redirecting to Login...",true);setTimeout(()=>location.href="login.html",1200);}catch(e){show("❌ "+e.message,false);}}</script></body></html>
+<header><div style="display:flex;gap:10px;align-items:center;cursor:pointer" onclick="location.href='landing.html'"><img src="logo.png"><b>Makhanani LTSM 2.0<br><span style="font-size:11px;opacity:.8">Wordsworth High School</span></b></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="location.href='landing.html'">🏠 Back to Landing Page</button><button class="btn white" onclick="location.href='login.html'">🔐 Login</button></div></header>
+<div class="wrap">
+<div class="hero"><h2>📝 Create Your Account</h2><p>Register → Admin / Super Admin confirms your Role → You login to your dashboard.<br>Finance users get <b>Subscriptions + Pricing</b> in Finance.</p></div>
+<div class="card">
+<h2 style="margin:0">Register</h2><p style="color:#666;font-size:13px;margin:6px 0 0">Use your school email. Choose the closest Role — Admin can change it later.</p>
+<label>Full Name *</label><input id="name" placeholder="e.g. Thandi Dube" autocomplete="name">
+<label>Email *</label><input id="email" type="email" placeholder="e.g. teacher@whs.co.za" autocomplete="email">
+<div class="grid2"><div><label>Password * (min 6)</label><input id="pass" type="password" placeholder="e.g. Whs@2026" autocomplete="new-password"></div><div><label>Confirm Password *</label><input id="pass2" type="password" placeholder="Repeat password" autocomplete="new-password"></div></div>
+<label style="display:flex;gap:6px;align-items:center;font-weight:400"><input type="checkbox" id="showPass" style="width:auto" onchange="let t=this.checked?'text':'password';document.getElementById('pass').type=t;document.getElementById('pass2').type=t;"> Show passwords</label>
+<div class="grid2"><div><label>Requested Role *</label><select id="role"><option>Teacher</option><option>HOD</option><option>Principal</option><option>Librarian</option><option>Finance</option><option>Admin</option></select></div><div><label>School ID</label><input id="schoolId" value="WHS"></div></div>
+<label>School Name</label><input id="schoolName" value="Wordsworth High School">
+<div class="grid2"><div><label>Department (HOD / Teacher)</label><select id="dept"><option value="">— None —</option><option>Languages</option><option>Mathematics</option><option>Natural Sciences</option><option>Social Sciences</option><option>Technology</option><option>Life Orientation</option><option>Arts & Culture</option><option>Economic Management Sciences</option><option>Admin</option><option>Finance</option><option>Library</option><option>Management</option></select></div><div><label>Classes (optional)</label><input id="classes" placeholder="e.g. Grade 10A, Grade 11B"></div></div>
+<button class="btn green" style="width:100%;padding:14px;margin-top:14px" onclick="doRegister()">📝 REGISTER →</button>
+<p id="msg" style="font-weight:700;font-size:13px"></p>
+<button class="btn dark" style="width:100%;padding:12px" onclick="location.href='login.html'">Already have an account? 🔐 Login →</button>
+<div class="note">🔒 <b>After Register:</b> You will be taken to Login. If Admin has not yet approved your Role, you may see “No user record” — ask Super Admin to create / confirm you in <b>Super Admin → Users</b>. Finance access is Finance / Super Admin / Admin only.</div>
+<div class="links"><a href="landing.html">🏠 Back to Landing Page</a> • <a href="landing.html#pricing">💰 Pricing</a> • <a href="landing.html#subs">💳 Subscriptions</a> • <a href="login.html">🔐 Login</a></div>
+</div>
+<div style="text-align:center;margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn white" style="border:1px solid #0a1f4d" onclick="location.href='landing.html'">🏠 ← Back to Landing Page</button><button class="btn white" style="border:1px solid #0a1f4d" onclick="location.href='login.html'">🔐 Login →</button></div>
+<p style="text-align:center;color:#888;font-size:11px">Makhanani LTSM 2.0 • Wordsworth High School • V6.9</p>
+</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+try{firebase.initializeApp(firebaseConfig);}catch(e){}
+const db=firebase.database();
+function normRole(r){if(!r)return"";let x=String(r).trim().toLowerCase().replace(/_/g," ").replace(/\s+/g," ");if(x==="super admin"||x==="superadmin")return"Super Admin";if(x==="admin"||x==="administrator")return"Admin";if(x==="principal")return"Principal";if(x==="librarian")return"Librarian";if(x==="hod"||x==="head of department")return"HOD";if(x==="teacher"||x==="educator")return"Teacher";if(x==="finance"||x==="financial"||x==="bursar")return"Finance";return r;}
+async function doRegister(){
+  let name=document.getElementById("name").value.trim();
+  let email=document.getElementById("email").value.trim().toLowerCase();
+  let pass=document.getElementById("pass").value;
+  let pass2=document.getElementById("pass2").value;
+  let role=normRole(document.getElementById("role").value);
+  let schoolId=document.getElementById("schoolId").value.trim()||"WHS";
+  let schoolName=document.getElementById("schoolName").value.trim()||"Wordsworth High School";
+  let dept=document.getElementById("dept").value;
+  let classesRaw=document.getElementById("classes").value.trim();
+  let classes=classesRaw?classesRaw.split(",").map(s=>s.trim()).filter(Boolean):[];
+  let msg=document.getElementById("msg");
+  if(!name||!email||!pass) {msg.textContent="⛔ Fill Name + Email + Password";msg.style.color="red";return;}
+  if(pass.length<6){msg.textContent="⛔ Password must be at least 6 characters";msg.style.color="red";return;}
+  if(pass!==pass2){msg.textContent="⛔ Passwords do not match";msg.style.color="red";return;}
+  msg.textContent="Creating account...";msg.style.color="#0a1f4d";
+  try{
+    let cred=await firebase.auth().createUserWithEmailAndPassword(email,pass);
+    let uid=cred.user.uid;
+    await db.ref("users/"+uid).set({name,email,role,schoolId,schoolName,department:dept,classes,disabled:false,createdAt:Date.now(),source:"register"});
+    msg.textContent=`✅ Registered ${name} — ${role} — Redirecting to Login...`;msg.style.color="green";
+    await firebase.auth().signOut();
+    setTimeout(()=>location.href="login.html",800);
+  }catch(e){msg.textContent="⛔ "+e.message;msg.style.color="red";}
+}
+</script></body></html>
