@@ -1,98 +1,52 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Marketing - Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}header img{height:42px;background:#fff;border-radius:8px;padding:2px}.btn{background:#d4af37;color:#000;border:none;padding:10px 14px;border-radius:8px;font-weight:900;cursor:pointer}.wrap{max-width:1100px;margin:0 auto;padding:16px}.card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:14px}.muted{color:#666;font-size:13px}label{font-size:13px;font-weight:700}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-top:6px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:520px){.grid{grid-template-columns:1fr}}
-/* FLYER */
-.flyer{background:#0a1f4d;color:#fff;border-radius:16px;padding:22px;position:relative;overflow:hidden}
-.flyer .gold{color:#d4af37}.flyer h1{margin:6px 0;font-size:28px;line-height:1.1}.flyer h2{margin:4px 0;color:#d4af37;font-size:18px}
-.flyer-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:14px}@media(max-width:700px){.flyer-grid{grid-template-columns:1fr}}
-.flyer .box{background:#fff;color:#111;border-radius:12px;padding:14px}
-.flyer .box h3{margin:0 0 8px;color:#0a1f4d}.f-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #eee;font-size:13px}.f-row b{color:#0a1f4d}
-.pill{display:inline-block;background:#d4af37;color:#000;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:900}
-ul{padding-left:18px;font-size:13px;line-height:1.7;margin:8px 0}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}th{background:#0a1f4d;color:#fff}
-</style></head>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 16px;display:flex;justify-content:space-between}header img{height:42px;background:#fff;border-radius:8px;padding:2px}.btn{background:#d4af37;color:#000;border:none;padding:10px 14px;border-radius:8px;font-weight:900;cursor:pointer}.btn.dark{background:#0a1f4d;color:#fff}.wrap{max-width:1000px;margin:0 auto;padding:16px}.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:14px}.muted{color:#666;font-size:13px}textarea{width:100%;min-height:120px;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:Arial}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}@media(max-width:700px){.grid3{grid-template-columns:1fr}}</style></head>
 <body>
-<header><div style="display:flex;gap:10px;align-items:center"><img src="logo.png"><b>Makhanani LTSM 2.0<br><span style="font-size:11px;font-weight:400">Marketing</span></b></div><button class="btn" onclick="location.href='index.html'">🏠 Home</button></header>
+<script>const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=firebase.database();
+firebase.auth().onAuthStateChanged(async(u)=>{if(!u){alert("🔒 Login as Super Admin");location.href="login.html";return;}const s=await db.ref("users/"+u.uid).once("value");const role=s.exists()?s.val().role:"TEACHER";if(role!=="SUPER_ADMIN"){alert("⛔ Marketing is SUPER ADMIN ONLY. Your role: "+role);location.href="index.html";return;}});
+function logout(){firebase.auth().signOut().then(()=>location.href="login.html");}function copyText(id){const el=document.getElementById(id);el.select();document.execCommand("copy");alert("✅ Copied! Paste in WhatsApp / Facebook.");}</script>
+<header><div style="display:flex;gap:10px;align-items:center"><img src="logo.png"><b>📣 Marketing — SUPER ADMIN ONLY</b></div><div style="display:flex;gap:8px"><button class="btn" onclick="location.href='super_admin.html'">👑 Super Admin</button><button class="btn" style="background:#eee" onclick="logout()">🚪 Logout</button></div></header>
 <div class="wrap">
+<div class="card"><h2 style="margin:0">💰 Pricing Cards — V5 — Copy to WhatsApp</h2><div class="grid3" style="margin-top:12px"><div style="background:#fef9c3;border-radius:10px;padding:12px"><b>STARTER</b><br>R 3,000 Setup + R 500/mo or R 4,500/yr<br><b>Year 1: R 7,500</b><br>✅ For small schools<br>✅ Up to 500 Learners</div><div style="background:#dbeafe;border-radius:10px;padding:12px"><b>STANDARD ⭐ Most Popular</b><br>R 4,500 Setup + R 800/mo or R 7,500/yr<br><b>Year 1: R 12,000</b><br>✅ Up to 1500 Learners</div><div style="background:#fdf2f8;border-radius:10px;padding:12px"><b>PREMIUM 👑</b><br>R 5,500 Setup + R 950/mo or R 9,000/yr<br><b>Year 1: R 14,500</b><br>✅ Unlimited Learners</div></div><p class="muted">Renewal Due: 30 Nov Every Year • Bank: Capitec 258 501 4101 • Xintimani Group Holdings (PTY) Ltd</p></div>
+<div class="card"><h2 style="margin:0">📱 WhatsApp Message — For Principals</h2><textarea id="wa1">🏫 MAKHANANI LTSM 2.0 — STOP LOSING BOOKS!
 
-<div class="card"><h1 style="margin:0">📣 Marketing & Flyer</h1><p class="muted">Change school + plan → Flyer updates → Print / Save as PDF → Share on WhatsApp.</p>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-<div><label>School Name (for Flyer)</label><input id="schoolName" value="George Sonto High School"></div>
-<div><label>Plan To Promote</label><select id="planSelect" onchange="renderFlyer()"><option value="DEMO">DEMO — FREE 7 Days</option><option value="STARTER">STARTER</option><option value="STANDARD" selected>STANDARD</option><option value="PREMIUM">PREMIUM</option></select></div>
-<div><label>Billing To Show</label><select id="billingSelect" onchange="renderFlyer()"><option value="YEARLY" selected>YEARLY — Cheaper</option><option value="MONTHLY">MONTHLY</option></select></div>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>WhatsApp / Phone</label><input id="phone" value="078 023 3263"></div><div><label>Email</label><input id="email" value="vusichauke3037@gmail.com"></div></div>
-<button class="btn" style="width:100%;margin-top:12px;padding:14px;font-size:16px" onclick="window.print()">🖨️ PRINT FLYER / SAVE AS PDF</button>
-</div>
+Dear Principal,
 
-<!-- FLYER - NEW PRICES V5 -->
-<div class="flyer" id="flyer">
-<div style="display:flex;justify-content:space-between;align-items:start"><div><span class="pill">XINTIMANI GROUP HOLDINGS (PTY) LTD • Reg: 2026/934898/07</span><h1>STOP LOSING BOOKS.<br><span class="gold">START TRACKING EVERY BOOK.</span></h1><h2>Makhanani LTSM 2.0 — For Schools</h2></div><img src="logo.png" style="height:90px;background:#fff;border-radius:12px;padding:4px"></div>
-<div class="flyer-grid">
-<div>
-<div style="background:#fff;color:#111;border-radius:12px;padding:14px">
-<h3 style="margin:0;color:#0a1f4d" id="flyerPlanTitle">STANDARD — BEST VALUE</h3>
-<p style="font-size:13px;color:#666;margin:4px 0" id="flyerSchool">For George Sonto High School</p>
-<div style="font-size:32px;font-weight:900;color:#0a1f4d" id="flyerPrice">R 4,500 <span style="font-size:13px;color:#666">Setup Once-Off</span></div>
-<div class="f-row"><span>Monthly</span><b id="flyerMonthly">R 800 / mo</b></div>
-<div class="f-row"><span>Yearly</span><b id="flyerYearly">R 7,500 / year</b></div>
-<div class="f-row"><span>Due</span><b>30 Nov Every Year</b></div>
-<div class="f-row" style="border:none"><span><b>Total Year 1</b></span><b id="flyerTotal" style="color:#0a1f4d">R 12,000</b></div>
-<div id="flyerSave" style="color:#16a34a;font-weight:900;font-size:13px;margin-top:6px">💰 Save R 2,100 vs Monthly!</div>
-</div>
-<div style="background:#d4af37;color:#000;border-radius:12px;padding:12px;margin-top:12px;font-weight:900;text-align:center" id="flyerCTA">✅ FREE DEMO — 7 Days • No Risk • Try It Today!</div>
-<p style="font-size:12px;line-height:1.6;margin-top:10px">Scan Learner ID + Book No in <b>2 Seconds</b> • HOD Approves + Sets MAX • Print Issue Receipt with Signatures • Barcode for Learner + Book • Track by Grade, Class, Learner & Book</p>
-</div>
-<div>
-<div class="box"><h3>📦 ALL PACKAGES — NEW PRICES V5</h3>
-<div class="f-row"><span><b>DEMO</b> — FREE 7 Days</span><b>FREE</b></div>
-<div class="f-row"><span><b>STARTER</b> — R 3,000 Setup</span><b>R 500/mo or R 4,500/yr</b></div>
-<div class="f-row"><span><b>STANDARD</b> — R 4,500 Setup</span><b>R 800/mo or R 7,500/yr</b></div>
-<div class="f-row" style="border:none"><span><b>PREMIUM</b> — R 5,500 Setup</span><b>R 950/mo or R 9,000/yr</b></div>
-<p style="font-size:12px;color:#666;margin:6px 0 0">Year 1 Totals: STARTER R 7,500 • STANDARD R 12,000 • PREMIUM R 14,500 • Due 30 Nov Every Year</p>
-</div>
-<div class="box" style="margin-top:12px"><h3>✅ What You Get</h3><ul><li>Issue / Return + Receipt</li><li>Barcode</li><li>HOD Approval + MAX</li><li>Reports / Audit</li><li>WhatsApp Support</li></ul></div>
-<div class="box" style="margin-top:12px;text-align:center"><h3 style="margin:0">📞 Contact Us</h3><p style="margin:6px 0;font-size:14px;font-weight:900" id="flyerContact">078 023 3263<br>vusichauke3037@gmail.com</p><p style="font-size:11px;color:#666;margin:0">Directors: Vusi Chauke & Hloniphani Success Masia</p></div>
-</div>
-</div>
-</div>
+Are you tired of losing LTSM books every year?
 
-<div class="card"><h2 style="margin:0">📱 WhatsApp Message — Copy & Send</h2><textarea id="waMsg" rows="6" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-top:10px"></textarea><button class="btn" style="width:100%;margin-top:10px" onclick="copyWA()">📋 COPY WHATSAPP MESSAGE</button></div>
+✅ Scan Learner ID + Book No in 2 SECONDS
+✅ HOD Approval + MAX per Grade / Subject
+✅ Print Issue Receipt with Signatures
+✅ Track by Grade, Class, Learner & Book
+✅ Reports / Audit Trail
 
-</div>
-<script>
-const firebaseConfig={apiKey:"AIzaSyB8jS2Jjjf7r5m8ZxXxXxXxXxXxXxXxXx",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abcdef"};
-firebase.initializeApp(firebaseConfig);
-// NEW PRICES V5
-const PACKAGES={
- DEMO:{name:"DEMO",setup:0,monthly:0,yearly:0,desc:"FREE for 7 Days",badge:"FREE 7 DAYS"},
- STARTER:{name:"STARTER",setup:3000,monthly:500,yearly:4500,desc:"Small School",badge:"POPULAR"},
- STANDARD:{name:"STANDARD",setup:4500,monthly:800,yearly:7500,desc:"Medium School",badge:"BEST VALUE"},
- PREMIUM:{name:"PREMIUM",setup:5500,monthly:950,yearly:9000,desc:"Large School - Unlimited",badge:"UNLIMITED"}
-};
-function rand(n){return "R "+n.toLocaleString("en-ZA")}
-function renderFlyer(){
-  const plan=document.getElementById("planSelect").value;
-  const billing=document.getElementById("billingSelect").value;
-  const school=document.getElementById("schoolName").value||"Your School";
-  const phone=document.getElementById("phone").value||"078 023 3263";
-  const email=document.getElementById("email").value||"vusichauke3037@gmail.com";
-  const p=PACKAGES[plan];
-  const total = p.setup + (billing==="YEARLY"? p.yearly : p.monthly*12);
-  const save = billing==="YEARLY"&&p.monthly>0? p.monthly*12-p.yearly : 0;
-  document.getElementById("flyerPlanTitle").textContent = p.name+" — "+p.badge+" • "+p.desc;
-  document.getElementById("flyerSchool").textContent = "For "+school;
-  document.getElementById("flyerPrice").innerHTML = (p.setup===0?"FREE":rand(p.setup))+" <span style='font-size:13px;color:#666'>Setup Once-Off</span>";
-  document.getElementById("flyerMonthly").textContent = p.monthly===0?"FREE":rand(p.monthly)+" / mo";
-  document.getElementById("flyerYearly").textContent = p.yearly===0?"FREE":rand(p.yearly)+" / year";
-  document.getElementById("flyerTotal").textContent = rand(total);
-  document.getElementById("flyerSave").textContent = save>0? "💰 Save "+rand(save)+" vs Monthly! Yearly is cheaper." : "FREE for 7 Days — No Risk";
-  document.getElementById("flyerContact").innerHTML = phone+"<br>"+email;
-  document.getElementById("waMsg").value = `📚 MAKHANANI LTSM 2.0 — Stop Losing Books!\n\nHello ${school},\n\n${p.name} Plan — ${p.desc}\nSetup: ${p.setup===0?"FREE":rand(p.setup)} once-off\nMonthly: ${p.monthly===0?"FREE":rand(p.monthly)+" / mo"}\nYearly: ${p.yearly===0?"FREE":rand(p.yearly)+" / year"}\nTotal Year 1 (${billing}): ${rand(total)}\nDue: 30 Nov Every Year\n\n✅ Scan in 2 Seconds • HOD Approval + MAX • Receipt with Signatures • Barcode\n\nAll Packages:\nDEMO FREE 7 Days\nSTARTER R 3,000 + R 500/mo or R 4,500/yr\nSTANDARD R 4,500 + R 800/mo or R 7,500/yr\nPREMIUM R 5,500 + R 950/mo or R 9,000/yr\n\n📞 ${phone} • ${email}\nXintimani Group Holdings (PTY) Ltd`;
-}
-document.getElementById("schoolName").addEventListener("input",renderFlyer);
-document.getElementById("phone").addEventListener("input",renderFlyer);
-document.getElementById("email").addEventListener("input",renderFlyer);
-function copyWA(){const t=document.getElementById("waMsg"); t.select(); document.execCommand("copy"); alert("✅ WhatsApp message copied!");}
-renderFlyer();
-</script></body></html>
+💰 PRICING (V5):
+• DEMO: FREE 7 Days
+• STARTER: R 7,500 Year 1
+• STANDARD: R 12,000 Year 1
+• PREMIUM: R 14,500 Year 1
+
+🎁 We donated PREMIUM FREE for 12 Months to Wordsworth High & George Sonto High School!
+
+📞 Vusi Chauke: 078 023 3263
+📧 vusichauke3037@gmail.com
+🏢 Xintimani Group Holdings (PTY) Ltd
+Reg: 2026/934898/07
+
+Reply YES for FREE DEMO 👇</textarea><button class="btn dark" onclick="copyText('wa1')">📋 Copy WhatsApp Message</button></div>
+<div class="card"><h2 style="margin:0">📣 Facebook Post</h2><textarea id="fb1">🎉 MAKHANANI LTSM 2.0 IS HERE!
+
+South African schools lose THOUSANDS of Rands in lost LTSM books every year. We fixed it.
+
+✅ 2-second scanning
+✅ Full tracking — Grade, Class, Learner, Book
+✅ HOD approval
+✅ Printable receipts
+
+We donated PREMIUM (R 14,500 value) FREE for 12 months to Wordsworth High School & George Sonto High School! 🎁
+
+Your school could be next. Try FREE DEMO for 7 Days.
+
+#MakhananiLTSM #Education #SouthAfrica #LTSM #XintimaniGroup</textarea><button class="btn dark" onclick="copyText('fb1')">📋 Copy Facebook Post</button></div>
+<div class="card"><h2 style="margin:0">🎁 Donation Schools — Use in Marketing</h2><p>• Wordsworth High School — PREMIUM FREE — R 14,500 — Ref XGH-DON-2026-WORDSWORTH-001<br>• George Sonto High School — PREMIUM FREE — R 14,500 — Ref XGH-DON-2026-GEORGE-SONTO-002<br>• Total Donated: R 29,000</p><button class="btn" onclick="location.href='super_admin.html'">👑 Back to Super Admin →</button></div>
+</div></body></html>
