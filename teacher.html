@@ -1,30 +1,92 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Teacher — Makhanani LTSM 2.0</title>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="subscription_guard.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}header img{height:40px;background:#fff;border-radius:8px;padding:2px}.btn{background:#d4af37;color:#000;border:none;padding:10px 14px;border-radius:8px;font-weight:900;cursor:pointer;font-size:13px}.btn.dark{background:#0a1f4d;color:#fff}.btn.green{background:#16a34a;color:#fff}.btn.grey{background:#eee}.wrap{max-width:900px;margin:16px auto;padding:0 14px}.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:14px}.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.stat{background:#0a1f4d;color:#fff;border-radius:12px;padding:14px;text-align:center}.stat b{font-size:22px;display:block}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}th{background:#0a1f4d;color:#fff}.badge{padding:3px 8px;border-radius:12px;font-size:11px;font-weight:900}.b-green{background:#dcfce7;color:#166534}.b-yellow{background:#fef9c3;color:#854d0e}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin-top:4px}label{display:block;font-size:13px;font-weight:700;margin-top:10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.grid2{grid-template-columns:1fr}}
-@media print{header,.noPrint{display:none!important}}</style></head>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#eef2f7}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}header img{height:52px;background:#fff;border-radius:10px;padding:3px}.btn{border:none;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:13px}.btn.gold{background:#d4af37;color:#000}.btn.green{background:#16a34a;color:#fff}.btn.white{background:#fff;color:#0a1f4d}.wrap{max-width:900px;margin:14px auto;padding:0 14px}.card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px}.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center}.stat{background:#0a1f4d;color:#fff;border-radius:14px;padding:16px}.stat b{font-size:28px;display:block}.stat span{font-size:15px}label{font-weight:800;display:block;margin:14px 0 6px}input{width:100%;padding:14px;border:1px solid #ddd;border-radius:12px;font-size:16px}.bigBtn{width:100%;background:#0a1f4d;color:#fff;border:none;padding:16px;border-radius:12px;font-weight:900;font-size:17px;cursor:pointer;margin-top:16px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0a1f4d;color:#fff;padding:10px;text-align:left}td{padding:10px;border-bottom:1px solid #eee;vertical-align:top}.badge{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:900}.b-green{background:#dcfce7;color:#166534}.b-red{background:#fee2e2;color:#991b1b}.b-gold{background:#fef3c7;color:#92400e}.b-purple{background:#ede9fe;color:#5b21b6}.lockBox{border:3px solid #dc2626;background:#fffafa;border-radius:14px;padding:14px;margin-bottom:14px}.okBox{border:3px solid #16a34a;background:#f0fdf4;border-radius:14px;padding:14px;margin-bottom:14px}.scroll{overflow-x:auto}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr 1fr}.stat{padding:12px 6px}.stat b{font-size:22px}.stat span{font-size:13px}}
+</style></head>
 <body>
-<header><div style="display:flex;gap:10px;align-items:center"><img src="logo.png" alt="Makhanani LTSM Logo"><b>👩🏽‍🏫 Teacher — Makhanani LTSM<br><span style="font-size:11px" id="myEmail">Loading...</span></b></div><div style="display:flex;gap:8px;flex-wrap:wrap" class="noPrint"><button class="btn" onclick="location.href='landing.html'">🏠 Landing</button><button class="btn green" onclick="window.print()">🖨️ Print</button><button class="btn grey" onclick="logout()">🚪 Logout</button></div></header>
+<header><div style="display:flex;gap:12px;align-items:center"><img src="logo.png" alt="Xintimani Group Holdings Logo"><div style="line-height:1.25"><div style="font-size:20px;font-weight:900">Teacher — Makhanani LTSM</div><div style="font-size:12px;color:#d4af37;font-weight:700">Xintimani Group Holdings (Pty) Ltd</div><div style="font-size:11px;color:#cbd5e1">Reg No: 2026/934898/07 • <span id="myEmail">Loading...</span></div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="location.href='landing.html'">🏠 Landing</button><button class="btn green" onclick="window.print()">🖨️ Print</button><button class="btn white" onclick="logout()">🚪 Logout</button></div></header>
 <div class="wrap">
-<div class="card" style="border:2px solid #16a34a"><div class="stats"><div class="stat"><b id="statTitles">0</b><span>Titles</span></div><div class="stat"><b id="statQty">0</b><span>Total Qty</span></div><div class="stat"><b id="statRequests">0</b><span>My Requests</span></div></div><p style="font-size:12px;color:#666;margin:6px 0 0">🔒 Locked if subscription is Paused / Cancelled / Expired / Missing.</p></div>
-<div class="card noPrint"><h2 style="margin:0">📝 Request Book / LTSM</h2><div class="grid2"><div><label>Book Title</label><input id="reqTitle" placeholder="e.g. Maths Grade 10"></div><div><label>Qty Needed</label><input id="reqQty" type="number" value="1"></div></div><label>Reason / Class</label><input id="reqReason" placeholder="e.g. Grade 10A — Term 1"><button class="btn dark" style="width:100%;margin-top:12px;padding:14px" onclick="addRequest()">📝 SEND REQUEST</button><p id="msg" style="font-size:13px;color:#166534;font-weight:700"></p></div>
-<div class="card"><h2 style="margin:0">📚 Available Books — Qty Only</h2><div><label>Search</label><input id="searchBooks" placeholder="Title / Barcode..." oninput="render()"></div><div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>Title</th><th>Grade</th><th>Subject</th><th>Qty</th></tr></thead><tbody id="booksBody"><tr><td colspan="4">Loading books...</td></tr></tbody></table></div></div>
-<div class="card"><h2 style="margin:0">📋 My Requests</h2><div style="overflow-x:auto"><table><thead><tr><th>Title</th><th>Qty</th><th>Reason</th><th>Status</th></tr></thead><tbody id="reqBody"><tr><td colspan="4">Loading requests...</td></tr></tbody></table></div></div>
-<div class="card noPrint" style="text-align:center"><button class="btn dark" onclick="location.href='landing.html'">🏠 Landing →</button></div>
+<!-- ✅ SUBSCRIPTION STATUS — this was crashing before -->
+<div id="subBox" class="okBox"><b>Subscription:</b> <span id="subStatus">Checking subscription...</span><br><span id="subDetail" style="font-size:13px;color:#666"></span></div>
+<div class="card" style="border:2px solid #16a34a"><div class="stats"><div class="stat"><b id="cTitles">0</b><span>Titles</span></div><div class="stat"><b id="cQty">0</b><span>Total Qty</span></div><div class="stat"><b id="cReq">0</b><span>My Requests</span></div></div><p style="color:#666;font-size:13px;margin:10px 0 0">🔒 Locked if subscription is Paused / Cancelled / Expired / Missing.</p><p id="msg" style="font-size:13px;font-weight:700;text-align:center"></p></div>
+
+<div class="card"><h2 style="margin:0">📝 Request Book / LTSM</h2><label>Book Title</label><input id="reqTitle" placeholder="e.g. Maths Grade 10"><label>Qty Needed</label><input id="reqQty" type="number" value="1" min="1"><label>Reason / Class</label><input id="reqReason" placeholder="e.g. Grade 10A — Term 1"><button class="bigBtn" id="sendBtn" type="button">📝 SEND REQUEST</button></div>
+
+<div class="card"><h2 style="margin:0">📚 Available Books — Qty Only</h2><input id="search" placeholder="🔍 Search title / grade / subject..." oninput="renderBooks()" style="margin-top:12px"><div class="scroll"><table><thead><tr><th>Title</th><th>Grade</th><th>Subject</th><th>Qty</th><th>Barcode</th></tr></thead><tbody id="bookBody"><tr><td colspan="5">Loading books...</td></tr></tbody></table></div></div>
+
+<div class="card"><h2 style="margin:0">📋 My Requests</h2><div class="scroll"><table><thead><tr><th>Title</th><th>Qty</th><th>Reason</th><th>Status</th><th>Date</th></tr></thead><tbody id="reqBody"><tr><td colspan="5">Loading requests...</td></tr></tbody></table></div></div>
+<div style="text-align:center;color:#666;font-size:12px;padding:10px">Makhanani LTSM 2.0 • Xintimani Group Holdings (Pty) Ltd • Reg No: 2026/934898/07</div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 try{firebase.initializeApp(firebaseConfig);}catch(e){}
-const db=firebase.database();let ME={};let books=[];let requests=[];
+const db=firebase.database();let ME={};let BOOKS=[];let REQS=[];let SUBS=[];
 function logout(){sessionStorage.setItem("justLoggedOut","1");firebase.auth().signOut().then(()=>location.href="login.html");}
 function normRole(r){if(!r)return"";let x=String(r).trim().toLowerCase().replace(/_/g," ").replace(/\s+/g," ");if(x==="super admin"||x==="superadmin")return"Super Admin";if(x==="admin"||x==="administrator")return"Admin";if(x==="principal")return"Principal";if(x==="librarian")return"Librarian";if(x==="hod"||x==="head of department")return"HOD";if(x==="teacher"||x==="educator")return"Teacher";if(x==="finance"||x==="financial"||x==="bursar")return"Finance";return r;}
-function roleToPage(role){let r=normRole(role);if(r==="Super Admin")return"super_admin.html";if(r==="Admin")return"index.html";if(r==="Principal")return"principal.html";if(r==="Librarian")return"librarian.html";if(r==="HOD")return"hod.html";if(r==="Teacher")return"teacher.html";if(r==="Finance")return"finance.html";return"teacher.html";}
-function canSeeSchool(id){if(!ME.schoolId||ME.schoolId==="ALL")return true;if(!id||id==="ALL")return true;return id===ME.schoolId;}
-async function addRequest(){let t=document.getElementById("reqTitle").value.trim();if(!t){alert("Enter Title");return;}await db.ref("requests").push({title:t,qty:Number(document.getElementById("reqQty").value||1),reason:document.getElementById("reqReason").value.trim(),status:"Pending",requestedBy:ME.email||"",schoolId:ME.schoolId||"ALL",schoolName:ME.schoolName||"",createdAt:Date.now()});document.getElementById("msg").textContent="✅ Request sent: "+t;document.getElementById("reqTitle").value="";loadAll();}
-async function loadAll(){let b=await db.ref("books").once("value");books=[];if(b.exists())b.forEach(c=>books.push({key:c.key,...c.val()}));let r=await db.ref("requests").once("value");requests=[];if(r.exists())r.forEach(c=>requests.push({key:c.key,...c.val()}));render();}
-function render(){let f=books.filter(b=>canSeeSchool(b.schoolId));let q=(document.getElementById("searchBooks").value||"").toLowerCase();let filtered=f.filter(b=>!q||(b.title||"").toLowerCase().includes(q)||(b.barcode||"").toLowerCase().includes(q));document.getElementById("statTitles").textContent=filtered.length;document.getElementById("statQty").textContent=filtered.reduce((a,b)=>a+Number(b.qty||1),0);let myReq=requests.filter(r=>canSeeSchool(r.schoolId)&&r.requestedBy===ME.email);document.getElementById("statRequests").textContent=myReq.length;document.getElementById("booksBody").innerHTML=filtered.length?filtered.map(b=>`<tr><td><b>${b.title||""}</b></td><td>${b.grade||""}</td><td>${b.subject||""}</td><td>${Number(b.qty||1)}</td></tr>`).join(""):`<tr><td colspan="4">No books yet.</td></tr>`;document.getElementById("reqBody").innerHTML=myReq.length?myReq.map(r=>`<tr><td>${r.title||""}</td><td>${r.qty||1}</td><td>${r.reason||""}</td><td><span class="badge ${r.status==="Approved"?"b-green":"b-yellow"}">${r.status||"Pending"}</span></td></tr>`).join(""):`<tr><td colspan="4">No requests yet.</td></tr>`;}
-firebase.auth().onAuthStateChanged(async u=>{if(!u){location.href="login.html";return;}try{let s=await db.ref("users/"+u.uid).once("value");if(!s.exists()){document.getElementById("myEmail").textContent=u.email+" — No user record";return;}ME=s.val()||{};ME.role=normRole(ME.role);ME.email=u.email;ME.schoolId=ME.schoolId||"ALL";if(normRole(ME.role)!=="Teacher"&&!["Super Admin","Admin"].includes(ME.role)){alert("⛔ Teacher Only — You are: "+ME.role);location.href=roleToPage(ME.role);return;}document.getElementById("myEmail").textContent=u.email+" • "+ME.role+" ✅ • "+(ME.schoolName||ME.schoolId);
-// 🔒 LOCK CHECK — must be BEFORE loadAll()
-if(await enforceSubscriptionLock(ME,"Teacher")) return;
-loadAll();}catch(e){document.getElementById("myEmail").textContent="Error: "+e.message;}});
+function schoolOfUser(){return (ME.schoolName||ME.schoolId||ME.school||"").trim();}
+function schoolKey(name){let n=String(name||"").toLowerCase();if(n.includes("george"))return"George Sonto High School";if(n.includes("wordsworth"))return"Wordsworth High School";return String(name||"").trim();}
+function normStatus(s){return String(s.status||"").trim().toLowerCase();}
+function isExpired(s){if(!s.renewal||s.renewal==="—")return false;let t=new Date();t.setHours(0,0,0,0);let r=new Date(s.renewal);if(isNaN(r))return false;r.setHours(0,0,0,0);return r<t;}
+function isActiveSub(s){return normStatus(s)==="active"&&!isExpired(s);}
+function isDonation(s){return (s.notes||"").toLowerCase().includes("donation")||s.donation===true||Number(s.amount||0)===0;}
+// ✅ THIS FUNCTION WAS MISSING — NOW DEFINED BEFORE USE
+// Returns: {locked:boolean, reason:string, sub:object|null, activeCount:number}
+function getSchoolSubscriptionStatus(){
+let mySchool=schoolKey(schoolOfUser());
+let mine=SUBS.filter(s=>schoolKey(s.schoolName||s.schoolId||s.school)===mySchool);
+if(!mine.length) return {locked:true, reason:"Missing — No subscription found for "+mySchool, sub:null, activeCount:0, mySchool:mySchool};
+let active=mine.find(s=>isActiveSub(s));
+if(active) return {locked:false, reason:"Active — "+(active.plan||"Premium")+" • Renewal "+(active.renewal||"—")+(isDonation(active)?" • 🎁 Donation":""), sub:active, activeCount:mine.filter(s=>isActiveSub(s)).length, mySchool:mySchool};
+let first=mine[0];
+if(isExpired(first)) return {locked:true, reason:"Expired — Renewal was "+(first.renewal||"—"), sub:first, activeCount:0, mySchool:mySchool};
+return {locked:true, reason:(first.status||"Paused / Cancelled")+" — Subscription not Active for "+mySchool, sub:first, activeCount:0, mySchool:mySchool};
+}
+function updateSubBox(){
+let st=getSchoolSubscriptionStatus();
+let box=document.getElementById("subBox");
+let el=document.getElementById("subStatus");let det=document.getElementById("subDetail");
+if(st.locked){box.className="lockBox";el.innerHTML=`<span class="badge b-red">🔒 LOCKED</span> — ${st.reason}`;det.textContent="School: "+st.mySchool+" • Ask Finance / Super Admin to activate Donation in Manage School Subscriptions. You can still view, but Requests may be blocked.";}
+else{box.className="okBox";el.innerHTML=`<span class="badge b-green">✅ UNLOCKED</span> — ${st.reason}`;det.textContent="School: "+st.mySchool+" • You can request books.";}
+return st;
+}
+async function loadAll(){
+try{let s=await db.ref("subscriptions").once("value");SUBS=[];if(s.exists())s.forEach(c=>{if(c.key==="_test")return;SUBS.push({key:c.key,...c.val()});});}catch(e){SUBS=[];}
+let st=updateSubBox();
+try{let b=await db.ref("books").once("value");BOOKS=[];if(b.exists())b.forEach(c=>BOOKS.push({key:c.key,...c.val()}));}catch(e){BOOKS=[];}
+try{let r=await db.ref("requests").once("value");REQS=[];if(r.exists())r.forEach(c=>REQS.push({key:c.key,...c.val()}));}catch(e){REQS=[];}
+// Filter books/requests to my school if school is set on them — if no school field, show all (so old books still show)
+let mySchool=schoolKey(schoolOfUser());
+let myBooks=BOOKS.filter(b=>{let bs=schoolKey(b.schoolName||b.schoolId||b.school||"");return !bs||bs===mySchool;});
+let myReqs=REQS.filter(r=>{if(r.teacherEmail&&r.teacherEmail!==ME.email) return false;let rs=schoolKey(r.schoolName||r.schoolId||r.school||"");return !rs||rs===mySchool;});
+document.getElementById("cTitles").textContent=myBooks.length;
+document.getElementById("cQty").textContent=myBooks.reduce((a,b)=>a+Number(b.qty||b.quantity||b.stock||0),0);
+document.getElementById("cReq").textContent=myReqs.length;
+renderBooks(myBooks);
+renderReqs(myReqs);
+}
+function renderBooks(list){
+let arr=list||BOOKS.filter(b=>{let mySchool=schoolKey(schoolOfUser());let bs=schoolKey(b.schoolName||b.schoolId||b.school||"");return !bs||bs===mySchool;});
+let q=(document.getElementById("search").value||"").toLowerCase();
+if(q) arr=arr.filter(b=>((b.title||"")+" "+(b.grade||"")+" "+(b.subject||"")).toLowerCase().includes(q));
+let tb=document.getElementById("bookBody");
+if(!arr.length){tb.innerHTML=`<tr><td colspan="5">No books found for ${schoolKey(schoolOfUser())}. Ask Librarian to add books.</td></tr>`;return;}
+tb.innerHTML=arr.map(b=>`<tr><td><b>${b.title||"—"}</b></td><td>${b.grade||"—"}</td><td>${b.subject||"—"}</td><td><b>${Number(b.qty||b.quantity||b.stock||0)}</b></td><td>${b.barcode||"—"}</td></tr>`).join("");
+}
+function renderReqs(list){
+let arr=list||REQS.filter(r=>!r.teacherEmail||r.teacherEmail===ME.email);
+let tb=document.getElementById("reqBody");
+if(!arr.length){tb.innerHTML=`<tr><td colspan="5">No requests yet. Send your first request above.</td></tr>`;return;}
+tb.innerHTML=arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).map(r=>{
+let st=String(r.status||"Pending");let badge=st.toLowerCase()==="approved"?`<span class="badge b-green">✅ Approved</span>`:st.toLowerCase()==="rejected"?`<span class="badge b-red">❌ Rejected</span>`:`<span class="badge b-gold">⏳ Pending</span>`;
+return `<tr><td><b>${r.title||r.bookTitle||"—"}</b></td><td>${r.qty||r.quantity||1}</td><td>${r.reason||r.class||"—"}</td><td>${badge}</td><td>${r.createdAt?new Date(r.createdAt).toLocaleDateString("en-ZA"):"—"}</td></tr>`;}).join("");
+}
+document.getElementById("sendBtn").addEventListener("click",async()=>{
+let title=document.getElementById("reqTitle").value.trim();let qty=Number(document.getElementById("reqQty").value||1);let reason=document.getElementById("reqReason").value.trim();
+let msg=document.getElementById("msg");
+if(!title){msg.style.color="#991b1b";msg.textContent="❌ Enter Book Title";return;}
+let st=getSchoolSubscriptionStatus();
+if(st.locked){if(!confirm("⚠️ School subscription is LOCKED:\n"+st.reason+"\n\nSend request anyway? (HOD / Principal may not see it until Finance unlocks)"))return;}
+try{await db.ref("requests").push({title:title,bookTitle:title,qty:qty,quantity:qty,reason:reason,class:reason,status:"Pending",teacherName:ME.name||"",teacherEmail:ME.email||"",schoolId:schoolOfUser(),schoolName:schoolOfUser(),school:schoolOfUser(),createdAt:Date.now()});msg.style.color="#166534";msg.textContent="✅ Request sent — "+title+" x"+qty;document.getElementById("reqTitle").value="";document.getElementById("reqReason").value="";loadAll();}catch(e){msg.style.color="#991b1b";msg.textContent="❌ Send failed: "+e.message;}
+});
+firebase.auth().onAuthStateChanged(async u=>{if(!u){location.href="login.html";return;}try{let s=await db.ref("users/"+u.uid).once("value");if(!s.exists()){document.getElementById("myEmail").textContent=u.email+" — No user record";return;}ME=s.val()||{};ME.role=normRole(ME.role);ME.email=u.email;document.getElementById("myEmail").textContent=u.email+" • "+ME.role+" ✅ • "+(ME.schoolName||ME.schoolId||"No School");loadAll();}catch(e){document.getElementById("myEmail").textContent="Error: "+e.message;}});
 </script></body></html>
