@@ -7,18 +7,12 @@
 <header><div style="display:flex;gap:12px;align-items:center"><img src="logo.png" alt="Xintimani Group Holdings Logo"><div style="line-height:1.25"><div style="font-size:20px;font-weight:900">Issue Requests — MAKHANANI LTSM 2.0</div><div style="font-size:12px;color:#d4af37;font-weight:700">Xintimani Group Holdings (Pty) Ltd</div><div style="font-size:11px;color:#cbd5e1">Reg No: 2026/934898/07 • <span id="myEmail">Loading...</span></div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="location.href='landing.html'">🏠 Landing</button><button class="btn dark" onclick="location.href='librarian.html'">📚 Librarian</button><button class="btn purple" onclick="location.href='learners.html'">👩‍🎓 Learners</button><button class="btn purple" onclick="location.href='stock.html'">📦 Stock</button><button class="btn white" onclick="logout()">🚪 Logout</button></div></header>
 <div class="wrap">
 <div id="subBox" class="okBox"><b>Subscription:</b> <span id="subStatus">Checking...</span></div>
-<div class="card"><div class="info" id="myAssign">Loading your assignment...</div><div class="stats" style="margin-top:14px"><div class="stat"><b id="cPend">0</b><span>Pending</span></div><div class="stat"><b id="cAppr">0</b><span>Approved</span></div><div class="stat"><b id="cRej">0</b><span>Rejected</span></div><div class="stat"><b id="cIssued">0</b><span>Issued Via Requests</span></div></div><p id="msg" style="font-size:13px;font-weight:700;text-align:center"></p></div>
-
-<!-- ✅ TEACHER ONLY: Create Request -->
-<div class="card" id="requestCard" style="display:none"><h2 style="margin:0">📝 Teacher Request — Step 1</h2><p style="color:#666;font-size:13px">You can only request for <b>your</b> Grade / Class / Subject. HOD must approve before you can issue.</p>
-<div class="grid"><div><label>Title * — Must match Stock title</label><select id="rTitle"><option value="">-- Choose Title From Stock --</option></select></div><div><label>Grade *</label><input id="rGrade" readonly style="background:#f0fdf4"></div><div><label>Class *</label><input id="rClass" readonly style="background:#f0fdf4"></div><div><label>Subject *</label><input id="rSubject" readonly style="background:#f0fdf4"></div><div><label>Qty Requested *</label><input id="rQty" type="number" value="1" min="1" max="100"></div><div><label>Reason / Note</label><input id="rNote" placeholder="e.g. For Grade 10A Term 1"></div></div>
-<button class="btn green" style="width:100%;padding:15px;font-size:16px;margin-top:14px" id="submitReqBtn" type="button">📝 SUBMIT REQUEST TO HOD</button></div>
-
-<!-- ✅ HOD ONLY: Pending Requests -->
-<div class="card" id="hodCard" style="display:none"><h2 style="margin:0">✅ HOD Approval — Step 2</h2><p style="color:#666;font-size:13px">Approve up to the Requested Qty. Teacher can only issue up to Approved Qty.</p><div class="scroll"><table><thead><tr><th>Teacher</th><th>Title / Grade / Class / Subject</th><th>Requested</th><th>Approved Qty (HOD sets)</th><th>Action</th></tr></thead><tbody id="hodBody"><tr><td colspan="5">No pending requests</td></tr></tbody></table></div></div>
-
-<!-- ✅ ALL: Requests List + Teacher Issue -->
-<div class="card"><h2 style="margin:0">📋 Requests — Step 3: Teacher Issues (Max Approved)</h2><div class="scroll"><table><thead><tr><th>Request</th><th>Teacher</th><th>Title</th><th>Grade / Class / Subject</th><th>Requested → Approved → Issued</th><th>Status</th><th>Action</th></tr></thead><tbody id="reqBody"><tr><td colspan="7">Loading requests...</td></tr></tbody></table></div></div>
+<div class="card"><div class="info" id="myAssign">Loading your assignment...</div><div class="stats" style="margin-top:14px"><div class="stat"><b id="cPend">0</b><span>Pending (Yours)</span></div><div class="stat"><b id="cAppr">0</b><span>Approved</span></div><div class="stat"><b id="cRej">0</b><span>Rejected</span></div><div class="stat"><b id="cIssued">0</b><span>Issued Via Requests</span></div></div><p id="msg" style="font-size:13px;font-weight:700;text-align:center"></p></div>
+<div class="card" id="requestCard" style="display:none"><h2 style="margin:0">📝 Teacher Request — Step 1</h2><p style="color:#666;font-size:13px">You can only request for <b>your</b> Grade / Class / Subject / Department. HOD of <b>your Department</b> must approve.</p>
+<div class="grid"><div><label>Title *</label><select id="rTitle"><option value="">-- Choose Title From Stock --</option></select></div><div><label>Department (auto from book)</label><input id="rDept" readonly style="background:#f0fdf4"></div><div><label>Grade *</label><input id="rGrade" readonly style="background:#f0fdf4"></div><div><label>Class *</label><input id="rClass" readonly style="background:#f0fdf4"></div><div><label>Subject *</label><input id="rSubject" readonly style="background:#f0fdf4"></div><div><label>Qty Requested *</label><input id="rQty" type="number" value="1" min="1" max="100"></div><div><label>Reason / Note</label><input id="rNote" placeholder="e.g. For Grade 10A Term 1"></div></div>
+<button class="btn green" style="width:100%;padding:15px;font-size:16px;margin-top:14px" id="submitReqBtn" type="button">📝 SUBMIT REQUEST TO HOD (MY DEPARTMENT)</button></div>
+<div class="card" id="hodCard" style="display:none"><h2 style="margin:0">✅ HOD Approval — Step 2 — Your Department Only</h2><p style="color:#666;font-size:13px" id="hodNote">You only see requests for your Department. Other Departments are hidden.</p><div class="scroll"><table><thead><tr><th>Teacher</th><th>Title / Department / Grade / Class / Subject</th><th>Requested</th><th>Approved Qty</th><th>Action</th></tr></thead><tbody id="hodBody"><tr><td colspan="5">No pending requests for your Department</td></tr></tbody></table></div></div>
+<div class="card"><h2 style="margin:0">📋 Requests — Step 3: Teacher Issues (Max Approved)</h2><div class="scroll"><table><thead><tr><th>Request</th><th>Teacher</th><th>Title</th><th>Dept / Grade / Class / Subject</th><th>Requested → Approved → Issued</th><th>Status</th><th>Action</th></tr></thead><tbody id="reqBody"><tr><td colspan="7">Loading requests...</td></tr></tbody></table></div></div>
 <div style="text-align:center;color:#666;font-size:12px;padding:10px">MAKHANANI LTSM 2.0 • Xintimani Group Holdings (Pty) Ltd • Reg No: 2026/934898/07</div>
 </div>
 <script>
@@ -35,17 +29,28 @@ function isActiveSub(s){return normStatus(s)==="active"&&!isExpired(s);}
 function isDonation(s){return (s.notes||"").toLowerCase().includes("donation")||s.donation===true||Number(s.amount||0)===0;}
 function getSchoolSubscriptionStatus(){let mySchool=schoolKey(schoolOfUser());let mine=SUBS.filter(s=>schoolKey(s.schoolName||s.schoolId||s.school)===mySchool);if(!mine.length)return{locked:true,reason:"Missing — No subscription for "+mySchool};let a=mine.find(s=>isActiveSub(s));if(a)return{locked:false,reason:"Active — "+(a.plan||"Premium")+" • Renewal "+(a.renewal||"—")+(isDonation(a)?" • 🎁 Donation":"")};let f=mine[0];if(isExpired(f))return{locked:true,reason:"Expired — Renewal was "+(f.renewal||"—")};return{locked:true,reason:(f.status||"Paused")+" — Not Active"};}
 function updateSubBox(){let st=getSchoolSubscriptionStatus();let b=document.getElementById("subBox");if(st.locked){b.className="lockBox";document.getElementById("subStatus").innerHTML=`<span class="badge b-red">🔒 LOCKED</span> — ${st.reason}`;}else{b.className="okBox";document.getElementById("subStatus").innerHTML=`<span class="badge b-green">✅ UNLOCKED</span> — ${st.reason}`;}return st;}
-// ✅ TEACHER ASSIGNMENT — stored on user record: assignedGrade, assignedClass, assignedSubject
-// Example: Teacher Thabo → assignedGrade:"Grade 10", assignedClass:"A", assignedSubject:"Maths"
-function teacherAssign(){
-return {
-grade: ME.assignedGrade||ME.grade||ME.teacherGrade||"",
-cls: ME.assignedClass||ME.class||ME.teacherClass||"",
-subject: ME.assignedSubject||ME.subject||ME.teacherSubject||""
-};
-}
+// ✅ TEACHER ASSIGNMENT
+function teacherAssign(){return{grade:ME.assignedGrade||ME.grade||ME.teacherGrade||"",cls:ME.assignedClass||ME.class||ME.teacherClass||"",subject:ME.assignedSubject||ME.subject||ME.teacherSubject||"",department:ME.assignedDepartment||ME.department||ME.teacherDepartment||""};}
+// ✅ HOD ASSIGNMENT — Department is the key. Optional: Subject narrows it further.
+function hodAssign(){return{department:ME.assignedDepartment||ME.department||ME.hodDepartment||ME.assignedDept||"",subject:ME.assignedSubject||ME.subject||ME.hodSubject||"",grade:ME.assignedGrade||""};}
 function isTeacher(){return normRole(ME.role)==="Teacher";}
-function isHOD(){let r=normRole(ME.role);return r==="HOD"||r==="Principal"||r==="Admin"||r==="Super Admin";}
+function isHOD(){return normRole(ME.role)==="HOD";}
+function isAllAccess(){let r=normRole(ME.role);return r==="Principal"||r==="Admin"||r==="Super Admin"||r==="Librarian";}
+// ✅ CORE CHECK: Can this HOD approve THIS request?
+function canHODApprove(req){
+if(isAllAccess()) return {ok:true,reason:"All-access role"};
+if(!isHOD()) return {ok:false,reason:"You are not HOD"};
+let h=hodAssign();
+if(!h.department) return {ok:false,reason:"Your HOD Department is blank — ask Admin to set assignedDepartment in Users"};
+// Department must match exactly
+if(String(req.department||req.group||"")!==h.department) return {ok:false,reason:"Department mismatch: Request is "+(req.department||"—")+", you are HOD for "+h.department};
+// If HOD also has a Subject set, Subject must match too
+if(h.subject&&String(req.subject||"")!==h.subject) return {ok:false,reason:"Subject mismatch: Request is "+req.subject+", you are HOD for "+h.subject+" only"};
+// If HOD has a Grade set (e.g. Senior Phase HOD), Grade must match too
+if(h.grade&&String(req.grade||"")!==h.grade) return {ok:false,reason:"Grade mismatch: Request is "+req.grade+", you are HOD for "+h.grade+" only"};
+return {ok:true,reason:"HOD for "+h.department};
+}
+function visibleHODRequests(){return REQUESTS.filter(r=>canHODApprove(r).ok);}
 async function loadAll(){
 try{let s=await db.ref("subscriptions").once("value");SUBS=[];if(s.exists())s.forEach(c=>{if(c.key==="_test")return;SUBS.push({key:c.key,...c.val()});});}catch(e){SUBS=[];}updateSubBox();
 let my=schoolKey(schoolOfUser());let f=a=>{let x=schoolKey(a.schoolName||a.schoolId||a.school||"");return !x||x===my;};
@@ -54,104 +59,103 @@ try{let l=await db.ref("learners").once("value");LEARNERS=[];if(l.exists())l.for
 try{let r=await db.ref("issueRequests").once("value");REQUESTS=[];if(r.exists())r.forEach(c=>REQUESTS.push({key:c.key,...c.val()}));}catch(e){REQUESTS=[];}
 try{let i=await db.ref("issues").once("value");ISSUES=[];if(i.exists())i.forEach(c=>ISSUES.push({key:c.key,...c.val()}));}catch(e){ISSUES=[];}
 BOOKS=BOOKS.filter(f);LEARNERS=LEARNERS.filter(f);REQUESTS=REQUESTS.filter(f);ISSUES=ISSUES.filter(f);
-let a=teacherAssign();
-document.getElementById("myAssign").innerHTML = isTeacher()
-? `<b>👩‍🏫 You are Teacher:</b> ${ME.email} • <b>Your Class:</b> ${a.grade||"—"} ${a.cls||""} • <b>Your Subject:</b> ${a.subject||"—"}<br><span style="color:#991b1b">You can ONLY request / issue books for YOUR Grade / Class / Subject. If this is blank, ask Admin to set your assignment in Users.</span>`
-: `<b>Role:</b> ${ME.role} • <b>School:</b> ${schoolKey(schoolOfUser())} ${isHOD()?"• You can APPROVE requests":""}`;
+let a=teacherAssign();let h=hodAssign();
+if(isTeacher()){
+document.getElementById("myAssign").innerHTML=`<b>👩‍🏫 Teacher:</b> ${ME.email} • <b>Your Class:</b> ${a.grade||"—"} ${a.cls||""} • <b>Your Subject:</b> ${a.subject||"—"} • <b>Your Department:</b> ${a.department||"—"}<br><span style="color:#991b1b">You can ONLY request / issue for YOUR Grade / Class / Subject / Department.</span>`;
+}else if(isHOD()){
+document.getElementById("myAssign").innerHTML=`<b>✅ HOD:</b> ${ME.email} • <b>Your Department:</b> ${h.department||"⚠️ BLANK — Ask Admin to set assignedDepartment"} ${h.subject?`• <b>Your Subject:</b> ${h.subject}`:"• All Subjects in Department"} ${h.grade?`• <b>Grade:</b> ${h.grade}`:""}<br><span style="color:#166534">You can ONLY approve requests for YOUR Department. Other Departments are hidden from you.</span>`;
+}else{
+document.getElementById("myAssign").innerHTML=`<b>Role:</b> ${ME.role} • <b>School:</b> ${schoolKey(schoolOfUser())} • ${isAllAccess()?"You can approve ALL Departments":""}`;
+}
 if(isTeacher()){
 document.getElementById("requestCard").style.display="block";
-document.getElementById("rGrade").value=a.grade;document.getElementById("rClass").value=a.cls;document.getElementById("rSubject").value=a.subject;
-// Teacher only sees titles for THEIR Grade + Subject
-let titles=[...new Set(BOOKS.filter(b=>(!a.grade||b.grade===a.grade)&&(!a.subject||b.subject===a.subject)).map(b=>b.title))].sort();
+document.getElementById("rGrade").value=a.grade;document.getElementById("rClass").value=a.cls;document.getElementById("rSubject").value=a.subject;document.getElementById("rDept").value=a.department;
+let titles=[...new Set(BOOKS.filter(b=>(!a.grade||b.grade===a.grade)&&(!a.subject||b.subject===a.subject)&&(!a.department||(b.department||b.group||"")===a.department)).map(b=>b.title))].sort();
 document.getElementById("rTitle").innerHTML=`<option value="">-- Choose Title --</option>`+titles.map(t=>`<option>${t}</option>`).join("");
 }
-if(isHOD()) document.getElementById("hodCard").style.display="block";
-document.getElementById("cPend").textContent=REQUESTS.filter(r=>normStatus(r.status)==="pending").length;
-document.getElementById("cAppr").textContent=REQUESTS.filter(r=>normStatus(r.status)==="approved").length;
-document.getElementById("cRej").textContent=REQUESTS.filter(r=>normStatus(r.status)==="rejected").length;
+if(isHOD()||isAllAccess()) document.getElementById("hodCard").style.display="block";
+if(isHOD()) document.getElementById("hodNote").textContent="You only see requests for Department: "+(h.department||"—")+" — Other Departments are hidden and you cannot approve them.";
+let visible = isHOD() ? visibleHODRequests() : REQUESTS;
+document.getElementById("cPend").textContent=visible.filter(r=>normStatus(r.status)==="pending").length;
+document.getElementById("cAppr").textContent=visible.filter(r=>normStatus(r.status)==="approved").length;
+document.getElementById("cRej").textContent=visible.filter(r=>normStatus(r.status)==="rejected").length;
 document.getElementById("cIssued").textContent=ISSUES.filter(i=>i.requestId).length;
 renderHOD();renderRequests();
 }
 function issuedCount(reqKey){return ISSUES.filter(i=>i.requestId===reqKey&&normStatus(i.status)!=="returned").length;}
 function renderHOD(){
 let tb=document.getElementById("hodBody");
-let pend=REQUESTS.filter(r=>normStatus(r.status)==="pending");
-if(!pend.length){tb.innerHTML=`<tr><td colspan="5">No pending requests</td></tr>`;return;}
-tb.innerHTML=pend.map(r=>`<tr><td><b>${r.teacherName||r.teacherEmail||"—"}</b></td><td>${r.title}<br>${r.grade} ${r.class} • ${r.subject}</td><td><b>${r.qtyRequested}</b></td><td><input type="number" id="appr_${r.key}" value="${r.qtyRequested}" min="0" max="${r.qtyRequested}" style="width:90px"></td><td><button class="btn green" onclick="hodApprove('${r.key}')">✅ Approve</button> <button class="btn red" onclick="hodReject('${r.key}')">❌ Reject</button></td></tr>`).join("");
+let pend=REQUESTS.filter(r=>normStatus(r.status)==="pending"&&canHODApprove(r).ok);
+if(!pend.length){tb.innerHTML=`<tr><td colspan="5">No pending requests for your Department</td></tr>`;return;}
+tb.innerHTML=pend.map(r=>`<tr><td><b>${r.teacherName||r.teacherEmail||"—"}</b></td><td>${r.title}<br>${r.department||"—"} • ${r.grade} ${r.class} • ${r.subject}</td><td><b>${r.qtyRequested}</b></td><td><input type="number" id="appr_${r.key}" value="${r.qtyRequested}" min="0" max="${r.qtyRequested}" style="width:90px"></td><td><button class="btn green" onclick="hodApprove('${r.key}')">✅ Approve</button> <button class="btn red" onclick="hodReject('${r.key}')">❌ Reject</button></td></tr>`).join("");
 }
 function renderRequests(){
 let tb=document.getElementById("reqBody");
 let list=REQUESTS;
 if(isTeacher()) list=list.filter(r=>r.teacherEmail===ME.email);
-if(!list.length){tb.innerHTML=`<tr><td colspan="7">No requests yet. Teacher: submit a request above.</td></tr>`;return;}
+if(isHOD()) list=list.filter(r=>canHODApprove(r).ok);
+if(!list.length){tb.innerHTML=`<tr><td colspan="7">${isHOD()?"No requests for your Department yet.":"No requests yet. Teacher: submit a request above."}</td></tr>`;return;}
 tb.innerHTML=list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).map(r=>{
 let st=normStatus(r.status);let badge=st==="approved"?`<span class="badge b-green">✅ Approved</span>`:st==="rejected"?`<span class="badge b-red">❌ Rejected</span>`:st==="completed"?`<span class="badge b-purple">🏁 Completed</span>`:`<span class="badge b-gold">⏳ Pending</span>`;
-let issued=issuedCount(r.key);let appr=Number(r.qtyApproved||0);
-let remaining=Math.max(0,appr-issued);
+let issued=issuedCount(r.key);let appr=Number(r.qtyApproved||0);let remaining=Math.max(0,appr-issued);
 let canIssue=isTeacher()&&st==="approved"&&remaining>0;
-let act="";
-if(canIssue) act=`<button class="btn purple" onclick="issueFromRequest('${r.key}')">📤 Issue To Learner (${remaining} left)</button>`;
-else if(st==="pending") act=`<span style="color:#666;font-size:12px">⏳ Waiting for HOD</span>`;
-else if(st==="approved"&&remaining<=0) act=`<span style="color:#666;font-size:12px">🏁 Max Approved reached (${issued}/${appr})</span>`;
-else if(st==="rejected") act=`<span style="color:#666;font-size:12px">Rejected by HOD</span>`;
-return `<tr><td>${r.createdAt?new Date(r.createdAt).toLocaleDateString("en-ZA"):"—"}</td><td>${r.teacherName||r.teacherEmail||"—"}</td><td><b>${r.title}</b></td><td>${r.grade} ${r.class} • ${r.subject}</td><td><b>${r.qtyRequested} → ${appr} → ${issued}</b><br><span style="font-size:11px;color:#666">${remaining} left to issue</span></td><td>${badge}</td><td>${act}</td></tr>`;
+let act=canIssue?`<button class="btn purple" onclick="issueFromRequest('${r.key}')">📤 Issue To Learner (${remaining} left)</button>`:st==="pending"?`<span style="color:#666;font-size:12px">⏳ Waiting for HOD (${r.department||""})</span>`:st==="approved"&&remaining<=0?`<span style="color:#666;font-size:12px">🏁 Max Approved reached (${issued}/${appr})</span>`:st==="rejected"?`<span style="color:#666;font-size:12px">Rejected by HOD</span>`:"";
+return `<tr><td>${r.createdAt?new Date(r.createdAt).toLocaleDateString("en-ZA"):"—"}</td><td>${r.teacherName||r.teacherEmail||"—"}</td><td><b>${r.title}</b></td><td>${r.department||"—"} • ${r.grade} ${r.class} • ${r.subject}</td><td><b>${r.qtyRequested} → ${appr} → ${issued}</b><br><span style="font-size:11px;color:#666">${remaining} left</span></td><td>${badge}<br><span style="font-size:11px;color:#666">${r.approvedBy?("By "+r.approvedBy):""}</span></td><td>${act}</td></tr>`;
 }).join("");
 }
 async function hodApprove(key){
 let r=REQUESTS.find(x=>x.key===key);if(!r)return;
+// ✅ ENFORCE: HOD Department check at approve time too — not just hiding
+let chk=canHODApprove(r);
+if(!chk.ok){alert("⛔ You cannot approve this request.\n\n"+chk.reason);return;}
 let appr=Number(document.getElementById("appr_"+key).value||0);
 if(appr<0||appr>Number(r.qtyRequested)){alert("❌ Approved Qty must be 0 to "+r.qtyRequested);return;}
-try{await db.ref("issueRequests/"+key).update({status:appr===0?"Rejected":"Approved",qtyApproved:appr,approvedBy:ME.email,approvedAt:Date.now()});document.getElementById("msg").textContent="✅ Approved "+appr+" / "+r.qtyRequested+" for "+r.title;loadAll();}catch(e){document.getElementById("msg").textContent="❌ Approve failed: "+e.message;}
+try{await db.ref("issueRequests/"+key).update({status:appr===0?"Rejected":"Approved",qtyApproved:appr,approvedBy:ME.email,approvedByDept:hodAssign().department,approvedAt:Date.now()});document.getElementById("msg").textContent="✅ Approved "+appr+" / "+r.qtyRequested+" for "+r.title+" ("+r.department+")";loadAll();}catch(e){document.getElementById("msg").textContent="❌ Approve failed: "+e.message;}
 }
 async function hodReject(key){
+let r=REQUESTS.find(x=>x.key===key);if(!r)return;
+let chk=canHODApprove(r);if(!chk.ok){alert("⛔ You cannot reject this request.\n\n"+chk.reason);return;}
 if(!confirm("Reject this request?"))return;
-try{await db.ref("issueRequests/"+key).update({status:"Rejected",qtyApproved:0,approvedBy:ME.email,approvedAt:Date.now()});document.getElementById("msg").textContent="❌ Request rejected";loadAll();}catch(e){document.getElementById("msg").textContent="❌ Reject failed: "+e.message;}
+try{await db.ref("issueRequests/"+key).update({status:"Rejected",qtyApproved:0,approvedBy:ME.email,approvedByDept:hodAssign().department,approvedAt:Date.now()});document.getElementById("msg").textContent="❌ Request rejected";loadAll();}catch(e){document.getElementById("msg").textContent="❌ Reject failed: "+e.message;}
 }
+document.getElementById("rTitle").addEventListener("change",()=>{
+let t=document.getElementById("rTitle").value;
+let b=BOOKS.find(x=>x.title===t);
+if(b) document.getElementById("rDept").value=b.department||b.group||"";
+});
 document.getElementById("submitReqBtn").addEventListener("click",async()=>{
 let a=teacherAssign();
 let title=document.getElementById("rTitle").value;let qty=Number(document.getElementById("rQty").value||0);let note=document.getElementById("rNote").value.trim();let msg=document.getElementById("msg");
-if(!a.grade||!a.cls||!a.subject){msg.style.color="#991b1b";msg.textContent="❌ Your assignment is blank (Grade / Class / Subject). Ask Admin to set it in Users before you request.";return;}
+if(!a.grade||!a.cls||!a.subject){msg.style.color="#991b1b";msg.textContent="❌ Your assignment is blank (Grade / Class / Subject). Ask Admin to set it.";return;}
 if(!title){msg.style.color="#991b1b";msg.textContent="❌ Choose a Title";return;}
 if(!qty||qty<1){msg.style.color="#991b1b";msg.textContent="❌ Qty must be 1+";return;}
-// ✅ Teacher can only request their own Grade / Subject — title must exist in Stock for that Grade/Subject
-let inStock=BOOKS.some(b=>b.title===title&&b.grade===a.grade&&b.subject===a.subject);
-if(!inStock){msg.style.color="#991b1b";msg.textContent="❌ Grade / Subject mismatch: "+title+" is not in Stock for "+a.grade+" • "+a.subject+". You can only request your own Grade / Subject.";return;}
-try{await db.ref("issueRequests").push({title:title,grade:a.grade,class:a.cls,subject:a.subject,qtyRequested:qty,qtyApproved:0,status:"Pending",teacherEmail:ME.email,teacherName:ME.name||ME.email,note:note,schoolId:schoolOfUser(),schoolName:schoolOfUser(),school:schoolOfUser(),createdAt:Date.now()});msg.style.color="#166534";msg.textContent="✅ Request sent to HOD — "+title+" x"+qty+" for "+a.grade+" "+a.cls+" • "+a.subject;document.getElementById("rNote").value="";loadAll();}catch(e){msg.style.color="#991b1b";msg.textContent="❌ Request failed: "+e.message;}
+let book=BOOKS.find(b=>b.title===title&&b.grade===a.grade&&b.subject===a.subject);
+if(!book){msg.style.color="#991b1b";msg.textContent="❌ Grade / Subject mismatch: "+title+" is not in Stock for "+a.grade+" • "+a.subject;return;}
+let dept=book.department||book.group||a.department||"";
+if(a.department&&dept!==a.department){msg.style.color="#991b1b";msg.textContent="❌ Department mismatch: Book is "+dept+", you are in "+a.department;return;}
+try{await db.ref("issueRequests").push({title:title,department:dept,group:dept,grade:a.grade,class:a.cls,subject:a.subject,qtyRequested:qty,qtyApproved:0,status:"Pending",teacherEmail:ME.email,teacherName:ME.name||ME.email,note:note,schoolId:schoolOfUser(),schoolName:schoolOfUser(),school:schoolOfUser(),createdAt:Date.now()});msg.style.color="#166534";msg.textContent="✅ Request sent to HOD ("+dept+") — "+title+" x"+qty;document.getElementById("rNote").value="";loadAll();}catch(e){msg.style.color="#991b1b";msg.textContent="❌ Request failed: "+e.message;}
 });
 async function issueFromRequest(reqKey){
 let req=REQUESTS.find(r=>r.key===reqKey);if(!req)return;
 let appr=Number(req.qtyApproved||0);let issued=issuedCount(reqKey);
-if(normStatus(req.status)!=="approved"){alert("❌ This request is not Approved yet. Wait for HOD.");return;}
-if(issued>=appr){alert("❌ Max Approved reached: "+issued+"/"+appr+". Ask HOD for a new request if you need more.");return;}
-// Pick learner — must be in Teacher's Class + Grade
+if(normStatus(req.status)!=="approved"){alert("❌ Not Approved yet. Wait for HOD ("+req.department+").");return;}
+if(issued>=appr){alert("❌ Max Approved reached: "+issued+"/"+appr);return;}
 let learnersInClass=LEARNERS.filter(l=>l.grade===req.grade&&String(l.class||"")===String(req.class||""));
 if(!learnersInClass.length){alert("❌ No learners in "+req.grade+" "+req.class);return;}
 let list=learnersInClass.map(l=>(l.learnerId||"")+" — "+l.name).join("\n");
-let learnerIdInput=prompt("Issue "+req.title+" to which learner?\n\nType Learner ID (e.g. 10A001) — must be in "+req.grade+" "+req.class+":\n"+list);
+let learnerIdInput=prompt("Issue "+req.title+" to which learner?\n\nType Learner ID — must be in "+req.grade+" "+req.class+":\n"+list);
 if(!learnerIdInput)return;
 let learner=learnersInClass.find(l=>String(l.learnerId||"")===learnerIdInput.trim());
-if(!learner){alert("❌ Grade / Class mismatch: Learner ID "+learnerIdInput+" is NOT in "+req.grade+" "+req.class+". You can only issue to your own class.");return;}
-// ✅ 1 TITLE PER LEARNER — block if learner already has this title Issued
+if(!learner){alert("❌ Grade / Class mismatch: Learner is NOT in "+req.grade+" "+req.class);return;}
 let already=ISSUES.find(i=>i.learnerId===learner.learnerId&&i.title===req.title&&normStatus(i.status)!=="returned");
-if(already){alert("❌ 1 Title Per Learner: "+learner.name+" ("+learner.learnerId+") already has '"+req.title+"' issued (Book No "+(already.bookNo||"")+"). Return it first before issuing again.");return;}
-// Pick ONE specific copy — must match Title + Grade + Subject, and be Available
-let copies=BOOKS.filter(b=>b.title===req.title&&b.grade===req.grade&&b.subject===req.subject&&String(b.copyStatus||"Available")==="Available");
-if(!copies.length){alert("❌ No Available copy of "+req.title+" for "+req.grade+" • "+req.subject+" in Stock.");return;}
-let copyList=copies.map(b=>b.bookNo+" — "+b.title).join("\n");
-let bookNoInput=prompt("Scan / type Book No of THIS copy (1 Book = 1 Barcode):\n"+copyList);
+if(already){alert("❌ 1 Title Per Learner: "+learner.name+" already has '"+req.title+"' ("+(already.bookNo||"")+").");return;}
+let copies=BOOKS.filter(b=>b.title===req.title&&b.grade===req.grade&&b.subject===req.subject&&(b.department||b.group||"")===req.department&&String(b.copyStatus||"Available")==="Available");
+if(!copies.length){alert("❌ No Available copy of "+req.title+" for "+req.department+" • "+req.grade+" • "+req.subject);return;}
+let bookNoInput=prompt("Scan / type Book No of THIS copy (1 Book = 1 Barcode):\n"+copies.map(b=>b.bookNo).join("\n"));
 if(!bookNoInput)return;
 let book=copies.find(b=>String(b.bookNo||"")===bookNoInput.trim());
-if(!book){alert("❌ Book No not found / not Available / Grade or Subject mismatch.");return;}
-// ✅ Final grade mismatch guard: Book Grade vs Learner Grade vs Request Grade
-if(book.grade!==learner.grade||book.grade!==req.grade){alert("❌ Grade mismatch: Book is "+book.grade+", Learner is "+learner.grade+", Request is "+req.grade+". All must match.");return;}
-if(book.subject!==req.subject){alert("❌ Subject mismatch: Book is "+book.subject+", Request is "+req.subject);return;}
-try{
-await db.ref("issues").push({requestId:reqKey,bookKey:book.key,bookNo:book.bookNo,title:req.title,bookTitle:req.title,learner:learner.name,learnerId:learner.learnerId,to:learner.name,qty:1,quantity:1,status:"Issued",grade:req.grade,class:req.class,subject:req.subject,teacherEmail:ME.email,schoolId:schoolOfUser(),schoolName:schoolOfUser(),school:schoolOfUser(),createdAt:Date.now(),createdBy:ME.email});
-await db.ref("books/"+book.key).update({copyStatus:"Issued",issuedTo:learner.name,issuedToId:learner.learnerId,issuedAt:Date.now(),requestId:reqKey});
-document.getElementById("msg").textContent="✅ Issued — "+req.title+" ("+book.bookNo+") to "+learner.name+" ("+learner.learnerId+") — "+(issued+1)+"/"+appr+" of approved";
-// Mark Completed if max reached
-if(issued+1>=appr){await db.ref("issueRequests/"+reqKey).update({status:"Completed"});}
-loadAll();}catch(e){document.getElementById("msg").textContent="❌ Issue failed: "+e.message;}
+if(!book){alert("❌ Book No not found / not Available / Department / Grade / Subject mismatch.");return;}
+try{await db.ref("issues").push({requestId:reqKey,bookKey:book.key,bookNo:book.bookNo,title:req.title,bookTitle:req.title,learner:learner.name,learnerId:learner.learnerId,to:learner.name,qty:1,quantity:1,status:"Issued",department:req.department,grade:req.grade,class:req.class,subject:req.subject,teacherEmail:ME.email,schoolId:schoolOfUser(),schoolName:schoolOfUser(),school:schoolOfUser(),createdAt:Date.now(),createdBy:ME.email});await db.ref("books/"+book.key).update({copyStatus:"Issued",issuedTo:learner.name,issuedToId:learner.learnerId,issuedAt:Date.now(),requestId:reqKey});document.getElementById("msg").textContent="✅ Issued — "+req.title+" ("+book.bookNo+") to "+learner.name+" ("+learner.learnerId+") — "+(issued+1)+"/"+appr;if(issued+1>=appr){await db.ref("issueRequests/"+reqKey).update({status:"Completed"});}loadAll();}catch(e){document.getElementById("msg").textContent="❌ Issue failed: "+e.message;}
 }
 firebase.auth().onAuthStateChanged(async u=>{if(!u){location.href="login.html";return;}try{let s=await db.ref("users/"+u.uid).once("value");if(!s.exists()){document.getElementById("myEmail").textContent=u.email+" — No user record";return;}ME=s.val()||{};ME.role=normRole(ME.role);ME.email=u.email;document.getElementById("myEmail").textContent=u.email+" • "+ME.role+" ✅ • "+(ME.schoolName||ME.schoolId||"No School");loadAll();}catch(e){document.getElementById("myEmail").textContent="Error: "+e.message;}});
 </script></body></html>
