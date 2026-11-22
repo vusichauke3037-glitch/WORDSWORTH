@@ -1,0 +1,304 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HOD Dashboard — MAKHANANI LTSM 2.0</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#eef2f7}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}header img{height:52px;background:#fff;border-radius:10px;padding:3px}.btn{border:none;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:13px}.btn.gold{background:#d4af37;color:#000}.btn.green{background:#16a34a;color:#fff}.btn.white{background:#fff;color:#0a1f4d}.btn.dark{background:#0a1f4d;color:#fff}.btn.red{background:#ef4444;color:#fff}.btn.purple{background:#7c3aed;color:#fff}.wrap{max-width:1100px;margin:14px auto;padding:0 14px}.card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;text-align:center}.stat{background:#0a1f4d;color:#fff;border-radius:14px;padding:16px}.stat b{font-size:26px;display:block}.stat.gold{background:#d4af37;color:#000}.stat.green{background:#16a34a}.stat.red{background:#ef4444}label{font-weight:800;display:block;margin:10px 0 5px;font-size:13px}input,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:12px;font-size:15px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0a1f4d;color:#fff;padding:10px;text-align:left}td{padding:10px;border-bottom:1px solid #eee;vertical-align:top}.badge{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:900}.b-green{background:#dcfce7;color:#166534}.b-red{background:#fee2e2;color:#991b1b}.b-gold{background:#fef3c7;color:#92400e}.b-purple{background:#ede9fe;color:#5b21b6}.lockBox{border:3px solid #dc2626;background:#fffafa;border-radius:14px;padding:14px;margin-bottom:14px}.okBox{border:3px solid #16a34a;background:#f0fdf4;border-radius:14px;padding:14px;margin-bottom:14px}.scroll{overflow-x:auto}.info{background:#eff6ff;border:2px solid #0a1f4d;border-radius:12px;padding:12px;font-size:13px}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tab{padding:12px 16px;border-radius:12px;border:2px solid #0a1f4d;background:#fff;font-weight:900;cursor:pointer}.tab.active{background:#0a1f4d;color:#fff}.groupHead{background:#0a1f4d;color:#fff;padding:10px 12px;border-radius:10px;margin:14px 0 8px;font-weight:900;display:flex;justify-content:space-between;flex-wrap:wrap}.alertCrit{background:#fef2f2;border:2px solid #dc2626;border-radius:12px;padding:12px;margin-bottom:10px}.alertLow{background:#fffbeb;border:2px solid #f59e0b;border-radius:12px;padding:12px;margin-bottom:10px}.alertOk{background:#f0fdf4;border:2px solid #16a34a;border-radius:12px;padding:12px;margin-bottom:10px}.budgetBox{background:#eff6ff;border:2px solid #0a1f4d;border-radius:12px;padding:12px;margin-top:12px}
+@media(max-width:700px){.grid,.stats{grid-template-columns:1fr 1fr}}
+</style></head>
+<body>
+<header><div style="display:flex;gap:12px;align-items:center"><img src="logo.png" alt="Xintimani Group Holdings Logo"><div style="line-height:1.25"><div style="font-size:20px;font-weight:900">HOD Dashboard — MAKHANANI LTSM 2.0</div><div style="font-size:12px;color:#d4af37;font-weight:700">Xintimani Group Holdings (Pty) Ltd</div><div style="font-size:11px;color:#cbd5e1">Reg No: 2026/934898/07 • <span id="myEmail">Loading...</span></div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="location.href='landing.html'">🏠 Landing</button><button class="btn dark" onclick="location.href='stock.html'">📦 Stock</button><button class="btn purple" onclick="location.href='learners.html'">👩‍🎓 Learners</button><button class="btn purple" onclick="location.href='issue_requests.html'">📝 Issue Requests</button><button class="btn gold" onclick="location.href='barcode_print.html'">🏷️ Print Barcodes</button><button class="btn white" onclick="logout()">🚪 Logout</button></div></header>
+<div class="wrap">
+<div id="subBox" class="okBox"><b>Subscription:</b> <span id="subStatus">Checking...</span></div>
+<div class="card"><div class="info" id="myAssign">Loading...</div><div class="stats" style="margin-top:14px"><div class="stat gold"><b id="cPend">0</b><span>Pending Requests</span></div><div class="stat"><b id="cAppr">0</b><span>Approved</span></div><div class="stat"><b id="cStock">0</b><span>Copies In Dept</span></div><div class="stat"><b id="cLearn">0</b><span>Learners In Dept</span></div><div class="stat green"><b id="cIssued">0</b><span>Issued</span></div><div class="stat"><b id="cRet">0</b><span>Returned</span></div><div class="stat red"><b id="cOut">0</b><span>Still Out</span></div><div class="stat"><b id="cAvail">0</b><span>Available</span></div><div class="stat gold"><b id="cOrders">0</b><span>Orders Pending</span></div><div class="stat green"><b id="cBudget">—</b><span>Budget Remaining</span></div></div><p id="msg" style="font-size:13px;font-weight:700;text-align:center"></p></div>
+
+<div class="card"><h2 style="margin:0">💰 Department Budget</h2><div class="budgetBox" id="budgetBox">Loading budget...</div><div id="budgetAdminBtns" style="display:none;margin-top:10px"><button class="btn dark" onclick="setBudget()">💰 Set / Change Budget For Department</button> <button class="btn gold" onclick="setBudgetAll()">💰 Set Budget For All Departments</button></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn green" onclick="exportBudgetCSV()">📥 Export Budget Report CSV</button><button class="btn dark" onclick="exportBudgetCSV(true)">📥 Export My Department Only</button><button class="btn purple" onclick="printBudgetReport()">🖨️ Print Budget Report</button></div><p style="color:#666;font-size:12px">CSV has 2 sections: 1) Summary per Department — Budget, Spent, Committed, Remaining. 2) Every Order Line — Title, Qty, Price, Total, Status. Finance can open it in Excel / Sheets.</p>
+<div id="budgetReport" style="margin-top:14px"></div></div>
+
+<div class="card"><h2 style="margin:0">⚠️ Low Stock Alerts — Your Department Only</h2><p style="color:#666;font-size:13px">🔴 = Cannot fulfil request. 🟡 = Running low. Tap 📦 Order More to ask Admin / Finance to buy more.</p><div id="alerts"><p style="color:#666">Loading alerts...</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn dark" onclick="loadAll()">🔄 Refresh Alerts</button><button class="btn gold" onclick="setTab('orders')">📦 View Orders</button></div></div>
+
+<div class="card"><div class="tabs"><button class="tab active" id="tabReq" onclick="setTab('req')">📝 Pending Requests</button><button class="tab" id="tabStock" onclick="setTab('stock')">📦 Stock</button><button class="tab" id="tabLearn" onclick="setTab('learn')">👩‍🎓 Learners</button><button class="tab" id="tabIssues" onclick="setTab('issues')">📦 Issues</button><button class="tab" id="tabAllReq" onclick="setTab('allReq')">📋 All Requests</button><button class="tab" id="tabOrders" onclick="setTab('orders')">📦 Orders To Admin</button></div>
+<div id="panelReq" style="margin-top:14px"><h3 style="margin:0">✅ Approve — Your Department Only</h3><div class="scroll"><table><thead><tr><th>Teacher</th><th>Title / Dept / Grade / Class / Subject</th><th>Requested</th><th>Available</th><th>Stock Alert</th><th>Approved Qty</th><th>Action</th></tr></thead><tbody id="hodBody"><tr><td colspan="7">Loading...</td></tr></tbody></table></div></div>
+<div id="panelStock" style="display:none;margin-top:14px"><h3 style="margin:0">📦 Stock — Your Department Only</h3><div class="grid" style="margin-top:12px"><select id="fGrade" onchange="renderStock()"><option value="">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><select id="fSubject" onchange="renderStock()"><option value="">All Subjects</option></select><input id="searchStock" placeholder="🔍 Search Book No / title..." oninput="renderStock()"></div><div id="stockList"></div></div>
+<div id="panelLearn" style="display:none;margin-top:14px"><h3 style="margin:0">👩‍🎓 Learners — Your Department Only</h3><input id="searchLearn" placeholder="🔍 Search name / Learner ID..." oninput="renderLearners()" style="margin-top:10px"><div class="scroll"><table style="margin-top:12px"><thead><tr><th>Learner ID</th><th>Name</th><th>Grade / Class</th><th>Departments</th><th>Books Out (Your Dept)</th></tr></thead><tbody id="learnerBody"><tr><td colspan="5">Loading...</td></tr></tbody></table></div></div>
+<div id="panelIssues" style="display:none;margin-top:14px"><h3 style="margin:0">📦 Issues — Your Department Only</h3><div class="scroll"><table><thead><tr><th>Book No</th><th>Book</th><th>Learner</th><th>Qty</th><th>Status</th><th>Date</th></tr></thead><tbody id="issueBody"><tr><td colspan="6">Loading...</td></tr></tbody></table></div></div>
+<div id="panelAllReq" style="display:none;margin-top:14px"><h3 style="margin:0">📋 All Requests — Your Department Only</h3><div class="scroll"><table><thead><tr><th>Date</th><th>Teacher</th><th>Title</th><th>Dept / Grade / Class / Subject</th><th>Requested → Approved → Issued</th><th>Status</th></tr></thead><tbody id="reqBody"><tr><td colspan="6">Loading...</td></tr></tbody></table></div></div>
+<div id="panelOrders" style="display:none;margin-top:14px"><h3 style="margin:0">📦 Orders To Admin / Finance</h3><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><button class="btn green" onclick="exportBudgetCSV()">📥 Export Orders CSV</button><button class="btn dark" onclick="exportOrdersCSV()">📥 Export Orders Only CSV</button></div><div class="scroll"><table><thead><tr><th>Date</th><th>Title</th><th>Dept / Grade / Subject</th><th>Qty</th><th>Price / Copy</th><th>Total Cost</th><th>Ordered By</th><th>Reason</th><th>Budget Check</th><th>Status</th><th>Action</th></tr></thead><tbody id="orderBody"><tr><td colspan="11">Loading...</td></tr></tbody></table></div></div>
+</div>
+<div style="text-align:center;color:#666;font-size:12px;padding:10px">MAKHANANI LTSM 2.0 • Xintimani Group Holdings (Pty) Ltd • Reg No: 2026/934898/07</div>
+</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+try{firebase.initializeApp(firebaseConfig);}catch(e){}
+const db=firebase.database();let ME={};let BOOKS=[];let LEARNERS=[];let REQUESTS=[];let ISSUES=[];let ORDERS=[];let BUDGETS=[];let SUBS=[];let TAB="req";
+const LOW_THRESHOLD=5;
+function logout(){sessionStorage.setItem("justLoggedOut","1");firebase.auth().signOut().then(()=>location.href="login.html");}
+function normRole(r){if(!r)return"";let x=String(r).trim().toLowerCase().replace(/_/g," ").replace(/\s+/g," ");if(x==="super admin"||x==="superadmin")return"Super Admin";if(x==="admin"||x==="administrator")return"Admin";if(x==="principal")return"Principal";if(x==="librarian")return"Librarian";if(x==="hod"||x==="head of department")return"HOD";if(x==="teacher"||x==="educator")return"Teacher";if(x==="finance"||x==="financial"||x==="bursar")return"Finance";return r;}
+function schoolOfUser(){return (ME.schoolName||ME.schoolId||ME.school||"").trim();}
+function schoolKey(n){let x=String(n||"").toLowerCase();if(x.includes("george"))return"George Sonto High School";if(x.includes("wordsworth"))return"Wordsworth High School";return String(n||"").trim();}
+function normStatus(s){return String(s.status||"").trim().toLowerCase();}
+function isExpired(s){if(!s.renewal||s.renewal==="—")return false;let t=new Date();t.setHours(0,0,0,0);let r=new Date(s.renewal);if(isNaN(r))return false;r.setHours(0,0,0,0);return r<t;}
+function isActiveSub(s){return normStatus(s)==="active"&&!isExpired(s);}
+function isDonation(s){return (s.notes||"").toLowerCase().includes("donation")||s.donation===true||Number(s.amount||0)===0;}
+function getSchoolSubscriptionStatus(){let mySchool=schoolKey(schoolOfUser());let mine=SUBS.filter(s=>schoolKey(s.schoolName||s.schoolId||s.school)===mySchool);if(!mine.length)return{locked:true,reason:"Missing — No subscription for "+mySchool};let a=mine.find(s=>isActiveSub(s));if(a)return{locked:false,reason:"Active — "+(a.plan||"Premium")+" • Renewal "+(a.renewal||"—")+(isDonation(a)?" • 🎁 Donation":"")};let f=mine[0];if(isExpired(f))return{locked:true,reason:"Expired — Renewal was "+(f.renewal||"—")};return{locked:true,reason:(f.status||"Paused")+" — Not Active"};}
+function updateSubBox(){let st=getSchoolSubscriptionStatus();let b=document.getElementById("subBox");if(st.locked){b.className="lockBox";document.getElementById("subStatus").innerHTML=`<span class="badge b-red">🔒 LOCKED</span> — ${st.reason}`;}else{b.className="okBox";document.getElementById("subStatus").innerHTML=`<span class="badge b-green">✅ UNLOCKED</span> — ${st.reason}`;}return st;}
+function myAssign(){return{role:normRole(ME.role),department:ME.assignedDepartment||ME.department||ME.hodDepartment||"",subject:ME.assignedSubject||ME.subject||ME.hodSubject||"",grade:ME.assignedGrade||ME.grade||"",cls:ME.assignedClass||ME.class||""};}
+function isAllAccess(){let r=normRole(ME.role);return r==="Principal"||r==="Admin"||r==="Super Admin"||r==="Librarian";}
+function isHOD(){return normRole(ME.role)==="HOD";}
+function isAdminSide(){let r=normRole(ME.role);return r==="Admin"||r==="Super Admin"||r==="Principal"||r==="Finance";}
+function canHODApprove(req){if(isAllAccess()) return {ok:true};if(!isHOD()) return {ok:false,reason:"You are not HOD"};let h=myAssign();if(!h.department) return {ok:false,reason:"Your Department is blank"};if(String(req.department||req.group||"")!==h.department) return {ok:false,reason:"Department mismatch"};if(h.subject&&String(req.subject||"")!==h.subject) return {ok:false,reason:"Subject mismatch"};if(h.grade&&String(req.grade||"")!==h.grade) return {ok:false,reason:"Grade mismatch"};return {ok:true};}
+function canAccessBook(b){if(isAllAccess()) return true;let a=myAssign();if(!a.department) return false;if(String(b.department||b.group||"")!==a.department) return false;if(a.subject&&String(b.subject||"")!==a.subject) return false;if(a.grade&&String(b.grade||"")!==a.grade) return false;return true;}
+function learnerIdOf(l){return String(l.learnerId||l.learnerNo||l.no||"—");}
+function learnerDepartments(l){let id=learnerIdOf(l);let s=new Set();ISSUES.forEach(i=>{if(i.learnerId===id&&i.department) s.add(String(i.department));});ISSUES.forEach(i=>{if(i.learnerId===id&&!i.department&&i.bookKey){let b=BOOKS.find(x=>x.key===i.bookKey);if(b&&(b.department||b.group)) s.add(String(b.department||b.group));}});return [...s];}
+function canAccessLearner(l){if(isAllAccess()) return true;if(isHOD()){let a=myAssign();if(!a.department) return false;if(a.grade&&String(l.grade||"")===a.grade) return true;if(a.subject&&ISSUES.some(i=>i.learnerId===learnerIdOf(l)&&String(i.subject||"")===a.subject)) return true;return learnerDepartments(l).includes(a.department);}return false;}
+function visibleBooks(){return BOOKS.filter(b=>canAccessBook(b));}
+function visibleLearners(){return LEARNERS.filter(l=>canAccessLearner(l));}
+function visibleIssues(){if(isAllAccess()) return ISSUES;let a=myAssign();return ISSUES.filter(i=>String(i.department||"")===a.department||(a.subject&&String(i.subject||"")===a.subject)||(a.grade&&String(i.grade||"")===a.grade));}
+function visibleRequests(){if(isAllAccess()) return REQUESTS;return REQUESTS.filter(r=>canHODApprove(r).ok);}
+function visibleOrders(){if(isAllAccess()||isAdminSide()) return ORDERS;if(isHOD()){let a=myAssign();return ORDERS.filter(o=>String(o.department||o.group||"")===a.department);}return ORDERS;}
+function issuedCount(k){return ISSUES.filter(i=>i.requestId===k&&normStatus(i.status)!=="returned").length;}
+function stockForTitle(title,grade,subject){let copies=visibleBooks().filter(b=>b.title===title&&(!grade||b.grade===grade)&&(!subject||b.subject===subject));return {total:copies.length,available:copies.filter(b=>String(b.copyStatus||"Available")==="Available").length,issued:copies.filter(b=>String(b.copyStatus)==="Issued").length};}
+function fmtR(n){return "R "+Number(n||0).toLocaleString("en-ZA",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtNum(n){return Number(n||0).toFixed(2);}
+function budgetForDept(dept){
+let b=BUDGETS.find(x=>String(x.department||"")===dept);
+if(!b) return {department:dept,budget:0,hasBudget:false,spent:0,committed:0,remaining:0};
+let spent=0,committed=0;
+ORDERS.filter(o=>String(o.department||o.group||"")===dept).forEach(o=>{
+let cost=Number(o.totalCost|| (Number(o.qtyOrdered||0)*Number(o.unitPrice||0)) ||0);
+if(normStatus(o.status)==="approved"||normStatus(o.status)==="received") spent+=cost;
+if(normStatus(o.status)==="pending") committed+=cost;
+});
+return {department:dept,budget:Number(b.budget||0),hasBudget:true,spent:spent,committed:committed,remaining:Number(b.budget||0)-spent-committed,raw:b};
+}
+function allDeptBudgets(){
+let depts=["Languages","Mathematics","Sciences","Humanities","Commerce","Technology","Life Orientation","Creative Arts","Other"];
+let seen=new Set();let out=[];
+depts.forEach(d=>{out.push(budgetForDept(d));seen.add(d);});
+BUDGETS.forEach(b=>{if(!seen.has(b.department)) out.push(budgetForDept(b.department));});
+ORDERS.forEach(o=>{let d=o.department||o.group||"";if(d&&!seen.has(d)){out.push(budgetForDept(d));seen.add(d);}});
+return out;
+}
+function budgetCheckForOrder(o){
+let bd=budgetForDept(o.department||o.group||"");
+let cost=Number(o.totalCost||0);
+if(!bd.hasBudget) return {ok:true,label:`<span class="badge b-gold">⚠️ No Budget Set</span>`,detail:"No budget set"};
+let committedOther=ORDERS.filter(x=>x.key!==o.key&&String(x.department||x.group||"")===o.department&&normStatus(x.status)==="pending").reduce((s,x)=>s+Number(x.totalCost||0),0);
+let remainingExcl=bd.budget-bd.spent-committedOther;
+let afterApprove=remainingExcl-cost;
+if(afterApprove>=0) return {ok:true,label:`<span class="badge b-green">✅ Within Budget</span>`,detail:`Remaining after: ${fmtR(afterApprove)}`};
+return {ok:false,label:`<span class="badge b-red">🔴 OVER BUDGET</span>`,detail:`Need ${fmtR(cost)} • Remaining: ${fmtR(remainingExcl)} • Short by ${fmtR(Math.abs(afterApprove))}`};
+}
+// ✅ BUDGET REPORT — CSV + On-Screen Table
+function buildBudgetReportData(myDeptOnly){
+let depts=myDeptOnly&&myAssign().department?[myAssign().department]:allDeptBudgets().map(b=>b.department);
+let summary=depts.map(d=>budgetForDept(d));
+let orders=myDeptOnly&&myAssign().department?ORDERS.filter(o=>String(o.department||o.group||"")===myAssign().department):ORDERS;
+if(isHOD()&&!myDeptOnly){orders=visibleOrders();}
+return {summary,orders};
+}
+function renderBudgetReport(){
+let data=buildBudgetReportData(isHOD());
+let wrap=document.getElementById("budgetReport");
+let html=`<h3 style="margin:14px 0 8px">📊 Budget Report — ${isHOD()?myAssign().department+" Only":"All Departments"}</h3><div class="scroll"><table><thead><tr><th>Department</th><th>Budget</th><th>Spent (Approved + Received)</th><th>Committed (Pending)</th><th>Remaining</th><th>Status</th></tr></thead><tbody>`;
+let totalB=0,totalS=0,totalC=0,totalR=0;
+data.summary.forEach(b=>{
+totalB+=b.budget;totalS+=b.spent;totalC+=b.committed;totalR+=b.remaining;
+let badge=!b.hasBudget?`<span class="badge b-gold">⚠️ No Budget</span>`:b.remaining<0?`<span class="badge b-red">🔴 OVER BUDGET</span>`:b.remaining<=b.budget*0.2?`<span class="badge b-gold">🟡 Low — Under 20% Left</span>`:`<span class="badge b-green">✅ OK</span>`;
+html+=`<tr><td><b>${b.department}</b></td><td>${b.hasBudget?fmtR(b.budget):"—"}</td><td>${fmtR(b.spent)}</td><td>${fmtR(b.committed)}</td><td><b>${fmtR(b.remaining)}</b></td><td>${badge}</td></tr>`;
+});
+html+=`<tr style="background:#eff6ff;font-weight:900"><td>TOTAL</td><td>${fmtR(totalB)}</td><td>${fmtR(totalS)}</td><td>${fmtR(totalC)}</td><td>${fmtR(totalR)}</td><td>${totalR<0?`<span class="badge b-red">🔴 OVER</span>`:`<span class="badge b-green">✅ OK</span>`}</td></tr></tbody></table></div>`;
+wrap.innerHTML=html;
+}
+function exportBudgetCSV(myDeptOnly){
+let data=buildBudgetReportData(!!myDeptOnly);
+let school=schoolKey(schoolOfUser());
+let today=new Date().toISOString().slice(0,10);
+let rows=[];
+rows.push(["MAKHANANI LTSM 2.0 — BUDGET REPORT"]);
+rows.push(["School",school]);
+rows.push(["Generated",today+" by "+(ME.email||"")]);
+rows.push(["Scope",myDeptOnly?"Department: "+myAssign().department:"All Departments"]);
+rows.push([]);
+rows.push(["SECTION 1 — SUMMARY PER DEPARTMENT"]);
+rows.push(["Department","Budget (R)","Spent - Approved + Received (R)","Committed - Pending (R)","Remaining (R)","Status","Period"]);
+let tB=0,tS=0,tC=0,tR=0;
+data.summary.forEach(b=>{
+tB+=b.budget;tS+=b.spent;tC+=b.committed;tR+=b.remaining;
+let status=!b.hasBudget?"No Budget Set":b.remaining<0?"OVER BUDGET":b.remaining<=b.budget*0.2?"Low - Under 20% Left":"OK";
+rows.push([b.department,fmtNum(b.budget),fmtNum(b.spent),fmtNum(b.committed),fmtNum(b.remaining),status,b.raw?b.raw.period||"":""]);
+});
+rows.push(["TOTAL",fmtNum(tB),fmtNum(tS),fmtNum(tC),fmtNum(tR),tR<0?"OVER BUDGET":"OK",""]);
+rows.push([]);
+rows.push(["SECTION 2 — EVERY ORDER LINE"]);
+rows.push(["Date","Department","Title","Grade","Subject","Qty Ordered","Qty Received","Price per Copy (R)","Total Cost (R)","Ordered By","Approved By","Status","Reason"]);
+let sorted=[...data.orders].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+sorted.forEach(o=>{
+rows.push([o.createdAt?new Date(o.createdAt).toISOString().slice(0,10):"",o.department||o.group||"",o.title||"",o.grade||"",o.subject||"",o.qtyOrdered||"",o.qtyReceived||"",fmtNum(o.unitPrice||0),fmtNum(o.totalCost||0),o.orderedBy||"",o.approvedBy||"",o.status||"",o.reason||""]);
+});
+rows.push([]);
+rows.push(["SECTION 3 — NOTES"]);
+rows.push(["Spent = Approved + Received orders only"]);
+rows.push(["Committed = Pending orders only — not yet spent, but reserved"]);
+rows.push(["Remaining = Budget - Spent - Committed"]);
+let csv=rows.map(r=>r.map(c=>`"${String(c??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+let blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="makhanani_budget_report_"+schoolKey(schoolOfUser()).replace(/\s+/g,"_")+"_"+(myDeptOnly?myAssign().department+"_" : "")+today+".csv";a.click();
+document.getElementById("msg").textContent="✅ Budget Report exported — "+data.summary.length+" departments, "+sorted.length+" orders";
+}
+function exportOrdersCSV(){
+let orders=visibleOrders();
+let rows=[["Date","Department","Title","Grade","Subject","Qty Ordered","Qty Received","Price per Copy (R)","Total Cost (R)","Ordered By","Approved By","Status","Reason"]];
+[...orders].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)).forEach(o=>{
+rows.push([o.createdAt?new Date(o.createdAt).toISOString().slice(0,10):"",o.department||"",o.title||"",o.grade||"",o.subject||"",o.qtyOrdered||"",o.qtyReceived||"",fmtNum(o.unitPrice||0),fmtNum(o.totalCost||0),o.orderedBy||"",o.approvedBy||"",o.status||"",o.reason||""]);
+});
+let csv=rows.map(r=>r.map(c=>`"${String(c??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+let a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"}));a.download="makhanani_orders_"+new Date().toISOString().slice(0,10)+".csv";a.click();
+}
+function printBudgetReport(){
+renderBudgetReport();
+let w=window.open("","_blank");
+let data=buildBudgetReportData(isHOD());
+let rows=data.summary.map(b=>`<tr><td>${b.department}</td><td>${fmtR(b.budget)}</td><td>${fmtR(b.spent)}</td><td>${fmtR(b.committed)}</td><td><b>${fmtR(b.remaining)}</b></td></tr>`).join("");
+let orderRows=[...data.orders].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)).map(o=>`<tr><td>${o.createdAt?new Date(o.createdAt).toLocaleDateString("en-ZA"):"—"}</td><td>${o.department||""}</td><td>${o.title}</td><td>${o.qtyOrdered}</td><td>${fmtR(o.unitPrice||0)}</td><td>${fmtR(o.totalCost||0)}</td><td>${o.status}</td></tr>`).join("");
+w.document.write(`<html><head><title>Budget Report — MAKHANANI LTSM 2.0</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #ccc;padding:6px;text-align:left}th{background:#0a1f4d;color:#fff}</style></head><body><h2>MAKHANANI LTSM 2.0 — Budget Report</h2><p>School: ${schoolKey(schoolOfUser())} • Date: ${new Date().toLocaleDateString("en-ZA")} • By: ${ME.email}</p><h3>Summary</h3><table><tr><th>Department</th><th>Budget</th><th>Spent</th><th>Committed</th><th>Remaining</th></tr>${rows}</table><h3>Orders</h3><table><tr><th>Date</th><th>Dept</th><th>Title</th><th>Qty</th><th>Price</th><th>Total</th><th>Status</th></tr>${orderRows}</table><p style="font-size:11px;color:#666">Xintimani Group Holdings (Pty) Ltd • Reg No: 2026/934898/07</p></body></html>`);
+w.document.close();setTimeout(()=>w.print(),300);
+}
+async function setBudget(){
+if(!isAdminSide()){alert("Only Admin / Principal / Finance can set budget.");return;}
+let dept=prompt("Which Department budget?\nLanguages, Mathematics, Sciences, Humanities, Commerce, Technology, Life Orientation, Creative Arts, Other",myAssign().department||"Mathematics");
+if(!dept)return;
+let cur=budgetForDept(dept);
+let amtInput=prompt("Budget for "+dept+" (Rands):\nCurrent: "+(cur.hasBudget?fmtR(cur.budget):"No budget yet")+"\n\nEnter new total budget, e.g. 20000",String(cur.hasBudget?cur.budget:"20000"));
+if(amtInput===null)return;let amt=Number(amtInput);if(!amt||amt<0){alert("Enter a valid amount");return;}
+let period=prompt("Period / Note (e.g. 2026 Term 1, 2026 Year)","2026");
+try{let existing=BUDGETS.find(b=>String(b.department||"")===dept);if(existing){await db.ref("budgets/"+existing.key).update({budget:amt,period:period||"",updatedBy:ME.email,updatedAt:Date.now()});}else{await db.ref("budgets").push({department:dept,budget:amt,period:period||"",schoolId:schoolOfUser(),schoolName:schoolOfUser(),school:schoolOfUser(),createdAt:Date.now(),createdBy:ME.email});}document.getElementById("msg").textContent="✅ Budget set — "+dept+" = "+fmtR(amt);loadAll();}catch(e){document.getElementById("msg").textContent="❌ Budget failed: "+e.message;}
+}
+async function setBudgetAll(){
+if(!isAdminSide())return;
+let depts=["Languages","Mathematics","Sciences","Humanities","Commerce","Technology","Life Orientation","Creative Arts","Other"];
+for(let d of depts){let cur=budgetForDept(d);let v=prompt("Budget for "+d+" (Rands) — Leave blank to skip.\nCurrent: "+(cur.hasBudget?fmtR(cur.budget):"No budget"),cur.hasBudget?String(cur.budget):"");if(v===null)break;if(v.trim()==="")continue;let amt=Number(v);if(!amt)continue;let ex=BUDGETS.find(b=>String(b.department||"")===d);if(ex)await db.ref("budgets/"+ex.key).update({budget:amt,updatedBy:ME.email,updatedAt:Date.now()});else await db.ref("budgets").push({department:d,budget:amt,period:"2026",schoolId:schoolOfUser(),schoolName:schoolOfUser(),school:schoolOfUser(),createdAt:Date.now(),createdBy:ME.email});}
+loadAll();
+}
+function setTab(t){TAB=t;["req","stock","learn","issues","allReq","orders"].forEach(x=>{document.getElementById("tab"+(x==="req"?"Req":x==="stock"?"Stock":x==="learn"?"Learn":x==="issues"?"Issues":x==="allReq"?"AllReq":"Orders")).className="tab"+(x===t?" active":"");document.getElementById("panel"+(x==="req"?"Req":x==="stock"?"Stock":x==="learn"?"Learn":x==="issues"?"Issues":x==="allReq"?"AllReq":"Orders")).style.display=x===t?"block":"none";});}
+async function loadAll(){
+try{let s=await db.ref("subscriptions").once("value");SUBS=[];if(s.exists())s.forEach(c=>{if(c.key==="_test")return;SUBS.push({key:c.key,...c.val()});});}catch(e){SUBS=[];}updateSubBox();
+let my=schoolKey(schoolOfUser());let f=a=>{let x=schoolKey(a.schoolName||a.schoolId||a.school||"");return !x||x===my;};
+try{let b=await db.ref("books").once("value");BOOKS=[];if(b.exists())b.forEach(c=>BOOKS.push({key:c.key,...c.val()}));}catch(e){BOOKS=[];}
+try{let l=await db.ref("learners").once("value");LEARNERS=[];if(l.exists())l.forEach(c=>LEARNERS.push({key:c.key,...c.val()}));}catch(e){LEARNERS=[];}
+try{let r=await db.ref("issueRequests").once("value");REQUESTS=[];if(r.exists())r.forEach(c=>REQUESTS.push({key:c.key,...c.val()}));}catch(e){REQUESTS=[];}
+try{let i=await db.ref("issues").once("value");ISSUES=[];if(i.exists())i.forEach(c=>ISSUES.push({key:c.key,...c.val()}));}catch(e){ISSUES=[];}
+try{let o=await db.ref("orderRequests").once("value");ORDERS=[];if(o.exists())o.forEach(c=>ORDERS.push({key:c.key,...c.val()}));}catch(e){ORDERS=[];}
+try{let bg=await db.ref("budgets").once("value");BUDGETS=[];if(bg.exists())bg.forEach(c=>BUDGETS.push({key:c.key,...c.val()}));}catch(e){BUDGETS=[];}
+BOOKS=BOOKS.filter(f);LEARNERS=LEARNERS.filter(f);REQUESTS=REQUESTS.filter(f);ISSUES=ISSUES.filter(f);ORDERS=ORDERS.filter(f);BUDGETS=BUDGETS.filter(f);
+let a=myAssign();let visReq=visibleRequests();let visB=visibleBooks();let visL=visibleLearners();let visI=visibleIssues();let visO=visibleOrders();
+if(isHOD()){document.getElementById("myAssign").innerHTML=`<b>✅ HOD Dashboard:</b> ${ME.email} • <b>Your Department:</b> ${a.department||"⚠️ BLANK"} ${a.subject?`• Subject: ${a.subject}`:""} ${a.grade?`• Grade: ${a.grade}`:""}<br><span style="color:#166534">You only see / approve / order for YOUR Department.</span>`;}
+else if(isAllAccess()||isAdminSide()){document.getElementById("myAssign").innerHTML=`<b>Role:</b> ${a.role} • <b>School:</b> ${my} • You can see <b>ALL Departments</b>.`;}
+else{document.getElementById("myAssign").innerHTML=`<b>Role:</b> ${a.role} • This dashboard is for HOD / Principal / Admin / Librarian / Finance.`;}
+document.getElementById("cPend").textContent=visReq.filter(r=>normStatus(r.status)==="pending").length;
+document.getElementById("cAppr").textContent=visReq.filter(r=>normStatus(r.status)==="approved").length;
+document.getElementById("cStock").textContent=visB.length;
+document.getElementById("cLearn").textContent=visL.length;
+document.getElementById("cIssued").textContent=visI.length;
+document.getElementById("cRet").textContent=visI.filter(i=>normStatus(i)==="returned").length;
+document.getElementById("cOut").textContent=visI.filter(i=>normStatus(i)!=="returned").length;
+document.getElementById("cAvail").textContent=visB.filter(b=>String(b.copyStatus||"Available")==="Available").length;
+document.getElementById("cOrders").textContent=visO.filter(o=>normStatus(o.status)==="pending").length;
+if(isHOD()&&a.department){let bd=budgetForDept(a.department);document.getElementById("cBudget").textContent=bd.hasBudget?fmtR(bd.remaining):"No Budget";}
+else if(isAdminSide()){let totalBud=BUDGETS.reduce((s,b)=>s+Number(b.budget||0),0);let totalSpent=ORDERS.filter(o=>["approved","received"].includes(normStatus(o.status))).reduce((s,o)=>s+Number(o.totalCost||0),0);document.getElementById("cBudget").textContent=fmtR(totalBud-totalSpent);}
+if(isAdminSide()) document.getElementById("budgetAdminBtns").style.display="block";
+let bdHtml="";
+if(isHOD()&&a.department){let bd=budgetForDept(a.department);bdHtml=bd.hasBudget?`<b>💰 ${a.department} Budget:</b> ${fmtR(bd.budget)} • <b>Spent:</b> ${fmtR(bd.spent)} • <b>Committed:</b> ${fmtR(bd.committed)} • <b>Remaining:</b> <b style="color:${bd.remaining>=0?"#166534":"#991b1b"}">${fmtR(bd.remaining)}</b> ${bd.raw.period?`• Period: ${bd.raw.period}`:""}`:`<b>💰 ${a.department} Budget:</b> ⚠️ No Budget Set — Ask Admin / Finance to set it.`;}
+else if(isAdminSide()){bdHtml=BUDGETS.length?BUDGETS.map(b=>{let bd=budgetForDept(b.department);return `<div><b>${b.department}:</b> Budget ${fmtR(bd.budget)} • Spent ${fmtR(bd.spent)} • Committed ${fmtR(bd.committed)} • <b>Remaining ${fmtR(bd.remaining)}</b> ${b.period?`• ${b.period}`:""}</div>`;}).join(""):`<b>No budgets set yet.</b> Tap “Set Budget For All Departments”.`;}
+document.getElementById("budgetBox").innerHTML=bdHtml||"—";
+let subs=[...new Set(visB.map(b=>b.subject||"").filter(Boolean))].sort();
+document.getElementById("fSubject").innerHTML=`<option value="">All Subjects</option>`+subs.map(s=>`<option>${s}</option>`).join("");
+renderBudgetReport();renderAlerts();renderHOD();renderStock();renderLearners();renderIssues();renderAllReq();renderOrders();
+}
+function renderAlerts(){
+let wrap=document.getElementById("alerts");
+let visB=visibleBooks();let pend=visibleRequests().filter(r=>normStatus(r.status)==="pending");
+let groups={};visB.forEach(b=>{let k=b.title+"|"+b.grade+"|"+b.subject;if(!groups[k])groups[k]={title:b.title,grade:b.grade,subject:b.subject,dept:b.department||b.group||"",total:0,available:0,issued:0};groups[k].total++;if(String(b.copyStatus||"Available")==="Available")groups[k].available++;else if(String(b.copyStatus)==="Issued")groups[k].issued++;});
+let html="";let crit=[],low=[];
+Object.values(groups).forEach(g=>{
+let reqForTitle=pend.filter(r=>r.title===g.title&&r.grade===g.grade&&r.subject===g.subject);
+let totalReq=reqForTitle.reduce((s,r)=>s+Number(r.qtyRequested||0),0);
+if(totalReq>0){if(g.available<totalReq)crit.push({...g,totalReq,short:totalReq-g.available,reqs:reqForTitle});else if(g.available<=LOW_THRESHOLD)low.push({...g,totalReq});}
+else{if(g.available<=LOW_THRESHOLD&&g.available>0)low.push({...g,totalReq:0});else if(g.available===0)crit.push({...g,totalReq:0,short:0,reqs:[]});}
+});
+if(!crit.length&&!low.length){wrap.innerHTML=`<div class="alertOk">🟢 <b>All Good — No Low Stock</b></div>`;return;}
+crit.forEach(g=>{let existing=ORDERS.find(o=>o.title===g.title&&o.grade===g.grade&&o.subject===g.subject&&(normStatus(o.status)==="pending"||normStatus(o.status)==="approved"));let orderBtn=existing?`<span class="badge b-gold">📦 Already Ordered: ${existing.qtyOrdered} — ${existing.status} — ${fmtR(existing.totalCost||0)}</span>`: `<button class="btn gold" onclick="orderMore('${encodeURIComponent(g.title)}','${encodeURIComponent(g.grade)}','${encodeURIComponent(g.subject)}','${encodeURIComponent(g.dept)}',${g.short||10})">📦 Order More</button>`;html+=`<div class="alertCrit">🔴 <b>CRITICAL — ${g.title}</b> (${g.dept} • ${g.grade} • ${g.subject})<br>${g.totalReq?`Pending: <b>${g.totalReq}</b> • Available: <b>${g.available}</b> • <b>Short by ${g.short}</b>`:`Available: <b>0</b>`}<br><br>${orderBtn}</div>`;});
+low.forEach(g=>{let existing=ORDERS.find(o=>o.title===g.title&&o.grade===g.grade&&o.subject===g.subject&&(normStatus(o.status)==="pending"||normStatus(o.status)==="approved"));let orderBtn=existing?`<span class="badge b-gold">📦 Already Ordered: ${existing.qtyOrdered} — ${existing.status}</span>`: `<button class="btn gold" onclick="orderMore('${encodeURIComponent(g.title)}','${encodeURIComponent(g.grade)}','${encodeURIComponent(g.subject)}','${encodeURIComponent(g.dept)}',${Math.max(10,LOW_THRESHOLD-g.available+5)})">📦 Order More</button>`;html+=`<div class="alertLow">🟡 <b>LOW STOCK — ${g.title}</b> (${g.dept} • ${g.grade} • ${g.subject})<br>Available: <b>${g.available}</b> / Total: ${g.total}<br><br>${orderBtn}</div>`;});
+wrap.innerHTML=html;
+}
+function renderHOD(){
+let tb=document.getElementById("hodBody");
+let pend=visibleRequests().filter(r=>normStatus(r.status)==="pending");
+if(!pend.length){tb.innerHTML=`<tr><td colspan="7">No pending requests for your Department ✅</td></tr>`;return;}
+tb.innerHTML=pend.map(r=>{let st=stockForTitle(r.title,r.grade,r.subject);let alert=st.available<Number(r.qtyRequested)?`<span class="badge b-red">🔴 Short by ${Number(r.qtyRequested)-st.available}</span>`:st.available<=LOW_THRESHOLD?`<span class="badge b-gold">🟡 Low</span>`:`<span class="badge b-green">🟢 OK</span>`;let def=Math.min(Number(r.qtyRequested||0),st.available);let short=Math.max(0,Number(r.qtyRequested||0)-st.available);let orderBtn=short>0?` <button class="btn gold" onclick="orderMore('${encodeURIComponent(r.title)}','${encodeURIComponent(r.grade)}','${encodeURIComponent(r.subject)}','${encodeURIComponent(r.department||"")}',${short})">📦 Order ${short} More</button>`:"";return `<tr><td><b>${r.teacherName||r.teacherEmail||"—"}</b></td><td>${r.title}<br>${r.department||"—"} • ${r.grade} ${r.class} • ${r.subject}</td><td><b>${r.qtyRequested}</b></td><td><b>${st.available}</b> / ${st.total}</td><td>${alert}${orderBtn}</td><td><input type="number" id="appr_${r.key}" value="${def}" min="0" max="${st.available}" style="width:90px"></td><td><button class="btn green" onclick="hodApprove('${r.key}')">✅ Approve</button> <button class="btn red" onclick="hodReject('${r.key}')">❌ Reject</button></td></tr>`;}).join("");
+}
+function renderStock(){
+let fg=document.getElementById("fGrade").value;let fs=document.getElementById("fSubject").value;let q=(document.getElementById("searchStock").value||"").toLowerCase();
+let arr=visibleBooks().filter(b=>{if(fg&&(b.grade||"")!==fg)return false;if(fs&&(b.subject||"")!==fs)return false;if(q&&!((b.title||"")+" "+(b.bookNo||"")).toLowerCase().includes(q))return false;return true;});
+let wrap=document.getElementById("stockList");
+if(!arr.length){wrap.innerHTML=`<p style="text-align:center;color:#666">No stock for your Department.</p>`;return;}
+let groups={};arr.forEach(b=>{let k=(b.department||"Other")+" • "+(b.grade||"—")+" • "+(b.subject||"—")+" • "+(b.title||"—");if(!groups[k])groups[k]=[];groups[k].push(b);});
+let html="";Object.keys(groups).sort().forEach(k=>{let list=groups[k];let avail=list.filter(b=>String(b.copyStatus||"Available")==="Available").length;let badge=avail===0?`<span class="badge b-red">🔴 OUT</span>`:avail<=LOW_THRESHOLD?`<span class="badge b-gold">🟡 LOW: ${avail}</span>`:`<span class="badge b-green">🟢 ${avail} available</span>`;html+=`<div class="groupHead"><span>${k}</span><span>${list.length} copies • ${badge}</span></div><div class="scroll"><table><thead><tr><th>Book No</th><th>Status</th></tr></thead><tbody>`;list.sort((a,b)=>String(a.bookNo||"").localeCompare(String(b.bookNo||""))).forEach(b=>{let st=String(b.copyStatus||"Available");html+=`<tr><td><b>${b.bookNo||"—"}</b></td><td>${st==="Issued"?`<span class="badge b-gold">📤 Issued to ${b.issuedTo||""}</span>`:`<span class="badge b-green">✅ Available</span>`}</td></tr>`;});html+=`</tbody></table></div>`;});wrap.innerHTML=html;
+}
+function renderLearners(){
+let q=(document.getElementById("searchLearn").value||"").toLowerCase();
+let arr=visibleLearners().filter(l=>{if(q&&!((l.name||"")+" "+learnerIdOf(l)).toLowerCase().includes(q))return false;return true;});
+let tb=document.getElementById("learnerBody");
+if(!arr.length){tb.innerHTML=`<tr><td colspan="5">No learners with ${myAssign().department||""} history yet.</td></tr>`;return;}
+tb.innerHTML=arr.sort((a,b)=>String(learnerIdOf(a)).localeCompare(String(learnerIdOf(b)))).map(l=>{let out=visibleIssues().filter(i=>i.learnerId===learnerIdOf(l)&&normStatus(i)!=="returned").length;return `<tr><td><b>${learnerIdOf(l)}</b></td><td><b>${l.name||"—"}</b></td><td>${l.grade||""} ${l.class||""}</td><td>${learnerDepartments(l).join(", ")||"—"}</td><td><b>${out}</b> out</td></tr>`;}).join("");
+}
+function renderIssues(){
+let vis=visibleIssues();let tb=document.getElementById("issueBody");
+if(!vis.length){tb.innerHTML=`<tr><td colspan="6">No issues for your Department yet.</td></tr>`;return;}
+tb.innerHTML=vis.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).map(i=>{let st=String(i.status||"Issued");return `<tr><td><b>${i.bookNo||"—"}</b></td><td><b>${i.title||"—"}</b><br><span style="color:#666;font-size:11px">${i.department||""} • ${i.subject||""}</span></td><td>${i.learner||"—"} (${i.learnerId||""})</td><td>${i.qty||1}</td><td>${st.toLowerCase()==="returned"?`<span class="badge b-green">✅ Returned</span>`:`<span class="badge b-gold">📤 Issued</span>`}</td><td>${i.createdAt?new Date(i.createdAt).toLocaleDateString("en-ZA"):"—"}</td></tr>`;}).join("");
+}
+function renderAllReq(){
+let list=visibleRequests();let tb=document.getElementById("reqBody");
+if(!list.length){tb.innerHTML=`<tr><td colspan="6">No requests for your Department yet.</td></tr>`;return;}
+tb.innerHTML=list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).map(r=>{let st=normStatus(r.status);let badge=st==="approved"?`<span class="badge b-green">✅ Approved</span>`:st==="rejected"?`<span class="badge b-red">❌ Rejected</span>`:st==="completed"?`<span class="badge b-purple">🏁 Completed</span>`:`<span class="badge b-gold">⏳ Pending</span>`;let issued=issuedCount(r.key);return `<tr><td>${r.createdAt?new Date(r.createdAt).toLocaleDateString("en-ZA"):"—"}</td><td>${r.teacherName||r.teacherEmail||"—"}</td><td><b>${r.title}</b></td><td>${r.department||"—"} • ${r.grade} ${r.class} • ${r.subject}</td><td><b>${r.qtyRequested} → ${r.qtyApproved||0} → ${issued}</b></td><td>${badge}</td></tr>`;}).join("");
+}
+function renderOrders(){
+let list=visibleOrders();let tb=document.getElementById("orderBody");
+if(!list.length){tb.innerHTML=`<tr><td colspan="11">No orders yet.</td></tr>`;return;}
+tb.innerHTML=list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).map(o=>{
+let st=normStatus(o.status);let badge=st==="pending"?`<span class="badge b-gold">⏳ Pending</span>`:st==="approved"?`<span class="badge b-purple">✅ Approved</span>`:st==="received"?`<span class="badge b-green">✅ Received</span>`:st==="rejected"?`<span class="badge b-red">❌ Rejected</span>`:`<span class="badge b-gold">${o.status}</span>`;
+let bc=budgetCheckForOrder(o);
+let act="";
+if(isAdminSide()){if(st==="pending") act=`<button class="btn green" onclick="orderApprove('${o.key}')">✅ Approve</button> <button class="btn red" onclick="orderReject('${o.key}')">❌ Reject</button>`;else if(st==="approved") act=`<button class="btn dark" onclick="location.href='stock.html'">📦 Add Stock</button> <button class="btn green" onclick="orderReceived('${o.key}')">✅ Mark Received</button>`;else act=`—`;}
+else if(isHOD()){act=st==="pending"?`<button class="btn red" onclick="orderCancel('${o.key}')">Cancel</button>`:`—`;}
+return `<tr><td>${o.createdAt?new Date(o.createdAt).toLocaleDateString("en-ZA"):"—"}</td><td><b>${o.title}</b></td><td>${o.department||"—"} • ${o.grade} • ${o.subject}</td><td><b>${o.qtyOrdered}</b>${o.qtyReceived?` → ${o.qtyReceived}`:""}</td><td>${fmtR(o.unitPrice||0)}</td><td><b>${fmtR(o.totalCost||0)}</b></td><td>${o.orderedBy||"—"}</td><td>${o.reason||""}</td><td>${bc.label}<br><span style="font-size:11px;color:#666">${bc.detail}</span></td><td>${badge}</td><td>${act}</td></tr>`;}).join("");
+}
+async function orderMore(encTitle,encGrade,encSubject,encDept,suggestedQty){
+let title=decodeURIComponent(encTitle);let grade=decodeURIComponent(encGrade);let subject=decodeURIComponent(encSubject);let dept=decodeURIComponent(encDept);
+if(!isHOD()&&!isAllAccess()){alert("Only HOD / Admin can order.");return;}
+if(isHOD()){let a=myAssign();if(a.department&&dept!==a.department){alert("⛔ Department mismatch");return;}}
+let existing=ORDERS.find(o=>o.title===title&&o.grade===grade&&o.subject===subject&&(normStatus(o.status)==="pending"||normStatus(o.status)==="approved"));
+if(existing){alert("📦 Already ordered: "+title+" x"+existing.qtyOrdered+" — "+existing.status);return;}
+let st=stockForTitle(title,grade,subject);let bd=budgetForDept(dept);
+let qtyInput=prompt("📦 ORDER MORE — "+title+"\n\nDept: "+dept+" • Grade: "+grade+" • Subject: "+subject+"\nAvailable: "+st.available+" / Total: "+st.total+"\nBudget: "+(bd.hasBudget?fmtR(bd.budget)+" • Remaining: "+fmtR(bd.remaining):"No Budget Set")+"\n\nHow many copies? (1-200)",String(suggestedQty));
+if(qtyInput===null)return;let qty=Number(qtyInput);if(!qty||qty<1||qty>200){alert("❌ Qty must be 1-200");return;}
+let priceInput=prompt("💰 Price per copy (Rands) — e.g. 250\n\nTotal will be: "+qty+" × R ? = ?", "250");
+if(priceInput===null)return;let unitPrice=Number(priceInput);if(!unitPrice||unitPrice<0){alert("❌ Enter a valid price");return;}
+let total=qty*unitPrice;
+let reason=prompt("Reason / Note for Admin (optional):\n\nExample: 'Need 27 more for Grade 10A Term 1'","Shortage: Need "+qty+" more — Available "+st.available+" • "+fmtR(total));
+if(reason===null) reason="";
+try{await db.ref("orderRequests").push({title:title,department:dept,group:dept,grade:grade,subject:subject,qtyOrdered:qty,qtyReceived:0,qtyApproved:0,unitPrice:unitPrice,totalCost:total,status:"Pending",orderedBy:ME.email,orderedByName:ME.name||ME.email,orderedByRole:myAssign().role,reason:(reason||"Low Stock").trim(),availableAtOrder:st.available,totalAtOrder:st.total,budgetAtOrder:bd.hasBudget?bd.budget:0,budgetRemainingAtOrder:bd.hasBudget?bd.remaining:0,schoolId:schoolOfUser(),schoolName:schoolOfUser(),school:schoolOfUser(),createdAt:Date.now()});document.getElementById("msg").textContent="✅ Order sent — "+title+" x"+qty+" = "+fmtR(total);loadAll();setTab("orders");}catch(e){document.getElementById("msg").textContent="❌ Order failed: "+e.message;}
+}
+async function orderApprove(key){
+if(!isAdminSide()){alert("Only Admin / Principal / Finance can approve.");return;}
+let o=ORDERS.find(x=>x.key===key);if(!o)return;
+let bc=budgetCheckForOrder(o);
+if(!bc.ok){if(!confirm("🔴 OVER BUDGET!\n\n"+o.title+" x"+o.qtyOrdered+" = "+fmtR(o.totalCost)+"\n"+bc.detail+"\n\nApprove anyway?"))return;}
+else{if(!confirm("Approve?\n\n"+o.title+" x"+o.qtyOrdered+" = "+fmtR(o.totalCost)+"\n"+bc.detail))return;}
+try{await db.ref("orderRequests/"+key).update({status:"Approved",qtyApproved:o.qtyOrdered,approvedBy:ME.email,approvedAt:Date.now()});document.getElementById("msg").textContent="✅ Order Approved — "+fmtR(o.totalCost);loadAll();}catch(e){document.getElementById("msg").textContent="❌ Approve failed: "+e.message;}
+}
+async function orderReject(key){if(!isAdminSide())return;if(!confirm("Reject this order?"))return;try{await db.ref("orderRequests/"+key).update({status:"Rejected",approvedBy:ME.email,approvedAt:Date.now()});document.getElementById("msg").textContent="❌ Order rejected";loadAll();}catch(e){document.getElementById("msg").textContent="❌ Reject failed: "+e.message;}}
+async function orderCancel(key){let o=ORDERS.find(x=>x.key===key);if(!o)return;if(!confirm("Cancel?\n\n"+o.title+" x"+o.qtyOrdered))return;try{await db.ref("orderRequests/"+key).remove();document.getElementById("msg").textContent="Order cancelled";loadAll();}catch(e){document.getElementById("msg").textContent="❌ Cancel failed: "+e.message;}}
+async function orderReceived(key){if(!isAdminSide())return;let o=ORDERS.find(x=>x.key===key);if(!o)return;let qtyInput=prompt("✅ MARK RECEIVED — "+o.title+"\n\nOrdered: "+o.qtyOrdered+"\n\nHow many actually arrived?",String(o.qtyOrdered));if(qtyInput===null)return;let qty=Number(qtyInput);if(!qty||qty<1){alert("❌ Enter Qty");return;}if(!confirm("Confirm Received?\n\n"+o.title+" — Received "+qty+" / Ordered "+o.qtyOrdered))return;try{await db.ref("orderRequests/"+key).update({status:"Received",qtyReceived:qty,receivedBy:ME.email,receivedAt:Date.now()});document.getElementById("msg").textContent="✅ Order Received — "+o.title+" x"+qty;loadAll();}catch(e){document.getElementById("msg").textContent="❌ Failed: "+e.message;}}
+async function hodApprove(key){let r=REQUESTS.find(x=>x.key===key);if(!r)return;let chk=canHODApprove(r);if(!chk.ok){alert("⛔ You cannot approve this.");return;}let appr=Number(document.getElementById("appr_"+key).value||0);let st=stockForTitle(r.title,r.grade,r.subject);if(appr>st.available){alert("🔴 LOW STOCK — Cannot approve "+appr+". You only have "+st.available);document.getElementById("appr_"+key).value=st.available;return;}if(appr<0||appr>Number(r.qtyRequested)){alert("❌ Approved Qty must be 0 to "+r.qtyRequested);return;}try{await db.ref("issueRequests/"+key).update({status:appr===0?"Rejected":"Approved",qtyApproved:appr,approvedBy:ME.email,approvedByDept:myAssign().department,approvedAt:Date.now()});document.getElementById("msg").textContent="✅ Approved "+appr+" / "+r.qtyRequested;loadAll();}catch(e){document.getElementById("msg").textContent="❌ Approve failed: "+e.message;}}
+async function hodReject(key){let r=REQUESTS.find(x=>x.key===key);if(!r)return;let chk=canHODApprove(r);if(!chk.ok){alert("⛔ You cannot reject this.");return;}if(!confirm("Reject this request?"))return;try{await db.ref("issueRequests/"+key).update({status:"Rejected",qtyApproved:0,approvedBy:ME.email,approvedByDept:myAssign().department,approvedAt:Date.now()});document.getElementById("msg").textContent="❌ Request rejected";loadAll();}catch(e){document.getElementById("msg").textContent="❌ Reject failed: "+e.message;}}
+firebase.auth().onAuthStateChanged(async u=>{if(!u){location.href="login.html";return;}try{let s=await db.ref("users/"+u.uid).once("value");if(!s.exists()){document.getElementById("myEmail").textContent=u.email+" — No user record";return;}ME=s.val()||{};ME.role=normRole(ME.role);ME.email=u.email;document.getElementById("myEmail").textContent=u.email+" • "+ME.role+" ✅ • "+(ME.schoolName||ME.schoolId||"No School");loadAll();}catch(e){document.getElementById("myEmail").textContent="Error: "+e.message;}});
+</script></body></html>
