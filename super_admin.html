@@ -1,112 +1,173 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Super Admin V6.6 - Makhanani LTSM</title>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}header img{height:40px;background:#fff;border-radius:8px;padding:2px}.btn{background:#d4af37;color:#000;border:none;padding:10px 14px;border-radius:8px;font-weight:900;cursor:pointer;font-size:13px}.btn.dark{background:#0a1f4d;color:#fff}.btn.green{background:#16a34a;color:#fff}.btn.grey{background:#eee}.btn.red{background:#dc2626;color:#fff}.btn.blue{background:#2563eb;color:#fff}.wrap{max-width:1150px;margin:0 auto;padding:16px}.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px}label{display:block;font-size:12px;font-weight:700;margin-top:10px}input,select{width:100%;padding:11px;border:1px solid #ddd;border-radius:8px;margin-top:4px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}.stat{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat div{background:#0a1f4d;color:#fff;border-radius:12px;padding:14px;text-align:center}.stat div b{font-size:22px;display:block}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}th{background:#0a1f4d;color:#fff}.badge{padding:3px 8px;border-radius:12px;font-size:11px;font-weight:900}.b-green{background:#dcfce7;color:#166534}.b-yellow{background:#fef9c3;color:#854d0e}.b-red{background:#fee2e2;color:#991b1b}.b-blue{background:#dbeafe;color:#1e40af}.b-purple{background:#ede9fe;color:#5b21b6}
-@media(max-width:700px){.grid3,.grid2,.grid4,.stat{grid-template-columns:1fr 1fr}}@media print{header,.noPrint{display:none!important}body{background:#fff}}</style></head>
-<body>
-<header><div style="display:flex;gap:10px;align-items:center"><img src="logo.png"><b>👑 Super Admin V6.6<br><span style="font-size:11px" id="myEmail">Loading...</span></b></div><div style="display:flex;gap:8px;flex-wrap:wrap" class="noPrint"><button class="btn" onclick="location.href='index.html'">📚 Admin / Library</button><button class="btn" onclick="location.href='finance.html'">💰 Finance</button><button class="btn" onclick="location.href='teacher.html'">👩‍🏫 Teacher</button><button class="btn" onclick="location.href='hod.html'">📚 HOD</button><button class="btn" onclick="location.href='principal.html'">🏫 Principal</button><button class="btn" onclick="location.href='librarian.html'">📖 Librarian</button><button class="btn dark" onclick="exportUsersCSV()">⬇️ Export Users CSV</button><button class="btn grey" onclick="logout()">🚪 Logout</button></div></header>
-<div class="wrap">
-<div class="card"><h2 style="margin:0">👑 Super Admin Dashboard — <span id="schoolName">All Schools</span></h2><div class="stat" style="margin-top:14px"><div><b id="sTotal">0</b>Total Users</div><div><b id="sActive">0</b>Active Users</div><div><b id="sDisabled">0</b>Disabled</div><div><b id="sBooks">0</b>Total Books</div></div>
-<div class="grid3 noPrint" style="margin-top:14px"><div><label>Filter Role</label><select id="roleFilter" onchange="render()"><option value="ALL">All Roles</option><option>Super Admin</option><option>Admin</option><option>Principal</option><option>Librarian</option><option>HOD</option><option>Teacher</option><option>Finance</option></select></div><div><label>Filter School</label><select id="schoolFilter" onchange="render()"><option value="ALL">All Schools</option><option>WHS</option><option>ALL</option></select></div><div><label>Search User</label><input id="search" placeholder="Name / Email..." oninput="render()"></div></div></div>
-<div class="card noPrint"><h2 style="margin:0">➕ Create New User — Auth + Database In One Click</h2><p style="color:#666;font-size:13px;margin:6px 0 0">This creates the Firebase Login AND the <code>users/{uid}</code> record. User can login immediately with this Email + Password.</p><div class="grid3"><div><label>Full Name *</label><input id="uName" placeholder="e.g. Vusi Chauke"></div><div><label>Email *</label><input id="uEmail" type="email" placeholder="e.g. teacher@whs.co.za"></div><div><label>Password * (min 6)</label><input id="uPass" type="password" placeholder="e.g. Whs@2026"></div></div><div class="grid3"><div><label>Role *</label><select id="uRole"><option>Teacher</option><option>HOD</option><option>Principal</option><option>Librarian</option><option>Finance</option><option>Admin</option><option>Super Admin</option></select></div><div><label>School ID</label><input id="uSchool" value="WHS" placeholder="WHS"></div><div><label>School Name</label><input id="uSchoolName" value="Wordsworth High School"></div></div><div class="grid2"><div><label>Department (HOD / Teacher)</label><select id="uDept"><option value="">— None —</option><option>Languages</option><option>Mathematics</option><option>Natural Sciences</option><option>Social Sciences</option><option>Technology</option><option>Life Orientation</option><option>Arts & Culture</option><option>Economic Management Sciences</option><option>Admin</option><option>Finance</option><option>Library</option><option>Management</option></select></div><div><label>Classes (comma separated, e.g. Grade 10A, Grade 11B)</label><input id="uClasses" placeholder="Grade 10A, Grade 11B"></div></div><button class="btn green" style="width:100%;padding:14px;margin-top:12px" onclick="createUser()">➕ CREATE USER</button><p id="addMsg" style="font-weight:700"></p></div>
-<div class="card"><h2 style="margin:0">👥 All Users — <span id="userCount">0</span></h2><div id="userTable"></div></div>
-<div class="card"><h2 style="margin:0">📊 Users By Role</h2><div id="byRole"></div></div>
-<div class="card"><h2 style="margin:0">📚 Quick Links — Open Any Dashboard As Super Admin</h2><div class="grid4"><button class="btn dark" onclick="location.href='index.html'">📚 Admin / Library</button><button class="btn dark" onclick="location.href='finance.html'">💰 Finance</button><button class="btn dark" onclick="location.href='subscriptions.html'">💳 Subscriptions</button><button class="btn dark" onclick="location.href='financial_projections.html'">📈 Projections</button><button class="btn dark" onclick="location.href='hr.html'">👥 HR</button><button class="btn dark" onclick="location.href='marketing.html'">📣 Marketing</button><button class="btn dark" onclick="location.href='teacher.html'">👩‍🏫 Teacher</button><button class="btn dark" onclick="location.href='hod.html'">📚 HOD</button></div></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Admin - School Management</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  .sidebar-link.active{background:#4f46e5;color:white}
+  .tab-content{display:none}.tab-content.active{display:block}
+  .modal{display:none}.modal.open{display:flex}
+</style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-lg fixed h-full z-20 hidden md:block">
+    <div class="p-5 border-b flex items-center gap-3">
+      <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xl"><i class="fa-solid fa-graduation-cap"></i></div>
+      <div><h1 class="font-bold text-lg leading-none">EduManage</h1><p class="text-xs text-gray-500">Super Admin</p></div>
+    </div>
+    <nav class="p-3 space-y-1">
+      <button onclick="showTab('dashboard')" data-tab="dashboard" class="sidebar-link active w-full text-left px-4 py-2.5 rounded-lg flex gap-3 items-center"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
+      <button onclick="showTab('users')" data-tab="users" class="sidebar-link w-full text-left px-4 py-2.5 rounded-lg flex gap-3 items-center"><i class="fa-solid fa-users"></i> Users <span id="navUserCount" class="ml-auto bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full">0</span></button>
+      <button onclick="showTab('departments')" data-tab="departments" class="sidebar-link w-full text-left px-4 py-2.5 rounded-lg flex gap-3 items-center"><i class="fa-solid fa-building"></i> Departments</button>
+      <button onclick="showTab('budgets')" data-tab="budgets" class="sidebar-link w-full text-left px-4 py-2.5 rounded-lg flex gap-3 items-center"><i class="fa-solid fa-wallet"></i> Budgets</button>
+      <button onclick="showTab('import')" data-tab="import" class="sidebar-link w-full text-left px-4 py-2.5 rounded-lg flex gap-3 items-center"><i class="fa-solid fa-file-import"></i> Import Users</button>
+      <button onclick="showTab('settings')" data-tab="settings" class="sidebar-link w-full text-left px-4 py-2.5 rounded-lg flex gap-3 items-center"><i class="fa-solid fa-gear"></i> Settings</button>
+    </nav>
+    <div class="absolute bottom-0 w-64 p-4 border-t">
+      <div class="flex items-center gap-3"><img src="https://i.pravatar.cc/40?img=12" class="w-10 h-10 rounded-full"><div><p class="font-semibold text-sm">Admin User</p><p class="text-xs text-gray-500">super@school.com</p></div></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 md:ml-64 p-4 md:p-8">
+    <!-- Mobile nav -->
+    <div class="md:hidden flex gap-2 overflow-x-auto mb-4">
+      <button onclick="showTab('dashboard')" class="bg-white px-4 py-2 rounded-full text-sm shadow">Dashboard</button>
+      <button onclick="showTab('users')" class="bg-white px-4 py-2 rounded-full text-sm shadow">Users</button>
+      <button onclick="showTab('departments')" class="bg-white px-4 py-2 rounded-full text-sm shadow">Departments</button>
+      <button onclick="showTab('budgets')" class="bg-white px-4 py-2 rounded-full text-sm shadow">Budgets</button>
+      <button onclick="showTab('import')" class="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm shadow">Import</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard" class="tab-content active">
+      <h2 class="text-2xl font-bold">Welcome back, Super Admin 👋</h2>
+      <p class="text-gray-500 text-sm mb-6">Here's what's happening at your school today.</p>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white p-5 rounded-2xl shadow-sm"><p class="text-gray-500 text-xs">Total Users</p><p id="statUsers" class="text-3xl font-bold mt-1">0</p><p class="text-green-600 text-xs mt-1">▲ 12% this month</p></div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm"><p class="text-gray-500 text-xs">Departments</p><p id="statDepts" class="text-3xl font-bold mt-1">0</p><p class="text-gray-400 text-xs mt-1">Active departments</p></div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm"><p class="text-gray-500 text-xs">Total Budget</p><p id="statBudget" class="text-3xl font-bold mt-1">R0</p><p class="text-gray-400 text-xs mt-1">2026 Academic Year</p></div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm"><p class="text-gray-500 text-xs">Teachers</p><p id="statTeachers" class="text-3xl font-bold mt-1">0</p><p class="text-gray-400 text-xs mt-1">Across all departments</p></div>
+      </div>
+      <div class="grid lg:grid-cols-2 gap-4">
+        <div class="bg-white p-5 rounded-2xl shadow-sm"><h3 class="font-bold mb-3">Recent Users</h3><div id="recentUsers" class="space-y-3"></div></div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm"><h3 class="font-bold mb-3">Budget Overview</h3><div id="budgetOverview" class="space-y-4"></div></div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div id="tab-users" class="tab-content">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <div><h2 class="text-2xl font-bold">Users</h2><p class="text-gray-500 text-sm">Manage students, teachers and staff</p></div>
+        <div class="flex gap-2">
+          <button onclick="downloadTemplate()" class="bg-white border px-4 py-2 rounded-lg text-sm"><i class="fa-solid fa-download"></i> Template</button>
+          <button onclick="showTab('import')" class="bg-white border px-4 py-2 rounded-lg text-sm"><i class="fa-solid fa-upload"></i> Import</button>
+          <button onclick="openUserModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm"><i class="fa-solid fa-plus"></i> Add User</button>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-2xl shadow-sm mb-4 flex flex-wrap gap-3">
+        <input id="searchUser" oninput="renderUsers()" placeholder="Search name, email, ID..." class="flex-1 min-w-[200px] border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 ring-indigo-200">
+        <select id="filterRole" onchange="renderUsers()" class="border rounded-lg px-3 py-2 text-sm"><option value="">All Roles</option><option>Student</option><option>Teacher</option><option>Staff</option><option>Admin</option><option>Parent</option></select>
+        <select id="filterDept" onchange="renderUsers()" class="border rounded-lg px-3 py-2 text-sm"><option value="">All Departments</option></select>
+      </div>
+      <div class="bg-white rounded-2xl shadow-sm overflow-x-auto">
+        <table class="w-full text-sm min-w-[700px]"><thead class="bg-gray-50 text-left"><tr><th class="p-4">User</th><th class="p-4">Role</th><th class="p-4">Department</th><th class="p-4">Status</th><th class="p-4">Actions</th></tr></thead><tbody id="usersTable"></tbody></table>
+        <p id="noUsers" class="p-6 text-center text-gray-400 hidden">No users found. Add one or import from Excel.</p>
+      </div>
+    </div>
+
+    <!-- DEPARTMENTS -->
+    <div id="tab-departments" class="tab-content">
+      <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Departments</h2><button onclick="openDeptModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">+ Add Department</button></div>
+      <div id="deptGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- BUDGETS -->
+    <div id="tab-budgets" class="tab-content">
+      <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Budgets</h2><button onclick="openBudgetModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">+ Add Budget</button></div>
+      <div class="bg-white rounded-2xl shadow-sm overflow-x-auto"><table class="w-full text-sm min-w-[600px]"><thead class="bg-gray-50"><tr><th class="p-4 text-left">Department</th><th class="p-4 text-left">Allocated</th><th class="p-4 text-left">Spent</th><th class="p-4 text-left">Remaining</th><th class="p-4 text-left">Usage</th></tr></thead><tbody id="budgetTable"></tbody></table></div>
+    </div>
+
+    <!-- IMPORT -->
+    <div id="tab-import" class="tab-content">
+      <h2 class="text-2xl font-bold mb-1">Import Users</h2><p class="text-gray-500 text-sm mb-6">Bulk import from Excel (.xlsx, .xls) or CSV. Columns: <b>Full Name, Email, Role, Department, Phone, Student ID</b></p>
+      <div class="grid lg:grid-cols-2 gap-4">
+        <div class="bg-white p-6 rounded-2xl shadow-sm">
+          <div id="dropZone" class="border-2 border-dashed border-indigo-300 bg-indigo-50 rounded-2xl p-8 text-center cursor-pointer">
+            <i class="fa-solid fa-cloud-arrow-up text-4xl text-indigo-600"></i><p class="font-bold mt-3">Drag & drop Excel file here</p><p class="text-sm text-gray-500">or click to browse</p><input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="hidden">
+          </div>
+          <div class="flex gap-2 mt-4">
+            <button onclick="downloadTemplate()" class="flex-1 bg-white border py-2 rounded-lg text-sm">Download Template</button>
+            <button onclick="document.getElementById('fileInput').click()" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg text-sm">Choose File</button>
+          </div>
+          <div class="mt-4 bg-amber-50 border border-amber-200 p-3 rounded-lg text-xs text-amber-800"><b>Template format:</b><br>Row 1 = headers: Full Name | Email | Role | Department | Phone | Student ID<br>Role must be: Student, Teacher, Staff, Admin, Parent</div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm">
+          <h3 class="font-bold mb-3">Preview (<span id="previewCount">0</span> rows)</h3>
+          <div id="previewBox" class="max-h-[300px] overflow-auto text-sm"><p class="text-gray-400">No file selected yet.</p></div>
+          <button id="confirmImportBtn" onclick="confirmImport()" disabled class="w-full mt-4 bg-green-600 disabled:bg-gray-300 text-white py-2.5 rounded-lg font-semibold">Import <span id="importCount">0</span> Users</button>
+          <p id="importMsg" class="text-center text-sm mt-2"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="tab-settings" class="tab-content">
+      <h2 class="text-2xl font-bold mb-4">Settings</h2>
+      <div class="bg-white p-6 rounded-2xl shadow-sm max-w-lg space-y-4">
+        <div><label class="text-sm font-medium">School Name</label><input value="Johannesburg High School" class="w-full border rounded-lg px-3 py-2 mt-1"></div>
+        <div><label class="text-sm font-medium">School Email</label><input value="info@jhbhigh.co.za" class="w-full border rounded-lg px-3 py-2 mt-1"></div>
+        <div><label class="text-sm font-medium">Academic Year</label><select class="w-full border rounded-lg px-3 py-2 mt-1"><option>2026</option><option>2025</option></select></div>
+        <button onclick="alert('Settings saved!')" class="bg-indigo-600 text-white px-6 py-2 rounded-lg">Save Settings</button>
+      </div>
+    </div>
+  </main>
 </div>
+
+<!-- User Modal -->
+<div id="userModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl w-full max-w-md p-6"><h3 id="userModalTitle" class="font-bold text-lg mb-4">Add User</h3><div class="space-y-3"><input id="uName" placeholder="Full Name *" class="w-full border rounded-lg px-3 py-2"><input id="uEmail" placeholder="Email *" class="w-full border rounded-lg px-3 py-2"><select id="uRole" class="w-full border rounded-lg px-3 py-2"><option>Student</option><option>Teacher</option><option>Staff</option><option>Admin</option><option>Parent</option></select><select id="uDept" class="w-full border rounded-lg px-3 py-2"></select><input id="uPhone" placeholder="Phone" class="w-full border rounded-lg px-3 py-2"><input id="uId" placeholder="Student / Staff ID" class="w-full border rounded-lg px-3 py-2"></div><div class="flex gap-2 mt-5"><button onclick="closeModal('userModal')" class="flex-1 bg-gray-100 py-2 rounded-lg">Cancel</button><button onclick="saveUser()" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg">Save User</button></div></div></div>
+
+<!-- Dept Modal -->
+<div id="deptModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl w-full max-w-md p-6"><h3 class="font-bold text-lg mb-4">Add Department</h3><input id="dName" placeholder="Department Name e.g. Mathematics" class="w-full border rounded-lg px-3 py-2 mb-3"><input id="dHod" placeholder="Head of Department" class="w-full border rounded-lg px-3 py-2 mb-3"><input id="dDesc" placeholder="Description" class="w-full border rounded-lg px-3 py-2"><div class="flex gap-2 mt-5"><button onclick="closeModal('deptModal')" class="flex-1 bg-gray-100 py-2 rounded-lg">Cancel</button><button onclick="saveDept()" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg">Save</button></div></div></div>
+
+<!-- Budget Modal -->
+<div id="budgetModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl w-full max-w-md p-6"><h3 class="font-bold text-lg mb-4">Add Budget</h3><select id="bDept" class="w-full border rounded-lg px-3 py-2 mb-3"></select><input id="bAllocated" type="number" placeholder="Allocated Amount (R)" class="w-full border rounded-lg px-3 py-2 mb-3"><input id="bSpent" type="number" placeholder="Spent Amount (R)" value="0" class="w-full border rounded-lg px-3 py-2"><div class="flex gap-2 mt-5"><button onclick="closeModal('budgetModal')" class="flex-1 bg-gray-100 py-2 rounded-lg">Cancel</button><button onclick="saveBudget()" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg">Save</button></div></div></div>
+
 <script>
-const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
-try{firebase.initializeApp(firebaseConfig);}catch(e){}
-const db=firebase.database();let ME={};let users=[];let books=[];
-function logout(){sessionStorage.setItem("justLoggedOut","1");firebase.auth().signOut().then(()=>location.href="login.html");}
-function normRole(r){if(!r)return"";let x=String(r).trim().toLowerCase().replace(/_/g," ").replace(/\s+/g," ");if(x==="super admin"||x==="superadmin")return"Super Admin";if(x==="admin"||x==="administrator")return"Admin";if(x==="principal"||x==="headmaster")return"Principal";if(x==="librarian"||x==="library")return"Librarian";if(x==="hod"||x==="head of department"||x==="head of dept")return"HOD";if(x==="teacher"||x==="educator")return"Teacher";if(x==="finance"||x==="financial"||x==="bursar")return"Finance";return r;}
-function roleToPage(role){let r=normRole(role);if(r==="Super Admin")return"super_admin.html";if(r==="Admin")return"index.html";if(r==="Principal")return"principal.html";if(r==="Librarian")return"librarian.html";if(r==="HOD")return"hod.html";if(r==="Teacher")return"teacher.html";if(r==="Finance")return"finance.html";return"teacher.html";}
-function roleBadge(r){if(r==="Super Admin")return"b-purple";if(r==="Admin")return"b-blue";if(r==="Principal")return"b-yellow";if(r==="Finance")return"b-red";if(r==="HOD")return"b-yellow";if(r==="Librarian")return"b-blue";return"b-green";}
-async function roleGuardSuper(){let u=firebase.auth().currentUser;if(!u){location.href="login.html";return false;}let s=await db.ref("users/"+u.uid).once("value");if(!s.exists()){location.href="login.html";return false;}ME=s.val();ME.role=normRole(ME.role);if(!["Super Admin","Admin"].includes(ME.role)){alert("⛔ Access Denied — Super Admin Only\nYou are: "+ME.role);location.href=roleToPage(ME.role);return false;}return true;}
-// Create User — uses secondary app so Super Admin stays logged in
-let secondApp=null;
-function getSecondApp(){if(secondApp) return secondApp;try{secondApp=firebase.initializeApp(firebaseConfig,"SecondApp");}catch(e){secondApp=firebase.app("SecondApp");}return secondApp;}
-async function createUser(){
-  let name=document.getElementById("uName").value.trim();
-  let email=document.getElementById("uEmail").value.trim().toLowerCase();
-  let pass=document.getElementById("uPass").value;
-  let role=normRole(document.getElementById("uRole").value);
-  let schoolId=document.getElementById("uSchool").value.trim()||"WHS";
-  let schoolName=document.getElementById("uSchoolName").value.trim()||"Wordsworth High School";
-  let dept=document.getElementById("uDept").value;
-  let classesRaw=document.getElementById("uClasses").value.trim();
-  let classes=classesRaw?classesRaw.split(",").map(s=>s.trim()).filter(Boolean):[];
-  if(!name||!email||!pass) return alert("Fill Name + Email + Password");
-  if(pass.length<6) return alert("Password must be at least 6 characters");
-  let msg=document.getElementById("addMsg"); msg.textContent="Creating..."; msg.style.color="#0a1f4d";
-  try{
-    let sec=getSecondApp();
-    let cred=await sec.auth().createUserWithEmailAndPassword(email,pass);
-    let uid=cred.user.uid;
-    await db.ref("users/"+uid).set({name,email,role,schoolId,schoolName,department:dept,classes,disabled:false,createdBy:ME.email,createdAt:Date.now()});
-    await sec.auth().signOut();
-    msg.textContent=`✅ Created ${name} — ${email} — ${role} • Can login now with password you set`; msg.style.color="green";
-    document.getElementById("uName").value="";document.getElementById("uEmail").value="";document.getElementById("uPass").value="";document.getElementById("uClasses").value="";
-    loadAll();
-  }catch(e){ msg.textContent="⛔ "+e.message; msg.style.color="red"; }
-}
-async function editUser(uid){
-  let u=users.find(x=>x.key===uid); if(!u) return;
-  let name=prompt("Full Name:",u.name||""); if(name===null) return;
-  let role=prompt("Role (Super Admin / Admin / Principal / Librarian / HOD / Teacher / Finance):",u.role||""); if(role===null) return;
-  role=normRole(role);
-  if(!["Super Admin","Admin","Principal","Librarian","HOD","Teacher","Finance"].includes(role)) return alert("Invalid Role: "+role);
-  let dept=prompt("Department (or blank):",u.department||""); if(dept===null) return;
-  let schoolId=prompt("School ID:",u.schoolId||"WHS"); if(schoolId===null) return;
-  let schoolName=prompt("School Name:",u.schoolName||"Wordsworth High School"); if(schoolName===null) return;
-  let classesRaw=prompt("Classes (comma separated):",Array.isArray(u.classes)?u.classes.join(", "):(u.classes||"")); if(classesRaw===null) return;
-  let classes=classesRaw?classesRaw.split(",").map(s=>s.trim()).filter(Boolean):[];
-  await db.ref("users/"+uid).update({name:name.trim(),role,department:dept.trim(),schoolId:schoolId.trim(),schoolName:schoolName.trim(),classes});
-  loadAll();
-}
-async function toggleDisable(uid){
-  let u=users.find(x=>x.key===uid); if(!u) return;
-  let next=!u.disabled;
-  if(!confirm((next?"Disable (block login for) ":"Enable ")+u.email+" ?")) return;
-  await db.ref("users/"+uid).update({disabled:next}); loadAll();
-}
-async function resetPass(uid){
-  let u=users.find(x=>x.key===uid); if(!u) return;
-  if(!confirm("Send password reset email to "+u.email+" ?")) return;
-  try{ await firebase.auth().sendPasswordResetEmail(u.email); alert("✅ Reset link sent to "+u.email); }
-  catch(e){ alert("⛔ "+e.message); }
-}
-async function delUser(uid){
-  let u=users.find(x=>x.key===uid); if(!u) return;
-  if(u.email===ME.email) return alert("You cannot delete yourself.");
-  if(!confirm("Delete user record for "+u.email+" ?\n\nThis deletes the Database record. To fully delete login, also delete in Firebase Console → Authentication.")) return;
-  await db.ref("users/"+uid).remove(); loadAll();
-}
-async function loadAll(){
-  let s=await db.ref("users").once("value"); users=[]; if(s.exists()) s.forEach(c=>users.push({key:c.key,...c.val()}));
-  // Normalize roles for display (does not overwrite DB until Edit)
-  users.forEach(u=>{ u.role=normRole(u.role); });
-  let b=await db.ref("books").once("value"); books=[]; if(b.exists()) b.forEach(c=>books.push({key:c.key,...c.val()}));
-  render();
-}
-function render(){
-  let rf=document.getElementById("roleFilter").value;
-  let sf=document.getElementById("schoolFilter").value;
-  let q=(document.getElementById("search").value||"").toLowerCase();
-  let f=users.filter(u=>(rf==="ALL"||u.role===rf)&&(sf==="ALL"||u.schoolId===sf)&&(!q||(u.name+" "+u.email).toLowerCase().includes(q)));
-  document.getElementById("schoolName").textContent=ME.schoolName||"All Schools";
-  document.getElementById("sTotal").textContent=users.length;
-  document.getElementById("sActive").textContent=users.filter(u=>!u.disabled).length;
-  document.getElementById("sDisabled").textContent=users.filter(u=>u.disabled).length;
-  document.getElementById("sBooks").textContent=books.reduce((s,b)=>s+Number(b.qty||1),0);
-  document.getElementById("userCount").textContent=f.length;
-  document.getElementById("userTable").innerHTML=`<table><tr><th>Name</th><th>Email</th><th>Role</th><th>School</th><th>Dept / Classes</th><th>Status</th><th></th></tr>`+f.map(u=>`<tr><td><b>${u.name||""}</b><br><span style="font-size:11px;color:#888">${u.key}</span></td><td>${u.email||""}</td><td><span class="badge ${roleBadge(u.role)}">${u.role||""}</span></td><td>${u.schoolId||""}<br><span style="font-size:11px;color:#666">${u.schoolName||""}</span></td><td>${u.department||"—"}<br><span style="font-size:11px;color:#666">${Array.isArray(u.classes)?u.classes.join(", "):(u.classes||"")}</span></td><td><span class="badge ${u.disabled?"b-red":"b-green"}">${u.disabled?"Disabled":"Active"}</span></td><td><div style="display:flex;gap:4px;flex-wrap:wrap"><button class="btn blue" onclick="editUser('${u.key}')">✏️ Edit</button><button class="btn dark" onclick="resetPass('${u.key}')">🔑 Reset</button><button class="btn ${u.disabled?"b-green":""} ${u.disabled?"btn green":"btn grey"}" onclick="toggleDisable('${u.key}')">${u.disabled?"✅ Enable":"🚫 Disable"}</button><button class="btn red" onclick="delUser('${u.key}')">🗑️ Delete</button></div></td></tr>`).join("")+`</table>`;
-  let byRole={}; users.forEach(u=>{ if(!byRole[u.role]) byRole[u.role]=0; byRole[u.role]++; });
-  document.getElementById("byRole").innerHTML=`<table><tr><th>Role</th><th>Count</th><th>Dashboard</th></tr>`+Object.keys(byRole).sort().map(k=>`<tr><td><span class="badge ${roleBadge(k)}">${k}</span></td><td><b>${byRole[k]}</b></td><td><button class="btn dark" onclick="location.href='${roleToPage(k)}'">Open →</button></td></tr>`).join("")+`</table>`;
-}
-function exportUsersCSV(){
-  let rows=[["Name","Email","Role","SchoolId","SchoolName","Department","Classes","Disabled","UID"]];
-  users.forEach(u=>rows.push([u.name||"",u.email||"",u.role||"",u.schoolId||"",u.schoolName||"",u.department||"",Array.isArray(u.classes)?u.classes.join("; "):(u.classes||""),u.disabled?"Yes":"No",u.key]));
-  let csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
-  let a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download=`Users_${new Date().toISOString().slice(0,10)}.csv`; a.click();
-}
-firebase.auth().onAuthStateChanged(async u=>{ if(!u){ location.href="login.html"; return; } if(!await roleGuardSuper()) return; document.getElementById("myEmail").textContent=u.email+" • "+ME.role+" ✅ • "+(ME.schoolName||ME.schoolId); loadAll(); });
-</script></body></html>
+let users = JSON.parse(localStorage.getItem('edu_users')||'[]');
+let departments = JSON.parse(localStorage.getItem('edu_depts')||'[{"name":"Mathematics","hod":"Dr. Smith","desc":"Maths & Stats"},{"name":"Science","hod":"Mrs. Naidoo","desc":"Physics, Chem, Bio"},{"name":"English","hod":"Mr. Patel","desc":"Languages"}]');
+let budgets = JSON.parse(localStorage.getItem('edu_budgets')||'[{"dept":"Mathematics","allocated":150000,"spent":85000},{"dept":"Science","allocated":200000,"spent":120000},{"dept":"English","allocated":80000,"spent":30000}]');
+let pendingImport=[], editingId=null;
+if(users.length===0){users=[{id:1,name:"Thabo Mokoena",email:"thabo@school.co.za",role:"Student",dept:"Mathematics",phone:"082 123 4567",sid:"STU001",status:"Active"},{id:2,name:"Sarah Johnson",email:"sarah@school.co.za",role:"Teacher",dept:"Science",phone:"083 987 6543",sid:"TCH001",status:"Active"},{id:3,name:"Sipho Dlamini",email:"sipho@school.co.za",role:"Teacher",dept:"Mathematics",phone:"084 555 1234",sid:"TCH002",status:"Active"},{id:4,name:"Ayesha Khan",email:"ayesha@school.co.za",role:"Admin",dept:"English",phone:"082 999 8888",sid:"ADM001",status:"Active"}]; saveAll();}
+
+function saveAll(){localStorage.setItem('edu_users',JSON.stringify(users));localStorage.setItem('edu_depts',JSON.stringify(departments));localStorage.setItem('edu_budgets',JSON.stringify(budgets));}
+function showTab(t){document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.querySelectorAll('.sidebar-link').forEach(e=>e.classList.toggle('active',e.dataset.tab===t));window.scrollTo(0,0);}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openUserModal(id=null){editingId=id;document.getElementById('userModalTitle').textContent=id?'Edit User':'Add User';if(id){let u=users.find(x=>x.id===id);document.getElementById('uName').value=u.name;document.getElementById('uEmail').value=u.email;document.getElementById('uRole').value=u.role;document.getElementById('uDept').value=u.dept;document.getElementById('uPhone').value=u.phone||'';document.getElementById('uId').value=u.sid||'';}else{['uName','uEmail','uPhone','uId'].forEach(i=>document.getElementById(i).value='');}document.getElementById('userModal').classList.add('open');}
+function saveUser(){let name=document.getElementById('uName').value.trim(),email=document.getElementById('uEmail').value.trim();if(!name||!email) return alert('Name and Email required');let data={name,email,role:document.getElementById('uRole').value,dept:document.getElementById('uDept').value,phone:document.getElementById('uPhone').value,sid:document.getElementById('uId').value,status:"Active"};if(editingId){let i=users.findIndex(x=>x.id===editingId);users[i]={...users[i],...data};}else{data.id=Date.now();users.push(data);}saveAll();closeModal('userModal');renderAll();}
+function deleteUser(id){if(confirm('Delete this user?')){users=users.filter(x=>x.id!==id);saveAll();renderAll();}}
+function renderUsers(){let q=(document.getElementById('searchUser').value||'').toLowerCase(),r=document.getElementById('filterRole').value,d=document.getElementById('filterDept').value;let filtered=users.filter(u=>(!q||u.name.toLowerCase().includes(q)||u.email.toLowerCase().includes(q)||(u.sid||'').toLowerCase().includes(q))&&(!r||u.role===r)&&(!d||u.dept===d));document.getElementById('usersTable').innerHTML=filtered.map(u=>`<tr class="border-t"><td class="p-4"><div class="flex items-center gap-3"><div class="w-9 h-9 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold">${u.name.charAt(0)}</div><div><p class="font-semibold">${u.name}</p><p class="text-gray-500 text-xs">${u.email} • ${u.sid||''}</p></div></div></td><td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs">${u.role}</span></td><td class="p-4">${u.dept}</td><td class="p-4"><span class="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs">Active</span></td><td class="p-4"><button onclick="openUserModal(${u.id})" class="text-indigo-600 mr-2">Edit</button><button onclick="deleteUser(${u.id})" class="text-red-500">Delete</button></td></tr>`).join('');document.getElementById('noUsers').classList.toggle('hidden',filtered.length>0);}
+function renderDepts(){document.getElementById('deptGrid').innerHTML=departments.map((d,i)=>`<div class="bg-white p-5 rounded-2xl shadow-sm"><div class="flex justify-between"><h3 class="font-bold">${d.name}</h3><button onclick="deleteDept(${i})" class="text-red-400 text-sm">✕</button></div><p class="text-sm text-gray-500 mt-1">HOD: ${d.hod||'Not assigned'}</p><p class="text-sm mt-2">${d.desc||''}</p><p class="text-xs text-indigo-600 mt-3">${users.filter(u=>u.dept===d.name).length} members</p></div>`).join('')||'<p class="text-gray-400">No departments yet.</p>';let opts=departments.map(d=>`<option>${d.name}</option>`).join('');document.getElementById('filterDept').innerHTML='<option value="">All Departments</option>'+opts;document.getElementById('uDept').innerHTML=opts;document.getElementById('bDept').innerHTML=opts;}
+function deleteDept(i){if(confirm('Delete department?')){departments.splice(i,1);saveAll();renderAll();}}
+function openDeptModal(){document.getElementById('deptModal').classList.add('open');}
+function saveDept(){let n=document.getElementById('dName').value.trim();if(!n) return alert('Enter name');departments.push({name:n,hod:document.getElementById('dHod').value,desc:document.getElementById('dDesc').value});saveAll();closeModal('deptModal');renderAll();}
+function renderBudgets(){document.getElementById('budgetTable').innerHTML=budgets.map(b=>{let rem=b.allocated-b.spent,pct=Math.min(100,Math.round(b.spent/b.allocated*100));return `<tr class="border-t"><td class="p-4 font-semibold">${b.dept}</td><td class="p-4">R${b.allocated.toLocaleString()}</td><td class="p-4">R${b.spent.toLocaleString()}</td><td class="p-4 font-semibold ${rem<0?'text-red-600':'text-green-600'}">R${rem.toLocaleString()}</td><td class="p-4"><div class="w-32 bg-gray-200 rounded-full h-2"><div class="h-2 rounded-full ${pct>80?'bg-red-500':'bg-indigo-600'}" style="width:${pct}%"></div></div><span class="text-xs">${pct}%</span></td></tr>`}).join('');document.getElementById('budgetOverview').innerHTML=budgets.map(b=>`<div><div class="flex justify-between text-sm"><span>${b.dept}</span><span>R${b.spent.toLocaleString()} / R${b.allocated.toLocaleString()}</span></div><div class="w-full bg-gray-200 rounded-full h-2 mt-1"><div class="bg-indigo-600 h-2 rounded-full" style="width:${Math.round(b.spent/b.allocated*100)}%"></div></div></div>`).join('');}
+function openBudgetModal(){document.getElementById('budgetModal').classList.add('open');}
+function saveBudget(){budgets.push({dept:document.getElementById('bDept').value,allocated:+document.getElementById('bAllocated').value||0,spent:+document.getElementById('bSpent').value||0});saveAll();closeModal('budgetModal');renderAll();}
+function renderAll(){renderUsers();renderDepts();renderBudgets();let totalBud=budgets.reduce((s,b)=>s+b.allocated,0);document.getElementById('statUsers').textContent=users.length;document.getElementById('navUserCount').textContent=users.length;document.getElementById('statDepts').textContent=departments.length;document.getElementById('statBudget').textContent='R'+totalBud.toLocaleString();document.getElementById('statTeachers').textContent=users.filter(u=>u.role==='Teacher').length;document.getElementById('recentUsers').innerHTML=users.slice(-4).reverse().map(u=>`<div class="flex items-center gap-3"><div class="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center font-bold text-indigo-700">${u.name.charAt(0)}</div><div class="flex-1"><p class="font-semibold text-sm">${u.name}</p><p class="text-xs text-gray-500">${u.role} • ${u.dept}</p></div><span class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full">Active</span></div>`).join('');}
+function downloadTemplate(){let ws=XLSX.utils.aoa_to_sheet([["Full Name","Email","Role","Department","Phone","Student ID"],["Thabo Mokoena","thabo@school.co.za","Student","Mathematics","0821234567","STU001"],["Sarah Johnson","sarah@school.co.za","Teacher","Science","0839876543","TCH001"]]);let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Users");XLSX.writeFile(wb,"users_template.xlsx");}
+function handleFile(file){let reader=new FileReader();reader.onload=e=>{let data=new Uint8Array(e.target.result);let wb=XLSX.read(data,{type:'array'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{defval:''});pendingImport=rows.map(r=>({name:r['Full Name']||r['Name']||r['full name']||'',email:r['Email']||r['email']||'',role:r['Role']||r['role']||'Student',dept:r['Department']||r['department']||departments[0]?.name||'',phone:r['Phone']||r['phone']||'',sid:r['Student ID']||r['StudentID']||r['ID']||''})).filter(x=>x.name&&x.email);document.getElementById('previewCount').textContent=pendingImport.length;document.getElementById('importCount').textContent=pendingImport.length;document.getElementById('previewBox').innerHTML=pendingImport.length?pendingImport.slice(0,20).map(u=>`<div class="flex justify-between border-b py-2"><span>${u.name} <span class="text-gray-400">(${u.role})</span></span><span class="text-gray-500 text-xs">${u.email}</span></div>`).join('')+'<p class="text-xs text-gray-400 mt-2">Showing first 20 rows</p>':'<p class="text-red-500">No valid rows found. Check headers.</p>';document.getElementById('confirmImportBtn').disabled=pendingImport.length===0;};reader.readAsArrayBuffer(file);}
+function confirmImport(){if(!pendingImport.length) return;let added=0;pendingImport.forEach(u=>{if(!users.some(x=>x.email.toLowerCase()===u.email.toLowerCase())){users.push({id:Date.now()+added,...u,status:"Active"});added++;}});saveAll();renderAll();document.getElementById('importMsg').textContent=`✅ Imported ${added} users (${pendingImport.length-added} duplicates skipped)`;document.getElementById('importMsg').className='text-center text-sm mt-2 text-green-600';pendingImport=[];document.getElementById('previewBox').innerHTML='<p class="text-gray-400">Import complete. Select another file to import more.</p>';document.getElementById('confirmImportBtn').disabled=true;showTab('users');}
+document.getElementById('fileInput').addEventListener('change',e=>{if(e.target.files[0]) handleFile(e.target.files[0])});
+let dz=document.getElementById('dropZone');dz.addEventListener('click',()=>document.getElementById('fileInput').click());dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('bg-indigo-100')});dz.addEventListener('dragleave',()=>dz.classList.remove('bg-indigo-100'));dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('bg-indigo-100');if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0])});
+renderAll();
+</script>
+</body>
+</html>
