@@ -1,155 +1,205 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stock — MAKHANANI LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#eef2f7}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}header img{height:52px;background:#fff;border-radius:10px;padding:3px}.btn{border:none;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:13px}.btn.gold{background:#d4af37;color:#000}.btn.green{background:#16a34a;color:#fff}.btn.white{background:#fff;color:#0a1f4d}.btn.dark{background:#0a1f4d;color:#fff}.btn.red{background:#ef4444;color:#fff}.btn.purple{background:#7c3aed;color:#fff}.wrap{max-width:1100px;margin:14px auto;padding:0 14px}.card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}.stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;text-align:center}.stat{background:#0a1f4d;color:#fff;border-radius:14px;padding:16px}.stat b{font-size:24px;display:block}.groupHead{background:#0a1f4d;color:#fff;padding:10px 12px;border-radius:10px;margin:16px 0 8px;font-weight:900;display:flex;justify-content:space-between;flex-wrap:wrap}label{font-weight:800;display:block;margin:10px 0 5px;font-size:13px}input,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:12px;font-size:15px}input:disabled,select:disabled{background:#f0fdf4;opacity:.9}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#f1f5f9;padding:10px;text-align:left}td{padding:10px;border-bottom:1px solid #eee;vertical-align:top}.badge{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:900;white-space:nowrap}.b-green{background:#dcfce7;color:#166534}.b-red{background:#fee2e2;color:#991b1b}.b-gold{background:#fef3c7;color:#92400e}.lockBox{border:3px solid #dc2626;background:#fffafa;border-radius:14px;padding:14px;margin-bottom:14px}.okBox{border:3px solid #16a34a;background:#f0fdf4;border-radius:14px;padding:14px;margin-bottom:14px}.scroll{overflow-x:auto}.barcodeBox{background:#fff;border:1px solid #ddd;border-radius:10px;padding:6px;text-align:center}.barcodeBox svg{max-width:100%}.preview{background:#f0fdf4;border:2px solid #16a34a;border-radius:12px;padding:14px;text-align:center;margin-top:12px}.info{background:#eff6ff;border:2px solid #0a1f4d;border-radius:12px;padding:12px;font-size:13px}
-@media(max-width:700px){.grid,.filters,.stats{grid-template-columns:1fr 1fr}}
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#eef2f7}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}header img{height:52px;background:#fff;border-radius:10px;padding:3px}.btn{border:none;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:13px}.btn.gold{background:#d4af37;color:#000}.btn.green{background:#16a34a;color:#fff}.btn.white{background:#fff;color:#0a1f4d}.btn.dark{background:#0a1f4d;color:#fff}.btn.red{background:#ef4444;color:#fff}.btn.purple{background:#7c3aed;color:#fff}.wrap{max-width:1100px;margin:14px auto;padding:0 14px}.card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;text-align:center}.stat{background:#0a1f4d;color:#fff;border-radius:14px;padding:16px}.stat b{font-size:26px;display:block}.stat.gold{background:#d4af37;color:#000}.stat.green{background:#16a34a}.stat.red{background:#ef4444}label{font-weight:800;display:block;margin:10px 0 5px;font-size:13px}input,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:12px;font-size:15px}input:disabled,select:disabled{background:#f0fdf4;opacity:.9}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0a1f4d;color:#fff;padding:10px;text-align:left}td{padding:10px;border-bottom:1px solid #eee;vertical-align:top}.badge{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:900}.b-green{background:#dcfce7;color:#166534}.b-red{background:#fee2e2;color:#991b1b}.b-gold{background:#fef3c7;color:#92400e}.b-purple{background:#ede9fe;color:#5b21b6}.lockBox{border:3px solid #dc2626;background:#fffafa;border-radius:14px;padding:14px;margin-bottom:14px}.okBox{border:3px solid #16a34a;background:#f0fdf4;border-radius:14px;padding:14px;margin-bottom:14px}.scroll{overflow-x:auto}.info{background:#eff6ff;border:2px solid #0a1f4d;border-radius:12px;padding:12px;font-size:13px}.groupHead{background:#0a1f4d;color:#fff;padding:10px 12px;border-radius:10px;margin:14px 0 8px;font-weight:900;display:flex;justify-content:space-between;flex-wrap:wrap}.importBox{border:2px dashed #0a1f4d;border-radius:12px;padding:14px;background:#f8fafc}
+@media(max-width:700px){.grid,.stats{grid-template-columns:1fr 1fr}}
 </style></head>
 <body>
-<header><div style="display:flex;gap:12px;align-items:center"><img src="logo.png" alt="Xintimani Group Holdings Logo"><div style="line-height:1.25"><div style="font-size:20px;font-weight:900">Stock — MAKHANANI LTSM 2.0</div><div style="font-size:12px;color:#d4af37;font-weight:700">Xintimani Group Holdings (Pty) Ltd</div><div style="font-size:11px;color:#cbd5e1">Reg No: 2026/934898/07 • <span id="myEmail">Loading...</span></div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="location.href='landing.html'">🏠 Landing</button><button class="btn dark" onclick="location.href='librarian.html'">📚 Librarian</button><button class="btn purple" onclick="location.href='learners.html'">👩‍🎓 Learners</button><button class="btn gold" onclick="location.href='barcode_print.html'">🏷️ Print Barcodes</button><button class="btn purple" onclick="location.href='issue_requests.html'">📝 Issue Requests</button><button class="btn white" onclick="logout()">🚪 Logout</button></div></header>
+<header><div style="display:flex;gap:12px;align-items:center"><img src="logo.png" alt="Xintimani Group Holdings Logo"><div style="line-height:1.25"><div style="font-size:20px;font-weight:900">Stock — MAKHANANI LTSM 2.0</div><div style="font-size:12px;color:#d4af37;font-weight:700">Xintimani Group Holdings (Pty) Ltd</div><div style="font-size:11px;color:#cbd5e1">Reg No: 2026/934898/07 • <span id="myEmail">Loading...</span></div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="location.href='landing.html'">🏠 Landing</button><button class="btn dark" onclick="location.href='librarian.html'">📚 Librarian</button><button class="btn purple" onclick="location.href='learners.html'">👩‍🎓 Learners</button><button class="btn purple" onclick="location.href='issue_requests.html'">📝 Issue Requests</button><button class="btn gold" onclick="location.href='barcode_print.html'">🏷️ Print Barcodes</button><button class="btn gold" onclick="location.href='hod_dashboard.html'">✅ HOD Dashboard</button><button class="btn white" onclick="logout()">🚪 Logout</button></div></header>
 <div class="wrap">
 <div id="subBox" class="okBox"><b>Subscription:</b> <span id="subStatus">Checking...</span></div>
-<div class="card"><div class="info" id="myAssign">Loading your assignment...</div><div class="stats" style="margin-top:14px"><div class="stat"><b id="cCopies">0</b><span>Copies You Can See</span></div><div class="stat"><b id="cTitles">0</b><span>Titles You Can See</span></div><div class="stat"><b id="cAvail">0</b><span>Available</span></div><div class="stat"><b id="cNext">—</b><span>Next Book No</span></div></div><p id="msg" style="font-size:13px;font-weight:700;text-align:center"></p><p style="text-align:center;font-size:12px;color:#666;margin:0">✅ RULE: 1 Book = 1 Barcode • Qty 5 = 5 Unique Book Nos • Department-Locked</p></div>
-<div class="card"><h2 style="margin:0">➕ Add Stock — Each Copy Gets Its Own Book No + Barcode</h2>
-<div class="grid"><div><label>Department / Group *</label><select id="bDept"><option value="">-- Choose --</option><option>Languages</option><option>Mathematics</option><option>Sciences</option><option>Humanities</option><option>Commerce</option><option>Technology</option><option>Life Orientation</option><option>Creative Arts</option><option>Other</option></select></div><div><label>Grade *</label><select id="bGrade"><option value="">-- Grade --</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Subject *</label><input id="bSubject" placeholder="e.g. Maths"></div><div><label>Title *</label><input id="bTitle" placeholder="e.g. Maths Grade 10 Textbook"></div><div><label>Qty = Number of Physical Copies *</label><input id="bQty" type="number" value="1" min="1" max="200"></div><div><label>Author / Publisher</label><input id="bAuthor" placeholder="Optional"></div></div>
-<div class="preview" id="previewBox" style="display:none"><b>Will create <span id="previewQty">1</span> copies with Book Nos:</b><br><span id="previewRange" style="font-size:18px;font-weight:900">—</span><br><span style="font-size:12px;color:#666">Example: Qty 5 → GSHS000001, GSHS000002, GSHS000003, GSHS000004, GSHS000005 — each copy, its own barcode.</span></div>
-<button class="btn dark" style="width:100%;padding:12px;margin-top:12px" id="previewBtn" type="button">👁️ Preview Book Nos For This Qty</button>
-<button class="btn green" style="width:100%;padding:15px;font-size:16px;margin-top:10px" id="addBtn" type="button">➕ ADD — 1 BARCODE PER COPY</button></div>
-<div class="card"><h2 style="margin:0">📦 Stock — 1 Row = 1 Physical Book</h2>
-<div class="filters" style="margin-top:12px"><select id="fDept" onchange="render()"><option value="">All Departments</option><option>Languages</option><option>Mathematics</option><option>Sciences</option><option>Humanities</option><option>Commerce</option><option>Technology</option><option>Life Orientation</option><option>Creative Arts</option><option>Other</option></select><select id="fGrade" onchange="render()"><option value="">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><select id="fSubject" onchange="render()"><option value="">All Subjects</option></select><input id="search" placeholder="🔍 Search Book No / title / barcode..." oninput="render()"></div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn gold" onclick="location.href='barcode_print.html'">🏷️ Print Barcodes (A4 3x5)</button><button class="btn dark" onclick="exportCSV()">📥 Export CSV (Your Dept Only)</button><button class="btn green" onclick="loadAll()">🔄 Refresh</button></div>
+<div class="card"><div class="info" id="myAssign">Loading...</div><div class="stats" style="margin-top:14px"><div class="stat"><b id="cTotal">0</b><span>Total Copies</span></div><div class="stat green"><b id="cAvail">0</b><span>Available</span></div><div class="stat gold"><b id="cIssued">0</b><span>Issued</span></div><div class="stat red"><b id="cLow">0</b><span>Titles ≤ 5 Available</span></div></div><p id="msg" style="font-size:13px;font-weight:700;text-align:center"></p></div>
+
+<div class="card"><h2 style="margin:0">📥 Import Stock From Excel / CSV — Bulk Add</h2>
+<div class="importBox"><p style="margin:0;font-size:13px"><b>Columns:</b> Title, Department, Grade, Subject, Qty, Price (optional), StartingBookNo (optional)</p><p style="font-size:12px;color:#666;margin:6px 0">If StartingBookNo is blank, system uses next free number automatically. Department is locked for HOD — HOD can only import their own Department.</p>
+<div class="grid"><div><label>Upload .xlsx, .xls or .csv</label><input type="file" id="importFile" accept=".xlsx,.xls,.csv"></div><div><label>Book No Prefix</label><input id="importPrefix" value="GSHS"></div><div><label>Default Price (R) — if Price column is blank</label><input type="number" id="importPrice" placeholder="e.g. 250" min="0" step="0.01"></div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn dark" onclick="downloadTemplate()">📥 Download Template CSV</button><button class="btn purple" onclick="previewImport()">👁️ Preview Import</button><button class="btn green" onclick="confirmImport()">✅ Confirm & Import All</button><button class="btn white" onclick="clearImport()">Clear</button></div>
+<div id="importPreview" style="margin-top:14px"></div></div></div>
+
+<div class="card"><h2 style="margin:0">➕ Add Stock — 1 Title = Many Copies</h2><p style="color:#666;font-size:13px;margin:6px 0 0">Example: Title `Maths Grade 10 Textbook`, Qty `30` → Creates 30 rows: `GSHS000001` → `GSHS000030`.</p>
+<div class="grid"><div><label>Department / Group *</label><select id="nDept" onchange="onDeptChange()"><option value="">-- Select Department --</option><option>Languages</option><option>Mathematics</option><option>Sciences</option><option>Humanities</option><option>Commerce</option><option>Technology</option><option>Life Orientation</option><option>Creative Arts</option><option>Other</option></select></div><div><label>Title *</label><input id="nTitle" placeholder="e.g. Maths Grade 10 Textbook"></div><div><label>Subject *</label><select id="nSubject"><option value="">-- Select Subject --</option></select></div><div><label>Grade *</label><select id="nGrade"><option value="">-- Select Grade --</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Qty To Add * (1-200)</label><input type="number" id="nQty" value="1" min="1" max="200"></div><div><label>Book No Prefix (auto)</label><input id="nPrefix" value="GSHS" placeholder="e.g. GSHS"></div><div><label>Starting Book No (auto — next free number)</label><input id="nStart" placeholder="Auto"></div><div><label>Price Per Copy (R) — Optional</label><input type="number" id="nPrice" placeholder="e.g. 250" min="0" step="0.01"></div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn green" onclick="addStock()">➕ Add Stock (Create Copies)</button><button class="btn gold" onclick="printNew()">🏷️ Print Barcodes For Last Added</button><button class="btn dark" onclick="loadAll()">🔄 Refresh</button></div><p id="lastAdded" style="font-size:12px;color:#666"></p></div>
+<div class="card"><h2 style="margin:0">📦 Stock — Grouped By Title</h2>
+<div class="grid" style="margin-top:12px"><select id="fDept" onchange="render()"><option value="">All Departments</option><option>Languages</option><option>Mathematics</option><option>Sciences</option><option>Humanities</option><option>Commerce</option><option>Technology</option><option>Life Orientation</option><option>Creative Arts</option><option>Other</option></select><select id="fGrade" onchange="render()"><option value="">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><select id="fSubject" onchange="render()"><option value="">All Subjects</option></select><select id="fStatus" onchange="render()"><option value="">All Status</option><option>Available</option><option>Issued</option></select><input id="search" placeholder="🔍 Search Book No / Title..." oninput="render()" style="grid-column:span 2"></div>
 <div id="stockList"></div></div>
 <div style="text-align:center;color:#666;font-size:12px;padding:10px">MAKHANANI LTSM 2.0 • Xintimani Group Holdings (Pty) Ltd • Reg No: 2026/934898/07</div>
 </div>
 <script>
-const BRAND="MAKHANANI LTSM 2.0";
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 try{firebase.initializeApp(firebaseConfig);}catch(e){}
-const db=firebase.database();let ME={};let BOOKS=[];let SUBS=[];
+const db=firebase.database();let ME={};let BOOKS=[];let ISSUES=[];let SUBS=[];let LAST_ADDED=[];let IMPORT_ROWS=[];let IMPORT_ERRORS=[];
+const LOW_THRESHOLD=5;
+const SUBJECTS_BY_DEPT={"Languages":["English HL","English FAL","Afrikaans HL","Afrikaans FAL","Sepedi HL","Xitsonga HL","Tshivenda HL","Setswana HL","isiZulu HL"],"Mathematics":["Maths","Mathematical Literacy","Technical Maths"],"Sciences":["Physical Sciences","Life Sciences","Natural Sciences","Agricultural Sciences"],"Humanities":["Geography","History","Life Orientation","Religion Studies"],"Commerce":["Accounting","Business Studies","Economics","EMS"],"Technology":["CAT","IT","Technology","EGD","Civil Technology","Electrical Technology","Mechanical Technology"],"Life Orientation":["Life Orientation"],"Creative Arts":["Creative Arts","Visual Arts","Dramatic Arts","Music"],"Other":["Other"]};
 function logout(){sessionStorage.setItem("justLoggedOut","1");firebase.auth().signOut().then(()=>location.href="login.html");}
 function normRole(r){if(!r)return"";let x=String(r).trim().toLowerCase().replace(/_/g," ").replace(/\s+/g," ");if(x==="super admin"||x==="superadmin")return"Super Admin";if(x==="admin"||x==="administrator")return"Admin";if(x==="principal")return"Principal";if(x==="librarian")return"Librarian";if(x==="hod"||x==="head of department")return"HOD";if(x==="teacher"||x==="educator")return"Teacher";if(x==="finance"||x==="financial"||x==="bursar")return"Finance";return r;}
 function schoolOfUser(){return (ME.schoolName||ME.schoolId||ME.school||"").trim();}
 function schoolKey(n){let x=String(n||"").toLowerCase();if(x.includes("george"))return"George Sonto High School";if(x.includes("wordsworth"))return"Wordsworth High School";return String(n||"").trim();}
-function schoolPrefix(){let name=schoolKey(schoolOfUser());return name.split(/\s+/).map(w=>w[0]).join("").toUpperCase().replace(/[^A-Z]/g,"")||"SCH";}
-function counterKey(){return "counters/books_"+schoolPrefix();}
 function normStatus(s){return String(s.status||"").trim().toLowerCase();}
 function isExpired(s){if(!s.renewal||s.renewal==="—")return false;let t=new Date();t.setHours(0,0,0,0);let r=new Date(s.renewal);if(isNaN(r))return false;r.setHours(0,0,0,0);return r<t;}
 function isActiveSub(s){return normStatus(s)==="active"&&!isExpired(s);}
 function isDonation(s){return (s.notes||"").toLowerCase().includes("donation")||s.donation===true||Number(s.amount||0)===0;}
 function getSchoolSubscriptionStatus(){let mySchool=schoolKey(schoolOfUser());let mine=SUBS.filter(s=>schoolKey(s.schoolName||s.schoolId||s.school)===mySchool);if(!mine.length)return{locked:true,reason:"Missing — No subscription for "+mySchool};let a=mine.find(s=>isActiveSub(s));if(a)return{locked:false,reason:"Active — "+(a.plan||"Premium")+" • Renewal "+(a.renewal||"—")+(isDonation(a)?" • 🎁 Donation":"")};let f=mine[0];if(isExpired(f))return{locked:true,reason:"Expired — Renewal was "+(f.renewal||"—")};return{locked:true,reason:(f.status||"Paused")+" — Not Active"};}
 function updateSubBox(){let st=getSchoolSubscriptionStatus();let b=document.getElementById("subBox");if(st.locked){b.className="lockBox";document.getElementById("subStatus").innerHTML=`<span class="badge b-red">🔒 LOCKED</span> — ${st.reason}`;}else{b.className="okBox";document.getElementById("subStatus").innerHTML=`<span class="badge b-green">✅ UNLOCKED</span> — ${st.reason}`;}return st;}
-// ✅ DEPARTMENT LOCK — same fields as Issue Requests
-function myAssign(){
-let r=normRole(ME.role);
-return {
-role:r,
-department: ME.assignedDepartment||ME.department||ME.hodDepartment||ME.teacherDepartment||"",
-subject: ME.assignedSubject||ME.subject||ME.teacherSubject||ME.hodSubject||"",
-grade: ME.assignedGrade||ME.grade||ME.teacherGrade||"",
-cls: ME.assignedClass||ME.class||ME.teacherClass||""
-};
-}
+function myAssign(){return{role:normRole(ME.role),department:ME.assignedDepartment||ME.department||ME.hodDepartment||ME.teacherDepartment||"",subject:ME.assignedSubject||ME.subject||ME.teacherSubject||ME.hodSubject||"",grade:ME.assignedGrade||ME.grade||ME.teacherGrade||"",cls:ME.assignedClass||ME.class||ME.teacherClass||""};}
 function isAllAccess(){let r=normRole(ME.role);return r==="Principal"||r==="Admin"||r==="Super Admin"||r==="Librarian";}
 function isHOD(){return normRole(ME.role)==="HOD";}
 function isTeacher(){return normRole(ME.role)==="Teacher";}
-// ✅ Can this user see / edit THIS book?
-function canAccessBook(b){
-if(isAllAccess()) return {ok:true};
-let a=myAssign();
-if(!a.department) return {ok:false,reason:"Your Department is blank — ask Admin to set assignedDepartment in Users"};
-if(String(b.department||b.group||"")!==a.department) return {ok:false,reason:"Department mismatch: Book is "+(b.department||"—")+", you are "+a.department};
-if(isTeacher()){
-if(a.subject&&String(b.subject||"")!==a.subject) return {ok:false,reason:"Subject mismatch: Book is "+b.subject+", you are "+a.subject};
-if(a.grade&&String(b.grade||"")!==a.grade) return {ok:false,reason:"Grade mismatch: Book is "+b.grade+", you are "+a.grade};
-}
-if(isHOD()){
-if(a.subject&&String(b.subject||"")!==a.subject) return {ok:false,reason:"Subject mismatch: Book is "+b.subject+", you are HOD for "+a.subject};
-if(a.grade&&String(b.grade||"")!==a.grade) return {ok:false,reason:"Grade mismatch"};
-}
-return {ok:true};
-}
-function visibleBooks(){return BOOKS.filter(b=>canAccessBook(b).ok);}
-async function bookNoExists(no){if(BOOKS.some(b=>String(b.bookNo||b.barcode||"")===no)) return true;try{let snap=await db.ref("books").orderByChild("bookNo").equalTo(no).once("value");return snap.exists();}catch(e){return false;}}
-async function generateBookNos(count){let prefix=schoolPrefix();let r=await db.ref(counterKey()).transaction(cur=>{let c=Number((cur&&cur.count)||cur||0);return{count:c+count,prefix:prefix,school:schoolKey(schoolOfUser()),updatedAt:Date.now()};});let end=Number(r.snapshot.val().count||count);let start=end-count+1;let maxExisting=0;BOOKS.forEach(b=>{let m=String(b.bookNo||"").match(/(\d{6})$/);if(m)maxExisting=Math.max(maxExisting,Number(m[1]));});if(maxExisting>=start){let newEnd=maxExisting+count;await db.ref(counterKey()).set({count:newEnd,prefix:prefix,school:schoolKey(schoolOfUser()),updatedAt:Date.now()});start=maxExisting+1;end=newEnd;}let nos=[];for(let i=start;i<=end;i++){nos.push(prefix+String(i).padStart(6,"0"));}let final=[];for(let no of nos){if(await bookNoExists(no)){let extra=await generateBookNos(1);final.push(...extra);}else final.push(no);}return final;}
-async function peekNextBookNo(){let prefix=schoolPrefix();let next=1;try{let snap=await db.ref(counterKey()).once("value");if(snap.exists())next=Number(snap.val().count||snap.val()||0)+1;}catch(e){}let max=0;BOOKS.forEach(b=>{let m=String(b.bookNo||"").match(/(\d{6})$/);if(m)max=Math.max(max,Number(m[1]));});return prefix+String(Math.max(next,max+1)).padStart(6,"0");}
-function applyLockToForm(){
-let a=myAssign();
-// HOD / Teacher: Department + Subject + Grade are locked to their assignment — cannot change to another Dept
-if(isHOD()||isTeacher()){
-if(a.department){document.getElementById("bDept").value=a.department;document.getElementById("bDept").disabled=true;}
-if(isTeacher()){
-if(a.grade){document.getElementById("bGrade").value=a.grade;document.getElementById("bGrade").disabled=true;}
-if(a.subject){document.getElementById("bSubject").value=a.subject;document.getElementById("bSubject").disabled=true;}
-}
-if(isHOD()&&a.subject){document.getElementById("bSubject").value=a.subject;document.getElementById("bSubject").disabled=true;}
-if(isHOD()&&a.grade){document.getElementById("bGrade").value=a.grade;document.getElementById("bGrade").disabled=true;}
-// Filter dropdowns also locked
-if(a.department){let f=document.getElementById("fDept");f.value=a.department;f.disabled=true;}
-if(isTeacher()&&a.grade){let f=document.getElementById("fGrade");f.value=a.grade;f.disabled=true;}
-}
+function canAccessBook(b){if(isAllAccess()) return true;let a=myAssign();if(!a.department) return false;if(String(b.department||b.group||"")!==a.department) return false;if(isHOD()||isTeacher()){if(a.subject&&String(b.subject||"")!==a.subject) return false;if(a.grade&&String(b.grade||"")!==a.grade) return false;}return true;}
+function canAddStock(){if(isAllAccess()) return true;if(isHOD()) return true;return false;}
+function onDeptChange(){let d=document.getElementById("nDept").value;let sel=document.getElementById("nSubject");let list=SUBJECTS_BY_DEPT[d]||[];sel.innerHTML=`<option value="">-- Select Subject --</option>`+list.map(s=>`<option>${s}</option>`).join("");let a=myAssign();if(isHOD()&&a.subject&&list.includes(a.subject)) sel.value=a.subject;}
+function applyLockToForm(){let a=myAssign();if(isHOD()||isTeacher()){if(a.department){document.getElementById("nDept").value=a.department;document.getElementById("nDept").disabled=true;onDeptChange();}if(a.grade){let g=document.getElementById("nGrade");if(g){g.value=a.grade;g.disabled=true;}}if(a.department){document.getElementById("fDept").value=a.department;document.getElementById("fDept").disabled=true;}if(a.grade){document.getElementById("fGrade").value=a.grade;document.getElementById("fGrade").disabled=true;}}if(isTeacher()){document.getElementById("nSubject").disabled=true;}}
+function nextFreeNumber(prefix){let max=0;BOOKS.forEach(b=>{let bn=String(b.bookNo||"");if(bn.startsWith(prefix)){let n=parseInt(bn.slice(prefix.length),10);if(!isNaN(n)&&n>max) max=n;}});return max+1;}
+function pad(n){return String(n).padStart(6,"0");}
+function parseBookNo(bn,prefix){
+if(!bn) return null;
+let s=String(bn).trim().toUpperCase();
+if(s.startsWith(prefix)) {let n=parseInt(s.slice(prefix.length),10);if(!isNaN(n)) return {prefix:prefix,num:n};}
+let m=s.match(/^(.*?)(\d+)$/);if(m) return {prefix:m[1],num:parseInt(m[2],10)};
+return null;
 }
 async function loadAll(){
 try{let s=await db.ref("subscriptions").once("value");SUBS=[];if(s.exists())s.forEach(c=>{if(c.key==="_test")return;SUBS.push({key:c.key,...c.val()});});}catch(e){SUBS=[];}updateSubBox();
+let my=schoolKey(schoolOfUser());let f=a=>{let x=schoolKey(a.schoolName||a.schoolId||a.school||"");return !x||x===my;};
 try{let b=await db.ref("books").once("value");BOOKS=[];if(b.exists())b.forEach(c=>BOOKS.push({key:c.key,...c.val()}));}catch(e){BOOKS=[];}
-let my=schoolKey(schoolOfUser());BOOKS=BOOKS.filter(b=>{let bs=schoolKey(b.schoolName||b.schoolId||b.school||"");return !bs||bs===my;});
+try{let i=await db.ref("issues").once("value");ISSUES=[];if(i.exists())i.forEach(c=>ISSUES.push({key:c.key,...c.val()}));}catch(e){ISSUES=[];}
+BOOKS=BOOKS.filter(f);ISSUES=ISSUES.filter(f);
 let a=myAssign();
-if(isAllAccess()){
-document.getElementById("myAssign").innerHTML=`<b>Role:</b> ${a.role} • <b>School:</b> ${my} • You can see / add / delete <b>ALL Departments</b>`;
-}else if(isHOD()){
-document.getElementById("myAssign").innerHTML=`<b>✅ HOD:</b> ${ME.email} • <b>Your Department:</b> ${a.department||"⚠️ BLANK — Ask Admin to set assignedDepartment"} ${a.subject?`• Subject: ${a.subject}`:"• All Subjects in Department"} ${a.grade?`• Grade: ${a.grade}`:""}<br><span style="color:#166534">You only see / add / delete stock for YOUR Department. Other Departments are hidden.</span>`;
-}else if(isTeacher()){
-document.getElementById("myAssign").innerHTML=`<b>👩‍🏫 Teacher:</b> ${ME.email} • <b>Department:</b> ${a.department||"—"} • <b>Grade:</b> ${a.grade||"—"} • <b>Subject:</b> ${a.subject||"—"}<br><span style="color:#166534">You only see stock for YOUR Department / Grade / Subject.</span>`;
-}else{
-document.getElementById("myAssign").innerHTML=`<b>Role:</b> ${a.role} • <b>Department:</b> ${a.department||"—"}`;
-}
-applyLockToForm();
-let vis=visibleBooks();
-document.getElementById("cCopies").textContent=vis.length;
-document.getElementById("cTitles").textContent=new Set(vis.map(b=>b.title||"")).size;
+if(isAllAccess()){document.getElementById("myAssign").innerHTML=`<b>Role:</b> ${a.role} • <b>School:</b> ${my} • You can see / add / import <b>ALL Departments</b>`;}
+else if(isHOD()){document.getElementById("myAssign").innerHTML=`<b>✅ HOD:</b> ${ME.email} • <b>Your Department:</b> ${a.department||"⚠️ BLANK"} ${a.subject?`• Subject: ${a.subject}`:""} ${a.grade?`• Grade: ${a.grade}`:""}<br><span style="color:#166534">You only see / add / import YOUR Department.</span>`;}
+else if(isTeacher()){document.getElementById("myAssign").innerHTML=`<b>👩‍🏫 Teacher:</b> ${ME.email} • <b>Your Class:</b> ${a.grade||"—"} ${a.cls||""} • <b>Dept:</b> ${a.department||"—"}<br><span style="color:#991b1b">Teachers can VIEW stock only — they cannot add / import.</span>`;}
+let vis=BOOKS.filter(b=>canAccessBook(b));
+document.getElementById("cTotal").textContent=vis.length;
 document.getElementById("cAvail").textContent=vis.filter(b=>String(b.copyStatus||"Available")==="Available").length;
-document.getElementById("cNext").textContent=await peekNextBookNo();
+document.getElementById("cIssued").textContent=vis.filter(b=>String(b.copyStatus)==="Issued").length;
+let groups={};vis.forEach(b=>{let k=b.title+"|"+b.grade+"|"+b.subject;if(!groups[k])groups[k]=0;if(String(b.copyStatus||"Available")==="Available")groups[k]++;});
+document.getElementById("cLow").textContent=Object.values(groups).filter(v=>v<=LOW_THRESHOLD).length;
 let subs=[...new Set(vis.map(b=>b.subject||"").filter(Boolean))].sort();
-let fs=document.getElementById("fSubject");let cur=fs.value;fs.innerHTML=`<option value="">All Subjects</option>`+subs.map(s=>`<option>${s}</option>`).join("");fs.value=cur;
+document.getElementById("fSubject").innerHTML=`<option value="">All Subjects</option>`+subs.map(s=>`<option>${s}</option>`).join("");
+applyLockToForm();
+if(!canAddStock()){document.querySelectorAll("#nDept,#nTitle,#nSubject,#nGrade,#nQty,#nPrefix,#nStart,#nPrice,#importFile,#importPrefix,#importPrice").forEach(el=>el.disabled=true);}
 render();
 }
-function filtered(){
-let vis=visibleBooks();
-let fd=document.getElementById("fDept").value;let fg=document.getElementById("fGrade").value;let fs=document.getElementById("fSubject").value;let q=(document.getElementById("search").value||"").toLowerCase();
-return vis.filter(b=>{if(fd&&(b.department||b.group||"")!==fd)return false;if(fg&&(b.grade||"")!==fg)return false;if(fs&&(b.subject||"")!==fs)return false;if(q){let hay=((b.title||"")+" "+(b.bookNo||"")+" "+(b.barcode||"")+" "+(b.subject||"")+" "+(b.department||"")+" "+(b.grade||"")).toLowerCase();if(!hay.includes(q))return false;}return true;});
+// ✅ IMPORT
+function downloadTemplate(){
+let rows=[["Title","Department","Grade","Subject","Qty","Price","StartingBookNo"],["Maths Grade 10 Textbook","Mathematics","Grade 10","Maths","30","250",""],["English HL Grade 10 Anthology","Languages","Grade 10","English HL","25","200",""],["Physical Sciences Grade 11 Textbook","Sciences","Grade 11","Physical Sciences","20","300",""]];
+let csv=rows.map(r=>r.map(c=>`"${c}"`).join(",")).join("\n");
+let a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv"}));a.download="makhanani_stock_template.csv";a.click();
+document.getElementById("msg").textContent="✅ Template downloaded — Fill it in Excel / Sheets, save as .xlsx or .csv, then Preview Import";
 }
-function render(){
-let arr=filtered();let wrap=document.getElementById("stockList");
-if(!arr.length){wrap.innerHTML=`<p style="text-align:center;color:#666;margin-top:16px">${isHOD()||isTeacher()?"No copies for your Department / Grade / Subject — or no stock yet.":"No copies found — Add stock above."}</p>`;return;}
-let groups={};arr.forEach(b=>{let key=(b.department||b.group||"Other")+" • "+(b.grade||"—")+" • "+(b.subject||"—")+" • "+(b.title||"—");if(!groups[key])groups[key]=[];groups[key].push(b);});
-let html="";Object.keys(groups).sort().forEach(key=>{let list=groups[key];html+=`<div class="groupHead"><span>${key}</span><span>${list.length} copies • Each copy = 1 Barcode</span></div><div class="scroll"><table><thead><tr><th>Book No / Barcode — 1 Per Copy</th><th>Status</th><th>Action</th></tr></thead><tbody>`;list.sort((a,b)=>String(a.bookNo||"").localeCompare(String(b.bookNo||""))).forEach(b=>{let no=b.bookNo||b.barcode||"—";let st=String(b.copyStatus||"Available");let badge=st==="Issued"?`<span class="badge b-gold">📤 Issued to ${b.issuedTo||""}</span>`:`<span class="badge b-green">✅ Available</span>`;html+=`<tr><td><b>${no}</b><div class="barcodeBox"><svg class="bc" data-code="${no}"></svg></div></td><td>${badge}</td><td><button class="btn purple" onclick="location.href='learners.html?bookNo=${encodeURIComponent(no)}'">👩‍🎓 Issue This Copy</button> <button class="btn gold" onclick="location.href='barcode_print.html?book=${encodeURIComponent(no)}'">🏷️ Print Label</button> <button class="btn red" onclick="delBook('${b.key}','${no}')">Delete This Copy</button></td></tr>`;});html+=`</tbody></table></div>`;});wrap.innerHTML=html;document.querySelectorAll(".bc").forEach(el=>{try{JsBarcode(el,el.dataset.code,{format:"CODE128",displayValue:true,fontSize:12,height:40,margin:4});}catch(e){el.outerHTML=`<span>${el.dataset.code}</span>`;}});}
-async function delBook(key,no){
-let book=BOOKS.find(b=>b.key===key);if(book){let chk=canAccessBook(book);if(!chk.ok){alert("⛔ You cannot delete this copy.\n\n"+chk.reason);return;}}
-if(!confirm("Delete THIS copy only?\n\nBook No: "+no+"\n\nThis number will NEVER be reused. Other copies keep their own numbers."))return;
-try{await db.ref("books/"+key).remove();loadAll();}catch(e){document.getElementById("msg").textContent="❌ Delete failed: "+e.message;}
-}
-function exportCSV(){
-let rows=[["Book No","Barcode","Department","Grade","Subject","Title","Author","Status","School"]];
-// ✅ Export only what this user can see — HOD cannot export other Departments
-filtered().forEach(b=>rows.push([b.bookNo||"",b.barcode||"",b.department||b.group||"",b.grade||"",b.subject||"",b.title||"",b.author||"",b.copyStatus||"Available",schoolKey(schoolOfUser())]));
-let csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="makhanani_stock_"+schoolPrefix()+"_"+(myAssign().department||"ALL")+"_"+new Date().toISOString().slice(0,10)+".csv";a.click();
-}
-document.getElementById("previewBtn").addEventListener("click",async()=>{let qty=Number(document.getElementById("bQty").value||1);let next=await peekNextBookNo();let prefix=schoolPrefix();let startNum=Number(next.replace(prefix,""));let endNum=startNum+qty-1;document.getElementById("previewBox").style.display="block";document.getElementById("previewQty").textContent=qty;document.getElementById("previewRange").textContent=qty===1?next:(prefix+String(startNum).padStart(6,"0")+" → "+prefix+String(endNum).padStart(6,"0")+"  ("+qty+" unique numbers)");});
-document.getElementById("addBtn").addEventListener("click",async()=>{
-let dept=document.getElementById("bDept").value;let grade=document.getElementById("bGrade").value;let subject=document.getElementById("bSubject").value.trim();let title=document.getElementById("bTitle").value.trim();let qty=Number(document.getElementById("bQty").value||0);let author=document.getElementById("bAuthor").value.trim();let msg=document.getElementById("msg");
-if(!dept||!grade||!subject||!title){msg.style.color="#991b1b";msg.textContent="❌ Fill Department + Grade + Subject + Title";return;}
-if(!qty||qty<1||qty>200){msg.style.color="#991b1b";msg.textContent="❌ Qty must be 1–200 copies";return;}
-// ✅ DEPARTMENT LOCK ON ADD — HOD / Teacher cannot add to another Department
-let chk=canAccessBook({department:dept,grade:grade,subject:subject});
-if(!chk.ok){msg.style.color="#991b1b";msg.textContent="⛔ "+chk.reason;alert("⛔ You cannot add stock for another Department / Grade / Subject.\n\n"+chk.reason);return;}
-let st=getSchoolSubscriptionStatus();if(st.locked&&!confirm("⚠️ School LOCKED:\n"+st.reason+"\n\nAdd stock anyway?"))return;
-msg.style.color="#166534";msg.textContent="⏳ Generating "+qty+" unique Book Nos — 1 per copy...";
+function normHeader(h){return String(h||"").trim().toLowerCase().replace(/[^a-z0-9]/g,"");}
+async function previewImport(){
+if(!canAddStock()){alert("⛔ Only Librarian / Admin / Principal / HOD can import.");return;}
+let file=document.getElementById("importFile").files[0];
+if(!file){alert("Choose a .xlsx, .xls or .csv file first. Tap 📥 Download Template CSV if you need the format.");return;}
+document.getElementById("importPreview").innerHTML=`<p style="color:#666">Reading ${file.name}...</p>`;
 try{
-let nos=await generateBookNos(qty);
-if(new Set(nos).size!==nos.length){msg.style.color="#991b1b";msg.textContent="❌ Duplicate detected inside batch — aborted, nothing saved.";return;}
-let batch={};
-nos.forEach((no,idx)=>{let k=db.ref("books").push().key;batch["books/"+k]={bookNo:no,bookNumber:no,barcode:no,copyNumber:idx+1,totalCopies:qty,department:dept,group:dept,grade:grade,subject:subject,title:title,qty:1,quantity:1,stock:1,copyStatus:"Available",author:author,schoolId:schoolOfUser(),schoolName:schoolOfUser(),school:schoolOfUser(),createdAt:Date.now(),createdBy:ME.email||""};});
-await db.ref().update(batch);
-msg.style.color="#166534";msg.textContent="✅ Added "+qty+" copies ("+dept+") — "+nos[0]+(qty>1?" → "+nos[nos.length-1]:"")+" • Each copy has its own barcode.";
-document.getElementById("bTitle").value="";document.getElementById("bSubject").value="";if(isTeacher())document.getElementById("bSubject").value=myAssign().subject;document.getElementById("previewBox").style.display="none";loadAll();}catch(e){msg.style.color="#991b1b";msg.textContent="❌ Add failed: "+e.message;}
+let data=await file.arrayBuffer();
+let wb=XLSX.read(data,{type:"array"});
+let ws=wb.Sheets[wb.SheetNames[0]];
+let json=XLSX.utils.sheet_to_json(ws,{defval:""});
+if(!json.length){document.getElementById("importPreview").innerHTML=`<p style="color:#991b1b">❌ Sheet is empty.</p>`;return;}
+// Map headers flexibly: Title, Department, Grade, Subject, Qty, Price, StartingBookNo
+let rows=json.map((r,idx)=>{
+let o={};
+Object.keys(r).forEach(k=>{let nk=normHeader(k);if(nk==="title")o.title=String(r[k]||"").trim();else if(nk==="department"||nk==="dept"||nk==="group")o.department=String(r[k]||"").trim();else if(nk==="grade")o.grade=String(r[k]||"").trim();else if(nk==="subject")o.subject=String(r[k]||"").trim();else if(nk==="qty"||nk==="quantity"||nk==="copies")o.qty=Number(r[k]||0);else if(nk==="price"||nk==="pricepercopy"||nk==="unitprice")o.price=Number(r[k]||0);else if(nk==="startingbookno"||nk==="startbookno"||nk==="bookno"||nk==="startingno")o.startingBookNo=String(r[k]||"").trim();});
+o._row=idx+2;return o;
 });
+IMPORT_ROWS=[];IMPORT_ERRORS=[];
+let prefix=(document.getElementById("importPrefix").value||"GSHS").trim().toUpperCase();
+let defaultPrice=Number(document.getElementById("importPrice").value||0);
+// Simulate Book No allocation to catch duplicates inside the file + against existing stock
+let existingNos=new Set(BOOKS.map(b=>String(b.bookNo||"")));
+let simNext=nextFreeNumber(prefix);
+let simUsed=new Set();
+rows.forEach(r=>{
+let errs=[];
+if(!r.title) errs.push("Missing Title");
+if(!r.department) errs.push("Missing Department");
+if(!r.grade) errs.push("Missing Grade");
+if(!r.subject) errs.push("Missing Subject");
+if(!r.qty||r.qty<1||r.qty>500) errs.push("Qty must be 1-500 (got "+r.qty+")");
+let a=myAssign();
+if(isHOD()&&a.department&&r.department&&r.department!==a.department) errs.push("Department mismatch — You are "+a.department+", row is "+r.department);
+if(isHOD()&&a.subject&&r.subject&&r.subject!==a.subject) errs.push("Subject mismatch — You are "+a.subject);
+if(isHOD()&&a.grade&&r.grade&&r.grade!==a.grade) errs.push("Grade mismatch — You are "+a.grade);
+// Book No range
+let startNum=null;
+if(r.startingBookNo){let p=parseBookNo(r.startingBookNo,prefix);if(!p) errs.push("StartingBookNo '"+r.startingBookNo+"' not valid");else startNum=p.num;}
+else startNum=simNext;
+if(startNum){
+for(let i=0;i<(r.qty||0);i++){let bn=prefix+pad(startNum+i);if(existingNos.has(bn)||simUsed.has(bn)){errs.push("Duplicate Book No "+bn+" already exists");break;}}
+if(!errs.length){for(let i=0;i<r.qty;i++) simUsed.add(prefix+pad(startNum+i));simNext=Math.max(simNext,startNum+(r.qty||0));}
+}
+r.price=r.price||defaultPrice||0;
+r._start=startNum;r._prefix=prefix;
+if(errs.length) IMPORT_ERRORS.push({row:r._row,errs:errs,raw:r});
+else IMPORT_ROWS.push(r);
+});
+let totalCopies=IMPORT_ROWS.reduce((s,r)=>s+r.qty,0);
+let totalCost=IMPORT_ROWS.reduce((s,r)=>s+r.qty*(r.price||0),0);
+let html=`<h3 style="margin:0">👁️ Preview — ${IMPORT_ROWS.length} valid rows • ${totalCopies} copies to create ${IMPORT_ERRORS.length?`• <span style="color:#991b1b">${IMPORT_ERRORS.length} rows with errors (will be skipped)</span>`:""}</h3><p style="font-size:12px;color:#666">Total Cost (if Price filled): R ${totalCost.toLocaleString("en-ZA",{minimumFractionDigits:2})}</p>`;
+if(IMPORT_ERRORS.length){
+html+=`<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:10px;padding:10px;margin-bottom:10px"><b>❌ Errors — Fix these rows in Excel, then Preview again:</b><ul style="margin:6px 0">${IMPORT_ERRORS.map(e=>`<li>Row ${e.row}: ${e.errs.join(" • ")} — Title: ${e.raw.title||"(blank)"}</li>`).join("")}</ul></div>`;
+}
+html+=`<div class="scroll"><table><thead><tr><th>Row</th><th>Title</th><th>Department</th><th>Grade</th><th>Subject</th><th>Qty</th><th>Price</th><th>Total</th><th>Book Nos</th></tr></thead><tbody>`+IMPORT_ROWS.map(r=>`<tr><td>${r._row}</td><td><b>${r.title}</b></td><td>${r.department}</td><td>${r.grade}</td><td>${r.subject}</td><td><b>${r.qty}</b></td><td>R ${(r.price||0).toFixed(2)}</td><td>R ${(r.qty*(r.price||0)).toFixed(2)}</td><td>${r._prefix+pad(r._start)} → ${r._prefix+pad(r._start+r.qty-1)}</td></tr>`).join("")+`</tbody></table></div>`;
+html+=`<p style="font-size:12px;color:#666;margin-top:8px">Tap <b>✅ Confirm & Import All</b> to create ${totalCopies} copies. Nothing is saved yet — this is only a preview.</p>`;
+document.getElementById("importPreview").innerHTML=html;
+document.getElementById("msg").textContent="👁️ Preview ready — "+IMPORT_ROWS.length+" rows valid, "+IMPORT_ERRORS.length+" errors";
+}catch(e){document.getElementById("importPreview").innerHTML=`<p style="color:#991b1b">❌ Could not read file: ${e.message}<br>Try saving as .csv and uploading again.</p>`;}
+}
+async function confirmImport(){
+if(!IMPORT_ROWS.length){alert("Preview first — no valid rows to import.\n\nTap 📥 Download Template, fill it, then 👁️ Preview Import.");return;}
+let total=IMPORT_ROWS.reduce((s,r)=>s+r.qty,0);
+if(!confirm("Import "+IMPORT_ROWS.length+" titles / "+total+" copies?\n\n"+IMPORT_ROWS.map(r=>r.title+" x"+r.qty).join("\n")+"\n\nEach copy gets its own Book No. This cannot be undone in bulk — you would need to delete copies one by one.")) return;
+try{
+LAST_ADDED=[];
+let done=0;
+for(let r of IMPORT_ROWS){
+for(let i=0;i<r.qty;i++){
+let bn=r._prefix+pad(r._start+i);
+let ref=await db.ref("books").push({bookNo:bn,barcode:bn,title:r.title,department:r.department,group:r.department,subject:r.subject,grade:r.grade,copyStatus:"Available",status:"Available",price:r.price||0,imported:true,schoolId:schoolOfUser(),schoolName:schoolOfUser(),school:schoolOfUser(),createdAt:Date.now(),createdBy:ME.email});
+LAST_ADDED.push({key:ref.key,bookNo:bn});
+}
+done+=r.qty;
+}
+document.getElementById("msg").textContent="✅ Imported "+done+" copies from "+IMPORT_ROWS.length+" titles";
+document.getElementById("lastAdded").innerHTML=`Last imported: <b>${done} copies</b> • <button class="btn gold" onclick="printNew()">🏷️ Print These Barcodes</button>`;
+IMPORT_ROWS=[];IMPORT_ERRORS=[];
+document.getElementById("importPreview").innerHTML=`<p style="color:#166534">✅ Import done — ${done} copies created. Upload another file to import more.</p>`;
+document.getElementById("importFile").value="";
+loadAll();
+}catch(e){document.getElementById("msg").textContent="❌ Import failed: "+e.message;}
+}
+function clearImport(){IMPORT_ROWS=[];IMPORT_ERRORS=[];document.getElementById("importFile").value="";document.getElementById("importPreview").innerHTML="";}
+function render(){
+let fd=document.getElementById("fDept").value;let fg=document.getElementById("fGrade").value;let fs=document.getElementById("fSubject").value;let fst=document.getElementById("fStatus").value;let q=(document.getElementById("search").value||"").toLowerCase();
+let arr=BOOKS.filter(b=>canAccessBook(b)).filter(b=>{
+if(fd&&(b.department||b.group||"")!==fd) return false;
+if(fg&&(b.grade||"")!==fg) return false;
+if(fs&&(b.subject||"")!==fs) return false;
+if(fst&&String(b.copyStatus||"Available")!==fst) return false;
+if(q&&!((b.title||"")+" "+(b.bookNo||"")).toLowerCase().includes(q)) return false;
+return true;
+});
+let wrap=document.getElementById("stockList");
+if(!arr.length){wrap.innerHTML=`<p style="text-align:center;color:#666">No stock for your Department / filter.</p>`;return;}
+let groups={};arr.forEach(b=>{let k=(b.department||"Other")+" • "+(b.grade||"—")+" • "+(b.subject||"—")+" • "+(b.title||"—");if(!groups[k])groups[k]=[];groups[k].push(b);});
+let html="";Object.keys(groups).sort().forEach(k=>{let list=groups[k];let avail=list.filter(b=>String(b.copyStatus||"Available")==="Available").length;let issued=list.filter(b=>String(b.copyStatus)==="Issued").length;let badge=avail===0?`<span class="badge b-red">🔴 OUT</span>`:avail<=LOW_THRESHOLD?`<span class="badge b-gold">🟡 LOW: ${avail}</span>`:`<span class="badge b-green">🟢 ${avail} available</span>`;html+=`<div class="groupHead"><span>${k}</span><span>${list.length} copies • ${avail} Available • ${issued} Issued • ${badge} • <button class="btn gold" onclick="printGroup('${encodeURIComponent(k)}')">🏷️ Print Barcodes</button></span></div><div class="scroll"><table><thead><tr><th>Book No</th><th>Status</th><th>Issued To</th><th>Action</th></tr></thead><tbody>`;list.sort((a,b)=>String(a.bookNo||"").localeCompare(String(b.bookNo||""))).forEach(b=>{let st=String(b.copyStatus||"Available");html+=`<tr><td><b>${b.bookNo||"—"}</b></td><td>${st==="Issued"?`<span class="badge b-gold">📤 Issued</span>`:`<span class="badge b-green">✅ Available</span>`}</td><td>${b.issuedTo||b.learnerId||"—"}</td><td>${canAddStock()?`<button class="btn red" onclick="deleteCopy('${b.key}','${b.bookNo||""}')">🗑️ Delete</button> <button class="btn dark" onclick="editCopy('${b.key}')">✏️ Edit</button>`:"—"}</td></tr>`;});html+=`</tbody></table></div>`;});wrap.innerHTML=html;
+}
+async function addStock(){
+if(!canAddStock()){alert("⛔ Only Librarian / Admin / Principal / HOD can add stock.");return;}
+let dept=document.getElementById("nDept").value;let title=document.getElementById("nTitle").value.trim();let subject=document.getElementById("nSubject").value;let grade=document.getElementById("nGrade").value;let qty=Number(document.getElementById("nQty").value||0);let prefix=(document.getElementById("nPrefix").value||"GSHS").trim().toUpperCase();let price=Number(document.getElementById("nPrice").value||0);
+let a=myAssign();if((isHOD()||isTeacher())&&a.department&&dept!==a.department){alert("⛔ Department mismatch");return;}
+if(!dept||!title||!subject||!grade){alert("Fill Department, Title, Subject, Grade");return;}
+if(!qty||qty<1||qty>200){alert("Qty must be 1-200");return;}
+let startInput=document.getElementById("nStart").value.trim();let start=startInput?Number(startInput):nextFreeNumber(prefix);if(!start||start<1){alert("Enter valid Starting Book No");return;}
+for(let i=0;i<qty;i++){let bn=prefix+pad(start+i);if(BOOKS.some(b=>String(b.bookNo||"")===bn)){alert("❌ Book No "+bn+" already exists. Change Starting Book No to "+nextFreeNumber(prefix));return;}}
+if(!confirm("Add Stock?\n\n"+title+"\n"+dept+" • "+grade+" • "+subject+"\nQty: "+qty+"\nBook Nos: "+prefix+pad(start)+" → "+prefix+pad(start+qty-1)) ) return;
+try{let created=[];for(let i=0;i<qty;i++){let bn=prefix+pad(start+i);let ref=await db.ref("books").push({bookNo:bn,barcode:bn,title:title,department:dept,group:dept,subject:subject,grade:grade,copyStatus:"Available",status:"Available",price:price||0,schoolId:schoolOfUser(),schoolName:schoolOfUser(),school:schoolOfUser(),createdAt:Date.now(),createdBy:ME.email});created.push({key:ref.key,bookNo:bn});}LAST_ADDED=created;document.getElementById("msg").textContent="✅ Added "+qty+" copies — "+prefix+pad(start)+" → "+prefix+pad(start+qty-1);document.getElementById("lastAdded").innerHTML=`Last added: <b>${qty} copies</b> — ${prefix+pad(start)} → ${prefix+pad(start+qty-1)} • <button class="btn gold" onclick="printNew()">🏷️ Print These Barcodes</button>`;document.getElementById("nStart").value="";document.getElementById("nTitle").value="";loadAll();}catch(e){document.getElementById("msg").textContent="❌ Add failed: "+e.message;}
+}
+function printNew(){if(!LAST_ADDED.length){alert("Add / Import stock first, then print.");return;}location.href="barcode_print.html?book="+LAST_ADDED[0].bookNo+"&type=book";}
+function printGroup(encK){let k=decodeURIComponent(encK);let parts=k.split(" • ");location.href="barcode_print.html?type=book&dept="+encodeURIComponent(parts[0])+"&grade="+encodeURIComponent(parts[1])+"&subject="+encodeURIComponent(parts[2])+"&book="+encodeURIComponent(parts[3]);}
+async function deleteCopy(key,bn){if(!canAddStock()){alert("Only Librarian / Admin / HOD can delete.");return;}let b=BOOKS.find(x=>x.key===key);if(b&&String(b.copyStatus)==="Issued"){alert("⛔ Cannot delete — ISSUED to "+(b.issuedTo||"")+". Return it first.");return;}if(!confirm("Delete copy "+bn+"?")) return;try{await db.ref("books/"+key).remove();document.getElementById("msg").textContent="🗑️ Deleted "+bn;loadAll();}catch(e){document.getElementById("msg").textContent="❌ Delete failed: "+e.message;}}
+async function editCopy(key){let b=BOOKS.find(x=>x.key===key);if(!b)return;let newTitle=prompt("Edit Title:",b.title||"");if(newTitle===null)return;let newSubject=prompt("Edit Subject:",b.subject||"");if(newSubject===null)return;try{await db.ref("books/"+key).update({title:newTitle.trim(),subject:newSubject.trim()});document.getElementById("msg").textContent="✅ Updated "+b.bookNo;loadAll();}catch(e){document.getElementById("msg").textContent="❌ Edit failed: "+e.message;}}
 firebase.auth().onAuthStateChanged(async u=>{if(!u){location.href="login.html";return;}try{let s=await db.ref("users/"+u.uid).once("value");if(!s.exists()){document.getElementById("myEmail").textContent=u.email+" — No user record";return;}ME=s.val()||{};ME.role=normRole(ME.role);ME.email=u.email;document.getElementById("myEmail").textContent=u.email+" • "+ME.role+" ✅ • "+(ME.schoolName||ME.schoolId||"No School");loadAll();}catch(e){document.getElementById("myEmail").textContent="Error: "+e.message;}});
 </script></body></html>
