@@ -1,56 +1,62 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login — Makhanani LTSM 2.0 — Xintimani Group Holdings (Pty) Ltd</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login — Makhanani LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#eef2f7}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;gap:12px;align-items:center}header img{height:56px;background:#fff;border-radius:10px;padding:3px}.topBtns{display:flex;gap:10px;padding:12px 16px;background:#0a1f4d;padding-top:0}.btn{border:none;padding:12px 16px;border-radius:10px;font-weight:900;cursor:pointer;font-size:14px}.btn.gold{background:#d4af37;color:#000}.btn.white{background:#fff;color:#0a1f4d}.wrap{max-width:520px;margin:14px auto;padding:0 14px}.card{background:#fff;border-radius:18px;padding:22px}.hero{background:#0a1f4d;color:#fff;border-radius:16px;padding:20px;text-align:center;margin-bottom:14px}.hero h2{margin:0;font-size:24px}.hero p{margin:6px 0;color:#cbd5e1}.pill{display:inline-block;background:#d4af37;color:#000;font-weight:900;padding:8px 14px;border-radius:20px;font-size:13px;margin-top:6px}label{display:block;font-weight:800;margin:14px 0 6px}input[type=email],input[type=password],input[type=text]{width:100%;padding:14px;border:1px solid #ddd;border-radius:12px;font-size:16px}input:focus{outline:2px solid #0a1f4d}.loginBtn{width:100%;background:#16a34a;color:#fff;border:none;padding:16px;border-radius:12px;font-weight:900;font-size:17px;cursor:pointer;margin-top:18px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.row2 button{padding:14px;border:none;border-radius:12px;font-weight:900;cursor:pointer;font-size:14px}.dark{background:#0a1f4d;color:#fff}.gold{background:#d4af37;color:#000}.note{background:#fef9c3;border:1px solid #facc15;border-radius:12px;padding:14px;font-size:14px;line-height:1.6;margin-top:16px}.footer{text-align:center;color:#666;font-size:12px;padding:14px;line-height:1.6}
-@media(max-width:480px){header{padding:12px}header img{height:48px}}
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#0a1f4d;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}.box{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:420px;text-align:center}.logo{height:70px;background:#fff;border-radius:12px;padding:4px}h1{margin:10px 0 4px;color:#0a1f4d;font-size:24px}p{color:#666;font-size:13px;margin:0 0 16px}label{font-weight:800;display:block;text-align:left;margin:12px 0 5px;font-size:13px}input{width:100%;padding:14px;border:1px solid #ddd;border-radius:12px;font-size:16px}.btn{width:100%;background:#0a1f4d;color:#fff;border:none;padding:15px;border-radius:12px;font-weight:900;font-size:16px;cursor:pointer;margin-top:16px}.btn:disabled{opacity:.6}.err{background:#fee2e2;color:#991b1b;border-radius:10px;padding:12px;font-size:13px;margin-top:12px;display:none;text-align:left}.ok{background:#dcfce7;color:#166534;border-radius:10px;padding:12px;font-size:13px;margin-top:12px;display:none}.small{font-size:12px;color:#666;margin-top:14px;line-height:1.6}
 </style></head>
 <body>
-<!-- ✅ HEADER — COMPANY NAME + REG NO — NOT Wordsworth -->
-<header><img src="logo.png" alt="Xintimani Group Holdings Logo"><div style="line-height:1.25"><div style="font-size:22px;font-weight:900">Makhanani LTSM 2.0</div><div style="font-size:13px;color:#d4af37;font-weight:700">Xintimani Group Holdings (Pty) Ltd</div><div style="font-size:11px;color:#cbd5e1">Reg No: 2026/934898/07 • Building Solutions, Empowering Communities</div></div></header>
-<div class="topBtns"><button class="btn gold" style="flex:1" onclick="location.href='landing.html'">🏠 Back to Landing Page</button><button class="btn white" style="flex:1" onclick="location.href='register.html'">📝 Register</button></div>
-<div class="wrap">
-<div class="hero"><h2>🔐 Login to Your Dashboard</h2><p>Teacher • HOD • Principal • Librarian • Finance •<br>Admin • Super Admin</p><span class="pill">💰 Pricing + 💳 Subscriptions in Finance</span></div>
-<div class="card">
-<h1 style="margin:0;font-size:28px">Welcome Back</h1><p style="color:#666;margin:6px 0 0">Login → You go straight to <b>your role's dashboard</b>.</p>
-<label>Email *</label><input id="email" type="email" placeholder="e.g. teacher@school.co.za" autocomplete="email">
-<label>Password *</label><input id="password" type="password" placeholder="Your password" autocomplete="current-password">
-<label style="display:flex;gap:8px;align-items:center;font-weight:400;font-size:15px"><input type="checkbox" id="showPw" onchange="togglePw()" style="width:20px;height:20px"> Show password</label>
-<button class="loginBtn" onclick="doLogin()" id="loginBtn">🔐 LOGIN →</button>
-<div class="row2"><button class="dark" onclick="forgotPw()">🔑 Forgot Password?</button><button class="gold" onclick="location.href='register.html'">📝 No Account? Register</button></div>
-<div class="note">💡 <b>Test accounts:</b> Ask Super Admin to create you in <b>Super Admin → Create User</b>. Your Role decides your dashboard — Finance users go to <b>finance.html</b> (Subscriptions + Pricing).</div>
-<p id="msg" style="font-size:14px;font-weight:700;text-align:center"></p>
-</div>
-<div class="footer"><b>Makhanani LTSM 2.0</b><br>Xintimani Group Holdings (Pty) Ltd • Reg No: 2026/934898/07<br>Finance — finance@xintimanigroupholdings.co.za</div>
+<div class="box">
+<img src="logo.png" alt="Xintimani Group Holdings Logo" class="logo" onerror="this.style.display='none'">
+<h1>Makhanani LTSM 2.0</h1><p>Xintimani Group Holdings (Pty) Ltd<br>Reg No: 2026/934898/07</p>
+<label>Email</label><input id="email" type="email" placeholder="you@school.co.za" autocomplete="email">
+<label>Password</label><input id="password" type="password" placeholder="Your password" autocomplete="current-password">
+<button class="btn" id="loginBtn" type="button">🔐 LOGIN</button>
+<div class="err" id="err"></div><div class="ok" id="ok"></div>
+<div class="small">After login you go to <b>Landing</b> → choose your role.<br>If you just logged out, you must login again — you will NOT be auto-logged back in.<br>Forgot password? Ask Super Admin / Finance to reset it in Firebase Authentication.</div>
+<div style="margin-top:12px;font-size:12px;color:#666">Makhanani LTSM 2.0 • Xintimani Group Holdings (Pty) Ltd</div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 try{firebase.initializeApp(firebaseConfig);}catch(e){}
-const db=firebase.database();
-function togglePw(){let p=document.getElementById("password");p.type=document.getElementById("showPw").checked?"text":"password";}
-function normRole(r){if(!r)return"";let x=String(r).trim().toLowerCase().replace(/_/g," ").replace(/\s+/g," ");if(x==="super admin"||x==="superadmin")return"Super Admin";if(x==="admin"||x==="administrator")return"Admin";if(x==="principal")return"Principal";if(x==="librarian")return"Librarian";if(x==="hod"||x==="head of department")return"HOD";if(x==="teacher"||x==="educator")return"Teacher";if(x==="finance"||x==="financial"||x==="bursar")return"Finance";return r;}
-function roleToPage(role){let r=normRole(role);if(r==="Super Admin")return"super_admin.html";if(r==="Admin")return"index.html";if(r==="Principal")return"principal.html";if(r==="Librarian")return"librarian.html";if(r==="HOD")return"hod.html";if(r==="Teacher")return"teacher.html";if(r==="Finance")return"finance.html";return"teacher.html";}
+const auth=firebase.auth();const db=firebase.database();
+function showErr(t){let e=document.getElementById("err");e.style.display="block";e.textContent=t;document.getElementById("ok").style.display="none";}
+function showOk(t){let e=document.getElementById("ok");e.style.display="block";e.textContent=t;document.getElementById("err").style.display="none";}
+function friendlyError(e){
+let m=String(e.message||e);
+if(m.includes("user-not-found")||m.includes("invalid-credential")||m.includes("wrong-password")||m.includes("invalid-email")) return "❌ Wrong email or password. Check email spelling, check Caps Lock, try again. If you never got a password, ask Super Admin to create / reset you.";
+if(m.includes("too-many-requests")) return "❌ Too many failed attempts. Wait 5 minutes, then try again.";
+if(m.includes("network")) return "❌ No internet / network error. Check data / WiFi and try again.";
+return "❌ Login failed: "+m;
+}
 async function doLogin(){
-let email=document.getElementById("email").value.trim();let pw=document.getElementById("password").value;
-let msg=document.getElementById("msg");if(!email||!pw){msg.style.color="#991b1b";msg.textContent="❌ Enter Email + Password";return;}
+let email=document.getElementById("email").value.trim().toLowerCase();
+let pass=document.getElementById("password").value;
+if(!email||!pass){showErr("❌ Enter email AND password");return;}
 let btn=document.getElementById("loginBtn");btn.textContent="⏳ Logging in...";btn.disabled=true;
 try{
-let cred=await firebase.auth().signInWithEmailAndPassword(email,pw);
-let snap=await db.ref("users/"+cred.user.uid).once("value");
-if(!snap.exists()){msg.style.color="#991b1b";msg.textContent="❌ No user record in Database — Ask Super Admin to create you.";btn.textContent="🔐 LOGIN →";btn.disabled=false;return;}
-let me=snap.val()||{};let role=normRole(me.role);
-msg.style.color="#166534";msg.textContent="✅ Welcome "+(me.name||email)+" • "+role+" — Going to your dashboard...";
-setTimeout(()=>{location.href=roleToPage(role);},600);
-}catch(e){msg.style.color="#991b1b";msg.textContent="❌ "+e.message;btn.textContent="🔐 LOGIN →";btn.disabled=false;}
+// ✅ Clear the logout flag BEFORE login, so onAuthStateChanged does NOT bounce you
+sessionStorage.removeItem("justLoggedOut");
+let cred=await auth.signInWithEmailAndPassword(email,pass);
+showOk("✅ Logged in as "+cred.user.email+" — checking your user record...");
+// Check user record exists — if not, still go to Landing, Landing will show the message
+try{let snap=await db.ref("users/"+cred.user.uid).once("value");if(!snap.exists()){showErr("⚠️ Logged in, but NO user record in Database for "+email+". You will go to Landing, but ask Super Admin to create you in Super Admin → Create User with this exact email + Role + School.");setTimeout(()=>location.href="landing.html",1500);return;}}catch(e){/* still go to landing */}
+setTimeout(()=>location.href="landing.html",600);
+}catch(e){showErr(friendlyError(e));btn.textContent="🔐 LOGIN";btn.disabled=false;}
 }
-async function forgotPw(){
-let email=document.getElementById("email").value.trim();if(!email){alert("Enter your Email first, then tap Forgot Password");return;}
-try{await firebase.auth().sendPasswordResetEmail(email);alert("✅ Password reset email sent to "+email+"\nCheck Inbox + Spam.");}catch(e){alert("❌ "+e.message);}
-}
+document.getElementById("loginBtn").addEventListener("click",doLogin);
 document.getElementById("password").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
 document.getElementById("email").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
-firebase.auth().onAuthStateChanged(async u=>{
+// ✅ FIX: Only auto-redirect if user is ALREADY logged in AND did NOT just log out
+// Old bug: after logout, Firebase still had a session for a second, so it bounced you back in
+auth.onAuthStateChanged(u=>{
 if(!u) return;
-if(sessionStorage.getItem("justLoggedOut")==="1"){sessionStorage.removeItem("justLoggedOut");return;}
-// If already logged in, go straight to dashboard — don't stay on login
-try{let s=await db.ref("users/"+u.uid).once("value");if(s.exists()){let me=s.val()||{};location.href=roleToPage(me.role);}}catch(e){}
+if(sessionStorage.getItem("justLoggedOut")==="1"){
+// User just clicked Logout — do NOT auto-login them again. Stay on login page.
+sessionStorage.removeItem("justLoggedOut");
+showOk("✅ Logged out. Please login again.");
+return;
+}
+// Already logged in from before (e.g. refreshed page) — go straight to Landing
+let ok=document.getElementById("ok");
+if(!ok.textContent) showOk("✅ Already logged in as "+u.email+" — going to Landing...");
+setTimeout(()=>location.href="landing.html",600);
 });
 </script></body></html>
