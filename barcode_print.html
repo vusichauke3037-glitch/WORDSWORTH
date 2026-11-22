@@ -1,34 +1,27 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Print Barcodes — MAKHANANI LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#eef2f7}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}header img{height:52px;background:#fff;border-radius:10px;padding:3px}.btn{border:none;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:13px}.btn.gold{background:#d4af37;color:#000}.btn.green{background:#16a34a;color:#fff}.btn.white{background:#fff;color:#0a1f4d}.btn.dark{background:#0a1f4d;color:#fff}.btn.red{background:#ef4444;color:#fff}.btn.purple{background:#7c3aed;color:#fff}.wrap{max-width:1100px;margin:14px auto;padding:0 14px}.card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}label{font-weight:800;display:block;margin:10px 0 5px;font-size:13px}input,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:12px;font-size:15px}input:disabled,select:disabled{background:#f0fdf4;opacity:.9}.info{background:#eff6ff;border:2px solid #0a1f4d;border-radius:12px;padding:12px;font-size:13px}.lockBox{border:3px solid #dc2626;background:#fffafa;border-radius:14px;padding:14px;margin-bottom:14px}.okBox{border:3px solid #16a34a;background:#f0fdf4;border-radius:14px;padding:14px;margin-bottom:14px}.badge{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:900}.b-green{background:#dcfce7;color:#166534}.b-red{background:#fee2e2;color:#991b1b}.b-gold{background:#fef3c7;color:#92400e}
-/* Screen preview — 3 x 5 */
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#eef2f7}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}header img{height:52px;background:#fff;border-radius:10px;padding:3px}.btn{border:none;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:13px}.btn.gold{background:#d4af37;color:#000}.btn.green{background:#16a34a;color:#fff}.btn.white{background:#fff;color:#0a1f4d}.btn.dark{background:#0a1f4d;color:#fff}.btn.red{background:#ef4444;color:#fff}.btn.purple{background:#7c3aed;color:#fff}.wrap{max-width:1100px;margin:14px auto;padding:0 14px}.card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}label{font-weight:800;display:block;margin:10px 0 5px;font-size:13px}input,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:12px;font-size:15px}input:disabled,select:disabled{background:#f0fdf4;opacity:.9}.info{background:#eff6ff;border:2px solid #0a1f4d;border-radius:12px;padding:12px;font-size:13px}.lockBox{border:3px solid #dc2626;background:#fffafa;border-radius:14px;padding:14px;margin-bottom:14px}.okBox{border:3px solid #16a34a;background:#f0fdf4;border-radius:14px;padding:14px;margin-bottom:14px}.badge{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:900}.b-green{background:#dcfce7;color:#166534}.b-red{background:#fee2e2;color:#991b1b}.b-gold{background:#fef3c7;color:#92400e}.diag{background:#fffbeb;border:2px solid #f59e0b;border-radius:12px;padding:12px;font-size:13px;margin-top:12px}
 .sheet{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}.label{border:2px dashed #0a1f4d;border-radius:10px;padding:8px;text-align:center;background:#fff;overflow:hidden}.label b{font-size:13px;display:block;line-height:1.2}.label small{font-size:11px;color:#333;display:block;line-height:1.2}.label svg{width:100%;max-height:46px}
 @media(max-width:700px){.grid,.filters{grid-template-columns:1fr 1fr}.sheet{grid-template-columns:1fr 1fr}}
-/* Print — A4 3 x 5 = 15 per page */
-@media print{
-body{background:#fff}header,.noPrint{display:none!important}.wrap{max-width:none;margin:0;padding:0}.card{border:none;border-radius:0;padding:0;margin:0;box-shadow:none}
-.sheet{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6mm;page-break-inside:auto}
-.label{border:1px solid #000;border-radius:0;padding:4mm 2mm;break-inside:avoid;page-break-inside:avoid}
-.label:nth-child(15n){page-break-after:always}
-}
+@media print{body{background:#fff}header,.noPrint{display:none!important}.wrap{max-width:none;margin:0;padding:0}.card{border:none;border-radius:0;padding:0;margin:0;box-shadow:none}.sheet{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6mm}.label{border:1px solid #000;border-radius:0;padding:4mm 2mm;break-inside:avoid}.label:nth-child(15n){page-break-after:always}}
 </style></head>
 <body>
 <header><div style="display:flex;gap:12px;align-items:center"><img src="logo.png" alt="Xintimani Group Holdings Logo"><div style="line-height:1.25"><div style="font-size:20px;font-weight:900">Print Barcodes — MAKHANANI LTSM 2.0</div><div style="font-size:12px;color:#d4af37;font-weight:700">Xintimani Group Holdings (Pty) Ltd</div><div style="font-size:11px;color:#cbd5e1">Reg No: 2026/934898/07 • <span id="myEmail">Loading...</span></div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="location.href='landing.html'">🏠 Landing</button><button class="btn dark" onclick="location.href='librarian.html'">📚 Librarian</button><button class="btn purple" onclick="location.href='learners.html'">👩‍🎓 Learners</button><button class="btn purple" onclick="location.href='stock.html'">📦 Stock</button><button class="btn purple" onclick="location.href='issue_requests.html'">📝 Issue Requests</button><button class="btn gold" onclick="location.href='hod_dashboard.html'">✅ HOD Dashboard</button><button class="btn white" onclick="logout()">🚪 Logout</button></div></header>
 <div class="wrap">
 <div id="subBox" class="okBox noPrint"><b>Subscription:</b> <span id="subStatus">Checking...</span></div>
-<div class="card noPrint"><div class="info" id="myAssign">Loading...</div><p style="text-align:center;font-size:13px;font-weight:700;margin:10px 0 0">✅ RULE: 1 Book = 1 Barcode • 1 Learner = 1 Barcode • A4 = 3 × 5 = 15 Labels Per Page</p><p id="msg" style="font-size:13px;font-weight:700;text-align:center"></p></div>
+<div class="card noPrint"><div class="info" id="myAssign">Loading...</div><p style="text-align:center;font-size:13px;font-weight:700;margin:10px 0 0">✅ RULE: 1 Book = 1 Barcode • 1 Learner = 1 Barcode • A4 = 3 × 5 = 15 Labels Per Page</p><p id="msg" style="font-size:13px;font-weight:700;text-align:center"></p><div id="diag" class="diag" style="display:none"></div></div>
 <div class="card noPrint"><h2 style="margin:0">🏷️ Choose What To Print</h2>
-<div class="grid"><div><label>Type *</label><select id="pType" onchange="onTypeChange()"><option value="book">📚 Book Labels — 1 Per Copy</option><option value="learner">👩‍🎓 Learner Labels — 1 Per Learner</option></select></div><div><label>Department / Group</label><select id="fDept" onchange="render()"><option value="">All Departments</option><option>Languages</option><option>Mathematics</option><option>Sciences</option><option>Humanities</option><option>Commerce</option><option>Technology</option><option>Life Orientation</option><option>Creative Arts</option><option>Other</option></select></div><div><label>Grade</label><select id="fGrade" onchange="render()"><option value="">All Grades</option><option>Grade 8</option><option>Grade 9</option> <option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Subject</label><select id="fSubject" onchange="render()"><option value="">All Subjects</option></select></div><div><label>Class (Learners Only)</label><select id="fClass" onchange="render()"><option value="">All Classes</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option></select></div><div><label>Search Book No / Title / Learner</label><input id="search" placeholder="🔍 e.g. GSHS000001 or 10A001..." oninput="render()"></div></div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn dark" onclick="selectAll(true)">✅ Select All On Page</button><button class="btn white" onclick="selectAll(false)">❌ Clear All</button><button class="btn green" onclick="printSelected()">🖨️ Print Selected (<span id="selCount">0</span>)</button><button class="btn gold" onclick="window.print()">🖨️ Print All Shown</button></div>
-<p style="font-size:12px;color:#666;margin:8px 0 0">Tip: Tick only the copies you just added, then Print Selected. Or use URL: <code>barcode_print.html?book=GSHS000001</code> for 1 label, <code>?type=learner&grade=Grade 10&class=A</code> for a whole class.</p></div>
-<div class="card"><h2 style="margin:0" id="sheetTitle">🏷️ Labels — Preview (3 × 5 A4)</h2><p class="noPrint" style="color:#666;font-size:12px;margin:6px 0 0">Tick labels to print only those. Untick to skip. Each label shows Book No / Learner ID + Barcode.</p><div class="sheet" id="sheet"></div><p id="emptyMsg" style="text-align:center;color:#666"></p></div>
+<div class="grid"><div><label>Type *</label><select id="pType" onchange="onTypeChange()"><option value="book">📚 Book Labels — 1 Per Copy</option><option value="learner">👩‍🎓 Learner Labels — 1 Per Learner</option></select></div><div><label>Department / Group</label><select id="fDept" onchange="render()"><option value="">All Departments</option><option>Languages</option><option>Mathematics</option><option>Sciences</option><option>Humanities</option><option>Commerce</option><option>Technology</option><option>Life Orientation</option><option>Creative Arts</option><option>Other</option></select></div><div><label>Grade</label><select id="fGrade" onchange="render()"><option value="">All Grades</option><option>Grade 8</option><option>Grade 9</option> <option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Subject</label><select id="fSubject" onchange="render()"><option value="">All Subjects</option></select></div><div><label>Class (Learners Only)</label><select id="fClass" onchange="render()"><option value="">All Classes</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option></select></div><div><label>Search Book No / Title / Learner — Exact Book No ignores other filters</label><input id="search" placeholder="e.g. WHS000001 or 10A001..." oninput="render()"></div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn dark" onclick="selectAll(true)">✅ Select All On Page</button><button class="btn white" onclick="selectAll(false)">❌ Clear All</button><button class="btn gold" onclick="clearFilters()">🧹 Clear All Filters</button><button class="btn green" onclick="printSelected()">🖨️ Print Selected (<span id="selCount">0</span>)</button><button class="btn gold" onclick="window.print()">🖨️ Print All Shown</button><button class="btn dark" onclick="loadAll()">🔄 Reload Books</button></div>
+<p style="font-size:12px;color:#666;margin:8px 0 0">Tip: Type exact Book No <code>WHS000001</code> → It will show even if Dept / Grade / Subject filters are wrong. Or tap <b>🧹 Clear All Filters</b> first.</p></div>
+<div class="card"><h2 style="margin:0" id="sheetTitle">🏷️ Labels — Preview (3 × 5 A4)</h2><p class="noPrint" style="color:#666;font-size:12px;margin:6px 0 0">Tick labels to print only those.</p><div class="sheet" id="sheet"></div><p id="emptyMsg" style="text-align:center;color:#666"></p></div>
 <div style="text-align:center;color:#666;font-size:12px;padding:10px" class="noPrint">MAKHANANI LTSM 2.0 • Xintimani Group Holdings (Pty) Ltd • Reg No: 2026/934898/07</div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 try{firebase.initializeApp(firebaseConfig);}catch(e){}
-const db=firebase.database();let ME={};let BOOKS=[];let LEARNERS=[];let ISSUES=[];let SUBS=[];let TYPE="book";let SELECTED=new Set();
+const db=firebase.database();let ME={};let BOOKS=[];let LEARNERS=[];let ISSUES=[];let SUBS=[];let TYPE="book";let SELECTED=new Set();let LAST_FILTER_INFO="";
 function logout(){sessionStorage.setItem("justLoggedOut","1");firebase.auth().signOut().then(()=>location.href="login.html");}
 function normRole(r){if(!r)return"";let x=String(r).trim().toLowerCase().replace(/_/g," ").replace(/\s+/g," ");if(x==="super admin"||x==="superadmin")return"Super Admin";if(x==="admin"||x==="administrator")return"Admin";if(x==="principal")return"Principal";if(x==="librarian")return"Librarian";if(x==="hod"||x==="head of department")return"HOD";if(x==="teacher"||x==="educator")return"Teacher";if(x==="finance"||x==="financial"||x==="bursar")return"Finance";return r;}
 function schoolOfUser(){return (ME.schoolName||ME.schoolId||ME.school||"").trim();}
@@ -39,7 +32,6 @@ function isActiveSub(s){return normStatus(s)==="active"&&!isExpired(s);}
 function isDonation(s){return (s.notes||"").toLowerCase().includes("donation")||s.donation===true||Number(s.amount||0)===0;}
 function getSchoolSubscriptionStatus(){let mySchool=schoolKey(schoolOfUser());let mine=SUBS.filter(s=>schoolKey(s.schoolName||s.schoolId||s.school)===mySchool);if(!mine.length)return{locked:true,reason:"Missing — No subscription for "+mySchool};let a=mine.find(s=>isActiveSub(s));if(a)return{locked:false,reason:"Active — "+(a.plan||"Premium")+" • Renewal "+(a.renewal||"—")+(isDonation(a)?" • 🎁 Donation":"")};let f=mine[0];if(isExpired(f))return{locked:true,reason:"Expired — Renewal was "+(f.renewal||"—")};return{locked:true,reason:(f.status||"Paused")+" — Not Active"};}
 function updateSubBox(){let st=getSchoolSubscriptionStatus();let b=document.getElementById("subBox");if(st.locked){b.className="lockBox noPrint";document.getElementById("subStatus").innerHTML=`<span class="badge b-red">🔒 LOCKED</span> — ${st.reason}`;}else{b.className="okBox noPrint";document.getElementById("subStatus").innerHTML=`<span class="badge b-green">✅ UNLOCKED</span> — ${st.reason}`;}return st;}
-// ✅ DEPARTMENT LOCK — same as Stock / Learners / HOD Dashboard
 function myAssign(){return{role:normRole(ME.role),department:ME.assignedDepartment||ME.department||ME.hodDepartment||ME.teacherDepartment||"",subject:ME.assignedSubject||ME.subject||ME.teacherSubject||ME.hodSubject||"",grade:ME.assignedGrade||ME.grade||ME.teacherGrade||"",cls:ME.assignedClass||ME.class||ME.teacherClass||""};}
 function isAllAccess(){let r=normRole(ME.role);return r==="Principal"||r==="Admin"||r==="Super Admin"||r==="Librarian";}
 function isHOD(){return normRole(ME.role)==="HOD";}
@@ -48,11 +40,7 @@ function canAccessBook(b){
 if(isAllAccess()) return true;
 let a=myAssign();if(!a.department) return false;
 if(String(b.department||b.group||"")!==a.department) return false;
-if(isTeacher()){
-if(a.subject&&String(b.subject||"")!==a.subject) return false;
-if(a.grade&&String(b.grade||"")!==a.grade) return false;
-}
-if(isHOD()){
+if(isTeacher()||isHOD()){
 if(a.subject&&String(b.subject||"")!==a.subject) return false;
 if(a.grade&&String(b.grade||"")!==a.grade) return false;
 }
@@ -75,10 +63,13 @@ let q=getParams();
 if(q.type==="learner") document.getElementById("pType").value="learner";
 if(q.book) document.getElementById("search").value=q.book;
 if(q.learner) document.getElementById("search").value=q.learner;
+// ✅ FIX 1: If URL has ?book=WHS000001, DO NOT apply Dept/Grade/Subject from URL — exact Book No must win
+if(!q.book && !q.learner){
 if(q.grade) document.getElementById("fGrade").value=q.grade;
 if(q.cls) document.getElementById("fClass").value=q.cls;
 if(q.subject) document.getElementById("fSubject").value=q.subject;
 if(q.dept) document.getElementById("fDept").value=q.dept;
+}
 TYPE=document.getElementById("pType").value;
 }
 function onTypeChange(){TYPE=document.getElementById("pType").value;SELECTED.clear();render();}
@@ -92,28 +83,49 @@ if(a.cls){document.getElementById("fClass").value=a.cls;document.getElementById(
 }
 }
 }
+function clearFilters(){
+document.getElementById("fDept").value=isHOD()||isTeacher()?myAssign().department:"";
+document.getElementById("fGrade").value=isTeacher()?myAssign().grade:"";
+document.getElementById("fSubject").value="";
+document.getElementById("fClass").value=isTeacher()?myAssign().cls:"";
+document.getElementById("search").value="";
+SELECTED.clear();render();
+}
 async function loadAll(){
+document.getElementById("msg").textContent="Loading books...";
 try{let s=await db.ref("subscriptions").once("value");SUBS=[];if(s.exists())s.forEach(c=>{if(c.key==="_test")return;SUBS.push({key:c.key,...c.val()});});}catch(e){SUBS=[];}updateSubBox();
-let my=schoolKey(schoolOfUser());let f=a=>{let x=schoolKey(a.schoolName||a.schoolId||a.school||"");return !x||x===my;};
-try{let b=await db.ref("books").once("value");BOOKS=[];if(b.exists())b.forEach(c=>BOOKS.push({key:c.key,...c.val()}));}catch(e){BOOKS=[];}
+let my=schoolKey(schoolOfUser());
+// ✅ FIX 2: School filter was too strict — books with NO school field were hidden. Now: show if school is blank OR matches.
+let f=a=>{let x=schoolKey(a.schoolName||a.schoolId||a.school||"");return !x||x===my;};
+try{let b=await db.ref("books").once("value");BOOKS=[];if(b.exists())b.forEach(c=>BOOKS.push({key:c.key,...c.val()}));}catch(e){BOOKS=[];document.getElementById("msg").textContent="❌ Could not load books: "+e.message+" — Check Firebase Rules for 'books'";}
 try{let l=await db.ref("learners").once("value");LEARNERS=[];if(l.exists())l.forEach(c=>LEARNERS.push({key:c.key,...c.val()}));}catch(e){LEARNERS=[];}
 try{let i=await db.ref("issues").once("value");ISSUES=[];if(i.exists())i.forEach(c=>ISSUES.push({key:c.key,...c.val()}));}catch(e){ISSUES=[];}
 BOOKS=BOOKS.filter(f);LEARNERS=LEARNERS.filter(f);ISSUES=ISSUES.filter(f);
 let a=myAssign();
 if(isAllAccess()){document.getElementById("myAssign").innerHTML=`<b>Role:</b> ${a.role} • <b>School:</b> ${my} • You can print <b>ALL Departments</b>`;}
-else if(isHOD()){document.getElementById("myAssign").innerHTML=`<b>✅ HOD:</b> ${ME.email} • <b>Your Department:</b> ${a.department||"⚠️ BLANK — Ask Admin to set assignedDepartment"}<br><span style="color:#166534">You can only print labels for YOUR Department. Other Departments are hidden.</span>`;}
-else if(isTeacher()){document.getElementById("myAssign").innerHTML=`<b>👩‍🏫 Teacher:</b> ${ME.email} • <b>Your Class:</b> ${a.grade||"—"} ${a.cls||""} • <b>Subject:</b> ${a.subject||"—"} • <b>Dept:</b> ${a.department||"—"}<br><span style="color:#166534">You can only print your Grade / Class / Subject labels.</span>`;}
+else if(isHOD()){document.getElementById("myAssign").innerHTML=`<b>✅ HOD:</b> ${ME.email} • <b>Your Department:</b> ${a.department||"⚠️ BLANK"}<br><span style="color:#166534">You can only print labels for YOUR Department.</span>`;}
+else if(isTeacher()){document.getElementById("myAssign").innerHTML=`<b>👩‍🏫 Teacher:</b> ${ME.email} • <b>Your Class:</b> ${a.grade||"—"} ${a.cls||""} • <b>Dept:</b> ${a.department||"—"}`;}
 applyLockToForm();applyParams();
-// Subject dropdown from visible books
 let visB=BOOKS.filter(b=>canAccessBook(b));
 let subs=[...new Set(visB.map(b=>b.subject||"").filter(Boolean))].sort();
+let curSub=document.getElementById("fSubject").value;
 document.getElementById("fSubject").innerHTML=`<option value="">All Subjects</option>`+subs.map(s=>`<option>${s}</option>`).join("");
+if(curSub) document.getElementById("fSubject").value=curSub;
+document.getElementById("msg").textContent="✅ Loaded "+BOOKS.length+" books in school • "+visB.length+" visible to you • "+LEARNERS.length+" learners";
 render();
 }
 function currentItems(){
-let fd=document.getElementById("fDept").value;let fg=document.getElementById("fGrade").value;let fs=document.getElementById("fSubject").value;let fc=document.getElementById("fClass").value;let q=(document.getElementById("search").value||"").toLowerCase();
+let fd=document.getElementById("fDept").value;let fg=document.getElementById("fGrade").value;let fs=document.getElementById("fSubject").value;let fc=document.getElementById("fClass").value;let q=(document.getElementById("search").value||"").trim().toLowerCase();
+// ✅ FIX 3: Exact Book No / Learner ID search ignores Dept / Grade / Subject / Class filters
+let isExactSearch=q.length>=3;
 if(TYPE==="book"){
-return BOOKS.filter(b=>canAccessBook(b)).filter(b=>{
+let base=BOOKS.filter(b=>canAccessBook(b));
+if(isExactSearch){
+let exact=base.filter(b=>String(b.bookNo||"").toLowerCase()===q||String(b.barcode||"").toLowerCase()===q);
+if(exact.length){LAST_FILTER_INFO=`Exact Book No match: <b>${q.toUpperCase()}</b> — other filters ignored ✅`;return exact.sort((a,b)=>String(a.bookNo||"").localeCompare(String(b.bookNo||"")));}
+LAST_FILTER_INFO=`No exact Book No <b>${q.toUpperCase()}</b> — searching Title / Book No containing "${q}" with filters Dept=${fd||"All"} Grade=${fg||"All"} Subject=${fs||"All"}`;
+}
+return base.filter(b=>{
 if(fd&&(b.department||b.group||"")!==fd) return false;
 if(fg&&(b.grade||"")!==fg) return false;
 if(fs&&(b.subject||"")!==fs) return false;
@@ -121,11 +133,16 @@ if(q){let hay=((b.title||"")+" "+(b.bookNo||"")+" "+(b.barcode||"")+" "+(b.subje
 return true;
 }).sort((a,b)=>String(a.bookNo||"").localeCompare(String(b.bookNo||"")));
 }else{
-return LEARNERS.filter(l=>canAccessLearner(l)).filter(l=>{
+let base=LEARNERS.filter(l=>canAccessLearner(l));
+if(isExactSearch){
+let exact=base.filter(l=>learnerIdOf(l).toLowerCase()===q);
+if(exact.length){LAST_FILTER_INFO=`Exact Learner ID match: <b>${q.toUpperCase()}</b> — other filters ignored ✅`;return exact;}
+LAST_FILTER_INFO=`Searching learners containing "${q}" with Grade=${fg||"All"} Class=${fc||"All"}`;
+}
+return base.filter(l=>{
 if(fg&&(l.grade||"")!==fg) return false;
 if(fc&&(l.class||"")!==fc) return false;
 if(q){let hay=((l.name||"")+" "+learnerIdOf(l)).toLowerCase();if(!hay.includes(q)) return false;}
-// Dept filter for learners = via their issues (Learner has no Dept field)
 if(fd&&!learnerDepartments(l).includes(fd)) return false;
 return true;
 }).sort((a,b)=>String(learnerIdOf(a)).localeCompare(String(learnerIdOf(b))));
@@ -134,33 +151,48 @@ return true;
 function render(){
 let items=currentItems();
 document.getElementById("sheetTitle").textContent=TYPE==="book"?"🏷️ Book Labels — Preview (3 × 5 A4) — "+items.length+" copies":"🏷️ Learner Labels — Preview (3 × 5 A4) — "+items.length+" learners";
-document.getElementById("emptyMsg").textContent=items.length?"":(isHOD()||isTeacher()?"No labels for your Department / Grade / Class — or no stock / learners yet.":"No labels found.");
+// ✅ FIX 4: Diagnostic — always show why 0 results
+let diag=document.getElementById("diag");
+if(!items.length){
+let q=(document.getElementById("search").value||"").trim();
+let total=TYPE==="book"?BOOKS.length:LEARNERS.length;
+let vis=TYPE==="book"?BOOKS.filter(b=>canAccessBook(b)).length:LEARNERS.filter(l=>canAccessLearner(l)).length;
+let html=`<b>🔍 Diagnostic — 0 labels:</b> Total in school: <b>${total}</b> • Visible to you: <b>${vis}</b> • ${LAST_FILTER_INFO||""}`;
+if(TYPE==="book"&&q){
+let anyBook=BOOKS.find(b=>String(b.bookNo||"").toLowerCase()===q.toLowerCase());
+if(anyBook) html+=`<br><span style="color:#991b1b">⚠️ Book <b>${q.toUpperCase()}</b> EXISTS but is hidden: Dept=${anyBook.department||anyBook.group||"—"} • Grade=${anyBook.grade||"—"} • Subject=${anyBook.subject||"—"} • School=${anyBook.schoolName||anyBook.schoolId||anyBook.school||"(blank)"} • Title=${anyBook.title||"—"}</span><br>Tap <b>🧹 Clear All Filters</b> and search again.`;
+else html+=`<br><span style="color:#991b1b">❌ Book <b>${q.toUpperCase()}</b> does NOT exist in Firebase → Go to Stock page, check Book No spelling, or re-add it. Existing Book Nos start with: ${(BOOKS.slice(0,3).map(b=>b.bookNo).join(", ")||"none")}</span>`;
+}
+html+=`<br><button class="btn gold" onclick="clearFilters()">🧹 Clear All Filters & Show All</button>`;
+diag.style.display="block";diag.innerHTML=html;
+document.getElementById("emptyMsg").textContent="No labels — see diagnostic above.";
+}else{
+diag.style.display="none";
+document.getElementById("emptyMsg").textContent="";
+}
 let sheet=document.getElementById("sheet");
+// ✅ FIX 5: SELECTED logic — first render = select all, later renders keep user's ticks
+let isFirst=SELECTED.size===0 && sheet.innerHTML==="";
 sheet.innerHTML=items.map(item=>{
 let code,line1,line2,line3;
-if(TYPE==="book"){
-code=item.bookNo||item.barcode||"—";
-line1=item.title||"—";
-line2=(item.grade||"")+" • "+(item.subject||"");
-line3=(item.department||item.group||"")+" • "+schoolKey(schoolOfUser());
-}else{
-code=learnerIdOf(item);
-line1=item.name||"—";
-line2=(item.grade||"")+" "+(item.class||"")+" • Learner";
-line3=schoolKey(schoolOfUser());
-}
+if(TYPE==="book"){code=item.bookNo||item.barcode||"—";line1=item.title||"—";line2=(item.grade||"")+" • "+(item.subject||"");line3=(item.department||item.group||"")+" • "+schoolKey(schoolOfUser());}
+else{code=learnerIdOf(item);line1=item.name||"—";line2=(item.grade||"")+" "+(item.class||"")+" • Learner";line3=schoolKey(schoolOfUser());}
 let id=TYPE+"_"+code;
-let checked=SELECTED.has(id)||SELECTED.size===0?"checked":"";
-return `<div class="label" data-id="${id}"><label class="noPrint" style="display:flex;gap:6px;align-items:center;justify-content:center;font-size:12px"><input type="checkbox" class="sel" data-id="${id}" ${checked} onchange="toggleSel('${id}',this.checked)" style="width:16px;height:16px"> Print</label><b>${line1}</b><small>${line2}</small><small>${line3}</small><svg class="bc" data-code="${code}"></svg><b style="font-size:14px;letter-spacing:1px">${code}</b></div>`;
+return `<div class="label" data-id="${id}"><label class="noPrint" style="display:flex;gap:6px;align-items:center;justify-content:center;font-size:12px"><input type="checkbox" class="sel" data-id="${id}" onchange="toggleSel('${id}',this.checked)" style="width:16px;height:16px"> Print</label><b>${line1}</b><small>${line2}</small><small>${line3}</small><svg class="bc" data-code="${code}"></svg><b style="font-size:14px;letter-spacing:1px">${code}</b></div>`;
 }).join("");
-// Default: all checked on first render
-if(SELECTED.size===0){items.forEach(item=>{let code=TYPE==="book"?(item.bookNo||item.barcode):learnerIdOf(item);SELECTED.add(TYPE+"_"+code);});}
-updateSelCount();
-document.querySelectorAll(".bc").forEach(el=>{try{JsBarcode(el,el.dataset.code,{format:"CODE128",displayValue:false,height:42,width:1.6,margin:2});}catch(e){el.outerHTML=`<span>${el.dataset.code}</span>`;}});
+if(isFirst){items.forEach(item=>{let code=TYPE==="book"?(item.bookNo||item.barcode):learnerIdOf(item);SELECTED.add(TYPE+"_"+code);});}
+// Keep only SELECTED that are still on screen for count, but don't lose them on filter change — count = selected on screen
+let onScreen=items.filter(item=>SELECTED.has(TYPE+"_"+(TYPE==="book"?(item.bookNo||item.barcode):learnerIdOf(item)))).length;
+document.getElementById("selCount").textContent=onScreen;
 document.querySelectorAll(".sel").forEach(cb=>{cb.checked=SELECTED.has(cb.dataset.id);});
+if(typeof JsBarcode!=="undefined"){
+document.querySelectorAll(".bc").forEach(el=>{try{JsBarcode(el,el.dataset.code,{format:"CODE128",displayValue:false,height:42,width:1.6,margin:2});}catch(e){el.outerHTML=`<span>${el.dataset.code}</span>`;}});
+}else{
+document.querySelectorAll(".bc").forEach(el=>{el.outerHTML=`<b>${el.dataset.code}</b>`;});
 }
-function toggleSel(id,on){if(on)SELECTED.add(id);else SELECTED.delete(id);updateSelCount();}
-function updateSelCount(){document.getElementById("selCount").textContent=SELECTED.size;}
+}
+function toggleSel(id,on){if(on)SELECTED.add(id);else SELECTED.delete(id);let items=currentItems();let onScreen=items.filter(item=>SELECTED.has(TYPE+"_"+(TYPE==="book"?(item.bookNo||item.barcode):learnerIdOf(item)))).length;document.getElementById("selCount").textContent=onScreen;}
+function updateSelCount(){let items=currentItems();let onScreen=items.filter(item=>SELECTED.has(TYPE+"_"+(TYPE==="book"?(item.bookNo||item.barcode):learnerIdOf(item)))).length;document.getElementById("selCount").textContent=onScreen;}
 function selectAll(on){
 let items=currentItems();
 if(on){items.forEach(item=>{let code=TYPE==="book"?(item.bookNo||item.barcode):learnerIdOf(item);SELECTED.add(TYPE+"_"+code);});}
@@ -168,8 +200,9 @@ else SELECTED.clear();
 render();
 }
 function printSelected(){
-if(!SELECTED.size){alert("Tick at least 1 label to print.");return;}
-// Hide unselected labels, then print
+let items=currentItems();
+let toPrint=items.filter(item=>SELECTED.has(TYPE+"_"+(TYPE==="book"?(item.bookNo||item.barcode):learnerIdOf(item))));
+if(!toPrint.length){alert("Tick at least 1 label to print.\n\nIf sheet is empty, tap 🧹 Clear All Filters first.");return;}
 document.querySelectorAll(".label").forEach(el=>{let id=el.dataset.id;el.style.display=SELECTED.has(id)?"block":"none";});
 window.print();
 setTimeout(()=>{document.querySelectorAll(".label").forEach(el=>el.style.display="block");},500);
