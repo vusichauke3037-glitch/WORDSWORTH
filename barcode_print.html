@@ -1,45 +1,178 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Print Barcodes A4 3x5 - Makhanani LTSM 2.0</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Print Barcodes — MAKHANANI LTSM 2.0</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}header img{height:40px;background:#fff;border-radius:8px;padding:2px}.btn{background:#d4af37;color:#000;border:none;padding:12px 16px;border-radius:8px;font-weight:900;cursor:pointer}.btn.dark{background:#0a1f4d;color:#fff}.btn.green{background:#16a34a;color:#fff}.btn.grey{background:#eee}.wrap{max-width:900px;margin:0 auto;padding:16px}.card{background:#fff;border-radius:14px;padding:20px;margin-bottom:14px}label{display:block;font-size:12px;font-weight:700;margin-top:12px}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin-top:4px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}.linked{background:#dcfce7;border:2px solid #16a34a;padding:12px;border-radius:10px;font-size:13px}
-.sheet{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;width:100%;margin-bottom:3mm}
-.label{height:54mm;border:1.5px solid #000;border-radius:4px;padding:2mm;text-align:center;background:#fff;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center}
-.school{font-size:9px;font-weight:900;white-space:nowrap;letter-spacing:0.2px;line-height:1.1}.brand{background:#d4af37;padding:1px 8px;border-radius:10px;font-size:8px;font-weight:900;display:inline-block;margin:2px 0;white-space:nowrap}.title{font-size:10px;font-weight:900;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-height:2.3em}.meta{font-size:9px;color:#333;white-space:nowrap}.label svg{width:100%;height:36px;max-width:55mm}.code{font-size:12px;font-weight:900;letter-spacing:1px;white-space:nowrap}.pageBreak{height:0}
-@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
-@media print{body{background:#fff;margin:0}header,.noPrint{display:none!important}.wrap{max-width:none;padding:0}.card{box-shadow:none;border:none;padding:0;margin:0}.sheet{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,54mm);gap:2mm;width:100%;margin:0}.label{height:54mm}.pageBreak{break-after:page;height:0}@page{size:A4 portrait;margin:10mm 8mm}}</style></head>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#eef2f7}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}header img{height:52px;background:#fff;border-radius:10px;padding:3px}.btn{border:none;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:13px}.btn.gold{background:#d4af37;color:#000}.btn.green{background:#16a34a;color:#fff}.btn.white{background:#fff;color:#0a1f4d}.btn.dark{background:#0a1f4d;color:#fff}.btn.red{background:#ef4444;color:#fff}.btn.purple{background:#7c3aed;color:#fff}.wrap{max-width:1100px;margin:14px auto;padding:0 14px}.card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}label{font-weight:800;display:block;margin:10px 0 5px;font-size:13px}input,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:12px;font-size:15px}input:disabled,select:disabled{background:#f0fdf4;opacity:.9}.info{background:#eff6ff;border:2px solid #0a1f4d;border-radius:12px;padding:12px;font-size:13px}.lockBox{border:3px solid #dc2626;background:#fffafa;border-radius:14px;padding:14px;margin-bottom:14px}.okBox{border:3px solid #16a34a;background:#f0fdf4;border-radius:14px;padding:14px;margin-bottom:14px}.badge{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:900}.b-green{background:#dcfce7;color:#166534}.b-red{background:#fee2e2;color:#991b1b}.b-gold{background:#fef3c7;color:#92400e}
+/* Screen preview — 3 x 5 */
+.sheet{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}.label{border:2px dashed #0a1f4d;border-radius:10px;padding:8px;text-align:center;background:#fff;overflow:hidden}.label b{font-size:13px;display:block;line-height:1.2}.label small{font-size:11px;color:#333;display:block;line-height:1.2}.label svg{width:100%;max-height:46px}
+@media(max-width:700px){.grid,.filters{grid-template-columns:1fr 1fr}.sheet{grid-template-columns:1fr 1fr}}
+/* Print — A4 3 x 5 = 15 per page */
+@media print{
+body{background:#fff}header,.noPrint{display:none!important}.wrap{max-width:none;margin:0;padding:0}.card{border:none;border-radius:0;padding:0;margin:0;box-shadow:none}
+.sheet{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6mm;page-break-inside:auto}
+.label{border:1px solid #000;border-radius:0;padding:4mm 2mm;break-inside:avoid;page-break-inside:avoid}
+.label:nth-child(15n){page-break-after:always}
+}
+</style></head>
 <body>
-<header><div style="display:flex;gap:10px;align-items:center"><img src="logo.png"><b>🖨️ Print Barcodes — A4 3 × 5</b></div><div style="display:flex;gap:8px"><button class="btn" onclick="goBack()">📦 Back to Stock</button><button class="btn" onclick="location.href='print_learner_cards.html'">🎓 Learner Cards</button><button class="btn" onclick="location.href='index.html'">🏠 Home</button></div></header>
+<header><div style="display:flex;gap:12px;align-items:center"><img src="logo.png" alt="Xintimani Group Holdings Logo"><div style="line-height:1.25"><div style="font-size:20px;font-weight:900">Print Barcodes — MAKHANANI LTSM 2.0</div><div style="font-size:12px;color:#d4af37;font-weight:700">Xintimani Group Holdings (Pty) Ltd</div><div style="font-size:11px;color:#cbd5e1">Reg No: 2026/934898/07 • <span id="myEmail">Loading...</span></div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" onclick="location.href='landing.html'">🏠 Landing</button><button class="btn dark" onclick="location.href='librarian.html'">📚 Librarian</button><button class="btn purple" onclick="location.href='learners.html'">👩‍🎓 Learners</button><button class="btn purple" onclick="location.href='stock.html'">📦 Stock</button><button class="btn purple" onclick="location.href='issue_requests.html'">📝 Issue Requests</button><button class="btn gold" onclick="location.href='hod_dashboard.html'">✅ HOD Dashboard</button><button class="btn white" onclick="logout()">🚪 Logout</button></div></header>
 <div class="wrap">
-<div id="linkedBox" class="linked noPrint" style="display:none"></div>
-<div class="card noPrint"><h2 style="margin:0">🖨️ Print Barcodes — Linked to Stock — A4 3 × 5</h2><p style="color:#666;font-size:13px;margin:6px 0 0">If you came from Stock, your books are below. If not, use Manual below.</p>
-<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn dark" onclick="loadFromStock('ALL')">🖨️ PRINT ALL STOCK</button><button class="btn dark" onclick="loadFromStock('FILTER')">🎓 PRINT BY GRADE / SUBJECT BELOW</button><button class="btn green" onclick="loadFromStock('SELECTED')">✅ PRINT TICKED IN STOCK</button><button class="btn grey" onclick="loadStockList()">🔄 RELOAD FROM FIREBASE</button></div>
-<div class="grid3"><div><label>Grade Filter</label><select id="gradeFilter" onchange="applyFilter()"><option value="ALL">ALL Grades</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Subject Filter</label><select id="subjectFilter" onchange="applyFilter()"><option value="ALL">ALL Subjects</option><option>Mathematics</option><option>Mathematical Literacy</option><option>Physical Sciences</option><option>Life Sciences</option><option>English</option><option>Afrikaans</option><option>Accounting</option><option>Business Studies</option><option>Geography</option><option>History</option><option>Life Orientation</option><option>General</option></select></div><div><label>Dept Filter</label><select id="deptFilter" onchange="applyFilter()"><option value="ALL">ALL Depts</option><option>Languages</option><option>Mathematics & Sciences</option><option>Commerce & EMS</option><option>Humanities</option><option>Creative & Technical</option><option>Foundation Phase</option><option>General</option></select></div></div>
-<p id="stockCount" style="font-weight:900;color:#0a1f4d;margin:12px 0 0">📦 Stock: Loading...</p>
-<div style="display:flex;gap:10px;margin-top:12px"><button class="btn dark" style="flex:1;padding:14px" onclick="previewStock()">👁️ PREVIEW STOCK LABELS</button><button class="btn green" style="flex:1;padding:14px" onclick="previewStock();window.print()">🖨️ PRINT A4 NOW</button></div><p id="result" style="color:#666;font-size:13px"></p></div>
-<div class="card noPrint"><h3 style="margin:0">Manual — No Stock Needed</h3><div class="grid3"><div><label>School</label><input id="school" value="Wordsworth High School"></div><div><label>How Many?</label><input id="count" type="number" value="15"></div><div><label>Start Code</label><input id="start" value="WHS000001"></div></div><div><label>Title</label><input id="title" value="STUDY AND MASTER GRADE 10 LEARNER BOOK"></div><div class="grid3"><div><label>Grade</label><select id="grade"><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Subject</label><input id="subject" value="Accounting"></div><div><label>&nbsp;</label><button class="btn dark" style="margin-top:18px" onclick="previewManual()">👁️ PREVIEW MANUAL</button></div></div></div>
-<div id="printArea" style="display:none"><div class="card"><div id="previewBox"></div></div></div>
+<div id="subBox" class="okBox noPrint"><b>Subscription:</b> <span id="subStatus">Checking...</span></div>
+<div class="card noPrint"><div class="info" id="myAssign">Loading...</div><p style="text-align:center;font-size:13px;font-weight:700;margin:10px 0 0">✅ RULE: 1 Book = 1 Barcode • 1 Learner = 1 Barcode • A4 = 3 × 5 = 15 Labels Per Page</p><p id="msg" style="font-size:13px;font-weight:700;text-align:center"></p></div>
+<div class="card noPrint"><h2 style="margin:0">🏷️ Choose What To Print</h2>
+<div class="grid"><div><label>Type *</label><select id="pType" onchange="onTypeChange()"><option value="book">📚 Book Labels — 1 Per Copy</option><option value="learner">👩‍🎓 Learner Labels — 1 Per Learner</option></select></div><div><label>Department / Group</label><select id="fDept" onchange="render()"><option value="">All Departments</option><option>Languages</option><option>Mathematics</option><option>Sciences</option><option>Humanities</option><option>Commerce</option><option>Technology</option><option>Life Orientation</option><option>Creative Arts</option><option>Other</option></select></div><div><label>Grade</label><select id="fGrade" onchange="render()"><option value="">All Grades</option><option>Grade 8</option><option>Grade 9</option> <option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label>Subject</label><select id="fSubject" onchange="render()"><option value="">All Subjects</option></select></div><div><label>Class (Learners Only)</label><select id="fClass" onchange="render()"><option value="">All Classes</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option></select></div><div><label>Search Book No / Title / Learner</label><input id="search" placeholder="🔍 e.g. GSHS000001 or 10A001..." oninput="render()"></div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn dark" onclick="selectAll(true)">✅ Select All On Page</button><button class="btn white" onclick="selectAll(false)">❌ Clear All</button><button class="btn green" onclick="printSelected()">🖨️ Print Selected (<span id="selCount">0</span>)</button><button class="btn gold" onclick="window.print()">🖨️ Print All Shown</button></div>
+<p style="font-size:12px;color:#666;margin:8px 0 0">Tip: Tick only the copies you just added, then Print Selected. Or use URL: <code>barcode_print.html?book=GSHS000001</code> for 1 label, <code>?type=learner&grade=Grade 10&class=A</code> for a whole class.</p></div>
+<div class="card"><h2 style="margin:0" id="sheetTitle">🏷️ Labels — Preview (3 × 5 A4)</h2><p class="noPrint" style="color:#666;font-size:12px;margin:6px 0 0">Tick labels to print only those. Untick to skip. Each label shows Book No / Learner ID + Barcode.</p><div class="sheet" id="sheet"></div><p id="emptyMsg" style="text-align:center;color:#666"></p></div>
+<div style="text-align:center;color:#666;font-size:12px;padding:10px" class="noPrint">MAKHANANI LTSM 2.0 • Xintimani Group Holdings (Pty) Ltd • Reg No: 2026/934898/07</div>
 </div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
 try{firebase.initializeApp(firebaseConfig);}catch(e){}
-const db=firebase.database();let allBooks=[];let filtered=[];let linkedIds=[];let linkedMode="ALL";
-function goBack(){let g=document.getElementById("gradeFilter").value;let s=document.getElementById("subjectFilter").value;let d=document.getElementById("deptFilter").value;location.href=`stock.html?dept=${encodeURIComponent(d)}&grade=${encodeURIComponent(g)}&subject=${encodeURIComponent(s)}`;}
-function oneLabel(school,title,grade,subj,code){return `<div class="label"><div class="school">${String(school||"Wordsworth High School").toUpperCase()}</div><span class="brand">MAKHANANI LTSM 2.0</span><div class="title">${title||"Book"}</div><div class="meta">${grade||""} • ${subj||""}</div><svg class="bc" data-code="${code}"></svg><div class="code">${code}</div></div>`;}
-function renderCards(cards){let html="";for(let p=0;p<Math.ceil(cards.length/15);p++){let page=cards.slice(p*15,(p+1)*15);html+=`<div class="sheet">`+page.join("")+`</div>`;if(p<Math.ceil(cards.length/15)-1)html+=`<div class="pageBreak"></div>`;}document.getElementById("previewBox").innerHTML=html;document.querySelectorAll(".bc").forEach(el=>{try{JsBarcode(el,el.dataset.code,{format:"CODE128",width:1.6,height:36,displayValue:false,margin:2});}catch(e){}});document.getElementById("printArea").style.display="block";}
-function applyFilter(){let g=document.getElementById("gradeFilter").value;let s=document.getElementById("subjectFilter").value;let d=document.getElementById("deptFilter").value;filtered=allBooks.filter(b=>{if(g!=="ALL"&&b.grade!==g)return false;if(s!=="ALL"&&b.subject!==s)return false;if(d!=="ALL"&&b.department!==d)return false;if(linkedMode==="SELECTED"&&!linkedIds.includes(b.key))return false;return true;});document.getElementById("stockCount").textContent=`📦 Stock: ${allBooks.length} total • Will Print: ${filtered.length} • Mode: ${linkedMode} • Grade: ${g} • Subject: ${s} • Dept: ${d}`;}
-async function loadStockList(){document.getElementById("stockCount").textContent="📦 Stock: Loading from Firebase...";try{let s=await db.ref("books").once("value");allBooks=[];if(s.exists())s.forEach(c=>{let b=c.val();allBooks.push({key:c.key,...b,department:b.department||"General",subject:b.subject||"General",grade:b.grade||"All Grades"});});allBooks.sort((a,b)=>(a.title||"").localeCompare(b.title||"")||(a.barcode||"").localeCompare(b.barcode||""));applyFilter();let box=document.getElementById("linkedBox");if(linkedMode!=="ALL"||linkedIds.length){box.style.display="block";box.innerHTML=`🔗 <b>Linked from Stock:</b> Mode ${linkedMode} ${linkedIds.length?`• ${linkedIds.length} ticked books`:""} • Grade ${document.getElementById("gradeFilter").value} • Subject ${document.getElementById("subjectFilter").value} • <button class="btn dark" onclick="goBack()">📦 BACK TO STOCK</button>`;}if(linkedMode!=="MANUAL"&&allBooks.length)previewStock();}catch(e){document.getElementById("stockCount").textContent="📦 Stock: FAILED — "+e.message+" — Use Manual below. Log in first, then RELOAD.";}}
-function loadFromStock(mode){linkedMode=mode;if(mode==="SELECTED"&&!linkedIds.length){alert("No ticked books passed from Stock. Tick books in Stock first, then click Print Selected, or use PRINT ALL.");}applyFilter();previewStock();}
-function previewStock(){if(!filtered.length){alert("No books in this filter. Try ALL or check Stock.");return;}let school=document.getElementById("school").value||"Wordsworth High School";let cards=filtered.map(b=>oneLabel(school,b.title,b.grade,b.subject,b.barcode||"WHS000001"));renderCards(cards);document.getElementById("result").textContent=`✅ Ready: ${filtered.length} stock labels — ${Math.ceil(filtered.length/15)} page(s) — A4 3×5 — Real titles + real barcodes from Stock`;}
-function previewManual(){let school=document.getElementById("school").value||"Wordsworth High School";let title=document.getElementById("title").value.trim()||"Book";let start=document.getElementById("start").value.trim()||"WHS000001";let count=Number(document.getElementById("count").value||15);let grade=document.getElementById("grade").value;let subj=document.getElementById("subject").value.trim();let prefix=start.replace(/\d+$/,"");let num=parseInt(start.match(/\d+$/)?.[0]||"1");let pad=start.match(/\d+$/)?.[0].length||6;let cards=[];for(let i=0;i<count;i++){let code=prefix+String(num+i).padStart(pad,"0");cards.push(oneLabel(school,title,grade,subj,code));}renderCards(cards);document.getElementById("result").textContent=`✅ Manual: ${count} labels — ${start} to ${prefix+String(num+count-1).padStart(pad,"0")} — ${Math.ceil(count/15)} page(s)`;}
-// READ LINK FROM STOCK URL: ?mode=SELECTED&ids=key1,key2&dept=..&grade=..&subject=..&title=..&barcode=..&count=..
+const db=firebase.database();let ME={};let BOOKS=[];let LEARNERS=[];let ISSUES=[];let SUBS=[];let TYPE="book";let SELECTED=new Set();
+function logout(){sessionStorage.setItem("justLoggedOut","1");firebase.auth().signOut().then(()=>location.href="login.html");}
+function normRole(r){if(!r)return"";let x=String(r).trim().toLowerCase().replace(/_/g," ").replace(/\s+/g," ");if(x==="super admin"||x==="superadmin")return"Super Admin";if(x==="admin"||x==="administrator")return"Admin";if(x==="principal")return"Principal";if(x==="librarian")return"Librarian";if(x==="hod"||x==="head of department")return"HOD";if(x==="teacher"||x==="educator")return"Teacher";if(x==="finance"||x==="financial"||x==="bursar")return"Finance";return r;}
+function schoolOfUser(){return (ME.schoolName||ME.schoolId||ME.school||"").trim();}
+function schoolKey(n){let x=String(n||"").toLowerCase();if(x.includes("george"))return"George Sonto High School";if(x.includes("wordsworth"))return"Wordsworth High School";return String(n||"").trim();}
+function normStatus(s){return String(s.status||"").trim().toLowerCase();}
+function isExpired(s){if(!s.renewal||s.renewal==="—")return false;let t=new Date();t.setHours(0,0,0,0);let r=new Date(s.renewal);if(isNaN(r))return false;r.setHours(0,0,0,0);return r<t;}
+function isActiveSub(s){return normStatus(s)==="active"&&!isExpired(s);}
+function isDonation(s){return (s.notes||"").toLowerCase().includes("donation")||s.donation===true||Number(s.amount||0)===0;}
+function getSchoolSubscriptionStatus(){let mySchool=schoolKey(schoolOfUser());let mine=SUBS.filter(s=>schoolKey(s.schoolName||s.schoolId||s.school)===mySchool);if(!mine.length)return{locked:true,reason:"Missing — No subscription for "+mySchool};let a=mine.find(s=>isActiveSub(s));if(a)return{locked:false,reason:"Active — "+(a.plan||"Premium")+" • Renewal "+(a.renewal||"—")+(isDonation(a)?" • 🎁 Donation":"")};let f=mine[0];if(isExpired(f))return{locked:true,reason:"Expired — Renewal was "+(f.renewal||"—")};return{locked:true,reason:(f.status||"Paused")+" — Not Active"};}
+function updateSubBox(){let st=getSchoolSubscriptionStatus();let b=document.getElementById("subBox");if(st.locked){b.className="lockBox noPrint";document.getElementById("subStatus").innerHTML=`<span class="badge b-red">🔒 LOCKED</span> — ${st.reason}`;}else{b.className="okBox noPrint";document.getElementById("subStatus").innerHTML=`<span class="badge b-green">✅ UNLOCKED</span> — ${st.reason}`;}return st;}
+// ✅ DEPARTMENT LOCK — same as Stock / Learners / HOD Dashboard
+function myAssign(){return{role:normRole(ME.role),department:ME.assignedDepartment||ME.department||ME.hodDepartment||ME.teacherDepartment||"",subject:ME.assignedSubject||ME.subject||ME.teacherSubject||ME.hodSubject||"",grade:ME.assignedGrade||ME.grade||ME.teacherGrade||"",cls:ME.assignedClass||ME.class||ME.teacherClass||""};}
+function isAllAccess(){let r=normRole(ME.role);return r==="Principal"||r==="Admin"||r==="Super Admin"||r==="Librarian";}
+function isHOD(){return normRole(ME.role)==="HOD";}
+function isTeacher(){return normRole(ME.role)==="Teacher";}
+function canAccessBook(b){
+if(isAllAccess()) return true;
+let a=myAssign();if(!a.department) return false;
+if(String(b.department||b.group||"")!==a.department) return false;
+if(isTeacher()){
+if(a.subject&&String(b.subject||"")!==a.subject) return false;
+if(a.grade&&String(b.grade||"")!==a.grade) return false;
+}
+if(isHOD()){
+if(a.subject&&String(b.subject||"")!==a.subject) return false;
+if(a.grade&&String(b.grade||"")!==a.grade) return false;
+}
+return true;
+}
+function learnerIdOf(l){return String(l.learnerId||l.learnerNo||l.no||"—");}
+function learnerDepartments(l){let id=learnerIdOf(l);let s=new Set();ISSUES.forEach(i=>{if(i.learnerId===id&&i.department) s.add(String(i.department));});ISSUES.forEach(i=>{if(i.learnerId===id&&!i.department&&i.bookKey){let b=BOOKS.find(x=>x.key===i.bookKey);if(b&&(b.department||b.group)) s.add(String(b.department||b.group));}});return [...s];}
+function canAccessLearner(l){
+if(isAllAccess()) return true;
+if(isTeacher()){let a=myAssign();if(!a.grade||!a.cls) return false;return String(l.grade||"")===a.grade&&String(l.class||"")===a.cls;}
+if(isHOD()){let a=myAssign();if(!a.department) return false;if(a.grade&&String(l.grade||"")===a.grade) return true;return learnerDepartments(l).includes(a.department);}
+return false;
+}
+function getParams(){
 let p=new URLSearchParams(location.search);
-if(p.get("mode"))linkedMode=p.get("mode").toUpperCase();
-if(p.get("ids"))linkedIds=p.get("ids").split(",").map(s=>decodeURIComponent(s)).filter(Boolean);
-if(p.get("dept"))document.getElementById("deptFilter").value=p.get("dept");
-if(p.get("grade")&&p.get("grade")!=="ALL"){document.getElementById("gradeFilter").value=p.get("grade");document.getElementById("grade").value=p.get("grade");}
-if(p.get("subject")&&p.get("subject")!=="ALL"){document.getElementById("subjectFilter").value=p.get("subject");document.getElementById("subject").value=p.get("subject");}
-if(p.get("title"))document.getElementById("title").value=p.get("title");
-if(p.get("barcode")||p.get("code"))document.getElementById("start").value=p.get("barcode")||p.get("code");
-if(p.get("count"))document.getElementById("count").value=p.get("count");
-firebase.auth().onAuthStateChanged(()=>loadStockList());setTimeout(()=>{if(!allBooks.length)loadStockList();},2500);
+return {type:p.get("type")||"",book:p.get("book")||p.get("bookNo")||"",learner:p.get("learner")||"",grade:p.get("grade")||"",cls:p.get("class")||p.get("cls")||"",subject:p.get("subject")||"",dept:p.get("dept")||p.get("department")||""};
+}
+function applyParams(){
+let q=getParams();
+if(q.type==="learner") document.getElementById("pType").value="learner";
+if(q.book) document.getElementById("search").value=q.book;
+if(q.learner) document.getElementById("search").value=q.learner;
+if(q.grade) document.getElementById("fGrade").value=q.grade;
+if(q.cls) document.getElementById("fClass").value=q.cls;
+if(q.subject) document.getElementById("fSubject").value=q.subject;
+if(q.dept) document.getElementById("fDept").value=q.dept;
+TYPE=document.getElementById("pType").value;
+}
+function onTypeChange(){TYPE=document.getElementById("pType").value;SELECTED.clear();render();}
+function applyLockToForm(){
+let a=myAssign();
+if(isHOD()||isTeacher()){
+if(a.department){document.getElementById("fDept").value=a.department;document.getElementById("fDept").disabled=true;}
+if(isTeacher()){
+if(a.grade){document.getElementById("fGrade").value=a.grade;document.getElementById("fGrade").disabled=true;}
+if(a.cls){document.getElementById("fClass").value=a.cls;document.getElementById("fClass").disabled=true;}
+}
+}
+}
+async function loadAll(){
+try{let s=await db.ref("subscriptions").once("value");SUBS=[];if(s.exists())s.forEach(c=>{if(c.key==="_test")return;SUBS.push({key:c.key,...c.val()});});}catch(e){SUBS=[];}updateSubBox();
+let my=schoolKey(schoolOfUser());let f=a=>{let x=schoolKey(a.schoolName||a.schoolId||a.school||"");return !x||x===my;};
+try{let b=await db.ref("books").once("value");BOOKS=[];if(b.exists())b.forEach(c=>BOOKS.push({key:c.key,...c.val()}));}catch(e){BOOKS=[];}
+try{let l=await db.ref("learners").once("value");LEARNERS=[];if(l.exists())l.forEach(c=>LEARNERS.push({key:c.key,...c.val()}));}catch(e){LEARNERS=[];}
+try{let i=await db.ref("issues").once("value");ISSUES=[];if(i.exists())i.forEach(c=>ISSUES.push({key:c.key,...c.val()}));}catch(e){ISSUES=[];}
+BOOKS=BOOKS.filter(f);LEARNERS=LEARNERS.filter(f);ISSUES=ISSUES.filter(f);
+let a=myAssign();
+if(isAllAccess()){document.getElementById("myAssign").innerHTML=`<b>Role:</b> ${a.role} • <b>School:</b> ${my} • You can print <b>ALL Departments</b>`;}
+else if(isHOD()){document.getElementById("myAssign").innerHTML=`<b>✅ HOD:</b> ${ME.email} • <b>Your Department:</b> ${a.department||"⚠️ BLANK — Ask Admin to set assignedDepartment"}<br><span style="color:#166534">You can only print labels for YOUR Department. Other Departments are hidden.</span>`;}
+else if(isTeacher()){document.getElementById("myAssign").innerHTML=`<b>👩‍🏫 Teacher:</b> ${ME.email} • <b>Your Class:</b> ${a.grade||"—"} ${a.cls||""} • <b>Subject:</b> ${a.subject||"—"} • <b>Dept:</b> ${a.department||"—"}<br><span style="color:#166534">You can only print your Grade / Class / Subject labels.</span>`;}
+applyLockToForm();applyParams();
+// Subject dropdown from visible books
+let visB=BOOKS.filter(b=>canAccessBook(b));
+let subs=[...new Set(visB.map(b=>b.subject||"").filter(Boolean))].sort();
+document.getElementById("fSubject").innerHTML=`<option value="">All Subjects</option>`+subs.map(s=>`<option>${s}</option>`).join("");
+render();
+}
+function currentItems(){
+let fd=document.getElementById("fDept").value;let fg=document.getElementById("fGrade").value;let fs=document.getElementById("fSubject").value;let fc=document.getElementById("fClass").value;let q=(document.getElementById("search").value||"").toLowerCase();
+if(TYPE==="book"){
+return BOOKS.filter(b=>canAccessBook(b)).filter(b=>{
+if(fd&&(b.department||b.group||"")!==fd) return false;
+if(fg&&(b.grade||"")!==fg) return false;
+if(fs&&(b.subject||"")!==fs) return false;
+if(q){let hay=((b.title||"")+" "+(b.bookNo||"")+" "+(b.barcode||"")+" "+(b.subject||"")).toLowerCase();if(!hay.includes(q)) return false;}
+return true;
+}).sort((a,b)=>String(a.bookNo||"").localeCompare(String(b.bookNo||"")));
+}else{
+return LEARNERS.filter(l=>canAccessLearner(l)).filter(l=>{
+if(fg&&(l.grade||"")!==fg) return false;
+if(fc&&(l.class||"")!==fc) return false;
+if(q){let hay=((l.name||"")+" "+learnerIdOf(l)).toLowerCase();if(!hay.includes(q)) return false;}
+// Dept filter for learners = via their issues (Learner has no Dept field)
+if(fd&&!learnerDepartments(l).includes(fd)) return false;
+return true;
+}).sort((a,b)=>String(learnerIdOf(a)).localeCompare(String(learnerIdOf(b))));
+}
+}
+function render(){
+let items=currentItems();
+document.getElementById("sheetTitle").textContent=TYPE==="book"?"🏷️ Book Labels — Preview (3 × 5 A4) — "+items.length+" copies":"🏷️ Learner Labels — Preview (3 × 5 A4) — "+items.length+" learners";
+document.getElementById("emptyMsg").textContent=items.length?"":(isHOD()||isTeacher()?"No labels for your Department / Grade / Class — or no stock / learners yet.":"No labels found.");
+let sheet=document.getElementById("sheet");
+sheet.innerHTML=items.map(item=>{
+let code,line1,line2,line3;
+if(TYPE==="book"){
+code=item.bookNo||item.barcode||"—";
+line1=item.title||"—";
+line2=(item.grade||"")+" • "+(item.subject||"");
+line3=(item.department||item.group||"")+" • "+schoolKey(schoolOfUser());
+}else{
+code=learnerIdOf(item);
+line1=item.name||"—";
+line2=(item.grade||"")+" "+(item.class||"")+" • Learner";
+line3=schoolKey(schoolOfUser());
+}
+let id=TYPE+"_"+code;
+let checked=SELECTED.has(id)||SELECTED.size===0?"checked":"";
+return `<div class="label" data-id="${id}"><label class="noPrint" style="display:flex;gap:6px;align-items:center;justify-content:center;font-size:12px"><input type="checkbox" class="sel" data-id="${id}" ${checked} onchange="toggleSel('${id}',this.checked)" style="width:16px;height:16px"> Print</label><b>${line1}</b><small>${line2}</small><small>${line3}</small><svg class="bc" data-code="${code}"></svg><b style="font-size:14px;letter-spacing:1px">${code}</b></div>`;
+}).join("");
+// Default: all checked on first render
+if(SELECTED.size===0){items.forEach(item=>{let code=TYPE==="book"?(item.bookNo||item.barcode):learnerIdOf(item);SELECTED.add(TYPE+"_"+code);});}
+updateSelCount();
+document.querySelectorAll(".bc").forEach(el=>{try{JsBarcode(el,el.dataset.code,{format:"CODE128",displayValue:false,height:42,width:1.6,margin:2});}catch(e){el.outerHTML=`<span>${el.dataset.code}</span>`;}});
+document.querySelectorAll(".sel").forEach(cb=>{cb.checked=SELECTED.has(cb.dataset.id);});
+}
+function toggleSel(id,on){if(on)SELECTED.add(id);else SELECTED.delete(id);updateSelCount();}
+function updateSelCount(){document.getElementById("selCount").textContent=SELECTED.size;}
+function selectAll(on){
+let items=currentItems();
+if(on){items.forEach(item=>{let code=TYPE==="book"?(item.bookNo||item.barcode):learnerIdOf(item);SELECTED.add(TYPE+"_"+code);});}
+else SELECTED.clear();
+render();
+}
+function printSelected(){
+if(!SELECTED.size){alert("Tick at least 1 label to print.");return;}
+// Hide unselected labels, then print
+document.querySelectorAll(".label").forEach(el=>{let id=el.dataset.id;el.style.display=SELECTED.has(id)?"block":"none";});
+window.print();
+setTimeout(()=>{document.querySelectorAll(".label").forEach(el=>el.style.display="block");},500);
+}
+firebase.auth().onAuthStateChanged(async u=>{if(!u){location.href="login.html";return;}try{let s=await db.ref("users/"+u.uid).once("value");if(!s.exists()){document.getElementById("myEmail").textContent=u.email+" — No user record";return;}ME=s.val()||{};ME.role=normRole(ME.role);ME.email=u.email;document.getElementById("myEmail").textContent=u.email+" • "+ME.role+" ✅ • "+(ME.schoolName||ME.schoolId||"No School");loadAll();}catch(e){document.getElementById("myEmail").textContent="Error: "+e.message;}});
 </script></body></html>
