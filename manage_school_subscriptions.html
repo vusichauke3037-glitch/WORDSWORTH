@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Manage School Subscriptions — Makhanani LTSM 2.0</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6fb}header{background:#0a1f4d;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}header img{height:40px;background:#fff;border-radius:8px;padding:2px}.btn{background:#d4af37;color:#000;border:none;padding:10px 14px;border-radius:8px;font-weight:900;cursor:pointer;font-size:13px}.btn.dark{background:#0a1f4d;color:#fff}.btn.green{background:#16a34a;color:#fff}.btn.grey{background:#eee}.btn.red{background:#dc2626;color:#fff}.btn.yellow{background:#facc15;color:#000}.wrap{max-width:1000px;margin:16px auto;padding:0 14px}.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:14px}.lock{background:#fef2f2;border:2px solid #dc2626;padding:12px;border-radius:10px;margin-bottom:14px;font-size:14px}.stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}.stat{background:#0a1f4d;color:#fff;border-radius:12px;padding:14px;text-align:center}.stat b{font-size:22px;display:block}.stat span{font-size:12px}.school{border:2px solid #ddd;border-radius:14px;padding:16px;margin-bottom:14px}.school.locked{border-color:#dc2626;background:#fffafa}.school.unlocked{border-color:#16a34a}.badge{padding:4px 10px;border-radius:12px;font-size:12px;font-weight:900}.b-green{background:#dcfce7;color:#166534}.b-yellow{background:#fef9c3;color:#854d0e}.b-red{background:#fee2e2;color:#991b1b}.b-grey{background:#e5e7eb}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin-top:4px}label{display:block;font-size:13px;font-weight:700;margin-top:10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}th{background:#0a1f4d;color:#fff}
+@media(max-width:600px){.stats,.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+@media print{header,.noPrint{display:none!important}}</style></head>
+<body>
+<header><div style="display:flex;gap:10px;align-items:center"><img src="logo.png" alt="Makhanani LTSM Logo"><b>🏫 Manage School Subscriptions<br><span style="font-size:11px" id="myEmail">Loading...</span></b></div><div style="display:flex;gap:8px;flex-wrap:wrap" class="noPrint"><button class="btn" onclick="location.href='landing.html'">🏠 Landing</button><button class="btn" onclick="location.href='finance.html'">💰 Finance</button><button class="btn" onclick="location.href='subscriptions.html'">💳 Subscriptions</button><button class="btn green" onclick="window.print()">🖨️ Print</button><button class="btn grey" onclick="logout()">🚪 Logout</button></div></header>
+<div class="wrap">
+<div class="lock">🔒 <b>FINANCE / SUPER ADMIN ONLY</b> — This page controls the lock. Pausing / Cancelling here locks the school instantly.</div>
+
+<div class="card"><div class="stats"><div class="stat"><b id="statSchools">0</b><span>Schools</span></div><div class="stat" style="background:#166534"><b id="statActive">0</b><span>✅ Unlocked</span></div><div class="stat" style="background:#991b1b"><b id="statLocked">0</b><span>🔒 Locked</span></div><div class="stat" style="background:#854d0e"><b id="statMonthly">R 0</b><span>/ Month (Active)</span></div></div></div>
+
+<!-- ADD / RENEW -->
+<div class="card noPrint"><h2 style="margin:0">➕ Add / Renew Subscription For A School</h2><div class="grid2"><div><label>School *</label><select id="newSchool"><option value="">-- Choose School --</option><option>George Sonto High School</option><option>Wordsworth High School</option><option value="__NEW__">+ New School (type below)</option></select><input id="newSchoolCustom" placeholder="Type new school name if + New School" style="display:none;margin-top:6px"></div><div><label>Plan</label><select id="newPlan" onchange="fillPlan()"><option value="Premium">📙 Premium — R 950 / month • R 9,000 / year • R 5,500 setup</option><option value="Standard">📘 Standard — R 800 / month • R 7,500 / year • R 4,500 setup</option><option value="Starter">📗 Starter — R 500 / month • R 4,500 / year • R 3,000 setup</option><option value="Custom">Custom — type amount</option></select></div></div><div class="grid4"><div><label>Provider / Name</label><input id="newName" value="Makhanani LTSM Premium"></div><div><label>Amount (R)</label><input id="newAmount" type="number" value="950"></div><div><label>Frequency</label><select id="newFreq"><option>Monthly</option><option>Yearly</option><option>Once-off</option></select></div><div><label>Status</label><select id="newStatus"><option>Active</option><option>Paused</option><option>Cancelled</option></select></div></div><div class="grid2"><div><label>Renewal Date *</label><input id="newRenewal" type="date"></div><div><label>Notes</label><input id="newNotes" placeholder="e.g. Donation — 12 Months Free"></div></div><button class="btn green" style="width:100%;margin-top:14px;padding:14px;font-size:16px" onclick="addSubscription()">➕ SAVE SUBSCRIPTION — UNLOCKS SCHOOL IF ACTIVE</button><p id="msg" style="font-size:13px;color:#166534;font-weight:700"></p></div>
+
+<!-- FILTER -->
+<div class="card noPrint"><div class="grid3"><div><label>Filter School</label><select id="filterSchool" onchange="render()"><option value="">All Schools</option></select></div><div><label>Filter Status</label><select id="filterStatus" onchange="render()"><option value="">All Status</option><option>Active</option><option>Paused</option><option>Cancelled</option><option>Expired</option></select></div><div><label>Search</label><input id="searchBox" placeholder="School / Plan..." oninput="render()"></div></div></div>
+
+<!-- SCHOOLS LIST -->
+<div id="schoolsList"><p style="text-align:center;color:#666">Loading subscriptions...</p></div>
+
+<div class="card noPrint" style="text-align:center"><button class="btn dark" onclick="location.href='finance.html'">💰 Back to Finance →</button> <button class="btn" onclick="location.href='subscriptions.html'">💳 All Subscriptions →</button> <button class="btn" onclick="location.href='letter_george_sonto.html'">✉️ Letter — George Sonto →</button> <button class="btn" onclick="location.href='letter_wordsworth.html'">✉️ Letter — Wordsworth →</button></div>
+</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+try{firebase.initializeApp(firebaseConfig);}catch(e){}
+const db=firebase.database();let ME={};let subs=[];
+function logout(){sessionStorage.setItem("justLoggedOut","1");firebase.auth().signOut().then(()=>location.href="login.html");}
+function normRole(r){if(!r)return"";let x=String(r).trim().toLowerCase().replace(/_/g," ").replace(/\s+/g," ");if(x==="super admin"||x==="superadmin")return"Super Admin";if(x==="admin"||x==="administrator")return"Admin";if(x==="principal")return"Principal";if(x==="librarian")return"Librarian";if(x==="hod"||x==="head of department")return"HOD";if(x==="teacher"||x==="educator")return"Teacher";if(x==="finance"||x==="financial"||x==="bursar")return"Finance";return r;}
+function roleToPage(role){let r=normRole(role);if(r==="Super Admin")return"super_admin.html";if(r==="Admin")return"index.html";if(r==="Principal")return"principal.html";if(r==="Librarian")return"librarian.html";if(r==="HOD")return"hod.html";if(r==="Teacher")return"teacher.html";if(r==="Finance")return"finance.html";return"teacher.html";}
+function monthlyCost(s){if(s.frequency==="Monthly")return Number(s.amount||0);if(s.frequency==="Yearly")return Number(s.amount||0)/12;return Number(s.amount||0);}
+function isExpired(s){if(!s.renewal) return false;let t=new Date();t.setHours(0,0,0,0);let r=new Date(s.renewal);r.setHours(0,0,0,0);return r<t;}
+function isActive(s){return s.status==="Active" && !isExpired(s);}
+function schoolOf(s){return s.schoolName || s.schoolId || s.school || "Unassigned / ALL";}
+function fillPlan(){let p=document.getElementById("newPlan").value;let amt=document.getElementById("newAmount");let name=document.getElementById("newName");if(p==="Premium"){amt.value=950;name.value="Makhanani LTSM Premium";}if(p==="Standard"){amt.value=800;name.value="Makhanani LTSM Standard";}if(p==="Starter"){amt.value=500;name.value="Makhanani LTSM Starter";}if(p==="Custom"){amt.value="";name.value="Makhanani LTSM";}}
+document.getElementById("newSchool").addEventListener("change",e=>{document.getElementById("newSchoolCustom").style.display=e.target.value==="__NEW__"?"block":"none";});
+// Default renewal = +1 month
+(function(){let d=new Date();d.setMonth(d.getMonth()+1);document.getElementById("newRenewal").value=d.toISOString().slice(0,10);})();
+async function addSubscription(){
+let schoolSel=document.getElementById("newSchool").value;
+let school = schoolSel==="__NEW__" ? document.getElementById("newSchoolCustom").value.trim() : schoolSel;
+if(!school){alert("Choose a School");return;}
+let amt=Number(document.getElementById("newAmount").value||0);if(!amt){alert("Enter Amount");return;}
+let renewal=document.getElementById("newRenewal").value;if(!renewal){alert("Enter Renewal Date");return;}
+let obj={name:document.getElementById("newName").value.trim()||"Makhanani LTSM",provider:"Makhanani LTSM",plan:document.getElementById("newPlan").value,amount:amt,frequency:document.getElementById("newFreq").value,status:document.getElementById("newStatus").value,renewal:renewal,notes:document.getElementById("newNotes").value.trim(),schoolId:school,schoolName:school,school:school,createdAt:Date.now(),createdBy:ME.email||"",updatedAt:Date.now()};
+await db.ref("subscriptions").push(obj);
+document.getElementById("msg").textContent="✅ Saved: "+school+" — "+obj.status+" • Renewal "+renewal+" • "+(obj.status==="Active"?"✅ School UNLOCKED":"🔒 School LOCKED");
+loadSubs();
+}
+async function setStatus(key,status){let s=subs.find(x=>x.key===key);if(!s)return;if(!confirm(status+" subscription for "+schoolOf(s)+"?\nThis will "+(status==="Active"?"UNLOCK":"LOCK")+" the school."))return;await db.ref("subscriptions/"+key).update({status:status,updatedAt:Date.now(),updatedBy:ME.email||""});loadSubs();}
+async function renewSub(key,months){
+let s=subs.find(x=>x.key===key);if(!s)return;
+let base = s.renewal && new Date(s.renewal) > new Date() ? new Date(s.renewal) : new Date();
+base.setMonth(base.getMonth()+months);
+let renewal=base.toISOString().slice(0,10);
+if(!confirm("Renew "+schoolOf(s)+" for "+months+" month(s)?\nNew Renewal: "+renewal+"\nStatus → Active (UNLOCK)"))return;
+await db.ref("subscriptions/"+key).update({status:"Active",renewal:renewal,updatedAt:Date.now(),updatedBy:ME.email||""});loadSubs();
+}
+async function delSub(key){let s=subs.find(x=>x.key===key);if(!confirm("Delete subscription for "+schoolOf(s)+"?\nSchool will become LOCKED (No subscription)."))return;await db.ref("subscriptions/"+key).remove();loadSubs();}
+async function loadSubs(){let snap=await db.ref("subscriptions").once("value");subs=[];if(snap.exists())snap.forEach(c=>subs.push({key:c.key,...c.val()}));render();}
+function render(){
+let fSchool=document.getElementById("filterSchool").value;let fStatus=document.getElementById("filterStatus").value;let q=(document.getElementById("searchBox").value||"").toLowerCase();
+// Build school filter
+let schools=[...new Set(subs.map(s=>schoolOf(s)))].sort();
+let sel=document.getElementById("filterSchool");let cur=sel.value;sel.innerHTML=`<option value="">All Schools</option>`+schools.map(s=>`<option ${s===cur?"selected":""}>${s}</option>`).join("");
+// Group by school
+let bySchool={};subs.forEach(s=>{let sch=schoolOf(s);if(!bySchool[sch])bySchool[sch]=[];bySchool[sch].push(s);});
+// Stats
+let activeSubs=subs.filter(s=>isActive(s));let lockedSchools=Object.keys(bySchool).filter(sch=>!bySchool[sch].some(s=>isActive(s)));
+document.getElementById("statSchools").textContent=Object.keys(bySchool).length;
+document.getElementById("statActive").textContent=Object.keys(bySchool).length - lockedSchools.length;
+document.getElementById("statLocked").textContent=lockedSchools.length;
+document.getElementById("statMonthly").textContent="R "+Math.round(activeSubs.reduce((a,s)=>a+monthlyCost(s),0)).toLocaleString();
+let html="";
+Object.keys(bySchool).sort().forEach(sch=>{
+let list=bySchool[sch];let unlocked=list.some(s=>isActive(s));
+if(fSchool && sch!==fSchool) return;
+if(q && !sch.toLowerCase().includes(q) && !list.some(s=>(s.plan||"").toLowerCase().includes(q))) return;
+let filtered=list.filter(s=>{
+if(!fStatus) return true;
+if(fStatus==="Expired") return isExpired(s);
+if(fStatus==="Active") return isActive(s);
+return s.status===fStatus;
+});
+if(fStatus && !filtered.length) return;
+html+=`<div class="card school ${unlocked?"unlocked":"locked"}"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><div><h2 style="margin:0">🏫 ${sch}</h2><p style="margin:4px 0;color:#666;font-size:13px">${unlocked?"✅ <b style='color:#166534'>UNLOCKED</b> — school can use Books / Issues / Requests":"🔒 <b style='color:#991b1b'>LOCKED</b> — school sees Subscription Locked page"}</p></div><span class="badge ${unlocked?"b-green":"b-red"}">${unlocked?"✅ UNLOCKED":"🔒 LOCKED"}</span></div><div style="overflow-x:auto"><table><thead><tr><th>Plan / Name</th><th>Amount</th><th>Freq</th><th>Renewal</th><th>Status</th><th>Actions</th></tr></thead><tbody>${filtered.map(s=>`<tr><td><b>${s.plan||s.name||""}</b><br><span style="color:#666;font-size:11px">${s.name||""} ${s.notes?"• "+s.notes:""}</span></td><td>R ${Number(s.amount||0).toLocaleString()}</td><td>${s.frequency||""}</td><td>${s.renewal||"—"} ${isExpired(s)?"<br><span style='color:#991b1b;font-weight:900'>Expired</span>":""}</td><td><span class="badge ${isActive(s)?"b-green":s.status==="Paused"?"b-yellow":s.status==="Cancelled"?"b-red":"b-grey"}">${isExpired(s)?"Expired":s.status||""}</span></td><td style="white-space:nowrap"><button class="btn green" onclick="setStatus('${s.key}','Active')">✅ Activate</button> <button class="btn yellow" onclick="renewSub('${s.key}',1)">🔄 +1 Month</button> <button class="btn yellow" onclick="renewSub('${s.key}',12)">🔄 +1 Year</button> <button class="btn grey" onclick="setStatus('${s.key}','Paused')">⏸️ Pause</button> <button class="btn red" onclick="setStatus('${s.key}','Cancelled')">⛔ Cancel</button> <button class="btn red" onclick="delSub('${s.key}')">🗑️ Delete</button></td></tr>`).join("")}</tbody></table></div></div>`;
+});
+document.getElementById("schoolsList").innerHTML=html||`<div class="card"><p>No subscriptions yet. Add one above — choose George Sonto or Wordsworth to unlock that school.</p></div>`;
+}
+firebase.auth().onAuthStateChanged(async u=>{
+if(!u){location.href="login.html";return;}
+try{
+let s=await db.ref("users/"+u.uid).once("value");
+if(!s.exists()){document.getElementById("myEmail").textContent=u.email+" — No user record";return;}
+ME=s.val()||{};ME.role=normRole(ME.role);ME.email=u.email;ME.schoolId=ME.schoolId||"ALL";
+if(!["Finance","Super Admin","Admin"].includes(ME.role)){alert("⛔ Finance / Super Admin Only — You are: "+ME.role);location.href=roleToPage(ME.role);return;}
+// School Admin (specific school) should only manage their own school — filter in render via schoolId
+document.getElementById("myEmail").textContent=u.email+" • "+ME.role+" ✅ • "+(ME.schoolName||ME.schoolId);
+if(ME.role==="Admin" && ME.schoolId!=="ALL"){document.getElementById("newSchool").value=ME.schoolId;document.getElementById("newSchool").disabled=true;document.getElementById("filterSchool").value=ME.schoolId;}
+loadSubs();
+}catch(e){document.getElementById("myEmail").textContent="Error: "+e.message;}
+});
+</script></body></html>
